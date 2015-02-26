@@ -86,9 +86,9 @@
                                 <li>
                                     <a href="reads_table.php"><i class="fa fa-eye fa-fw"></i> Individual Read Data</a>
                                 </li>
-								<!--<li>
+								<li>
 									<a href="prev_kmers.php"><i class="fa fa-cogs fa-fw"></i> K-mer summaries</a>
-								</li>-->
+								</li>
                                 <li>
                                     <a href="previous_export.php"><i class="fa fa-file-text-o fa-fw"></i> Export Reads</a>
                                 </li>
@@ -97,6 +97,9 @@
                                 </li>
                                 <li>
                                     <a href="manage_data.php"><i class="fa fa-pencil-square-o"></i> Manage Data</a>
+                                </li>
+                                <li>
+                                    <a href="ena_export_data.php"><i class="fa fa-sign-out"></i> Export Data</a>
                                 </li>
 								<?php }else{?>
 	                            <li>
@@ -176,7 +179,7 @@
 				parts = pathname.split("/");
 							var filename = parts[parts.length - 1];
 							//alert(filename);
-							if (filename == "previous_bases.php" || filename == "previous_insertions.php" || filename == "previous_deletions.php" || filename == "previous_variants.php" || filename == "previous_var.php" || filename == "previous_report.php" || filename == "previous_runs.php" || filename  == "previous_summary.php" || filename  == "previous_histogram.php" || filename== "previous_export.php" || filename== "previous_rates.php" || filename== "previous_pores.php" || filename== "previous_quality.php" || filename== "previous_coverage.php" || filename== "previous_development.php" || filename=="reads_table.php" || filename=="manage_data.php" || filename=="prev_kmers.php"){
+							if (filename == "previous_bases.php" || filename == "previous_insertions.php" || filename == "previous_deletions.php" || filename == "previous_variants.php" || filename == "previous_var.php" || filename == "previous_report.php" || filename == "previous_runs.php" || filename  == "previous_summary.php" || filename  == "previous_histogram.php" || filename== "previous_export.php" || filename== "previous_rates.php" || filename== "previous_pores.php" || filename== "previous_quality.php" || filename== "previous_coverage.php" || filename == "ena_export_data.php" || filename== "previous_development.php" || filename=="reads_table.php" || filename=="manage_data.php" || filename=="prev_kmers.php"){
 								var d = document.getElementById("prevruns");
 								d.className = d.className + " active";
 							}

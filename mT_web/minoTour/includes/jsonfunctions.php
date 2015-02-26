@@ -181,7 +181,7 @@ function basesnpcoveragepos($jobname,$currun,$refid,$position,$type) {
 					}
 				}
 			}
-			$jsonstring;
+			$jsonstring="";
 		$jsonstring = $jsonstring . "[\n";
 		foreach ($basearray as $key=> $value) {
 			$jsonstring = $jsonstring . "{\n";
@@ -341,7 +341,7 @@ function basesnpcoverage($jobname,$currun,$refid) {
 				}
 			}
 		}
-		$jsonstring;
+		$jsonstring="";
 		$jsonstring = $jsonstring . "[\n";
 		foreach ($resultarray as $key => $value) {
 			foreach ($value as $key2 => $value2){
@@ -434,29 +434,29 @@ function whatsinmyminion2($jobname,$currun,$type) {
 			$result = $mindb_connection->query($sql);
 			
 			//array to store the results
-			$resultarray;
+			$resultarray=array();
 			
 			//refidarray - to store individual reference elements
-			$refidarray;
-			$refiddescarray;
+			$refidarray=array();
+			$refiddescarray=array();
 			
-			
-			if ($result->num_rows >=1) {
-				$cumucount1;
-				foreach ($result as $row) {
-					if (!in_array($row['refid'], $refidarray)){
-					    $refidarray[] = $row['refid'];
-					    $refiddescarray[$row['refid']]=$row['refname'];
-					}
-					$resultarray['$type'][$row['time']][$row['refid']]['refname']=$row['refname'];
-					$resultarray['$type'][$row['time']][$row['refid']]['reffile']=$row['reffile'];
-					$resultarray['$type'][$row['time']][$row['refid']]['count']=$row['count'];
-					$cumucount1[$row['refid']] = $cumucount1[$row['refid']] + $row['count'];
-					$resultarray['$type'][$row['time']][$row['refid']]['cumucount']=$cumucount1[$row['refid']];												
+			if (isset($result)){
+				if ($result->num_rows >=1) {
+					$cumucount1;
+					foreach ($result as $row) {
+						if (!in_array($row['refid'], $refidarray)){
+							$refidarray[] = $row['refid'];
+					    	$refiddescarray[$row['refid']]=$row['refname'];
+						}
+						$resultarray['$type'][$row['time']][$row['refid']]['refname']=$row['refname'];
+						$resultarray['$type'][$row['time']][$row['refid']]['reffile']=$row['reffile'];
+						$resultarray['$type'][$row['time']][$row['refid']]['count']=$row['count'];
+						$cumucount1[$row['refid']] = $cumucount1[$row['refid']] + $row['count'];
+						$resultarray['$type'][$row['time']][$row['refid']]['cumucount']=$cumucount1[$row['refid']];									}				
 				}
 			}
 			
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value) {
 				//echo $key . "\n";
@@ -578,7 +578,7 @@ function whatsinmyminion($jobname,$currun) {
 					$resultarray['2d'][$row['time']][$row['refid']]['cumucount']=$cumucount3[$row['refid']];												
 				}
 			}
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value) {
 				//echo $key . "\n";
@@ -644,16 +644,21 @@ function readsperporemux($jobname,$currun){
 			###Get the reverse map to decode from channel and mux to position.
 			$reverse_map = minion_map()[1];
 			
+			
+			
 			if ($template->num_rows >= 1){
 				foreach ($template as $row) {
 					//$resultarray['template'][$row['channel']][$row['mux']]=$row['count'];
 					$tempitem = $row['channel'] . "," . $row['mux'];
 					//echo $tempitem . "\t";
-					$tempitem2 = $reverse_map["$tempitem"];
-					//echo $tempitem2 . "\n";
-					$temparray = explode( ',', $tempitem2 );
-					//echo $temparray[0];
-					$resultarray['template'][$temparray[1]][$temparray[0]]=$row['count'];
+					//sometimes we see mux channels of 0 - this shouldn't be possible and so we skip these.
+					if ($row['mux']!=0){
+						$tempitem2 = $reverse_map["$tempitem"];
+						//echo $tempitem2 . "\n";
+						$temparray = explode( ',', $tempitem2 );
+						//echo $temparray[0];
+						$resultarray['template'][$temparray[1]][$temparray[0]]=$row['count'];
+					}
 				}
 			}
 		
@@ -661,7 +666,7 @@ function readsperporemux($jobname,$currun){
 	
 			//var_dump($resultarray);
 			//echo json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value){
 				$jsonstring = $jsonstring . "{\n";
@@ -762,7 +767,7 @@ function minion_map() {
 
 
 ##Average Length Over Time - chart showing read lengths over time
-function average_length_over_time($jobname,$currrun){
+function average_length_over_time($jobname,$currun){
 	$checkvar = $currun . $jobname;
 	$checkrunning = $currun . $jobname . "status";
 	global $memcache;
@@ -772,7 +777,7 @@ function average_length_over_time($jobname,$currrun){
 	$checkingrunning = $memcache->get("$checkrunning");
 	if($checkingrunning === "No" || $checkingrunning === FALSE){	
 		$memcache->set("$checkrunning", "YES", 0, 0); 
-		$checkrow = "select name,json from jsonstore where name = '" . $jsonjobname . "' ;";
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 			$checking=$mindb_connection->query($checkrow);
 			if ($checking->num_rows ==1){
 				//echo "We have already run this!";
@@ -804,7 +809,7 @@ function average_length_over_time($jobname,$currrun){
 		
 			//var_dump($resultarray);
 			//echo json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value){
 				$jsonstring = $jsonstring . "{\n";
@@ -857,7 +862,7 @@ function readnumberlength($jobname,$currun){
 		
 		
 			//$sql_template_lengths = "select seqpos, count(*) as count from last_align_basecalled_template_5prime where alignnum = 1 group by seqpos order by seqpos;";
-			$resultarray2;
+			$resultarray2=array();
 			
 			$sql_template_lengths = "select length(sequence) as lenseq from last_align_basecalled_template_5prime inner join basecalled_template using (basename_id) group by basename_id order by length(sequence);";
 			
@@ -888,7 +893,7 @@ function readnumberlength($jobname,$currun){
 		
 			$read2d_lengths=$mindb_connection->query($sql_2d_lengths);
 			$read2d_numbers = $read2d_lengths->num_rows;
-				if ($read2d_lengths->num_rows >= 1){
+			if ($read2d_lengths->num_rows >= 1){
 				foreach ($read2d_lengths as $row) {
 					$resultarray2['2d(aligned)'][$row['lenseq']]=$read2d_numbers;
 					$read2d_numbers = $read2d_numbers-1;
@@ -897,9 +902,9 @@ function readnumberlength($jobname,$currun){
 		
 			//var_dump($resultarray);
 			//echo json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
-				foreach ($resultarray2 as $key => $value){
+			foreach ($resultarray2 as $key => $value){
 				$jsonstring = $jsonstring ."{\n";
 				$jsonstring = $jsonstring . "\"name\" : \"$key\", \n";
 				$jsonstring = $jsonstring . "\"type\" : \"line\",\n";
@@ -938,7 +943,7 @@ function readlengthqual($jobname,$currun){
 	$checkingrunning = $memcache->get("$checkrunning");
 	if($checkingrunning === "No" || $checkingrunning === FALSE){
 		$memcache->set("$checkrunning", "YES", 0, 0); 
-		$checkrow = "select name,json from jsonstore where name = '" . $jsonjobname . "' ;";
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
 		if ($checking->num_rows ==1){
 			//echo "We have already run this!";
@@ -981,7 +986,7 @@ function readlengthqual($jobname,$currun){
 		
 			//var_dump($resultarray);
 			//echo json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value){
 				$jsonstring = $jsonstring ."{\n";
@@ -1051,7 +1056,7 @@ function readsperpore($jobname,$currun){
 	
 			//var_dump($resultarray);
 			//echo json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value){
 				$jsonstring = $jsonstring . "{\n";
@@ -1157,7 +1162,7 @@ $checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		
 			//var_dump($resultarray);
 			//$jsonstring = $jsonstring . json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value){
 				$jsonstring = $jsonstring . "{\n";
@@ -1245,7 +1250,7 @@ function average_time_over_time2($jobname,$currun){
 			//var_dump ($template);
 			//var_dump($resultarray);
 			//$jsonstring = $jsonstring . json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value){
 				$jsonstring = $jsonstring . "{\n";
@@ -1314,7 +1319,7 @@ function reads_over_time2($jobname,$currun) {
 			}
 			//var_dump($resultarray);
 			//echo json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value){
 				$jsonstring = $jsonstring . "{\n";
@@ -1617,7 +1622,7 @@ function depthcoverage($jobname,$currun,$refid) {
 			$table_exists = $mindb_connection->query($table_check); 
 			
 			
-			$jsonstring;
+			$jsonstring="";
 							
 			if ($table_exists->num_rows >= 1){
 				$sql_template = "select count(*) as bases, AVG(count) as coverage from (SELECT count(*) as count,refid,refpos FROM last_align_basecalled_template where (cigarclass=7 or cigarclass=8) and refid = " . $refid . " group by refid,refpos) as x";
@@ -1767,7 +1772,7 @@ function percentcoverage($jobname,$currun,$refid) {
 			} else {	
 				$table_check = "SHOW TABLES LIKE 'last_align_basecalled_template'";
 				$table_exists = $mindb_connection->query($table_check); 
-				$jsonstring;
+				$jsonstring="";
 				if ($table_exists->num_rows >= 1){
 					$sql_template = "select count(*) as bases, AVG(count) as coverage from (SELECT count(*) as count,refid,refpos FROM last_align_basecalled_template where (cigarclass=7 or cigarclass=8) and refid = " . $refid . " group by refid,refpos) as x";
 					$sql_complement = "select count(*) as bases, AVG(count) as coverage from (SELECT count(*) as count,refid,refpos FROM last_align_basecalled_complement where (cigarclass=7 or cigarclass=8) and refid = " . $refid . " group by refid,refpos) as x";
@@ -1996,7 +2001,7 @@ function readnumberupload($jobname,$currun) {
 		}
 		//var_dump($resultarray);
 		//echo json_encode($resultarray);
-		$jsonstring;
+		$jsonstring="";
 		$jsonstring = $jsonstring .   "[\n";
 			foreach ($resultarray as $key => $value){
 				$jsonstring = $jsonstring .   "{\n";
@@ -2077,7 +2082,7 @@ function readnumber($jobname,$currun) {
 		}
 		//var_dump($resultarray);
 		//echo json_encode($resultarray);
-		$jsonstring;
+		$jsonstring="";
 		$jsonstring = $jsonstring .   "[\n";
 			foreach ($resultarray as $key => $value){
 				foreach ($value as $key2 => $value2) {
@@ -2156,7 +2161,7 @@ function maxlen($jobname,$currun) {
 		
 			//var_dump($resultarray);
 			//echo json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value){
 				foreach ($value as $key2 => $value2) {
@@ -2236,7 +2241,7 @@ function avelen($jobname,$currun) {
 	
 			//var_dump($resultarray);
 			//echo json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value){
 				foreach ($value as $key2 => $value2) {
@@ -2321,7 +2326,7 @@ function bases($jobname,$currun){
 			}
 			//var_dump($resultarray);
 			//echo json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring .   "[\n";
 			foreach ($resultarray as $key => $value){
 				$jsonstring = $jsonstring .   "{\n";

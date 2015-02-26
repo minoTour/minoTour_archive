@@ -41,7 +41,7 @@ if ($login->isUserLoggedIn() == true) {
 	if (!$mindb_connection->connect_errno) {
 		//Check if entry already exists in jsonstore table:
 		$jsonjobname="tracessperpore";
-			
+		$jobname="tracesperpore";
 		$checkrow = "select name,json from jsonstore where name = '" . $jsonjobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
 		if ($checking->num_rows ==1){
@@ -69,7 +69,7 @@ if ($login->isUserLoggedIn() == true) {
 	
 		//var_dump($resultarray);
 		//echo json_encode($resultarray);
-		$jsonstring;
+		$jsonstring="";
 		$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value){
 				$jsonstring = $jsonstring . "{\n";

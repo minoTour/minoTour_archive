@@ -92,7 +92,7 @@ if ($login->isUserLoggedIn() == true) {
 			}
 		}
 		
-		$qualityarray;
+		$qualityarray=array();
 		
 		foreach ($resultarray as $key => $value) {
 			//echo $key."\n";
@@ -101,10 +101,16 @@ if ($login->isUserLoggedIn() == true) {
 				$qualarray = str_split($value2);
 				$counter = 1;
 				foreach ($qualarray as $value3){
-					//echo $key . "\t" . $counter . "\n";
-					
-					$qualityarray[$key][$counter]['value'] = $qualityarray[$key][$counter]['value']+(ord($value3)-31);
-					$qualityarray[$key][$counter]['number']++;
+					#echo $key . "\t" . $counter . "\t" . $value3 . "\n";
+					if (isset($qualityarray[$key][$counter]['value'])) {
+						#echo "exists\n";
+						$qualityarray[$key][$counter]['value'] = $qualityarray[$key][$counter]['value']+(ord($value3)-31);
+						$qualityarray[$key][$counter]['number']++;
+					}else{
+						#echo "not exists\n";
+						$qualityarray[$key][$counter]['value'] = (ord($value3)-31);
+						$qualityarray[$key][$counter]['number'] = 1;
+					}
 					$counter++;
 				}
 			}
@@ -117,7 +123,7 @@ if ($login->isUserLoggedIn() == true) {
 		//}
 		//var_dump($resultarray);
 		//echo json_encode($resultarray);
-		$jsonstring;
+		$jsonstring="";
 		$jsonstring = $jsonstring . "[\n";
 			foreach ($qualityarray as $key => $value){
 				$jsonstring = $jsonstring .  "{\n";
@@ -132,6 +138,7 @@ if ($login->isUserLoggedIn() == true) {
 				$jsonstring = $jsonstring .  "\"data\": [";
 				foreach ($value as $key2 => $value2) {
 					$jsonstring = $jsonstring .  "[" . $key2 . "," . ($qualityarray[$key][$key2]['value']/$qualityarray[$key][$key2]['number']) . "],\n" ;
+					#echo "\n$key position is " . $key2 . " number is " . $qualityarray[$key][$key2]['number'] . "\n";
 				}
 
 				$jsonstring = $jsonstring .  "]\n},\n";

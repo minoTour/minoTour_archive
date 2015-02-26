@@ -46,8 +46,9 @@ if ($login->isUserLoggedIn() == true) {
 		echo "<div class='panel-body'>";
 		$sql = "SELECT basename_id,config_general.basename,asic_id,asic_temp,device_id,exp_script_purpose,exp_start_time,flow_cell_id,heatsink_temp,run_id,version_name,local_folder,workflow_script,workflow_name,read_id,use_local,tag,model_path,complement_model,max_events,input,min_events,config,template_model,channel,metrichor_version,metrichor_time_stamp, basecalled_template.seqid as btseqid, basecalled_template.duration as btduration, basecalled_template.start_time as btstarttime, basecalled_template.scale as btscale, basecalled_template.shift as btshift, basecalled_template.gross_shift as btgross_shift, basecalled_template.drift as btdrift, basecalled_template.scale_sd as btscalesd, basecalled_template.var_sd as btvarsd, basecalled_template.var as btvar, basecalled_template.sequence as btsequence, basecalled_template.qual as qual, basecalled_complement.seqid as ctseqid, basecalled_complement.duration as ctduration, basecalled_complement.start_time as ctstarttime, basecalled_complement.scale as ctscale, basecalled_complement.shift as ctshift, basecalled_complement.gross_shift as ctgross_shift, basecalled_complement.drift as ctdrift, basecalled_complement.scale_sd as ctscalesd, basecalled_complement.var_sd as ctvarsd, basecalled_complement.var as ctvar, basecalled_complement.sequence as ctsequence, basecalled_complement.qual as qual, basecalled_2d.seqid as b2dseqid, basecalled_2d.sequence as b2dsequence, basecalled_2d.qual as b2dqual FROM tracking_id inner join config_general using (basename_id) left join basecalled_template using (basename_id) left join basecalled_complement using (basename_id) left join basecalled_2d using (basename_id) where config_general.basename = '".$_POST['readname'] ."';";
 		$sql_result = $mindb_connection->query($sql);
-		echo $sql . "<br>";
+		//echo $sql . "<br>";
 		$resultsarray;
+		
 		if ($sql_result->num_rows >=1){
 			foreach ($sql_result as $row){
 				while ($property = mysqli_fetch_field($sql_result)) {
@@ -57,23 +58,15 @@ if ($login->isUserLoggedIn() == true) {
 			}	
 		}
 		//var_dump($sql_result);
-			echo "<div id='combichart'  style='width:100%; height:400px;'><i class='fa fa-cog fa-spin fa-3x'></i> Testing combination chart</div>";
-			echo "<div id='allqualities'  style='width:100%; height:400px;'><i class='fa fa-cog fa-spin fa-3x'></i> Calculating Quality Scores for Reads - note even reads which are not basecalled will have quality scores</div>";
+			//echo "<div id='buttonholder'>Some text.</div>";
 			
-			$sql2 = "select * from caller_basecalled_template limit 1;";
-			$sql2_result = $mindb_connection->query($sql2);
-			//echo $sql2_result->num_rows;
-			if ($sql2_result->num_rows >=1) {
-				if (!empty($resultsarray['btsequence'])){
-					echo "<div id='templatesquiggles'  style='width:100%; height:400px;'><i class='fa fa-cog fa-spin fa-3x'></i> Template Squiggles...</div>";
-				}
-				if (!empty($resultsarray['ctsequence'])){
-					echo "<div id='complementsquiggles'  style='width:100%; height:400px;'><i class='fa fa-cog fa-spin fa-3x'></i> Complement Squiggles...</div>";
-				}
-			}
-
-			  
-		
+			
+						
+			
+			
+			
+			echo "<div id='templatefancy' style='width:100%; height:600px;'><i class='fa fa-cog fa-spin fa-3x'></i> Integrating lots of complex numbers...</div>";
+			echo "<div id='complementfancy' style='width:100%; height:600px;'><i class='fa fa-cog fa-spin fa-3x'></i> Integrating more complex numbers...</div>";
 
 		
 		#echo "<div class='panel panel-default'>";
@@ -109,82 +102,69 @@ if ($login->isUserLoggedIn() == true) {
 			</div>";
 		echo "
 		<div class='panel-group'>
-		  <div class='panel panel-default'>
-		    <div class='panel-heading clearfix'>";
-				if (!empty($resultsarray['btsequence'])){
-					echo "<h4 class='panel-title pull-left' style='padding-top: 7.5px;'>";
-		        	//echo "<a data-toggle='collapse' data-parent='#accordion' href='#collapseOne'>";
-					echo "Template Sequence: Generated";
-					echo "</h4>";
-					echo "<div class='btn-group pull-right'>";
-						echo "<a href='includes/fetchreads.php?db=" . $_SESSION['focusrun'] . "&job=template&readname=".$resultsarray['basename_id']."&prev=1' type='button' class='btn btn-success'>Download Fasta</a>  <a href='includes/fetchreads.php?db=" . $_SESSION['focusrun'] ."&job=template&readname=".$resultsarray['basename_id']."&prev=1&type=fastq' type='button' class='btn btn-success'>Download Fastq</a>";
-					echo "</div>";
-					//echo ">" .$resultsarray['btseqid']. "<br>\n";
-					//echo "<p style='word-wrap: break-word;'>" . $resultsarray['btsequence'] . "</p><br>\n";
-				}else{
-	  	  	     	echo "<h4 class='panel-title' >";
-	  	  	      	//echo "<a data-toggle='collapse' data-parent='#accordion' href='#collapseOne'>";
-					echo "Template Sequence Not Generated";
-					echo "</h4>";
-					
-			
-				}
-echo "
-		    </div>
-		</div>
-		<div class='panel panel-default'>
-			<div class='panel-heading'>";
-	      
-			if (!empty($resultsarray['ctsequence'])){
-	  	    	echo "<h4 class='panel-title pull-left' style='padding-top: 7.5px;'>";
-	  	      	//echo "<a data-toggle='collapse' data-parent='#accordion' href='#collapseTwo'>";
-				echo "Complement Sequence: Generated";
-				echo "</h4>";
-				echo "<div class='btn-group pull-right'>";
-					echo "<a href='includes/fetchreads.php?db=" . $_SESSION['focusrun'] . "&job=complement&readname=".$resultsarray['basename_id']."&prev=1' type='button' class='btn btn-success'>Download Fasta</a>  <a href='includes/fetchreads.php?db=" . $_SESSION['focusrun'] ."&job=complement&readname=".$resultsarray['basename_id']."&prev=1&type=fastq' type='button' class='btn btn-success'>Download Fastq</a>";
-				echo "</div>";
-				
-				//echo ">" .$resultsarray['btseqid']. "<br>\n";
-				//echo "<p style='word-wrap: break-word;'>" . $resultsarray['btsequence'] . "</p><br>\n";
-			}else{
-			
-  	  	    	echo "<h4 class='panel-title '>";
-  	  	    	//echo "<a data-toggle='collapse' data-parent='#accordion' href='#collapseTwo'>";
-				echo "Complement Sequence Not Generated";
-				echo "</h4>";
-			}
-			echo " 
-		</div>
+		<h4>Download Sequences</h4>
+		<table class='table table-condensed'>
+		<thead>
+		<tr>
+		<th>Sequence Type</th>
+		<th>Result</th>
+		<th>Fasta</th>
+		<th>Fastq</th>
+		
+		</tr>
+		</thead>
+		<tbody>";
+		if (!empty($resultsarray['btsequence'])){
+			echo "<tr>
+					<td>Template Sequence</td>
+					<td>Generated</td>
+					<td><a href='includes/fetchreads.php?db=" . $_SESSION['active_run_name'] . "&job=template&readname=".$resultsarray['basename_id']."&prev=0' type='button' class='btn btn-success btn-xs'>Download Fasta</a></td>
+					<td><a href='includes/fetchreads.php?db=" . $_SESSION['active_run_name'] ."&job=template&readname=".$resultsarray['basename_id']."&prev=0&type=fastq' type='button' class='btn btn-success btn-xs'>Download Fastq</a></td>
+					</tr>";
+		}else{
+			echo "<tr>
+					<td>Template Sequence</td>
+					<td>Not Generated</td>
+					<td>N/A</td>
+					<td>N/A</td>
+					</tr>";
+		}
+		if (!empty($resultsarray['ctsequence'])){
+			echo "<tr>
+					<td>Complement Sequence</td>
+					<td>Generated</td>
+					<td><a href='includes/fetchreads.php?db=" . $_SESSION['active_run_name'] . "&job=complement&readname=".$resultsarray['basename_id']."&prev=0' type='button' class='btn btn-success btn-xs'>Download Fasta</a></td>
+					<td><a href='includes/fetchreads.php?db=" . $_SESSION['active_run_name'] ."&job=complement&readname=".$resultsarray['basename_id']."&prev=0&type=fastq' type='button' class='btn btn-success btn-xs'>Download Fastq</a></td>
+					</tr>";
+		}else{
+			echo "<tr>
+					<td>Complement Sequence</td>
+					<td>Not Generated</td>
+					<td>N/A</td>
+					<td>N/A</td>
+					</tr>";
+		}
+		if (!empty($resultsarray['b2dsequence'])){
+			echo "<tr>
+					<td>2D Sequence</td>
+					<td>Generated</td>
+					<td><a href='includes/fetchreads.php?db=" . $_SESSION['active_run_name'] . "&job=2d&readname=".$resultsarray['basename_id']."&prev=0' type='button' class='btn btn-success btn-xs'>Download Fasta</a></td>
+					<td><a href='includes/fetchreads.php?db=" . $_SESSION['active_run_name'] ."&job=2d&readname=".$resultsarray['basename_id']."&prev=0&type=fastq' type='button' class='btn btn-success btn-xs'>Download Fastq</a></td>
+					</tr>";
+		}else{
+			echo "<tr>
+					<td>2D Sequence</td>
+					<td>Not Generated</td>
+					<td>N/A</td>
+					<td>N/A</td>
+					</tr>";
+		}
+		
+		echo "</tbody>
+		</table>
 		
 		</div>
 		
-		<div class='panel panel-default'>
-		    <div class='panel-heading'>";
-			if (!empty($resultsarray['b2dsequence'])){
-				echo "<h4 class='panel-title pull-left' style='padding-top: 7.5px;'>";
-	        	//echo "<a data-toggle='collapse' data-parent='#accordion' href='#collapseThree'>";
-				echo "2D Sequence: Generated";
-				echo "</h4>";
-				echo "<div class='btn-group pull-right'>";
-					echo "<a href='includes/fetchreads.php?db=" . $_SESSION['focusrun'] . "&job=2d&readname=".$resultsarray['basename_id']."&prev=1' type='button' class='btn btn-success'>Download Fasta</a>  <a href='includes/fetchreads.php?db=" . $_SESSION['focusrun'] ."&job=2d&readname=".$resultsarray['basename_id']."&prev=1&type=fastq' type='button' class='btn btn-success'>Download Fastq</a>";
-				echo "</div>";
-				//echo ">" .$resultsarray['btseqid']. "<br>\n";
-				//echo "<p style='word-wrap: break-word;'>" . $resultsarray['btsequence'] . "</p><br>\n";
-			}else{
-  	  	     	echo "<h4 class='panel-title' >";
-				//echo "<a data-toggle='collapse' data-parent='#accordion' href='#collapseThree'>";
-				echo "2d Sequence Not Generated";
-				echo "</h4>";
-				
-		
-			}
-		      
-		         echo "
-		        
-		    </div>
-		   
-		    </div>
-		  </div>
 		</div>";
 		//var_dump($resultsarray);
 		

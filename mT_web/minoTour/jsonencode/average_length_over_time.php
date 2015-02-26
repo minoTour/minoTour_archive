@@ -48,7 +48,7 @@ if ($login->isUserLoggedIn() == true) {
 	//echo cleanname($_SESSION['active_run_name']);;
 
 	//echo '<br>';
-
+	
 	if (!$mindb_connection->connect_errno) {
 		//Check if entry already exists in jsonstore table:
 		$jsonjobname="average_length_over_time";

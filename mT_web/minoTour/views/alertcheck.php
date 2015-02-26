@@ -8,7 +8,7 @@ if ($login->isUserLoggedIn() == true) {
     
 	$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,DB_NAME);
 
-	if (!$db_connection->connect_errno) {
+	if (!$mindb_connection->connect_errno) {
 		
 			//echo "<script src=\"js/jquery-1.10.2.js\"></script>
 			//    <script src=\"js/bootstrap.min.js\"></script>

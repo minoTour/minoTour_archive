@@ -1,8 +1,8 @@
 <?php
 
 //Setting general system wide parameters for various features
-$_SESSION['minotourversion']=0.47;
-$_SESSION['pagerefresh']=5000;
+$_SESSION['minotourversion']=0.48;
+$_SESSION['pagerefresh']=500;
 
 //generate an array containing all possible 5mers
 
@@ -193,8 +193,11 @@ function checksessionvars(){
 					
 					$sql3  = "SELECT refid,refname FROM " . $_SESSION['active_run_name'] . ".reference_seq_info;";
 					$refnamedetails = $db_connection->query($sql3);
-					foreach ($refnamedetails as $row){
-						$refnames[$row['refid']] = $row['refname'];
+					$refnames=array();
+					if ($refnamedetails->num_rows == 1){
+						foreach ($refnamedetails as $row){
+							$refnames[$row['refid']] = $row['refname'];
+						}
 					}
 					$_SESSION['activerefnames'] = $refnames;
 					//echo "The run is called " . key($runarray[1]) .".<br>\n";
@@ -214,9 +217,12 @@ function checksessionvars(){
 						//echo "Hello World" . $result_row3->reference;
 						$sql4  = "SELECT refid,refname FROM " . $_SESSION['focusrun'] . ".reference_seq_info;";
 						$refnamedetails = $db_connection->query($sql4);
-						foreach ($refnamedetails as $row){
-							$focusrefnames[$row['refid']] = $row['refname'];
-						}
+						$focusrefnames=array();
+						if (isset($refnanedetails)){
+							foreach ($refnamedetails as $row){
+								$focusrefnames[$row['refid']] = $row['refname'];
+							}
+						}	
 						$_SESSION['focusrefnames'] = $focusrefnames;
 					}
 				}
