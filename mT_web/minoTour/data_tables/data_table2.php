@@ -28,9 +28,19 @@ if ($login->isUserLoggedIn() == true) {
 	//echo cleanname($_SESSION['focusrun']);
 	if($_GET["prev"] == 1){
 		$database =$_SESSION['focusrun'];
+		if (count($_SESSION['focusrefnames']) >= 1){
+			$aligned =1;
+		}else{
+			$aligned = 0;
+		}
 	}else {
 		
 		$database =$_SESSION['active_run_name'];
+		if (count($_SESSION['activerefnames']) >= 1){
+			$aligned =1;
+		}else{
+			$aligned = 0;
+		}
 	}
 	//echo $_SESSION['active_run_name'];
 	//echo $database;
@@ -172,7 +182,12 @@ if ($login->isUserLoggedIn() == true) {
 			$aQueryColumns[] = $col;
 		}
 	}
- 	$sQuery = "select SQL_CALC_FOUND_ROWS config_general.channel as Channel, config_general.read_id , basename, if (basecalled_template.basename_id is null, 'N', 'Y') as Template, if (last_align_basecalled_template_5prime.basename_id is null, 'N', 'Y') as Template_align, length(basecalled_template.sequence) as Template_length,round(basecalled_template.start_time,2) as Template_Start,round(basecalled_template.duration,2) as Template_Duration, if (basecalled_complement.basename_id is null, 'N', 'Y') as Complement, if (last_align_basecalled_complement_5prime.basename_id is null, 'N', 'Y') as Complement_align, length(basecalled_complement.sequence) as Complement_length, round(basecalled_complement.start_time,2) as Complement_Start,round(basecalled_complement.duration,2) as Complement_Duration, if (basecalled_2d.basename_id is null, 'N', 'Y') as 2d, if (last_align_basecalled_2d_5prime.basename_id is null, 'N', 'Y') as 2d_align, length(basecalled_2d.sequence) as 2d_length from config_general left join basecalled_template using (basename_id) left join last_align_basecalled_template_5prime using (basename_id) left join basecalled_complement using (basename_id) left join last_align_basecalled_complement_5prime using (basename_id) left join basecalled_2d using (basename_id) left join last_align_basecalled_2d_5prime using (basename_id) ".$sWhere." group by basename ".$sOrder.$sLimit;
+	if ($aligned == 1) {
+	 	$sQuery = "select SQL_CALC_FOUND_ROWS config_general.channel as Channel, config_general.read_id , basename, if (basecalled_template.basename_id is null, 'N', 'Y') as Template, if (last_align_basecalled_template_5prime.basename_id is null, 'N', 'Y') as Template_align, length(basecalled_template.sequence) as Template_length,round(basecalled_template.start_time,2) as Template_Start,round(basecalled_template.duration,2) as Template_Duration, if (basecalled_complement.basename_id is null, 'N', 'Y') as Complement, if (last_align_basecalled_complement_5prime.basename_id is null, 'N', 'Y') as Complement_align, length(basecalled_complement.sequence) as Complement_length, round(basecalled_complement.start_time,2) as Complement_Start,round(basecalled_complement.duration,2) as Complement_Duration, if (basecalled_2d.basename_id is null, 'N', 'Y') as 2d, if (last_align_basecalled_2d_5prime.basename_id is null, 'N', 'Y') as 2d_align, length(basecalled_2d.sequence) as 2d_length from config_general left join basecalled_template using (basename_id) left join last_align_basecalled_template_5prime using (basename_id) left join basecalled_complement using (basename_id) left join last_align_basecalled_complement_5prime using (basename_id) left join basecalled_2d using (basename_id) left join last_align_basecalled_2d_5prime using (basename_id) ".$sWhere." group by basename ".$sOrder.$sLimit;
+	 }else {
+	 	$sQuery = "select SQL_CALC_FOUND_ROWS config_general.channel as Channel, config_general.read_id , basename, if (basecalled_template.basename_id is null, 'N', 'Y') as Template, 'N' as Template_align, length(basecalled_template.sequence) as Template_length,round(basecalled_template.start_time,2) as Template_Start,round(basecalled_template.duration,2) as Template_Duration, if (basecalled_complement.basename_id is null, 'N', 'Y') as Complement, 'N' as Complement_align, length(basecalled_complement.sequence) as Complement_length, round(basecalled_complement.start_time,2) as Complement_Start,round(basecalled_complement.duration,2) as Complement_Duration, if (basecalled_2d.basename_id is null, 'N', 'Y') as 2d, 'N' as 2d_align, length(basecalled_2d.sequence) as 2d_length from config_general left join basecalled_template using (basename_id) left join basecalled_complement using (basename_id) left join basecalled_2d using (basename_id)  ".$sWhere." group by basename ".$sOrder.$sLimit;
+	 }
+	 
 	//$sQuery = "SELECT SQL_CALC_FOUND_ROWS basename, if(basecalled_template.seqid is null,'N','Y') as Template,if(last_align_basecalled_template_5prime.seqid is null,'N','Y') as Template_align,length(basecalled_template.sequence) as Template_length, if(basecalled_complement.seqid is null,'N','Y') as Complement,if(last_align_basecalled_complement_5prime.seqid is null,'N','Y') as Complement_align, length(basecalled_complement.sequence) as Complement_length, if(basecalled_2d.seqid is null,'N','Y') as 2d,if(last_align_basecalled_2d_5prime.seqid is null,'N','Y') as 2d_align, length(basecalled_2d.sequence) as 2d_length from config_general left join basecalled_template using (basename) left join last_align_basecalled_template_5prime on basecalled_template.seqid=last_align_basecalled_template_5prime.seqid  left join basecalled_complement using (basename) left join last_align_basecalled_complement_5prime on basecalled_complement.seqid=last_align_basecalled_complement_5prime.seqid left join basecalled_2d using (basename) left join last_align_basecalled_2d_5prime on basecalled_2d.seqid=last_align_basecalled_2d_5prime.seqid ".$sWhere." group by basename ".$sOrder.$sLimit;
  	//echo $sQuery . "\n\n";
 	$rResult = $db->query( $sQuery ) or die($db->error);
