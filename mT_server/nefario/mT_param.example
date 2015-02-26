@@ -1,0 +1,6 @@
+directory=/path/to/your/minotour/web/install/
+memcache=127.0.0.1:11211
+dbhost=127.0.0.1
+dbuser=*db_user_name*
+dbpass=*db_password*
+phploc=/usr/bin/

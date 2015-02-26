@@ -1,0 +1,18 @@
+#!/bin/bash
+ 
+EXPECTED_ARGS=1
+E_BADARGS=65
+MYSQL=`which mysql`
+
+Q1="DROP USER '$1'@'%';"
+Q2="DROP USER '$1'@'localhost';"
+Q6="FLUSH PRIVILEGES;"
+SQL="${Q1}${Q6}${Q2}${Q6}"
+ 
+if [ $# -ne $EXPECTED_ARGS ]
+then
+  echo "Usage: $0 dbuser"
+  exit $E_BADARGS
+fi
+ 
+$MYSQL -uroot -p -e "$SQL"

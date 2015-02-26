@@ -1,0 +1,18 @@
+#!/bin/bash
+ 
+EXPECTED_ARGS=2
+E_BADARGS=65
+MYSQL=`which mysql`
+
+
+Q5="GRANT ALL ON \`$1\_%\`.* TO '$1'@'$2';"
+Q6="FLUSH PRIVILEGES;"
+SQL="${Q5}${Q6}"
+ 
+if [ $# -ne $EXPECTED_ARGS ]
+then
+  echo "Usage: $0 dbuser sourceIP"
+  exit $E_BADARGS
+fi
+ 
+$MYSQL -uroot -p -e "$SQL"
