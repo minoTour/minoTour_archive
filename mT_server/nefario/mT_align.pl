@@ -9,23 +9,70 @@ use Getopt::Long;
 use Data::Dumper;
 
 
+
 if ($#ARGV!=0) {
 	print "This script only requires 1 database name variable.\n";
 	exit;
 }
+
+## Import variables from mT_param.conf
+## This file allows us to set global parameters for the mT_control package
+
+my $file = "mT_param.conf";
+open (FH, "< $file") or die "Can't open $file for read: $!";
+my @lines;
+while (<FH>) {
+    push (@lines, $_);
+}
+close FH or die "Cannot close $file: $!";
+
+my $directory;
+my $memcache;
+my $dbhost;
+my $dbuser;
+my $dbpass;
+my $phploc;
+
+foreach (@lines) {
+        chomp($_);
+        #print $_ . "\n";
+        my @values = split(/=/, $_);
+        if ($values[0] eq "directory") {
+                $directory = $values[1];
+        }
+        if ($values[0] eq "memcache") {
+                $memcache = $values[1];
+        }
+        if ($values[0] eq "dbhost") {
+                $dbhost = $values[1];
+        }
+        if ($values[0] eq "dbuser") {
+                $dbuser = $values[1];
+        }
+        if ($values[0] eq "dbpass") {
+                $dbpass = $values[1];
+        }
+        if ($values[0] eq "phploc") {
+                $phploc = $values[1];
+        }
+}
+
+
+
+
 my $dbname = $ARGV[0];
 my $development;
 
 
 #Set up a connection to memcache to upload data and process stuff
-my $memd = Cache::Memcached->new(servers => ["127.0.0.1:11211"]);
+my $memd = Cache::Memcached->new(servers => [$memcache]);
 my $checkvar = $dbname . "alignmax";
 my $checkrunning = $dbname . "alignmax" . "status";
 my $checkingrunning = $memd->get($checkrunning);
 my $checking = $memd->get($checkvar);
 my @readtypes = ("template","complement","2d");
 
-my $dbh2 = DBI->connect('DBI:mysql:host=127.0.0.1;database=Gru','webuser','webpassword') or die "Connection Error: $DBI::errstr\n"; 
+my $dbh2 = DBI->connect('DBI:mysql:host='.$dbhost.';database=Gru',$dbuser,$dbpass) or die "Connection Error: $DBI::errstr\n"; 
 
 unless ($checkingrunning) {
 	$memd->set($checkrunning,"1");
