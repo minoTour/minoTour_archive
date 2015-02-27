@@ -169,7 +169,9 @@ require_once("includes/functions.php");
 			        	//alert (tdur);
 						var mod = 5;
 			        	var tmin = tstart+(tdur/2)-mod;
+			        	//var tmin =tstart;
 			        	var tmax = tstart+(tdur/2)+mod;
+			        	//var tmax = tstart+tdur;
 			        	//alert (tmax);	
 			        }else {
 			        	var tmin;
@@ -426,7 +428,7 @@ require_once("includes/functions.php");
 				                lineWidth: 1
 				            }],
 					        scrollbar: {
-      							  enabled: false
+      							  enabled: true
     						},
     						navigator: {
  	  						  enabled: true
@@ -858,7 +860,7 @@ require_once("includes/functions.php");
 </body>
 	<!-- Highcharts Addition -->
 	<!--<script src='js/highcharts.js'></script>-->
-	<script src='http://code.highcharts.com/stock/highstock.js'></script>
+	<script src='http://code.highcharts.com/stock/2.0.4/highstock.js'></script>
 	<script type='text/javascript' src='js/themes/grid-light.js'></script>
 	<script src='http://code.highcharts.com/4.0.3/modules/heatmap.js'></script>
 	<script src='http://code.highcharts.com/modules/exporting.js'></script>";
