@@ -72,7 +72,7 @@ my $checkingrunning = $memd->get($checkrunning);
 my $checking = $memd->get($checkvar);
 my @readtypes = ("template","complement","2d");
 
-my $dbh2 = DBI->connect('DBI:mysql:host='.$dbhost.';database=Gru',$dbuser,$dbpass) or die "Connection Error: $DBI::errstr\n"; 
+my $dbh2 = DBI->connect('DBI:mysql:host='.$dbhost.';database=Gru',$dbuser,$dbpass, { AutoCommit => 1, mysql_auto_reconnect=>1}) or die "Connection Error: $DBI::errstr\n"; 
 
 unless ($checkingrunning) {
 	$memd->set($checkrunning,"1");
