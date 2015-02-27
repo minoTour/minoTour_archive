@@ -13,7 +13,9 @@ git clone https://github.com/minoTour/minoTour.git
 To set up a repository that you can pull updates in to, create a new folder and initialise it for git use and set this repository as your origin:
 
 git init
+
 git remote add origin https://github.com/minoTour/minoTour.git
+
 git pull
 
 Subsequent updates can be retrieved by simply re pulling the repository down.
