@@ -10,7 +10,7 @@ The most complex method is to configure your own server. Full details for this a
 To just download these files ensure that you have GIT configured on your target server. Create a directory and type:
 git clone https://github.com/minoTour/minoTour.git
 
-To set up a repository that you can pull updates in to, create a new folder and initialise it for git use and set this repository as your origin. You then pull down the files and set your branch to the master version.
+To set up a repository that you can pull updates in to, create a new folder and initialise it for git use and set this repository as your origin. You then pull down the files and set your branch to the master version. Unless you know what you are doing you should not use the develop branch at this time.
 
 git init
 
