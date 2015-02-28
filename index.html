@@ -1,33 +1,36 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
+
   <head>
-    <meta charset="utf-8">
+    <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>minoTour by minoTour</title>
+    <meta name="description" content="minoTour : Real time data analysis tools for the Oxford Nanopore minION sequencing platform.">
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>minoTour</title>
   </head>
+
   <body>
-    <div class="wrapper">
-      <header>
-        <h1>minoTour</h1>
-        <p>Real time data analysis tools for the Oxford Nanopore minION sequencing platform.</p>
 
-        <p class="view"><a href="https://github.com/minoTour/minoTour">View the Project on GitHub <small>minoTour/minoTour</small></a></p>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/minoTour/minoTour">View on GitHub</a>
 
+          <h1 id="project_title">minoTour</h1>
+          <h2 id="project_tagline">Real time data analysis tools for the Oxford Nanopore minION sequencing platform.</h2>
 
-        <ul>
-          <li><a href="https://github.com/minoTour/minoTour/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/minoTour/minoTour/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/minoTour/minoTour">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/minoTour/minoTour/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/minoTour/minoTour/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
         <h3>
 <a id="welcome-to-minotour" class="anchor" href="#welcome-to-minotour" aria-hidden="true"><span class="octicon octicon-link"></span></a>Welcome to minoTour.</h3>
 
@@ -39,14 +42,42 @@ If you wish to use our server you will need to register at <a href="http://minot
 <p>A video describing some of the features on minoTour is available here:
 <a href="https://www.youtube.com/embed/fZRMMSsw7O4">https://www.youtube.com/embed/fZRMMSsw7O4</a></p>
 
-<p>More information on minoTour will appear here shortly.</p>
+<h3>
+<a id="installation-and-configuration-instructions-for-your-own-minotour-server" class="anchor" href="#installation-and-configuration-instructions-for-your-own-minotour-server" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation and Configuration Instructions for your own minoTour server.</h3>
+
+<p>We provide an example for configuring an Ubuntu 14.04 server for minoTour. You should obviously modify these instructions as you need for your favour of UNIX. Instructions for configuring minoTour on the same computer as the minION device will be provided at a later date.</p>
+
+<p>Step 1 - LAMP Installation and memcached</p>
+
+<p>If you do not already have LAMP installed then follow the instructions below. You will also need memcached running on your server. This is currently optional but will become required for planned future features in minoTour.</p>
+
+<p><code>:-$ sudo apt-get update</code>
+<code>:-$ sudo apt-get install lamp-server^</code>
+<code>:-$ sudo apt-get install memcached php5-memcache</code></p>
+
+<p>Note - you really should set a password for the mySQL root user when prompted to at this point…you will use this later on. Also make sure your local firewalls are configured to allow access for http, https, ssh (for admin) and mySQL and the necessary ports are open on your server.</p>
+
+<p>Step 2 - Perl Background Processes</p>
+
+<p>You need to install the perl memcached module</p>
+
+<p><code>sudo apt-get install libcache-memcached-perl</code></p>
+
+<p>You should also install the following perl module (#idiot check - you may need to install make if it isn't already on your system… <code>sudo apt-get install make</code> )</p>
+
+<p>Parallel-Loops</p>
       </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/minoTour">minoTour</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">minoTour maintained by <a href="https://github.com/minoTour">minoTour</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
-    <script src="javascripts/scale.fix.js"></script>
+
     
+
   </body>
 </html>
