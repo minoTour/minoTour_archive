@@ -80,6 +80,156 @@ run the command </p>
 <p>restart your mysql server once.</p>
 
 <p><code>sudo /etc/init.d/mysql restart</code></p>
+
+<h3>
+<a id="configuring-the-minotour-package" class="anchor" href="#configuring-the-minotour-package" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuring the minoTour package.</h3>
+
+<p>The database works as follows. Each new run is added to its own unique database. This allows for relatively simple management of run data and shifting of databases to different locations in the future. To manage these databases, a master database is created (‘Gru’ - it controls the minIONs…). Gru allocates databases to users, controls access to the website and is absolutely essential to the operation of minoTour.</p>
+
+<p>In order for this system to work, you create mySQL users that have permission to create and delete databases. This creates risks for your mySQL system and it is unlikely that any centrally managed facility will allow you to do this - you therefore need access to your own mySQL installation. To negate these risks, we create users that can only create and destroy databases which belong to them, defined by their own user names - this means that users cannot delete other databases in your mySQL installation - PHEW! To simplify the creation of these accounts, we have generated a number of scripts to automate this process (found in the folder 'mT_server/db_control/'). These scripts assume that you have access to the mySQL server and can connect to mySQL as root. You should ensure that the scripts have the necessary permissions to run on your server.</p>
+
+<p>Firstly you need to create the basic database Gru and establish an account on mySQL that can be used by the website to show all the data (the ‘webuser'). You need to use the initialiseDB script and have the Gru.sql file (found in the 'mT_server/db_control/setup' folder).</p>
+
+<p>This account has full access to all the databases created by the upload scripts. The website archive features require that the webuser account can drop tables and can access all users data. The datasets that can be seen by individual users is managed by the Gru database itself.</p>
+
+<p>Assuming that you have root access to your mySQL install go to the command line and execute the initialiseDB script. You need to pass the script three variables. The username you wish to use for your webuser, the password and the ip address of the web server which will be connecting to the database. If your web server and mySQL database are on the same machine, use ‘localhost’ for this last option. The script will request your mySQL root password twice whilst it is running.</p>
+
+<p><code>&gt;./initialiseDB &lt;webusername&gt; &lt;webpassword&gt; &lt;ip&gt;</code></p>
+
+<p>If this process has been successful you should now be able to log in to mySQL with the following command:</p>
+
+<p><code>&gt;mysql -u &lt;webusername&gt; -p</code></p>
+
+<p>and provide the  on request. Typing </p>
+
+<p><code>mysql&gt; show databases;</code></p>
+
+<p>should list the presence of the Gru database.</p>
+
+<p>The username and password created here will be used later to connect the minoTour website to your mySQL database.</p>
+
+<p>Next you need to create accounts for users to actually upload data to the database. How you manage this process is up to you. We allow users to log in to the website and create an account for accessing the website choosing there own username. We then use this username to enable connection to the mySQL database. However these account names do not have to be the same.</p>
+
+<p>IMPORTANT: Do not use _ in the user name. This will break functionality elsewhere in the package.</p>
+
+<p>To create an account use the ‘createuser’ script (located in 'mT_server/db_control/admin'). This requires 3 arguments. The ,  and the  address from which they are connecting to your mySQL server. This is an important security feature as it limits the possibility of malicious connection to your database. To add additional IP addresses in the future we provide the script addusersource (see below). The simplest option is to use the wildcard symbol %. This will allow the user to connect from any computer anywhere. It will also resolve an issue where the machine connecting to the database does not have a fixed IP address. To create a user account execute the ‘createuser’ script. The username you use here must be associated with an account on the web site. e.g If Joe Bloggs creates a user account on the website called JB123, his account for uploading data in mySQL should also be called JB123.</p>
+
+<p><code>&gt;./createuser &lt;username&gt; &lt;userpassword&gt; &lt;ip&gt;</code></p>
+
+<p>You will need to communicate the  to the user directly. There is no way that they can find this information out otherwise. The option to change the user password on the website will not alter the mySQL password set here.
+To add additional connection points for this user run the addusersource script providing the username and the additional IP address.</p>
+
+<p><code>&gt;./addusersource &lt;username&gt; &lt;new_ip&gt;</code></p>
+
+<p>If you need to delete a user then run the dropuser script. This requires only the username to prevent any access to the database for that user. This does not remove any data OR prevent the user from seeing the data in the minoTour website.</p>
+
+<p><code>&gt;./dropuser &lt;username&gt;</code></p>
+
+<p>Having done this, we shall now configure the website.</p>
+
+<pre><code>Important: we will return to mySQL to configure our admin account shortly.
+</code></pre>
+
+<h3>
+<a id="minotour-website-installation" class="anchor" href="#minotour-website-installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>minoTour WebSite installation.</h3>
+
+<p>Configuring the website is straightforward. Copy the entire 'minoTour' folder located in the mT_web folder (which contains the web application) into the appropriate root folder for your webserver. In OSX this folder is usually called:</p>
+
+<p><code>/Library/WebServer/Documents</code></p>
+
+<p>In unix systems it may be</p>
+
+<p><code>/var/www/html/</code></p>
+
+<p>The name of the folder dictates the url for your website. You can change this if you wish.</p>
+
+<p>Upgrade Notes: You may wish to install your new version of minoTour in place of the previous version. We would suggest first setting the site up in an alternative location and checking the configuration before writing over your previous installation. The new version of minoTour includes a 'previous versions' tab which will allow you to go back and use older versions of minoTour. Most importantly you need to keep note of the DB-HOST and DB_PASS values from the db.php file in the config folder and ensure these values are used in the new minoTour install.</p>
+
+<p>You may need to use 'sudo' privileges to copy this folder into the appropriate location.</p>
+
+<p>Now - assuming you are on the same machine as your webServer and have not changed the folder name, open a browser window and navigate to:</p>
+
+<p><code>http://localhost/minoTour</code></p>
+
+<p>And you should see a nice welcoming page… - if you don’t - check that you have php and apache correctly configured on your machine. Google is your friend…</p>
+
+<p>If you do not see the video, then your webServer is unable to connect to the outside world. This isn’t critical but will limit some functionality in our system. In particular it will prevent you submitting bug reports and feature requests via the website to us.</p>
+
+<p>Before going any further, you need to configure the website to talk to your database.</p>
+
+<p>To do this, navigate to the folder ‘config’ which is located within the minoTour folder. In this folder is a file called ‘db_example.php’.
+Open this file with a text editor and you will see lines including:</p>
+
+<p>define("DB_HOST", "127.0.0.1"); 
+define("DB_NAME", "Gru"); 
+define("DB_USER", ""); <br>
+define("DB_PASS", ""); <br>
+define("DB_PORT", 3306);</p>
+
+<p>If your database is on the same machine as your webserver, leave DB_HOST set to “127.0.01”. If this doesn’t work, switch it to “localhost”. If your mySQL database is on a remote machine, then enter the IP address of that machine here. Then set DB_USER and DB_PASS to the user name and password that you used when setting up the database above. If you have mySQL configured on a non standard port you can set that here. When you save this file, save it as db.php in the config folder. </p>
+
+<pre><code>Important: Each time a new release of minoTour is made available you should check the db_example.php file to see if new global parameters have been established.
+</code></pre>
+
+<p>Now return to your web browser - we will make an account for you to access the site - to do so go to register_new.php . </p>
+
+<p>Important: For minoTour versions 0.43 and beyond we have removed the publicly accessible registration page. This prevents malicious account creation. To find the page to register a new user go to minoTour/register_new.php rather than index.php .</p>
+
+<p>This first account is important as we are going to make it the system administrator. Use your choice of username and password. Providing a valid email address is important as it allows us to contact you in the event of bugs or other problems. Complete the form and register away.</p>
+
+<p>If all has worked well you will be rewarded with a success message… Return to the login page and use your shiny new account to log in.</p>
+
+<p>If your machine is on a network where it can see the outside world, you will have the news items listed. If you do, then the bug reporting and feature requests will work. If you do not, then these buttons won’t function for you.</p>
+
+<p>The last thing we need to do is set this account as an administrator. To do that, we go back to mySQL - log in using your mySQL account - in our case webaccess. Follow these instructions replacing the minoTouruser with the user name of your choice:</p>
+
+<p><code>mysql&gt; USE Gru;</code></p>
+
+<p><code>mysql&gt; UPDATE USERS SET admin=1 WHERE user_name = 'minoTouruser';</code></p>
+
+<p>Now return to the website and refresh the page… Assuming all has gone to plan you will have an admin account and you should see a new ‘Admin’ menu has appeared. Currently the Admin processes are limited - you can allocate databases to different users.  The second page 'cache administration' allows you to check if the new optimised features of minoTour are working correctly.</p>
+
+<p>Update Notes: This is a new feature of minoTour that dramatically speeds up displaying data. You should follow these instructions.</p>
+
+<p>If you click on 'cache administration' you will see a message that minoTour is currently not using memcached. Memcached is a unix tool that allows a website to store parameters in memory on the server. We use this to dramatically improve performance. You will need to have memcached installed on your host to use this service. We also provide background scripts that allow the server to process data.</p>
+
+<p>To configure memcached in an Ubuntu environment type (you should modify as appropriate for your flavour of unix) Note you should have done this already if you followed the instructions from the start!:</p>
+
+<p><code>sudo apt-get install memcached php5-memcache</code> </p>
+
+<p>Depending on the size of your minoTour install you can dedicate more or less memory to memCached. We recommend at least 64Mb but larger installations with more users may benefit from more memory. To configure the memory allocated to memcached see the man pages for your particular flavour of unix/memcached.</p>
+
+<p>After configuring memcached correctly you should see the message has changed on your 'cache administration' page to indicate that minoTour can see the memcache.</p>
+
+<p>The perl scripts we are going to run in the background require the memcached-perl library - this can be installed on Ubuntu by typing (again - you should have done this above if all is well!):</p>
+
+<p><code>sudo apt-get install libcache-memcached-perl</code></p>
+
+<p>We now need to configure these scripts to work with your installation. As with the web site there is a central configuration file located in the 'nefario' folder within the 'mT_server' folder. The example configuration file is called mT_param.example. Open this in a text editor and complete each line as follows:</p>
+
+<p>directory - is the path to the folder containing your minoTour website. Do not forget the trailing '/' e.g. /var/www/html/minoTour/</p>
+
+<p>memcahce - is the memcache ip and port - this will work as 127.0.0.1:11211 unless you have changed your memcache install.</p>
+
+<p>dbhost - the database host ip</p>
+
+<p>dbuser - the database username you configured on page 2 of this document</p>
+
+<p>dbpass - the database password you configured on page 2 of this document</p>
+
+<p>phploc - the path to php to execute php from the command line</p>
+
+<p>Now you can set the background processes running by executing the command:</p>
+
+<p><code>perl mT_control.pl</code></p>
+
+<p>In order to run this in the background you need to use nohup or an equivalent methodology - e.g.</p>
+
+<p><code>nohup perl mT_control.pl &amp;</code></p>
+
+<p>If you return to the website and 'cache administration' you should now see a message that your memcache is working and the backend scripts are running.</p>
+
+<p>Great. Nearly there… Now to upload some data…</p>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/minoTour">minoTour</a></p>
