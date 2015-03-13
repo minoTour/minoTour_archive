@@ -54,7 +54,25 @@ if ($login->isUserLoggedIn() == true) {
 		
 		if (isset($_GET["readname"])) {
 			$sqlsequence = "SELECT sequence,qual from basecalled_" . $_GET['type'] . " inner join tracking_id using (basename_id) where basename = '" .$_GET['readname'] . "';";
-			$sqlsquiggle = "SELECT mean,start,stdv,length,model_state,model_level,move,p_model_state,mp_state,p_mp_state,p_A,p_C,p_G,p_T FROM caller_basecalled_" . $_GET['type'] ." inner join tracking_id using (basename_id) where basename = '" . $_GET['readname'] ."';";
+			$sqlsquiggle;
+			
+			// Select 1 from table_name will return false if the table does not exist.
+			$testquery = 'select 1 from caller_basecalled_template';
+			$val = $mindb_connection->query($testquery);
+
+			if($val !== FALSE)
+			{
+			   //DO SOMETHING! IT EXISTS!
+			   $sqlsquiggle = "SELECT mean,start,stdv,length,model_state,model_level,move,p_model_state,mp_state,p_mp_state,p_A,p_C,p_G,p_T FROM caller_basecalled_" . $_GET['type'] ." inner join tracking_id using (basename_id) where basename = '" . $_GET['readname'] ."';";
+
+			}
+			else
+			{
+			    //I can't find it...
+			    $type = $_GET['type'] . "_" . $_GET['channel'];
+			    $sqlsquiggle = "SELECT mean,start,stdv,length,model_state,model_level,move,p_model_state,mp_state,p_mp_state,p_A,p_C,p_G,p_T FROM caller_basecalled_" . $type ." inner join tracking_id using (basename_id) where basename = '" . $_GET['readname'] ."';";
+
+			}
 			//echo $sqlsquiggle . "\n";
 			//echo $sqlsequence . "\n";
 			$resultarray;
