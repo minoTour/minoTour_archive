@@ -148,6 +148,8 @@ require_once("includes/functions.php");
 			$('#example tbody').on('click', 'tr', function () {
 			        var nameindex = $('td', this).eq(0).text();
 			        var name = oTable.fnGetData(this,2);
+			        var channel = oTable.fnGetData(this,0).slice(-1);;
+			        //alert(channel);
 			        //alert(name);
 			        var templength = $('td', this).eq(4).text();
 			        var complength = $('td', this).eq(9).text();
@@ -169,9 +171,7 @@ require_once("includes/functions.php");
 			        	//alert (tdur);
 						var mod = 5;
 			        	var tmin = tstart+(tdur/2)-mod;
-			        	//var tmin =tstart;
 			        	var tmax = tstart+(tdur/2)+mod;
-			        	//var tmax = tstart+tdur;
 			        	//alert (tmax);	
 			        }else {
 			        	var tmin;
@@ -428,7 +428,7 @@ require_once("includes/functions.php");
 				                lineWidth: 1
 				            }],
 					        scrollbar: {
-      							  enabled: true
+      							  enabled: false
     						},
     						navigator: {
  	  						  enabled: true
@@ -776,12 +776,12 @@ require_once("includes/functions.php");
 					    //}
 					    if 	(ttrue == 'Y') {
 					    	if ($('#toggle-two').prop('checked') == true) {
-								$.getJSON('jsonencode/squiggles3.php?prev=0&readname='+name+'&type=template&callback=?', function(data){
+								$.getJSON('jsonencode/squiggles3.php?channel='+channel+'&prev=0&readname='+name+'&type=template&callback=?', function(data){
 									newdata.series = data;
 									var chart = new Highcharts.Chart(newdata);
 								});
 					    	}else{
-					    		$.getJSON('jsonencode/squiggles2.php?prev=0&readname='+name+'&type=template&callback=?', function(data){
+					    		$.getJSON('jsonencode/squiggles2.php?channel='+channel+'&prev=0&readname='+name+'&type=template&callback=?', function(data){
 									newdata.series = data;
 									var chart = new Highcharts.Chart(newdata);
 								});
@@ -860,7 +860,7 @@ require_once("includes/functions.php");
 </body>
 	<!-- Highcharts Addition -->
 	<!--<script src='js/highcharts.js'></script>-->
-	<script src='http://code.highcharts.com/stock/2.0.4/highstock.js'></script>
+	<script src='http://code.highcharts.com/stock/highstock.js'></script>
 	<script type='text/javascript' src='js/themes/grid-light.js'></script>
 	<script src='http://code.highcharts.com/4.0.3/modules/heatmap.js'></script>
 	<script src='http://code.highcharts.com/modules/exporting.js'></script>";
