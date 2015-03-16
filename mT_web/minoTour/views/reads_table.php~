@@ -148,7 +148,6 @@ require_once("includes/functions.php");
 			$('#example tbody').on('click', 'tr', function () {
 			        var nameindex = $('td', this).eq(0).text();
 			        var name = oTable.fnGetData(this,2);
-				var channel = oTable.fnGetData(this,0).slice(-1);;
 			        //alert(name);
 			        var templength = $('td', this).eq(4).text();
 			        var complength = $('td', this).eq(9).text();
@@ -775,12 +774,12 @@ require_once("includes/functions.php");
 					    //}
 					    if 	(ttrue == 'Y') {
 					    	if ($('#toggle-two').prop('checked') == true) {
-								$.getJSON('jsonencode/squiggles3.php?channel='+channel+'&prev=1&readname='+name+'&type=template&callback=?', function(data){
+								$.getJSON('jsonencode/squiggles3.php?prev=1&readname='+name+'&type=template&callback=?', function(data){
 									newdata.series = data;
 									var chart = new Highcharts.Chart(newdata);
 								});
 					    	}else{
-					    		$.getJSON('jsonencode/squiggles2.php?channel='+channel+'&prev=1&readname='+name+'&type=template&callback=?', function(data){
+					    		$.getJSON('jsonencode/squiggles2.php?prev=1&readname='+name+'&type=template&callback=?', function(data){
 									newdata.series = data;
 									var chart = new Highcharts.Chart(newdata);
 								});
