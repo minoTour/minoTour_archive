@@ -20,7 +20,7 @@ git pull
 
 git checkout master
 
-Subsequent updates can be retrieved by simply re pulling the repository down.
+Subsequent updates can be retrieved by simply repulling the repository down.
 
 A development version will be made available shortly which will provide additional features that are in development and may break existing areas of the site. Bug fixes for the current version will be provided via the master branch. Users are advised that the development branch is exactly that - in development - and should be treated with extreme caution!
 
