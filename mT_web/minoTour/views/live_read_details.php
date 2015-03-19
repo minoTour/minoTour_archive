@@ -192,15 +192,14 @@ if ($login->isUserLoggedIn() == true) {
 					$alignarray[$property->name]=$row[$property->name];
 				}
 			}
-			$refarray = str_split($alignarray['r_align_string'],60);
-			$querarray = str_split($alignarray['q_align_string'],60);
-			echo "<pre>";
-			for ($x = 0; $x < count($refarray); $x++) {
-			    echo $refarray[$x] . "<br>";
-   			    echo $querarray[$x] . "<br><br>";
-			} 
-			echo "</pre>";
-		}else{
+			
+			$identityarray = alignsim($alignarray['r_align_string'],$alignarray['q_align_string']);
+			echo "% identity: " . round((($identityarray[0]*100)/strlen($alignarray['r_align_string'])),2) . "<br>";
+			echo "Query Matches: " . $identityarray[0] . "/" . $identityarray[2] . "<br>";
+			echo "Ref Matches: " . $identityarray[0] . "/" . $identityarray[1] . "<br>";			
+			displayalignment($alignarray['r_align_string'],$alignarray['q_align_string'],$alignarray['r_start'],$alignarray['q_start'],$alignarray['alignstrand']);
+						
+			}else{
 			echo "No Alignment<br>";
 		
 		}
@@ -229,14 +228,12 @@ if ($login->isUserLoggedIn() == true) {
 					$alignarray[$property->name]=$row[$property->name];
 				}
 			}
-			$refarray = str_split($alignarray['r_align_string'],60);
-			$querarray = str_split($alignarray['q_align_string'],60);
-			echo "<pre>";
-			for ($x = 0; $x < count($refarray); $x++) {
-			    echo $refarray[$x] . "<br>";
-	   		    echo $querarray[$x] . "<br><br>";
-			} 
-			echo "</pre>";
+			$identityarray = alignsim($alignarray['r_align_string'],$alignarray['q_align_string']);
+			echo "% identity: " . round((($identityarray[0]*100)/strlen($alignarray['r_align_string'])),2) . "<br>";
+			echo "Query Matches: " . $identityarray[0] . "/" . $identityarray[2] . "<br>";
+			echo "Ref Matches: " . $identityarray[0] . "/" . $identityarray[1] . "<br>";			
+			displayalignment($alignarray['r_align_string'],$alignarray['q_align_string'],$alignarray['r_start'],$alignarray['q_start'],$alignarray['alignstrand']);
+
 		}else{
 			echo "No Alignment<br>";
 		
@@ -264,14 +261,12 @@ if ($login->isUserLoggedIn() == true) {
 					$alignarray[$property->name]=$row[$property->name];
 				}
 			}
-			$refarray = str_split($alignarray['r_align_string'],60);
-			$querarray = str_split($alignarray['q_align_string'],60);
-			echo "<pre>";
-			for ($x = 0; $x < count($refarray); $x++) {
-			    echo $refarray[$x] . "<br>";
-	   		    echo $querarray[$x] . "<br><br>";
-			} 
-			echo "</pre>";		
+			$identityarray = alignsim($alignarray['r_align_string'],$alignarray['q_align_string']);
+			echo "% identity: " . round((($identityarray[0]*100)/strlen($alignarray['r_align_string'])),2) . "<br>";
+			echo "Query Matches: " . $identityarray[0] . "/" . $identityarray[2] . "<br>";
+			echo "Ref Matches: " . $identityarray[0] . "/" . $identityarray[1] . "<br>";			
+			displayalignment($alignarray['r_align_string'],$alignarray['q_align_string'],$alignarray['r_start'],$alignarray['q_start'],$alignarray['alignstrand']);
+	
 		}else{
 			echo "No Alignment<br>";
 		

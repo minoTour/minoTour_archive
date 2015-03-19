@@ -4,6 +4,65 @@
 $_SESSION['minotourversion']=0.47;
 $_SESSION['pagerefresh']=5000;
 
+
+//functions for viewing alignments
+
+function displayalignment($ref,$query,$r_start,$q_start,$align_strand){
+	$vislen = 60;
+	
+	$refarray = str_split($ref,$vislen);
+	$querarray = str_split($query,$vislen);
+	
+	echo "<pre>";
+	for ($x = 0; $x < count($refarray); $x++) {
+		echo "Q:" .return10char($q_start) . " ";
+   		echo $querarray[$x];
+   		$q_start = $q_start + $vislen - substr_count($quearray[$x], '-');
+		echo " " . $q_start . "<br>";
+		$q_start++;
+		echo "R:" . return10char($r_start) . " ";
+		echo $refarray[$x];
+		if ($align_strand == "F") {
+			$r_start = $r_start + $vislen - substr_count($refarray[$x], '-');
+			echo " " . $r_start . "<br><br>";
+			$r_start++;
+		}else if ($align_strand == "R") {
+			$r_start = $r_start - $vislen + substr_count($refarray[$x], '-');
+			echo " " . $r_start . "<br><br>";
+			$r_start--;
+		}
+	} 
+	echo "</pre>";
+
+
+}
+
+function return10char($value) {
+	$value2 = str_pad($value, 10, " ",STR_PAD_LEFT);
+	return $value2;
+}
+
+function alignsim($ref,$query) {
+	$rarray = str_split($ref);
+	$qarray = str_split($query);
+	$identities=0;
+	$rcount = 0;
+	$qcount = 0;
+	for ($x = 0; $x < count($rarray); $x++) {
+		if ($rarray[$x] == $qarray[$x] && $rarray[$x] != "-"){
+			$identities++;
+		}
+		if ($rarray[$x] != "-") {
+			$rcount++;
+		}
+		if ($qarray[$x] != "-") {
+			$qcount++;
+		}
+	}
+	return array ($identities,$rcount,$qcount);
+}
+
+
 //generate an array containing all possible 5mers
 
 function getkmers(){

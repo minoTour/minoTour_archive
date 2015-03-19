@@ -50,7 +50,7 @@ require_once("includes/functions.php");
 						//echo $xmlresult;
 						//echo $xmlresult;
 						switch ($row['type']) {
-						    case "master":
+						    case "study":
 						    	echo "<div class='panel panel-default'>";
 								echo "<div class='panel-heading'>";
 								echo "<h5>" . ucwords($row['type']) . ": " . substr($row['filename'],0,9) .  "</h5>";
