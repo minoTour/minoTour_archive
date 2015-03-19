@@ -107,6 +107,7 @@ if ($login->isUserLoggedIn() == true) {
 
 		echo "</div>
 			</div>";
+		
 		echo "
 		<div class='panel-group'>
 		  <div class='panel panel-default'>
@@ -186,7 +187,93 @@ echo "
 		    </div>
 		  </div>
 		</div>";
-		//var_dump($resultsarray);
+
+			
+		echo "<div class='panel panel-default'>";
+		echo "<div class='panel-heading'>";
+		echo "<h3 class='panel-title'>Alignment Data</h3>";
+		echo "</div>";
+		echo "<div class='panel-body'>";
+		echo "<h5>2D alignment</h5>";
+		$align = "SELECT * FROM last_align_maf_basecalled_2d inner join config_general using (basename_id) where config_general.basename = '".$_POST['readname'] ."';";
+		$align_result = $mindb_connection->query($align);
+		$alignarray;
+		
+		if ($align_result->num_rows >=1){
+			foreach ($align_result as $row){
+				while ($property = mysqli_fetch_field($align_result)) {
+					//echo "<p>" . $property->name . " : " . $row[$property->name] . "</p>";
+					$alignarray[$property->name]=$row[$property->name];
+				}
+			}
+			$refarray = str_split($alignarray['r_align_string'],60);
+			$querarray = str_split($alignarray['q_align_string'],60);
+			echo "<pre>";
+			for ($x = 0; $x < count($refarray); $x++) {
+			    echo $refarray[$x] . "<br>";
+   			    echo $querarray[$x] . "<br><br>";
+			} 
+			echo "</pre>";
+		}else{
+			echo "No Alignment<br>";
+		
+		}
+				
+		echo "<h5>Complement alignment</h5>";
+		$align = "SELECT * FROM last_align_maf_basecalled_complement inner join config_general using (basename_id) where config_general.basename = '".$_POST['readname'] ."';";
+		$align_result = $mindb_connection->query($align);
+		$alignarray;
+		
+		if ($align_result->num_rows >=1){
+			foreach ($align_result as $row){
+				while ($property = mysqli_fetch_field($align_result)) {
+					//echo "<p>" . $property->name . " : " . $row[$property->name] . "</p>";
+					$alignarray[$property->name]=$row[$property->name];
+				}
+			}
+			$refarray = str_split($alignarray['r_align_string'],60);
+			$querarray = str_split($alignarray['q_align_string'],60);
+			echo "<pre>";
+			for ($x = 0; $x < count($refarray); $x++) {
+			    echo $refarray[$x] . "<br>";
+	   		    echo $querarray[$x] . "<br><br>";
+			} 
+			echo "</pre>";		
+		}else{
+			echo "No Alignment<br>";
+		
+		}
+		
+		echo "<h5>Template alignment</h5>";
+		$align = "SELECT * FROM last_align_maf_basecalled_template inner join config_general using (basename_id) where config_general.basename = '".$_POST['readname'] ."';";
+		$align_result = $mindb_connection->query($align);
+		$alignarray;
+		
+		if ($align_result->num_rows >=1){
+			foreach ($align_result as $row){
+				while ($property = mysqli_fetch_field($align_result)) {
+					//echo "<p>" . $property->name . " : " . $row[$property->name] . "</p>";
+					$alignarray[$property->name]=$row[$property->name];
+				}
+			}
+			$refarray = str_split($alignarray['r_align_string'],60);
+			$querarray = str_split($alignarray['q_align_string'],60);
+			echo "<pre>";
+			for ($x = 0; $x < count($refarray); $x++) {
+			    echo $refarray[$x] . "<br>";
+	   		    echo $querarray[$x] . "<br><br>";
+			} 
+			echo "</pre>";
+		}else{
+			echo "No Alignment<br>";
+		
+		}
+		
+		
+		echo "</div>";
+		echo "</div>";
+
+				//var_dump($resultsarray);
 		
 		
 		

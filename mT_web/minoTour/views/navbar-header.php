@@ -6,7 +6,7 @@
          <span class="icon-bar"></span>
      </button>
      <a class="navbar-brand" href="index.php">
-							  <i class="fa fa-bolt"></i> minoTour v <?php echo $_SESSION['minotourversion'];?>
+							  <i class="fa fa-bolt"></i> minoTour FRICKIN LASERBEAMS v <?php echo $_SESSION['minotourversion'];?>
   						     
 								 </a>
  </div>

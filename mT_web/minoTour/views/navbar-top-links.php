@@ -11,7 +11,7 @@
 							<span class="fa-stack">
 							  <i class="fa fa-circle fa-stack-2x"></i>
 							  <i class="fa fa-user fa-stack-1x fa-inverse"></i>
-							</span> User: <?php echo $_SESSION['user_name']; ?>
+							</span> User HELP: <?php echo $_SESSION['user_name']; ?>
 								
 								
 						    
@@ -68,12 +68,12 @@
 						<?php } ?>
 						<?php if (checkallruns()) {?>
                         <li id="prevruns">
-                            <a href="#"><i class="fa fa-table fa-fw"></i> Previous Runs<span class="fa arrow"></a>
+                            <a href="#"><i class="fa fa-table fa-fw"></i> Previous Run<span class="fa arrow"></a>
                             <ul class="nav nav-second-level">
                                 
 								<?php if (isset($_SESSION['focusrun'])) {?>
 	                            <li>
-	                                <a href="previous_runs.php" id="SR"><i class="fa fa-database fa-fw"></i> Change Run</a>
+	                                <a href="previous_runs.php" id="SR"><i class="fa fa-database fa-fw"></i> Change Run Now</a>
 	                            </li>
 								<li>
                                     <a href="previous_summary.php"><i class="fa fa-bar-chart-o fa-fw"></i> Data Summary</a>
@@ -81,7 +81,7 @@
                                 <?php if ($_SESSION['focusreference'] != "NOREFERENCE") {?>
                                 <li>
                                 	<a href="previous_variants.php"><i class="fa fa-code-fork"></i> Nucleotide Variants</a>
-                                	</li>
+                                </li>
                                 	<?php }; ?>
                                 <li>
                                     <a href="reads_table.php"><i class="fa fa-eye fa-fw"></i> Individual Read Data</a>
@@ -91,6 +91,9 @@
 								</li>-->
                                 <li>
                                     <a href="previous_export.php"><i class="fa fa-file-text-o fa-fw"></i> Export Reads</a>
+                                </li>
+                                <li>
+                                	<a href="previous_XML.php"><i class="fa fa-info-circle fa-fw"></i> XML Reports</a>
                                 </li>
                                 <li>
                                     <a href="previous_report.php"><i class="fa fa-comments-o fa-fw"></i> Run Report</a>

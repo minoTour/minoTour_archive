@@ -73,14 +73,7 @@ if ($login->isUserLoggedIn() == true) {
 			echo "<div id='complementfancy' style='width:100%; height:600px;'><i class='fa fa-cog fa-spin fa-3x'></i> Integrating more complex numbers...</div>";
 
 		
-		#echo "<div class='panel panel-default'>";
-		#echo "<div class='panel-heading'>";
-		#echo "<h3 class='panel-title'>Read Sequence</h3>";
-		#echo	 " </div>";
-		#echo	 " <div class='panel-body'>";
-		#echo "<pre>" . $resultsarray['btsequence'] . "\n" . $resultsarray['btsequence'] . "</pre>";
-		#echo "</div>
-		#	</div>";
+		
 		
 		echo "<div class='panel panel-default'>";
 		echo "<div class='panel-heading'>";
@@ -104,6 +97,8 @@ if ($login->isUserLoggedIn() == true) {
 
 		echo "</div>
 			</div>";
+			
+					
 		echo "
 		<div class='panel-group'>
 		<h4>Download Sequences</h4>
@@ -169,7 +164,125 @@ if ($login->isUserLoggedIn() == true) {
 		
 		</div>
 		
-		</div>";
+		
+		
+		
+		";
+		?>
+		
+		<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingOne">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          2D Alignment
+        </a>
+      </h4>
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+      <div class="panel-body">
+        <?php $align = "SELECT * FROM last_align_maf_basecalled_2d inner join config_general using (basename_id) where config_general.basename = '".$_POST['readname'] ."';";
+		$align_result = $mindb_connection->query($align);
+		$alignarray;
+		
+		if ($align_result->num_rows >=1){
+			foreach ($align_result as $row){
+				while ($property = mysqli_fetch_field($align_result)) {
+					//echo "<p>" . $property->name . " : " . $row[$property->name] . "</p>";
+					$alignarray[$property->name]=$row[$property->name];
+				}
+			}
+			$refarray = str_split($alignarray['r_align_string'],60);
+			$querarray = str_split($alignarray['q_align_string'],60);
+			echo "<pre>";
+			for ($x = 0; $x < count($refarray); $x++) {
+			    echo $refarray[$x] . "<br>";
+   			    echo $querarray[$x] . "<br><br>";
+			} 
+			echo "</pre>";
+		}else{
+			echo "No Alignment<br>";
+		
+		}
+		?>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingTwo">
+      <h4 class="panel-title">
+        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          Template Alignment
+        </a>
+      </h4>
+    </div>
+    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+      <div class="panel-body">
+       <?php $align = "SELECT * FROM last_align_maf_basecalled_template inner join config_general using (basename_id) where config_general.basename = '".$_POST['readname'] ."';";
+		$align_result = $mindb_connection->query($align);
+		$alignarray;
+		
+		if ($align_result->num_rows >=1){
+			foreach ($align_result as $row){
+				while ($property = mysqli_fetch_field($align_result)) {
+					//echo "<p>" . $property->name . " : " . $row[$property->name] . "</p>";
+					$alignarray[$property->name]=$row[$property->name];
+				}
+			}
+			$refarray = str_split($alignarray['r_align_string'],60);
+			$querarray = str_split($alignarray['q_align_string'],60);
+			echo "<pre>";
+			for ($x = 0; $x < count($refarray); $x++) {
+			    echo $refarray[$x] . "<br>";
+	   		    echo $querarray[$x] . "<br><br>";
+			} 
+			echo "</pre>";
+		}else{
+			echo "No Alignment<br>";
+		
+		}?>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingThree">
+      <h4 class="panel-title">
+        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          Complement Alignment        </a>
+      </h4>
+    </div>
+    <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+      <div class="panel-body">
+       <?php  $align = "SELECT * FROM last_align_maf_basecalled_complement inner join config_general using (basename_id) where config_general.basename = '".$_POST['readname'] ."';";
+		$align_result = $mindb_connection->query($align);
+		$alignarray;
+		
+		if ($align_result->num_rows >=1){
+			foreach ($align_result as $row){
+				while ($property = mysqli_fetch_field($align_result)) {
+					//echo "<p>" . $property->name . " : " . $row[$property->name] . "</p>";
+					$alignarray[$property->name]=$row[$property->name];
+				}
+			}
+			$refarray = str_split($alignarray['r_align_string'],60);
+			$querarray = str_split($alignarray['q_align_string'],60);
+			echo "<pre>";
+			for ($x = 0; $x < count($refarray); $x++) {
+			    echo $refarray[$x] . "<br>";
+	   		    echo $querarray[$x] . "<br><br>";
+			} 
+			echo "</pre>";		
+		}else{
+			echo "No Alignment<br>";
+		
+		}?>
+      </div>
+    </div>
+  </div>
+</div>
+		
+		<?php
+		echo "</div>";
 		//var_dump($resultsarray);
 		
 		

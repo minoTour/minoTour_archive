@@ -219,6 +219,15 @@ function checksessionvars(){
 						}
 						$_SESSION['focusrefnames'] = $focusrefnames;
 					}
+					//Check for the existence of an XML table in the focus run database:
+					$db_connection2 = new mysqli(DB_HOST, DB_USER, DB_PASS, $_SESSION['focusrun']);
+					$xmlcheck = "select * from XML;";
+					$xmlresult = $db_connection2->query($xmlcheck);
+					if ($xmlresult->num_rows >= 1) {
+						$_SESSION['focusXML'] = $xmlresult->num_rows;
+					}else{
+						$_SESSION['focusXML'] = $xmlresult->num_rows;
+					}
 				}
 				
 			}else{

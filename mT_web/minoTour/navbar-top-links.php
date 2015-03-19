@@ -89,9 +89,15 @@
 								<!--<li>
 									<a href="prev_kmers.php"><i class="fa fa-cogs fa-fw"></i> K-mer summaries</a>
 								</li>--!>
+								
                                 <li>
                                     <a href="previous_export.php"><i class="fa fa-file-text-o fa-fw"></i> Export Reads</a>
                                 </li>
+                                <?php if ($_SESSION['focusXML'] >= 1) {?>
+								<li>
+									<a href="previous_XML.php"<i class="fa fa-info-circle"></i> ENA Submission Details</a>
+								</li>
+								<?php }; ?>
                                 <li>
                                     <a href="previous_report.php"><i class="fa fa-comments-o fa-fw"></i> Run Report</a>
                                 </li>
@@ -176,7 +182,7 @@
 				parts = pathname.split("/");
 							var filename = parts[parts.length - 1];
 							//alert(filename);
-							if (filename == "previous_bases.php" || filename == "previous_insertions.php" || filename == "previous_deletions.php" || filename == "previous_variants.php" || filename == "previous_var.php" || filename == "previous_report.php" || filename == "previous_runs.php" || filename  == "previous_summary.php" || filename  == "previous_histogram.php" || filename== "previous_export.php" || filename== "previous_rates.php" || filename== "previous_pores.php" || filename== "previous_quality.php" || filename== "previous_coverage.php" || filename== "previous_development.php" || filename=="reads_table.php" || filename=="manage_data.php" || filename=="prev_kmers.php"){
+							if (filename == "previous_bases.php" || filename == "previous_insertions.php" || filename == "previous_deletions.php" || filename == "previous_variants.php" || filename == "previous_var.php" || filename == "previous_report.php" || filename == "previous_runs.php" || filename  == "previous_summary.php" || filename  == "previous_histogram.php" || filename== "previous_export.php" || filename== "previous_rates.php" || filename== "previous_pores.php" || filename== "previous_quality.php" || filename== "previous_XML.php" || filename== "previous_coverage.php" || filename== "previous_development.php" || filename=="reads_table.php" || filename=="manage_data.php" || filename=="prev_kmers.php"){
 								var d = document.getElementById("prevruns");
 								d.className = d.className + " active";
 							}
