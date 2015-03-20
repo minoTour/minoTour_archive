@@ -181,7 +181,7 @@ if ($login->isUserLoggedIn() == true) {
     </div>
     <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
       <div class="panel-body">
-        <?php $align = "SELECT * FROM last_align_maf_basecalled_2d inner join config_general using (basename_id) where config_general.basename = '".$_POST['readname'] ."';";
+        <?php $align = "SELECT * FROM last_align_maf_basecalled_2d inner join reference_seq_info using (refid) inner join config_general using (basename_id) where config_general.basename = '".$_POST['readname'] ."';";
 		$align_result = $mindb_connection->query($align);
 		$alignarray;
 		
@@ -194,6 +194,7 @@ if ($login->isUserLoggedIn() == true) {
 			}
 			
 			$identityarray = alignsim($alignarray['r_align_string'],$alignarray['q_align_string']);
+			echo "Read Name: " . $alignarray['basename'] . " Reference Name: " . $alignarray['refname'] . "<br>";
 			echo "% identity: " . round((($identityarray[0]*100)/strlen($alignarray['r_align_string'])),2) . "<br>";
 			echo "Query Matches: " . $identityarray[0] . "/" . $identityarray[2] . "<br>";
 			echo "Ref Matches: " . $identityarray[0] . "/" . $identityarray[1] . "<br>";			
@@ -217,7 +218,7 @@ if ($login->isUserLoggedIn() == true) {
     </div>
     <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
       <div class="panel-body">
-       <?php $align = "SELECT * FROM last_align_maf_basecalled_template inner join config_general using (basename_id) where config_general.basename = '".$_POST['readname'] ."';";
+       <?php $align = "SELECT * FROM last_align_maf_basecalled_template inner join reference_seq_info using (refid) inner join config_general using (basename_id) where config_general.basename = '".$_POST['readname'] ."';";
 		$align_result = $mindb_connection->query($align);
 		$alignarray;
 		
@@ -229,6 +230,7 @@ if ($login->isUserLoggedIn() == true) {
 				}
 			}
 			$identityarray = alignsim($alignarray['r_align_string'],$alignarray['q_align_string']);
+			echo "Read Name: " . $alignarray['basename'] . " Reference Name: " . $alignarray['refname'] . "<br>";
 			echo "% identity: " . round((($identityarray[0]*100)/strlen($alignarray['r_align_string'])),2) . "<br>";
 			echo "Query Matches: " . $identityarray[0] . "/" . $identityarray[2] . "<br>";
 			echo "Ref Matches: " . $identityarray[0] . "/" . $identityarray[1] . "<br>";			
@@ -250,7 +252,7 @@ if ($login->isUserLoggedIn() == true) {
     </div>
     <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
       <div class="panel-body">
-       <?php  $align = "SELECT * FROM last_align_maf_basecalled_complement inner join config_general using (basename_id) where config_general.basename = '".$_POST['readname'] ."';";
+       <?php  $align = "SELECT * FROM last_align_maf_basecalled_complement inner join reference_seq_info using (refid) inner join config_general using (basename_id) where config_general.basename = '".$_POST['readname'] ."';";
 		$align_result = $mindb_connection->query($align);
 		$alignarray;
 		
@@ -262,6 +264,7 @@ if ($login->isUserLoggedIn() == true) {
 				}
 			}
 			$identityarray = alignsim($alignarray['r_align_string'],$alignarray['q_align_string']);
+			echo "Read Name: " . $alignarray['basename'] . " Reference Name: " . $alignarray['refname'] . "<br>";
 			echo "% identity: " . round((($identityarray[0]*100)/strlen($alignarray['r_align_string'])),2) . "<br>";
 			echo "Query Matches: " . $identityarray[0] . "/" . $identityarray[2] . "<br>";
 			echo "Ref Matches: " . $identityarray[0] . "/" . $identityarray[1] . "<br>";			
