@@ -239,7 +239,7 @@ function checksessionvars(){
 					}else {
 						$_SESSION['active_run_name']=key($runarray[1]);
 					}
-					$sql2 = "select reference,reflength,minup_version from minIONruns where runname='" . key($runarray[1]) . "';";
+					$sql2 = "select reference,reflength,minup_version from minIONruns where runname='" . $_SESSION['active_run_name'] . "';";
 					
 					$activerundetails = $db_connection->query($sql2);
 					if ($activerundetails->num_rows >= 1){
