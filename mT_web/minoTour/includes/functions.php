@@ -5,6 +5,57 @@ $_SESSION['minotourversion']=0.47;
 $_SESSION['pagerefresh']=5000;
 
 
+//function for calculating mean mode and median
+function mmmr($array, $output = 'mean'){ 
+    if(!is_array($array)){ 
+        return FALSE; 
+    }else{ 
+        switch($output){ 
+            case 'mean': 
+                $count = count($array); 
+                $sum = array_sum($array); 
+                $total = $sum / $count; 
+            break; 
+            case 'median': 
+                rsort($array); 
+                $middle = round(count($array) / 2); 
+                $total = $array[$middle-1]; 
+            break; 
+            case 'mode': 
+                $v = array_count_values($array); 
+                arsort($v); 
+                foreach($v as $k => $v){$total = $k; break;} 
+            break; 
+            case 'range': 
+                sort($array); 
+                $sml = $array[0]; 
+                rsort($array); 
+                $lrg = $array[0]; 
+                $total = $lrg - $sml; 
+            break;
+            case 'max': 
+                rsort($array); 
+                $total = $array[0]; 
+            break;
+            case 'min': 
+                sort($array); 
+                $total = $array[0]; 
+            break; 
+            case 'stddev':
+            $fMean = array_sum($array) / count($array);
+   			 $fVariance = 0.0;
+			    foreach ($array as $i)
+				    {
+			        $fVariance += pow($i - $fMean, 2);
+    				}
+    				$fVariance /= ( $bSample ? count($array) - 1 : count($array) );
+    				$total = (float) sqrt($fVariance);
+        } 
+        return $total; 
+    } 
+} 
+
+
 //functions for viewing alignments
 
 function displayalignment($ref,$query,$r_start,$q_start,$align_strand){
@@ -256,6 +307,17 @@ function checksessionvars(){
 						$refnames[$row['refid']] = $row['refname'];
 					}
 					$_SESSION['activerefnames'] = $refnames;
+					
+					//Check for the existence of an XML table in the active run database:
+					$db_connection2 = new mysqli(DB_HOST, DB_USER, DB_PASS, $_SESSION['active_run_name']);
+					$xmlcheck = "select * from XML;";
+					$xmlresult = $db_connection2->query($xmlcheck);
+					if ($xmlresult->num_rows >= 1) {
+						$_SESSION['currentXML'] = $xmlresult->num_rows;
+					}else{
+						$_SESSION['currentXML'] = $xmlresult->num_rows;
+					}
+					
 					//echo "The run is called " . key($runarray[1]) .".<br>\n";
 					
 				}else{

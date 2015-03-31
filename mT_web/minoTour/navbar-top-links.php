@@ -56,6 +56,11 @@
                                 <li>
                                     <a href="export.php"><i class="fa fa-file-text-o fa-fw"></i> Export Reads</a>
                                 </li>
+                                <?php if ($_SESSION['currentXML'] >= 1) {?>
+								<li>
+									<a href="current_XML.php"<i class="fa fa-info-circle"></i> ENA Submission Details</a>
+								</li>
+								<?php }; ?>
                                 <li>
                                     <a href="live_report.php"><i class="fa fa-comments-o fa-fw"></i> Run Report</a>
                                 </li>
@@ -186,7 +191,7 @@
 								var d = document.getElementById("prevruns");
 								d.className = d.className + " active";
 							}
-							if (filename == "current_bases.php" || filename == "current_insertions.php" || filename == "current_deletions.php" || filename == "current_variants.php" || filename == "current_var.php" || filename == "live_report.php" || filename == "switch_run.php" || filename == "live_reads_table.php" || filename  == "current_histogram.php"|| filename == "live_data.php" || filename  == "current_summary.php" || filename== "export.php" || filename== "set_alerts.php" || filename== "current_export.php" || filename== "current_histogram.php" || filename== "current_rates.php" || filename== "current_pores.php" || filename== "current_quality.php" || filename== "current_coverage.php" || filename== "current_development.php") {
+							if (filename == "current_bases.php" || filename == "current_insertions.php" || filename == "current_deletions.php" || filename == "current_variants.php" || filename == "current_var.php" || filename == "live_report.php" || filename == "switch_run.php" || filename == "live_reads_table.php" || filename  == "current_histogram.php"|| filename == "live_data.php" || filename== "current_XML.php" || filename  == "current_summary.php" || filename== "export.php" || filename== "set_alerts.php" || filename== "current_export.php" || filename== "current_histogram.php" || filename== "current_rates.php" || filename== "current_pores.php" || filename== "current_quality.php" || filename== "current_coverage.php" || filename== "current_development.php") {
 								var d = document.getElementById("currentruns");
 								d.className = d.className + " active";
 							}

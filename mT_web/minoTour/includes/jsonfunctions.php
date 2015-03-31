@@ -39,6 +39,252 @@ function blanktemplate($jobname,$currun,$refid) {
    	
 }
 
+##########Code to generate kmer statistics about a run.
+
+function kmerstats($jobname,$currun,$refid) {
+	$checkvar = $currun . $jobname . $type;
+	//echo $type . "\n";
+	$checkrunning = $currun . $jobname . $type . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;
+	//$jsonstring = $memcache->get("$checkvar");
+	$checkingrunning = $memcache->get("$checkrunning");
+	if($checkingrunning === "No" || $checkingrunning === FALSE){
+		//$memcache->set("$checkrunning", "YES", 0, 0); 
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if ($checking->num_rows ==1){
+			//echo "We have already run this!";
+			foreach ($checking as $row){
+				$jsonstring = $row['json'];
+			}
+		} else {
+			$jsonstring = $jsonstring . "[\n";
+			
+			###Get list of tables that we need to process
+			
+			$template_table = "show tables like \"caller_basecalled_template%\";";
+			$template_tables = $mindb_connection->query($template_table);
+			
+			$templatemeans=[];
+			
+			if ($template_tables->num_rows >= 1) {
+				foreach ($template_tables as $row=>$value) {
+					#echo $row . "\n";
+					foreach ($value as $monkey=>$tree) {
+						#echo $tree . "\n";
+						$template_query = "select mean, length,model_state from $tree;";
+						$template_querysql = $mindb_connection->query($template_query);
+						if ($template_querysql->num_rows >= 1) {
+							foreach ($template_querysql as $row) {
+								#echo $row['mean'] . "\n";	
+								$templatemeans[$row['model_state']]['mean'][]=$row['mean'];
+								$templatemeans[$row['model_state']]['time'][]=$row['length'];
+
+							}	
+						}
+						
+					}
+				}	
+			}
+			ksort ($templatemeans);
+			echo "KMER\tMean_current\tMedian_current\tSTERR_current\tMin_current\tMax_current\tMean_time\tMedian_time\tSTERR_time\tMin_time\tMax_time\n";
+			foreach ($templatemeans as $row => $value){
+				echo $row  . "\t";
+				echo mmmr($value['mean'],mean) . "\t";
+				echo mmmr($value['mean'],median) . "\t";
+				echo (mmmr($value['mean'],stddev)/sqrt(count($value['mean']))) . "\t";
+				echo mmmr($value['mean'],min) . "\t";
+				echo mmmr($value['mean'],max) . "\t";
+				#echo "Mode " . mmmr($value['mean'],mode) . "\t";
+				#echo "Range " . mmmr($value['mean'],range) . "\n";
+				#echo "STDV " . mmmr($value['mean'],stddev) . "\n";
+				
+				#echo $value . "\n";
+				echo mmmr($value['time'],mean) . "\t";
+				echo mmmr($value['time'],median) . "\t";
+				echo (mmmr($value['time'],stddev)/sqrt(count($value['mean']))) . "\t";
+				echo mmmr($value['time'],min) . "\t";
+				echo mmmr($value['time'],max) . "\t";
+				echo "\n";
+			}
+
+			$jsonstring = $jsonstring . "]\n";
+			$jsonstring = $jsonstring . "},\n";
+			
+			
+			
+			
+			
+		}
+		
+		
+		$jsonstring = $jsonstring . "]\n";
+		if ($_GET["prev"] == 1){
+			include 'savejson.php';
+		}
+		$memcache->set("$checkvar", $jsonstring);
+	}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}	
+	// cache for 2 minute as we want yield to update semi-regularly...  
+	$memcache->delete("$checkrunning");
+   	return $jsonstring;
+   	
+}
+
+
+##########Code to generate basic statistics about a run.
+
+function basicstats($jobname,$currun,$refid) {
+	$checkvar = $currun . $jobname . $type;
+	//echo $type . "\n";
+	$checkrunning = $currun . $jobname . $type . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;
+	//$jsonstring = $memcache->get("$checkvar");
+	$checkingrunning = $memcache->get("$checkrunning");
+	if($checkingrunning === "No" || $checkingrunning === FALSE){
+		//$memcache->set("$checkrunning", "YES", 0, 0); 
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if ($checking->num_rows ==1){
+			//echo "We have already run this!";
+			foreach ($checking as $row){
+				$jsonstring = $row['json'];
+			}
+		} else {
+			$jsonstring = $jsonstring . "[\n";
+			### We will recover an array of sequence lengths for the template, complement and 2d sequences
+			$sql_template_lengths = 'select length(sequence) as len from basecalled_template order by length(sequence);';
+			$sql_complement_lengths = 'select length(sequence) as len from basecalled_complement order by length(sequence);';
+			$sql_2d_lengths = 'select length(sequence) as len from basecalled_2d order by length(sequence);';
+		
+			$sql_template_lengths_result=$mindb_connection->query($sql_template_lengths);
+			$sql_complement_lengths_result=$mindb_connection->query($sql_complement_lengths);
+			$sql_2d_lengths_result=$mindb_connection->query($sql_2d_lengths);	
+			
+			$template_lengths=[];
+			$complement_lengths=[];
+			$twod_lengths=[];
+			
+			
+	
+			if ($sql_template_lengths_result->num_rows >=1) {
+				foreach ($sql_template_lengths_result as $row) {
+					$template_lengths[] = $row['len'];
+				}
+			}
+			if ($sql_complement_lengths_result->num_rows >=1) {
+				foreach ($sql_complement_lengths_result as $row) {
+					$complement_lengths[] = $row['len'];
+				}
+			}
+			if ($sql_2d_lengths_result->num_rows >=1) {
+				foreach ($sql_2d_lengths_result as $row) {
+					$twod_lengths[] = $row['len'];
+				}
+			}
+			$jsonstring = $jsonstring . "{\n";
+			$jsonstring = $jsonstring . "\"name\" : \"template\",\n";
+			$jsonstring = $jsonstring . "\"data\" : [\n";
+			$jsonstring = $jsonstring . "\"median\" : " . mmmr($template_lengths,median) . ",\n";
+			$jsonstring = $jsonstring . "\"percentile90\" : " . $template_lengths[round( 90/100 * count($complement_lengths))] . ",\n";
+
+			
+			#echo "Template median is : " . mmmr($template_lengths,median) . "\n";
+			#echo "Template array length is: " . count($template_lengths). "\n";
+			#echo "90 percentile is value: " . round( 90/100 * count($template_lengths)) . "\n";
+			#echo "90 percentile length is: " . $template_lengths[round( 90/100 * count($template_lengths))] . "\n";
+			#echo "Template length is: " .array_sum($template_lengths) . "\n";
+			
+			$cumulen = 0;
+			foreach ($template_lengths as $row) {
+				$cumulen = $cumulen + $row;
+				if ($cumulen >= array_sum($template_lengths)) {
+					#echo "N50 length is: " . $row . "\n";
+					$jsonstring = $jsonstring . "\"N50\" : " . $row . ",\n";
+					last;
+				}
+			}
+			
+			$jsonstring = $jsonstring . "]\n";
+			$jsonstring = $jsonstring . "},\n";
+			
+			$jsonstring = $jsonstring . "{\n";
+			$jsonstring = $jsonstring . "\"name\" : \"complement\",\n";
+			$jsonstring = $jsonstring . "\"data\" : [\n";
+			$jsonstring = $jsonstring . "\"median\" : " . mmmr($complement_lengths,median) . ",\n";
+			$jsonstring = $jsonstring . "\"percentile90\" : " . $complement_lengths[round( 90/100 * count($complement_lengths))] . ",\n";
+			
+			
+			#echo "Complement median is : " . mmmr($complement_lengths,median) . "\n";
+			#echo "Complement array length is: " . count($complement_lengths). "\n";
+			#echo "90 percentile is value: " . round( 90/100 * count($complement_lengths)) . "\n";
+			#echo "90 percentile length is: " . $complement_lengths[round( 90/100 * count($complement_lengths))] . "\n";
+			#echo "Complement length is: " .array_sum($complement_lengths) . "\n";			
+			$cumulen = 0;
+			foreach ($complement_lengths as $row) {
+				$cumulen = $cumulen + $row;
+				if ($cumulen >= array_sum($complement_lengths)) {
+					#echo "N50 length is: " . $row . "\n";	
+					$jsonstring = $jsonstring . "\"N50\" : " . $row . ",\n";
+					last;
+				}
+			}
+			
+			$jsonstring = $jsonstring . "]\n";
+			$jsonstring = $jsonstring . "},\n";
+			
+			$jsonstring = $jsonstring . "{\n";
+			$jsonstring = $jsonstring . "\"name\" : \"2d\",\n";
+			$jsonstring = $jsonstring . "\"data\" : [\n";
+			$jsonstring = $jsonstring . "\"median\" : " . mmmr($twod_lengths,median) . ",\n";
+			$jsonstring = $jsonstring . "\"percentile90\" : " . $twod_lengths[round( 90/100 * count($complement_lengths))] . ",\n";
+
+
+			
+			#echo "2d median is : " . mmmr($twod_lengths,median) . "\n";
+			#echo "2d array length is: " . count($twod_lengths). "\n";
+			#echo "90 percentile is value: " . round( 90/100 * count($twod_lengths)) . "\n";
+			#echo "90 percentile length is: " . $twod_lengths[round( 90/100 * count($twod_lengths))] . "\n";
+			#echo "2d length is: " .array_sum($twod_lengths) . "\n";
+			$cumulen = 0;
+			foreach ($twod_lengths as $row) {
+				$cumulen = $cumulen + $row;
+				if ($cumulen >= array_sum($twod_lengths)) {
+					#echo "N50 length is: " . $row . "\n";
+					$jsonstring = $jsonstring . "\"N50\" : " . $row . ",\n";	
+					last;
+				}
+			}
+
+			$jsonstring = $jsonstring . "]\n";
+			$jsonstring = $jsonstring . "},\n";
+			
+			
+			
+			
+			
+		}
+		
+		
+		$jsonstring = $jsonstring . "]\n";
+		if ($_GET["prev"] == 1){
+			include 'savejson.php';
+		}
+		$memcache->set("$checkvar", $jsonstring);
+	}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}	
+	// cache for 2 minute as we want yield to update semi-regularly...  
+	$memcache->delete("$checkrunning");
+   	return $jsonstring;
+   	
+}
+
 ########### Plots considering 5mers
 #### Generate a plot of all 5mers
 
@@ -64,6 +310,8 @@ function kmercoveragereads($jobname,$currun,$refid) {
 			//do something intersting here...
 			###This will generate total counts for events from the two tables
 			## Note we are going to have to reverse complement the complement strand
+			
+			
 			
 			$sql_template_total="select count(*) from caller_basecalled_template;";
 			$sql_complement_total="select count(*) from caller_basecalled_complement;";
