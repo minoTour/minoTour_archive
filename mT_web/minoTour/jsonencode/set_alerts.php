@@ -34,6 +34,10 @@ if ($login->isUserLoggedIn() == true) {
 	//echo cleanname($_SESSION['active_run_name']);;
 
 	//echo '<br>';
+	
+	##Array to store read types
+	
+	$typearray = array();
 
 	if (!$mindb_connection->connect_errno) {
 		if (isset ($_GET['task'])){
@@ -56,15 +60,44 @@ if ($login->isUserLoggedIn() == true) {
 		}else{
 			$start = "null";
 		}
+		if (isset ($_GET['twitterhandle']) && strlen ($_GET['twitterhandle']) > 0) {
+			$twitterhandle = "'".$_GET['twitterhandle']."'";	
+		}else{
+			$twitterhandle = "null";	
+		}
+		if (isset ($_GET['type'])) {
+			$typeref = $_GET['type'];
+			switch ($_GET['type']) {
+			    case "All":
+			    $typearray = array("'template'","'complement'","'2d'");
+		        break;
+			    case "Template":	
+			    $typearray = array("'template'");
+        		break;
+    			case "Complement":
+			    $typearray = array("'complement'");
+        		break;
+    			case "2D":
+			    $typearray = array("'2d'");
+        		break;
+    		default:
+			    $typearray = array();
+			}
+		}else{
+			$typearray = array();	
+		}
 		if (isset ($_GET['end'])) {
 			$end = $_GET['end'];	
 		}else{
 			$end= "null";
 		}
-		$sqlinsert = "insert into alerts (name,reference,threshold,start,end,complete) values (" . $name .	"," . $reference .	"," . $threshold .	"," . $start .	"," . $end .	",0);";
-		//echo $sqlinsert;
-		$sqlinsertexecture = $mindb_connection->query($sqlinsert);
-		echo "<div class='alert alert-success alert-dismissible' role='alert'>  <button type='button' class='close' data-dismiss='alert'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button>  <strong>Success!</strong> An alert has been set for the following run: " .cleanname($_SESSION['active_run_name']) . "<br> The alert is for $name </div>";
+		
+		foreach ($typearray as &$type) {
+			$sqlinsert = "insert into alerts (name,reference,twitterhandle,type,threshold,start,end,complete) values (" . $name .	"," . $reference .	"," . $twitterhandle .	"," . $type .	"," . $threshold .	"," . $start .	"," . $end .	",0);";
+			//echo $sqlinsert;
+			$sqlinsertexecute = $mindb_connection->query($sqlinsert);
+		}
+		echo "<div class='alert alert-success alert-dismissible' role='alert'>  <button type='button' class='close' data-dismiss='alert'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button>  <strong>Success!</strong> An alert has been set for the following run: " .cleanname($_SESSION['active_run_name']) . "<br> The alert is for $name on $typeref strands. </div>";
 	}else{
 		echo "<div class='alert alert-danger alert-dismissible' role='alert'>  <button type='button' class='close' data-dismiss='alert'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button>  <strong>Failed!</strong> An alert has not been set. You should not normally see this message so a really unexpected error has occured.</div>";
 	}

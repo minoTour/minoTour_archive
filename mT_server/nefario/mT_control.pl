@@ -56,7 +56,8 @@ my $sleeptime = 10; #Sleep time to stop proessor going nuts in while loop
 my $verbose;
 my $heart;
 my $development;
-GetOptions  ("verbose"  => \$verbose, "heartbeat" => \$heart, "development" => \$development)   # flag
+my $twitter;
+GetOptions  ("verbose"  => \$verbose, "heartbeat" => \$heart, "development" => \$development, "twitter" => \$twitter)   # flag
   or die("Error in command line arguments\n");
 
 
@@ -94,10 +95,19 @@ while (42) {#If you have to ask the significance of 42 you shouldn't be reading 
  	if ($heartcount == 4) {
  		$heartcount = 0;
  	}
+ 	
+ 	#Run the twitter script to send background notifications
+ 	if ($twitter) {
+ 		my $command = $phploc . "php " . $directory . "/views/alertcheck_background.php";
+ 		system($command);
+ 	}
+ 	
+ 	
  	#Query the database to see if there are any active minION runs that need processing
  	my $query = "SELECT * FROM Gru.minIONruns where activeflag = 1;"; 	
  	my $sth = $dbh->prepare($query);
 	$sth->execute;
+	
 	
 	#Loop through results and if we have any, set a memcache variable containing a list of database names:
 	my $run_counter = 0; # Set counter for number of active runs.

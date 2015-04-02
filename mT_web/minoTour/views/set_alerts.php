@@ -48,8 +48,21 @@ require_once("includes/functions.php");
         				<button class="btn btn-default" id="gen_coverage" type="button">Set</button>
       			  	</span>
 				</input>
-    			</div><!-- /input-group -->
-  		  	</div><!-- /.col-lg-6 -->
+				</div><!-- /input-group -->
+
+				<label class="radio-inline">
+  					<input type="radio" name="coveragenoticeradio" id="inlineRadio1" value="All" checked="checked"> All
+				</label>
+				<label class="radio-inline">
+					<input type="radio" name="coveragenoticeradio" id="inlineRadio2" value="Template"> Template
+				</label>
+				<label class="radio-inline">
+  					<input type="radio" name="coveragenoticeradio" id="inlineRadio3" value="Complement"> Complement
+				</label>
+				<label class="radio-inline">
+  					<input type="radio" name="coveragenoticeradio" id="inlineRadio4" value="2D"> 2D
+				</label>
+    			  		  	</div><!-- /.col-lg-6 -->
 		</div>
 		
 		<div class="row">
@@ -63,6 +76,18 @@ require_once("includes/functions.php");
         				<button class="btn btn-default" id="base_notification" type="button">Set</button>
       			  	</span>
     			</div><!-- /input-group -->
+    			<label class="radio-inline">
+  					<input type="radio" name="basenoticeradio" id="inlineRadio1" value="All" checked="checked"> All
+				</label>
+				<label class="radio-inline">
+					<input type="radio" name="basenoticeradio" id="inlineRadio2" value="Template"> Template
+				</label>
+				<label class="radio-inline">
+  					<input type="radio" name="basenoticeradio" id="inlineRadio3" value="Complement"> Complement
+				</label>
+				<label class="radio-inline">
+  					<input type="radio" name="basenoticeradio" id="inlineRadio4" value="2D"> 2D
+				</label>
   		  	</div><!-- /.col-lg-6 -->
 
 		</div>
@@ -120,10 +145,11 @@ require_once("includes/functions.php");
             $('#gen_coverage').on('click', function(e){
                 e.preventDefault(); // preventing default click action
                 var idClicked = e.target.id;
-                var idVal = $("#foldchange").val()
+                var idVal = $("#foldchange").val();
                 //alert('were getting there ' + idClicked + ' is ' + idVal);
-        
-                 var monkey = 'jsonencode/set_alerts.php?task=gencoverage&threshold='+idVal;
+        		//alert ($("input:radio[name='coveragenoticeradio']:checked").val());
+        		var type = $("input:radio[name='coveragenoticeradio']:checked").val(); 
+                 var monkey = 'jsonencode/set_alerts.php?twitterhandle=<?php echo $_SESSION['twittername'];?>&type='+type+'&task=gencoverage&threshold='+idVal;
                 //alert (monkey);
                 $.ajax({
                     url: monkey,
@@ -149,8 +175,8 @@ require_once("includes/functions.php");
                 var idClicked = e.target.id;
                 var idVal = $("#basenotification").val()
                 //alert('were getting there ' + idClicked + ' is ' + idVal);
-        
-                 var monkey = 'jsonencode/set_alerts.php?task=basenotification&threshold='+idVal;
+        		var type = $("input:radio[name='basenoticeradio']:checked").val(); 
+                 var monkey = 'jsonencode/set_alerts.php?twitterhandle=<?php echo $_SESSION['twittername'];?>&type='+type+'&task=basenotification&threshold='+idVal;
                 //alert (monkey);
                 $.ajax({
                     url: monkey,
