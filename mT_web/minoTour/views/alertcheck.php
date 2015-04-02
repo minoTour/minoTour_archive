@@ -7,6 +7,13 @@ if ($login->isUserLoggedIn() == true) {
     //include("views/index_old.php");*/
     
 	$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,DB_NAME);
+	
+	// Connection creation
+	$memcache = new Memcache;
+	#$cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT) or die ("Memcached Failure");
+	$cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT);
+    
+    $checkalertrunning = $memcache->get("alertcheckrunning");
 
 	if (!$db_connection->connect_errno) {
 		
@@ -176,7 +183,11 @@ if ($login->isUserLoggedIn() == true) {
 								//echo (($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']). "<br>";
 									//echo $_SESSION['basecoveragetemp'];
 								//if (isset $_SESSION['basecoverage']){
-									if ((($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold'])>$_SESSION['basecoveragetemp']){
+									$checkrunning=$index['database'] . "basecoverage" . $index['type'];
+									//echo $checkrunning;
+									$basecoveragetemp = $memcache->get("$checkrunning");
+									$checkname = "basecoverage" . $index['type'];
+									if ((($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold'])>$_SESSION[$checkname]){
 										echo "<script type=\"text/javascript\" id=\"runscript\">
 											new PNotify({
 												title: 'Sequencing Alert!',
@@ -203,13 +214,15 @@ if ($login->isUserLoggedIn() == true) {
 												curl_close($curl);
 											}
 											echo "</script>";
-											$_SESSION['basecoveragetemp']=(($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']);
+											$_SESSION[$checkname]=(($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']);
+											$memcache->set("$checkrunning", (($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']));
 									}
 									//}else{
 									
 									
 								//}
-								$_SESSION['basecoveragetemp']=((($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']));
+								$_SESSION[$checkname]=((($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']));
+								$memcache->set("$checkrunning", (($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']));
 							}
 							
 						}
