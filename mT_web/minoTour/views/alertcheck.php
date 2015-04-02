@@ -69,7 +69,7 @@ if ($login->isUserLoggedIn() == true) {
 				foreach ($databases as $dbname){
 					//echo $dbname . "<br>";
 					if (isset ($databases)){
-						$getalerts = "SELECT name,threshold,alert_index FROM " . $dbname . ".alerts where complete = 0;";
+						$getalerts = "SELECT name,threshold,alert_index,twitterhandle,type FROM " . $dbname . ".alerts where complete = 0;";
 						$getthemalerts2 = $mindb_connection->query($getalerts);
 						//var_dump ($getthemalerts2);
 						if ($getthemalerts2->num_rows>=1){
@@ -78,6 +78,8 @@ if ($login->isUserLoggedIn() == true) {
 								    'job' => $row['name'],
 									'threshold' => $row['threshold'],
 									'jobid' => $row['alert_index'],
+									'twitterhandle' => $row['twitterhandle'],
+									'type' =>$row['type'],
 									'database' => $dbname,
 								  );
 //								$jobstodo[]['job']=$row['name'];
@@ -100,16 +102,17 @@ if ($login->isUserLoggedIn() == true) {
 				
 				if ($index['job'] == "gencoverage"){
 					#$sql_template = "select avg(count) as coverage, refname from (SELECT count(*) as count,refname FROM " . $index['database'] . ".last_align_basecalled_template inner join " . $index['database'] . ".reference_seq_info using (refid) where (cigarclass=7 or cigarclass=8) group by refid,refpos) as x;";
-					$sql_template = "SELECT avg(A+T+G+C) as coverage, refname FROM " . $index['database'] . ".reference_coverage_template inner join " . $index['database'] . ".reference_seq_info where ref_id = refid group by ref_id;";
-					$sql_complement = "SELECT avg(A+T+G+C) as coverage, refname FROM " . $index['database'] . ".reference_coverage_complement inner join " . $index['database'] . ".reference_seq_info where ref_id = refid group by ref_id;";
-					$sql_2d = "SELECT avg(A+T+G+C) as coverage, refname FROM " . $index['database'] . ".reference_coverage_2d inner join " . $index['database'] . ".reference_seq_info where ref_id = refid group by ref_id;";
+					$sql_template = "SELECT avg(A+T+G+C) as coverage, refname FROM " . $index['database'] . ".reference_coverage_" . $index['type'] . " inner join " . $index['database'] . ".reference_seq_info where ref_id = refid group by ref_id;";
+					//$sql_template = "SELECT avg(A+T+G+C) as coverage, refname FROM " . $index['database'] . ".reference_coverage_template inner join " . $index['database'] . ".reference_seq_info where ref_id = refid group by ref_id;";
+					//$sql_complement = "SELECT avg(A+T+G+C) as coverage, refname FROM " . $index['database'] . ".reference_coverage_complement inner join " . $index['database'] . ".reference_seq_info where ref_id = refid group by ref_id;";
+					//$sql_2d = "SELECT avg(A+T+G+C) as coverage, refname FROM " . $index['database'] . ".reference_coverage_2d inner join " . $index['database'] . ".reference_seq_info where ref_id = refid group by ref_id;";
 					//$sql_complement = "select avg(count) as coverage, refname from (SELECT count(*) as count,refname FROM " . $index['database'] , ".last_align_basecalled_complement inner join " . $index['database'] , ".reference_seq_info using (refid) where (cigarclass=7 or cigarclass=8) group by refid,refpos) as x;";
 					//$sql_2d = "select avg(count) as coverage, refname from (SELECT count(*) as count,refname FROM " . $index['database'] , ".last_align_basecalled_2d inner join " . $index['database'] , ".reference_seq_info using (refid) where (cigarclass=7 or cigarclass=8) group by refid,refpos) as x;";
 					$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$index['database']);
 				
 					$template=$mindb_connection->query($sql_template);
-					$complement=$mindb_connection->query($sql_complement);
-					$twod=$mindb_connection->query($sql_2d);
+					//$complement=$mindb_connection->query($sql_complement);
+					//$twod=$mindb_connection->query($sql_2d);
 					//$complement=$mindb_connection->query($sql_complement);
 					//$read2d=$mindb_connection->query($sql_2d);
 					if ($template->num_rows >= 1){
@@ -118,13 +121,13 @@ if ($login->isUserLoggedIn() == true) {
 								echo"<script type=\"text/javascript\" id=\"runscript\">
 										new PNotify({
 		    								title: 'Coverage Alert!',
-								    		text: 'Coverage exceeding ".$index['threshold']."X has been achieved for run ".cleanname($index['database'])." on the template strand of ".$row['refname'].".',
+								    		text: 'Coverage exceeding ".$index['threshold']."X has been achieved for run ".cleanname($index['database'])." on the " . $index['type'] . " strand of ".$row['refname'].".',
 		    								type: 'success',
 								    		hide: false
 											});";
 											if (isset($_SESSION['twittername'])) {
 												//echo "alert ('tryingtotweet');";
-												$message = "Coverage >=".$index['threshold']."X on template for ".$row['refname'];
+												$message = "Coverage >=".$index['threshold']."X on " . $index['type'] . " for ".$row['refname'];
 												$postData = "twitteruser=" . ($_SESSION['twittername']) . "&run=". (urlencode(cleanname($index['database']))) ."&message=" . (urlencode($message));
 												//echo "alert ('".$postData."');";
 												
@@ -156,14 +159,17 @@ if ($login->isUserLoggedIn() == true) {
 				
 				}
 				if ($index['job'] == "basenotification"){
-					$sql_template = "SELECT sum(length(sequence)) as bases FROM basecalled_template;";
-					$sql_complement = "SELECT sum(length(sequence)) as bases FROM basecalled_complement;";
-					$sql_2d = "SELECT sum(length(sequence)) as bases FROM basecalled_2d;";
+					
+					$sql_template = "SELECT sum(length(sequence)) as bases FROM basecalled_" . $index['type'] . ";";
+					
+					//$sql_template = "SELECT sum(length(sequence)) as bases FROM basecalled_template;";
+					//$sql_complement = "SELECT sum(length(sequence)) as bases FROM basecalled_complement;";
+					//$sql_2d = "SELECT sum(length(sequence)) as bases FROM basecalled_2d;";
 					$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$index['database']);
 				
 					$template=$mindb_connection->query($sql_template);
-					$complement=$mindb_connection->query($sql_complement);
-					$read2d=$mindb_connection->query($sql_2d);
+					//$complement=$mindb_connection->query($sql_complement);
+					//$read2d=$mindb_connection->query($sql_2d);
 					if ($template->num_rows >= 1) {
 						foreach ($template as $row) {
 							if ((($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']) >=1 ){
@@ -174,13 +180,13 @@ if ($login->isUserLoggedIn() == true) {
 										echo "<script type=\"text/javascript\" id=\"runscript\">
 											new PNotify({
 												title: 'Sequencing Alert!',
-												text: 'You\'ve sequenced ". ($index['threshold']*(($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']))." bases for run ".cleanname($index['database'])." on the template strand.',
+												text: 'You\'ve sequenced ". ($index['threshold']*(($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']))." bases for run ".cleanname($index['database'])." on the ". $index['type'] . " strand.',
 												type: 'info',
 												
 												});";
 											if (isset($_SESSION['twittername']) && ($index['threshold'] >= 500000)) {
 												//echo "alert ('tryingtotweet');";
-												$message = "Sequenced ".($index['threshold']*(($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']))." bases on template";
+												$message = "Sequenced ".($index['threshold']*(($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']))." bases on ". $index['type'];
 												$postData = "twitteruser=" . ($_SESSION['twittername']) . "&run=". (urlencode(cleanname($index['database']))) ."&message=" . (urlencode($message));
 												//echo "alert ('".$postData."');";
 												// Get cURL resource
@@ -208,92 +214,8 @@ if ($login->isUserLoggedIn() == true) {
 							
 						}
 					}
-					if ($complement->num_rows >= 1) {
-						foreach ($complement as $row) {
-							if ((($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']) >=1 ){
-								//if (isset $_SESSION['basecoverage']){
-									if ((($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold'])>$_SESSION['basecoveragecomp']){
-										echo "<script type=\"text/javascript\" id=\"runscript\">
-											new PNotify({
-												title: 'Sequencing Alert!',
-												text: 'You\'ve sequenced ". ($index['threshold']*(($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']))." bases for run ".cleanname($index['database'])." on the complement strand.',
-												type: 'info',
-												
-												});";
-											if (isset($_SESSION['twittername']) && ($index['threshold'] >= 500000)) {
-												//echo "alert ('tryingtotweet');";
-												$message = "Sequenced ".($index['threshold']*(($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']))." bases on  complement";
-												$postData = "twitteruser=" . ($_SESSION['twittername']) . "&run=". (urlencode(cleanname($index['database']))) ."&message=" . (urlencode($message));
-												//echo "alert ('".$postData."');";
-												// Get cURL resource
-												$curl = curl_init();
-												// Set some options - we are passing in a useragent too here
-												curl_setopt_array($curl, array(
-												    CURLOPT_RETURNTRANSFER => 1,
-												    CURLOPT_URL => 'http://www.nottingham.ac.uk/~plzloose/minoTourhome/tweet.php?' .$postData ,
-												    CURLOPT_USERAGENT => 'Codular Sample cURL Request'
-												));
-												// Send the request & save response to $resp
-												$resp = curl_exec($curl);
-												// Close request to clear up some resources
-												curl_close($curl);
-											}
-											echo "</script>";
-													$_SESSION['basecoveragecomp']=(($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']);
-									}
-									//}else{
-									
-									
-								//}
-								$_SESSION['basecoveragecomp']=(($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']);
-							}
-							
-						}
-					}
-					if ($read2d->num_rows >= 1) {
-						foreach ($read2d as $row) {
-							if ((($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']) >=1 ){
-								//if (isset $_SESSION['basecoverage']){
-									if ((($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold'])>$_SESSION['basecoverage2d']){
-										echo "<script type=\"text/javascript\" id=\"runscript\">
-											new PNotify({
-												title: 'Sequencing Alert!',
-												text: 'You\'ve sequenced ". ($index['threshold']*(($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']))." bases for run ".cleanname($index['database'])." in 2d.',
-												type: 'info',
-												
-												});";
-											if (isset($_SESSION['twittername']) && ($index['threshold'] >= 500000)) {
-												//echo "alert ('tryingtotweet');";
-												$message = "Sequenced ".($index['threshold']*(($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']))." bases on  2d";
-												$postData = "twitteruser=" . ($_SESSION['twittername']) . "&run=". (urlencode(cleanname($index['database']))) ."&message=" . (urlencode($message));
-												//echo "alert ('".$postData."');";
-												// Get cURL resource
-												$curl = curl_init();
-												// Set some options - we are passing in a useragent too here
-												curl_setopt_array($curl, array(
-												    CURLOPT_RETURNTRANSFER => 1,
-												    CURLOPT_URL => 'http://www.nottingham.ac.uk/~plzloose/minoTourhome/tweet.php?' .$postData ,
-												    CURLOPT_USERAGENT => 'Codular Sample cURL Request'
-												));
-												// Send the request & save response to $resp
-												$resp = curl_exec($curl);
-												// Close request to clear up some resources
-												curl_close($curl);
-											}
-											echo "</script>";
-													$_SESSION['basecoverage2d']=(($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']);
-									}
-									//}else{
-									
-									
-								//}
-								$_SESSION['basecoverage2d']=(($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']);
-							}
-							
-						}
-					}
-				}
-				
+					
+				}				
 			}
 		}
 			//var_dump ($jobstodo);

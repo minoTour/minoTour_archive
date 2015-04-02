@@ -129,7 +129,7 @@ require_once($directory ."config/db.php");
 					if ($template->num_rows >= 1){
 						foreach ($template as $row) {
 							if ($row['coverage']>=$index['threshold'] && strlen($index['twitterhandle']) > 0) {
-								$message = "Coverage >=".$index['threshold']."X on template for ".$row['refname'];
+								$message = "Coverage >=".$index['threshold']."X on ".$index['type'] ." for ".$row['refname'];
 								$postData = "twitteruser=" . $index['twitterhandle'] . "&run=". (urlencode(cleanname($index['database']))) ."&message=" . (urlencode($message));
 								// Get cURL resource
 								$curl = curl_init();
@@ -171,7 +171,7 @@ require_once($directory ."config/db.php");
 									$basecoveragetemp = $memcache->get("$checkrunning");
 									if ((($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold'])>$basecoveragetemp){
 										if (isset($index['twittername']) && ($index['threshold'] >= 500000)) {
-											$message = "Sequenced ".($index['threshold']*(($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']))." bases on template";
+											$message = "Sequenced ".($index['threshold']*(($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']))." bases on " . $index['type'];
 											$postData = "twitteruser=" . ($_SESSION['twittername']) . "&run=". (urlencode(cleanname($index['database']))) ."&message=" . (urlencode($message));
 											$curl = curl_init();
 											// Set some options - we are passing in a useragent too here
