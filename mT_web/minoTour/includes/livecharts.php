@@ -81,6 +81,8 @@ if($('#poreactivitycheck').prop('checked')) {
 <script>
 
                             $(document).ready(function() {
+                            	//alert ($(window).width());
+                            	if ($(window).width() >=720) {
                                 var options = {
                                     chart: {
                                         renderTo: 'processing',
@@ -100,15 +102,17 @@ if($('#poreactivitycheck').prop('checked')) {
 								       // '#CBE1F7',
 								    //],
                                     title: {
+                                    
                                       text: 'Read Upload And Processing'
+                                    
                                     },
                                     xAxis: {
                                                 title: {
                                                     text: 'Strand'
                                                 },
                                                 categories: [
-									                'Template',
-									                'Complement',
+									                'template',
+									                'complement',
 									                '2d',
 									                ]
                                     			
@@ -122,14 +126,68 @@ if($('#poreactivitycheck').prop('checked')) {
                                                         enabled: false
                                                       },
                                     legend: {
-                                        layout: 'vertical',
-                                        align: 'right',
-                                        verticalAlign: 'middle',
+                                        layout: 'horizontal',
+                                        align: 'center',
+                                        verticalAlign: 'bottom',
                                         borderWidth: 0,
                                         reversed: true
                                     },
                                     series: []
                                 };
+                            	}else{
+                            	var options = {
+                                    chart: {
+                                        renderTo: 'processing',
+                                        type: 'bar',
+                                        //type: 'line'
+                                    },
+                                    plotOptions: {
+                                    	bar: {
+                                        	animation: false,
+										    //colorByPoint: true
+                                        }
+                                    },
+                                    //colors: [
+								      //  '#4A6D8E',
+								       // '#7cb5ec',
+								       // '#A3CBF2',
+								       // '#CBE1F7',
+								    //],
+                                    title: {
+                                    
+                                      text: ''
+                                    
+                                    },
+                                    xAxis: {
+                                                title: {
+                                                    text: 'Strand'
+                                                },
+                                                categories: [
+									                't',
+									                'c',
+									                '2d',
+									                ]
+                                    			
+                                            },
+                                            yAxis: {
+                                                        title: {
+                                                            text: 'Number of Reads'
+                                                        }
+                                                    },
+                                                    credits: {
+                                                        enabled: false
+                                                      },
+                                    legend: {
+                                        layout: 'horizontal',
+                                        align: 'center',
+                                        verticalAlign: 'bottom',
+                                        borderWidth: 0,
+                                        reversed: true
+                                    },
+                                    series: []
+                                };	
+                            		
+                            	}
                                 function loadchirp77() {
 									if($('#readsummarycheck').prop('checked')) {
    										 $.getJSON('jsonencode/readnumber2.php?prev=0&callback=?', function(data) {
@@ -183,7 +241,7 @@ if($('#poreactivitycheck').prop('checked')) {
 								       // '#CBE1F7',
 								    //],
                                     title: {
-                                      text: 'Read Upload And Processing'
+                                      text: 'Read Count'
                                     },
                                     xAxis: {
                                                 title: {
@@ -457,7 +515,8 @@ if($('#poreactivitycheck').prop('checked')) {
 																						        },
 																								yAxis: {
 																								            title: {
-																								                text: 'Percentage'
+																								                //text: 'Percentage'
+																								                text: ''
 																								            },
 																											max: 100
 																								        },
@@ -465,9 +524,9 @@ if($('#poreactivitycheck').prop('checked')) {
 																										    enabled: false
 																										  },
 																				        legend: {
-																				            layout: 'vertical',
-																				            align: 'right',
-																				            verticalAlign: 'middle',
+																				            layout: 'horizontal',
+                                        													align: 'center',
+													                                        verticalAlign: 'bottom',
 																				            borderWidth: 0
 																				        },
 																				        series: []
@@ -523,16 +582,17 @@ if($('#poreactivitycheck').prop('checked')) {
 																							        },
 																									yAxis: {
 																									            title: {
-																									                text: 'Depth'
+																									                //text: 'Depth'
+																									                text: ''
 																									            },
 																									        },
 																											credits: {
 																											    enabled: false
 																											  },
 																					        legend: {
-																					            layout: 'vertical',
-																					            align: 'right',
-																					            verticalAlign: 'middle',
+																					            layout: 'horizontal',
+                                    														    align: 'center',
+														                                        verticalAlign: 'bottom',
 																					            borderWidth: 0
 																					        },
 																					        series: []
@@ -693,9 +753,9 @@ $(document).ready(function() {
             }
         },
         legend: {
-            layout: 'vertical',
-            align: 'right',
-            verticalAlign: 'middle',
+            layout: 'horizontal',
+                                        align: 'center',
+                                        verticalAlign: 'bottom',
             borderWidth: 0
         },
         series: [],
@@ -761,9 +821,9 @@ if($('#histogramcheck').prop('checked')) {
 									    enabled: false
 									  },
 			        legend: {
-			            layout: 'vertical',
-			            align: 'right',
-			            verticalAlign: 'middle',
+			            layout: 'horizontal',
+                                        align: 'center',
+                                        verticalAlign: 'bottom',
 			            borderWidth: 0
 			        },
 			        series: []
@@ -1160,10 +1220,10 @@ if($('#histogramcheck').prop('checked')) {
 													    enabled: false
 													  },
 							        legend: {
-							            layout: 'vertical',
-							            align: 'right',
-							            verticalAlign: 'middle',
-							            borderWidth: 0
+							            layout: 'horizontal',
+                                        align: 'center',
+                                        verticalAlign: 'bottom',
+   							            borderWidth: 0
 							        },
 							        series: []
 							    };

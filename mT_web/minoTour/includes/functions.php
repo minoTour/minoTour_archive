@@ -526,7 +526,8 @@ function runsummary() {
 			
 			$runsummary=$mindb_connection->query($sql);
 			if ($runsummary->num_rows >= 1) {
-				echo " <table class='table table-condensed'>
+				echo " <div class='table-responsive'>
+				<table class='table table-condensed'>
 					<thead>
 				<tr>
 						<th>Device ID</th>
@@ -555,13 +556,14 @@ function runsummary() {
 						echo "<td>" . $count . "</td>";
 						echo "<td>" . gmdate('H:i:s', $row['exp_start_time']) . "</td>";
 						echo "<td>" . gmdate('d-m-y', $row['exp_start_time']) . "</td>";
-						echo "<td>" . $row['run_id'] . "</td>";
+						echo "<td style='word-wrap: break-word;'>" . $row['run_id'] . "</td>";
 						echo "<td>" . $row['version_name'] . "</td>";
 						echo "</tr>";
 					}
 						
 				echo"</tbody>
 					</table>
+					</div>
 					";
 				}
 			}
@@ -570,7 +572,8 @@ function runsummary() {
 			$sql3 = "select count(*) as readnum,exp_script_purpose,ROUND(AVG(length(sequence))) as average_length,STDDEV(length(sequence)) as standard_dev,MAX(length(sequence)) as maxlen,MIN(length(sequence)) as minlen from basecalled_template inner join tracking_id using (basename_id) group by exp_script_purpose;";
 			$template=$mindb_connection->query($sql3);
 			if ($template->num_rows >= 1) {
-				echo " <table class='table table-condensed'>
+				echo " <div class='table-responsive'>
+				<table class='table table-condensed'>
 					<thead>
 				<tr>
 						<th>Experiment Purpose</th>
@@ -595,6 +598,7 @@ function runsummary() {
 						
 				echo"</tbody>
 					</table>
+					</div>
 					";
 				
 			}
@@ -602,7 +606,8 @@ function runsummary() {
 			$sql4 = "select count(*) as readnum,exp_script_purpose,ROUND(AVG(length(sequence))) as average_length,STDDEV(length(sequence)) as standard_dev,MAX(length(sequence)) as maxlen,MIN(length(sequence)) as minlen from basecalled_complement inner join tracking_id using (basename_id) group by exp_script_purpose;";
 			$complement=$mindb_connection->query($sql4);
 			if ($complement->num_rows >= 1) {
-				echo " <table class='table table-condensed'>
+				echo " <div class='table-responsive'>
+				<table class='table table-condensed'>
 					<thead>
 				<tr>
 						<th>Experiment Purpose</th>
@@ -627,6 +632,7 @@ function runsummary() {
 						
 				echo"</tbody>
 					</table>
+					</div>
 					";
 				
 			}
@@ -634,7 +640,8 @@ function runsummary() {
 			$sql5 = "select count(*) as readnum,exp_script_purpose,ROUND(AVG(length(sequence))) as average_length,STDDEV(length(sequence)) as standard_dev,MAX(length(sequence)) as maxlen,MIN(length(sequence)) as minlen from basecalled_2d inner join tracking_id using (basename_id) group by exp_script_purpose;";
 			$twod=$mindb_connection->query($sql5);
 			if ($twod->num_rows >= 1) {
-				echo " <table class='table table-condensed'>
+				echo " <div class='table-responsive'>
+				<table class='table table-condensed'>
 					<thead>
 				<tr>
 						<th>Experiment Purpose</th>
@@ -659,6 +666,7 @@ function runsummary() {
 						
 				echo"</tbody>
 					</table>
+					</div>
 					";
 				
 			}

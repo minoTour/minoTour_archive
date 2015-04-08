@@ -38,7 +38,7 @@ require_once("includes/functions.php");
 					
                     <div class="row">
    					 <div class="col-lg-12">
-					 
+					 	<div class='table-responsive'>
                			 <table id="example" class="display table table-condensed table-hover " cellspacing="0" width="100%">
    							 <thead>
    								 <tr>
@@ -68,7 +68,7 @@ require_once("includes/functions.php");
    						 </table>
    					 </div>
    				 </div>
-			
+				</div>
 				</div>
                 <!-- /.col-lg-12 -->
             </div>

@@ -210,6 +210,8 @@ if ($login->isUserLoggedIn() == true) {
 			if ( $aColumns[$i] == 'version' ) {
 				// Special output formatting for 'version' column
 				$row[] = ($aRow[ $aColumns[$i] ]=='0') ? '-' : $aRow[ $aColumns[$i] ];
+			} elseif ($aColumns[$i] == 'runname') {
+				$row[] = cleanname($aRow[$aColumns[$i]]);
 			} elseif ( $aColumns[$i] != ' ' ) {
 				// General output
 				$row[] = $aRow[ $aColumns[$i] ];

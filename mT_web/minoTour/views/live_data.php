@@ -59,7 +59,7 @@ require_once("includes/functions.php");
 						  <div id="processingcoverage">
 						  <div class="panel-body">
 						  <div class="row">
-						  <div class="col-md-6" id="processing" style="width:100%; height:200px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Processing Rates</div>
+						  <div class="col-md-12" id="processing" style="height:200px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Processing Rates</div>
 						  </div>
 						   </div>
 						</div>
@@ -156,7 +156,7 @@ require_once("includes/functions.php");
 						  </div>
 						  <div id="sequencerate">
 						  <div class="panel-body">
-								<div id="readrate" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Read Rate</div>
+								<div id="readrate" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Read Rate</div>
 								
 						  </div>
 						</div>
@@ -191,9 +191,9 @@ require_once("includes/functions.php");
 						  </div>
 						  <div id="poreinfo">
 						  <div class="panel-body">
-								<div id="poreproduction" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pore Productivity</div>
+								<div id="poreproduction" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pore Productivity</div>
 								<?php if ($_SESSION['active_minup'] >= 0.37) {?>
-					<div id="readmuxproduction" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mux Productivity</div>	
+					<div id="readmuxproduction" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mux Productivity</div>	
 					<?php } ?>
 						  </div>
 						</div>
@@ -228,7 +228,7 @@ require_once("includes/functions.php");
 						  <div id="qualityinfo">
 						  <div class="panel-body">
 						  <?php if ($_SESSION['activereference'] != "NOREFERENCE") {?>
-				  			<div id="numberoverlength"  style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Number of Aligned Reads By Length</div>
+				  			<div id="numberoverlength"  style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Number of Aligned Reads By Length</div>
 				  			<?php }else { ?>
 															<div><p class="text-center"><small>This dataset has not been aligned to a reference sequence.</small></p></div>
 							<?php }; ?>
@@ -254,7 +254,10 @@ require_once("includes/functions.php");
 			        <h4 class="modal-title" id="myModalLabel"> Run Summary
 			      </div>
 			      <div class="modal-body">
+			      <div class="row">
+						  <div class="col-md-12">
 			Key details on the run.<br><br>
+			</div></div>
 					  </div>
 			      <div class="modal-footer">
 			        <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
