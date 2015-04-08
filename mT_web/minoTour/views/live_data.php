@@ -97,18 +97,19 @@ require_once("includes/functions.php");
 						  <div id="readsncoverage">
 						  <div class="panel-body">
 									<div class="row">
-									<div class="col-md-6" id="readnum" style="width:25%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Read Numbers</div>
-									<div class="col-md-6" id="yield" style="width:25%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Yield</div>
-									<div class="col-md-6" id="avglen" style="width:25%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Read Average Length</div>
-									<div class="col-md-6" id="maxlen" style="width:25%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Read Max Length</div>
+									<div class="col-md-3" id="readnum" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Read Numbers</div>
+									<div class="col-md-3" id="yield" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Yield</div>
+									<div class="col-md-3" id="avglen" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Read Average Length</div>
+									<div class="col-md-3" id="maxlen" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Read Max Length</div>
+
 
 								</div>	
 								<div class="row">
 								<?php if ($_SESSION['activereference'] != "NOREFERENCE") {?>
 									<?php foreach ($_SESSION['activerefnames'] as $key => $value) {
 										//echo $key . " " . $value . "<br>";?>
-										<div class="col-md-6" id="percentcoverage<?php echo $key;?>" style="width:50%; height:200px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Coverage for <?php echo $value;?></div>
-										<div class="col-md-6" id="depthcoverage<?php echo $key;?>" style="width:50%; height:200px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Depth for <?php echo $value;?></div><?php
+										<div class="col-md-6" id="percentcoverage<?php echo $key;?>" style="height:200px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Coverage for <?php echo $value;?></div>
+										<div class="col-md-6" id="depthcoverage<?php echo $key;?>" style="height:200px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Depth for <?php echo $value;?></div><?php
 									}
 									?>
 								<!---<div class="col-md-6" id="percentcoverage" style="width:50%; height:200px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Coverage</div>--->
