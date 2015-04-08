@@ -131,9 +131,10 @@ $(document).ready(function() {
 						    enabled: false
 						  },
         legend: {
-            layout: 'vertical',
-            align: 'right',
-            verticalAlign: 'middle',
+            layout: 'horizontal',
+					            											align: 'center',
+					            											verticalAlign: 'bottom',
+
             borderWidth: 0
         },
         series: []
@@ -180,9 +181,10 @@ $(document).ready(function() {
 							    enabled: false
 							  },
 	        legend: {
-	            layout: 'vertical',
-	            align: 'right',
-	            verticalAlign: 'middle',
+	            layout: 'horizontal',
+					            											align: 'center',
+					            											verticalAlign: 'bottom',
+
 	            borderWidth: 0
 	        },
 	        series: []
@@ -229,9 +231,10 @@ $(document).ready(function() {
 							    enabled: false
 							  },
 	        legend: {
-	            layout: 'vertical',
-	            align: 'right',
-	            verticalAlign: 'middle',
+	            layout: 'horizontal',
+					            											align: 'center',
+					            											verticalAlign: 'bottom',
+
 	            borderWidth: 0
 	        },
 	        series: []

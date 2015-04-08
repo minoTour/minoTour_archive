@@ -171,9 +171,10 @@ require_once("includes/functions.php");
 					                    }
 					                },
 					                legend: {
-					                    layout: 'vertical',
-					                    align: 'right',
-					                    verticalAlign: 'middle',
+					                    layout: 'horizontal',
+					            											align: 'center',
+					            											verticalAlign: 'bottom',
+
 					                    borderWidth: 0
 					                },
 					                series: [],
@@ -249,9 +250,10 @@ require_once("includes/functions.php");
 					                    }
 					                },
 					                legend: {
-					                    layout: 'vertical',
-					                    align: 'right',
-					                    verticalAlign: 'middle',
+					                    layout: 'horizontal',
+					            											align: 'center',
+					            											verticalAlign: 'bottom',
+
 					                    borderWidth: 0
 					                },
 					                series: [],

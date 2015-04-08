@@ -109,6 +109,8 @@ require_once("includes/functions.php");
 						<div class="row">
 					 <div class="col-lg-12">
 					 <div id = "consensus_details"><br><h5>Click on a position from the table below to view specific variants.</h5><br></div>
+            			 <div class='table-responsive'>
+
             			 <table id="example" class="display table table-condensed table-hover " cellspacing="0" width="100%">
 							 <thead>
 								 <tr>
@@ -151,6 +153,7 @@ require_once("includes/functions.php");
 							 </tfoot>
 
 						 </table>
+					 </div>
 					 </div>
 				
 					
