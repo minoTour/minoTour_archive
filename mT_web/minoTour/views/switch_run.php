@@ -134,7 +134,10 @@ require_once("includes/functions.php");
     					var tableData = $(this).children("td").map(function() {
        						 return $(this).text();
 					    }).get();
-						var url = "live_data.php?actru=" + $.trim(tableData[4]);
+					    var targetrun = $.trim(tableData[4]);
+					    var cleanedtarget = targetrun.replace(/ /g, "_");
+					    //alert (cleanedtarget);
+						var url = "live_data.php?actru=" + cleanedtarget;
 						window.location.href = url;
 					});
 		

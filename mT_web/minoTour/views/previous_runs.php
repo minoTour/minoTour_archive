@@ -133,7 +133,11 @@ require_once("includes/functions.php");
     					var tableData = $(this).children("td").map(function() {
        						 return $(this).text();
 					    }).get();
-						var url = "previous_summary.php?roi=" + $.trim(tableData[4]);
+					    var targetrun = $.trim(tableData[4]);
+					    var cleanedtarget = targetrun.replace(/ /g, "_");
+					    //alert (cleanedtarget);
+						
+						var url = "previous_summary.php?roi=" + cleanedtarget;
 						window.location.href = url;
 					});
 		

@@ -175,8 +175,16 @@ function checkminup($username) {
 
 function cleanname($nametoclean){
 	$pieces = explode("_", $nametoclean);
-	array_shift($pieces);
+	//array_shift($pieces);
 	$nametoreturn = implode(" ", $pieces);
+	//echo "test " . $nametoreturn;
+	return($nametoreturn);
+}
+
+function restorename($nametoclean){
+	$pieces = explode(" ", $nametoclean);
+	array_shift($pieces);
+	$nametoreturn = implode("_", $pieces);
 	//echo "test " . $nametoreturn;
 	return($nametoreturn);
 }
