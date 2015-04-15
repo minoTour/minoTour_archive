@@ -289,14 +289,14 @@ function barcodingpie($jobname,$currun,$refid) {
 				  
 			}
 			
-			$checkfails = "select count(*) as count from basecalled_2d where basename_id not in (select basename_id from barcode_assignment);";
-			$checkfailssearch = $mindb_connection->query($checkfails);
+			#$checkfails = "select count(*) as count from basecalled_2d where basename_id not in (select basename_id from barcode_assignment);";
+			#$checkfailssearch = $mindb_connection->query($checkfails);
 			
-			if ($checkfailssearch->num_rows >= 1) {
-				foreach ($checkfailssearch as $row) {
-					$jsonstring = $jsonstring . "[\"" . "UC" . "\",".$row['count'] . "],\n";	
-				}
-			}
+			#if ($checkfailssearch->num_rows >= 1) {
+		#		foreach ($checkfailssearch as $row) {
+		#			$jsonstring = $jsonstring . "[\"" . "UC" . "\",".$row['count'] . "],\n";	
+		#		}
+			#}
 			
 			$jsonstring = $jsonstring . "]\n";
 		}
