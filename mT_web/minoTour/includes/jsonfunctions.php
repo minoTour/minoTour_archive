@@ -23,7 +23,7 @@ function blanktemplate($jobname,$currun,$refid) {
 				$jsonstring = $row['json'];
 			}
 		} else {
-			//do something intersting here...
+			//do something interesting here...
 		}
 		$jsonstring = $jsonstring . "]\n";
 		if ($_GET["prev"] == 1){
@@ -38,6 +38,283 @@ function blanktemplate($jobname,$currun,$refid) {
    	return $jsonstring;
    	
 }
+
+##### Barcoding Coverage Over Time
+
+##SELECT count(*) as count,FLOOR((start_time+duration)/1) as time,refid,refname,reffile,barcode_arrangement FROM last_align_maf_basecalled_2d inner join basecalled_template using (basename_id) inner join reference_seq_info using (refid) inner join barcode_assignment using (basename_id) where alignnum = 1 group by refid,barcode_arrangement,FLOOR((start_time+duration)/1) order by FLOOR((start_time+duration)/1);
+
+function barcodwimm($jobname,$currun,$type) {
+	$checkvar = $currun . $jobname . $type;
+	//echo $type . "\n";
+	$checkrunning = $currun . $jobname . $type . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;
+	//$jsonstring = $memcache->get("$checkvar");
+	$checkingrunning = $memcache->get("$checkrunning");
+	if($checkingrunning === "No" || $checkingrunning === FALSE){
+		//$memcache->set("$checkrunning", "YES", 0, 0); 
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if ($checking->num_rows ==1){
+			//echo "We have already run this!";
+			foreach ($checking as $row){
+				$jsonstring = $row['json'];
+			}
+		} else {
+			$sql = "SELECT count(*) as count,FLOOR((start_time+duration)/1) as time,refid,refname,reffile,barcode_arrangement FROM last_align_maf_basecalled_" . $type . " inner join basecalled_template using (basename_id) inner join reference_seq_info using (refid) inner join barcode_assignment using (basename_id) where alignnum = 1 group by barcode_arrangement,FLOOR((start_time+duration)/1) order by FLOOR((start_time+duration)/1);";
+			
+			//echo $sql . "\n";
+			
+			//echo "\n$type\n";
+			$result = $mindb_connection->query($sql);
+			
+			//array to store the results
+			$resultarray;
+			
+			//refidarray - to store individual reference elements
+			$refidarray;
+			$refiddescarray;
+			
+			if ($result->num_rows >=1) {
+				//echo "We're in the loop";
+				$cumucount1;
+				foreach ($result as $row) {
+					### We're just going to track the barcodes over time - we're going to ignore the reference sequence at this point
+					if (!in_array($row['barcode_arrangement'], $refidarray)){
+					    $refidarray[] = $row['barcode_arrangement'];
+					   // echo $row['barcode_arrangement']."\n";
+					    
+					    $refiddescarray[$row['barcode_arrangement']]=$row['barcode_arrangement'];
+					}
+					//echo $type . "\n";
+					//echo $row['time'] . "\n";
+					//echo $row['barcode_arrangement'] . "\n";
+					//$resultarray['$type'][$row['time']][$row['barcode_arrangement']]['barcodename']=$row['barcode_arrangement'];
+					$resultarray[$type][$row['time']][$row['barcode_arrangement']]['barcodename']=$row['barcode_arrangement'];
+					#$resultarray['$type'][$row['time']][$row['refid']]['reffile']=$row['reffile'];
+					$resultarray[$type][$row['time']][$row['barcode_arrangement']]['count']=$row['count'];
+					$cumucount1[$row['barcode_arrangement']] = $cumucount1[$row['barcode_arrangement']] + $row['count'];
+					$resultarray[$type][$row['time']][$row['barcode_arrangement']]['cumucount']=$cumucount1[$row['barcode_arrangement']];											
+				}
+			}
+			
+			//var_dump ($resultarray);
+			
+			$jsonstring;
+			$jsonstring = $jsonstring . "[\n";
+			
+			foreach ($resultarray as $key => $value) {
+				//echo $key . "\n";
+				
+				asort($refidarray);
+				foreach ($refidarray as $index){
+					//echo $index . "\n";
+					
+					$cumu = 0;
+					$jsonstring = $jsonstring . "{\n";
+					$jsonstring = $jsonstring . "\"name\": \"" . $refiddescarray[$index] .  "\",\n";
+					
+					if ($key == "template") {
+						$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+					}else if ($key == "complement") {
+						$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+					}else if ($key == "2d") {
+						$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+					}
+					$jsonstring = $jsonstring . "\"data\":[";
+					foreach ($value as $key2 => $value2) {
+						$cumu = $cumu + $value2[$index]['count'];
+						$jsonstring = $jsonstring . "[ $key2 , $cumu ],";
+					}
+					
+					$jsonstring = $jsonstring . "]\n";
+					$jsonstring = $jsonstring . "},\n";
+					
+
+				}
+							}
+			$jsonstring = $jsonstring . "]\n";
+			
+			if ($_GET["prev"] == 1){
+				#include 'savejson.php';
+			}
+		}
+		$memcache->set("$checkvar", $jsonstring);
+	}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}
+		
+	// cache for 2 minute as we want yield to update semi-regularly...
+   
+	$memcache->delete("$checkrunning");
+    return $jsonstring;
+		
+}
+
+
+
+
+##### Barcoding Coverage Summary
+
+function barcodingcov($jobname,$currun,$refid) {
+	$checkvar = $currun . $jobname . $type;
+	//echo $type . "\n";
+	$checkrunning = $currun . $jobname . $type . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;
+	//$jsonstring = $memcache->get("$checkvar");
+	$checkingrunning = $memcache->get("$checkrunning");
+	if($checkingrunning === "No" || $checkingrunning === FALSE){
+		//$memcache->set("$checkrunning", "YES", 0, 0); 
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if ($checking->num_rows ==1){
+			//echo "We have already run this!";
+			foreach ($checking as $row){
+				$jsonstring = $row['json'];
+			}
+		} else {
+			//do something interesting here...
+			
+			$jsonstring = $jsonstring . "[\n";
+			
+			//Barcode List
+			$barcodes = ["BC01","BC02","BC03","BC04","BC05","BC06","BC07","BC08","BC09","BC10","BC11","BC12"];
+			
+			//Fetch the coverage depth for each barcode:
+			$barcov = "select ref_id, avg(count) as avecount from (SELECT ref_id, (A+T+G+C) as count, ref_pos FROM reference_coverage_barcode_2d) as refcounts group by ref_id;";
+			$barcovquery = $mindb_connection->query($barcov);
+			
+			
+			$refinfo = "SELECT refid,refname FROM reference_seq_info;";
+			$refinfoquery  = $mindb_connection->query($refinfo);
+		
+			//Dump the ref info into a lookup table
+			$reflookup=[];
+			
+			
+			if ($refinfoquery->num_rows >= 1) {
+				foreach ($refinfoquery as $row) {
+					$reflookup[$row['refid']]=$row['refname'];
+					#print $row['refid'] . " " . $row['refname'] . "\n";
+				}	
+			}
+			//Dump the barcode coverage info into a lookup table after splitting the barcode from the reference
+			
+			$barcodlookup=[];
+			if ($barcovquery->num_rows >= 1) {
+				foreach ($barcovquery as $row) {
+					$referenceids = explode("_", $row['ref_id']);
+					$barcodlookup[$reflookup[$referenceids[0]]][$referenceids[1]]=$row['avecount'];
+					#print $reflookup[$referenceids[0]] . " " . $referenceids[1] . " " . $row['avecount'] . "\n";
+				}	
+			}
+			//var_dump ($barcodlookup);
+			//Plot the results in a lovely bargraph with beautiful data presentation skills.
+			foreach ($barcodlookup as $key=>$value){
+				#print $key . "\n";
+				$jsonstring = $jsonstring . "{\n";
+				$jsonstring = $jsonstring . "\"name\": \"". $key. "\",\n";
+				$jsonstring = $jsonstring . "\"data\":\n";
+   				$jsonstring = $jsonstring . "[\n";
+				//foreach ($value as $key2=>$value2) {
+					#print $key2 . " " . $value2 . "\n";	
+				//	$jsonstring = $jsonstring . "[\"" . $key2	. "\",".$value2 . "],\n";
+				//}
+				foreach ($barcodes as $barcode) {
+					if ($value[$barcode] > 0){
+						$jsonstring = $jsonstring . "[\"" . $barcode . "\",".$value[$barcode] . "],\n";	
+					}else{
+						$jsonstring = $jsonstring . "[\"" . $barcode . "\",0],\n";		
+					}
+				}
+				$jsonstring = $jsonstring . "]\n";
+				$jsonstring = $jsonstring . "},\n";
+			}
+		
+			 
+		}
+
+		$jsonstring = $jsonstring . "]\n";
+		if ($_GET["prev"] == 1){
+			//include 'savejson.php';
+		}
+		$memcache->set("$checkvar", $jsonstring);
+	}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}	
+	// cache for 2 minute as we want yield to update semi-regularly...  
+	$memcache->delete("$checkrunning");
+   	return $jsonstring;
+   	
+}
+
+##### Barcoding summary pie chart data
+
+function barcodingpie($jobname,$currun,$refid) {
+	$checkvar = $currun . $jobname . $type;
+	//echo $type . "\n";
+	$checkrunning = $currun . $jobname . $type . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;
+	//$jsonstring = $memcache->get("$checkvar");
+	$checkingrunning = $memcache->get("$checkrunning");
+	if($checkingrunning === "No" || $checkingrunning === FALSE){
+		//$memcache->set("$checkrunning", "YES", 0, 0); 
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if ($checking->num_rows ==1){
+			//echo "We have already run this!";
+			foreach ($checking as $row){
+				$jsonstring = $row['json'];
+			}
+		} else {
+			//do something interesting here...
+			$jsonstring = $jsonstring . "[\n";
+			$jsonstring = $jsonstring . "{\n";
+			$barcodequery = "SELECT count(*) as count,barcode_arrangement FROM barcode_assignment group by barcode_arrangement order by barcode_arrangement;";
+			$barcodesearch = $mindb_connection->query($barcodequery);
+			
+			if ($barcodesearch->num_rows >= 1) {
+				$jsonstring = $jsonstring . "\"type\": \"pie\",\n";
+				$jsonstring = $jsonstring . "\"name\": \"Barcode Share\",\n";
+   				$jsonstring = $jsonstring . "\"data\":\n";
+   				$jsonstring = $jsonstring . "[\n";
+				foreach ($barcodesearch as $row){
+					$jsonstring = $jsonstring . "[\"" . $row['barcode_arrangement']	. "\",".$row['count'] . "],\n";
+				}	
+				  
+			}
+			
+			$checkfails = "select count(*) as count from basecalled_2d where basename_id not in (select basename_id from barcode_assignment);";
+			$checkfailssearch = $mindb_connection->query($checkfails);
+			
+			if ($checkfailssearch->num_rows >= 1) {
+				foreach ($checkfailssearch as $row) {
+					$jsonstring = $jsonstring . "[\"" . "UC" . "\",".$row['count'] . "],\n";	
+				}
+			}
+			
+			$jsonstring = $jsonstring . "]\n";
+		}
+		$jsonstring = $jsonstring . "}\n";
+		$jsonstring = $jsonstring . "]\n";
+		if ($_GET["prev"] == 1){
+			//include 'savejson.php';
+		}
+		$memcache->set("$checkvar", $jsonstring);
+	}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}	
+	// cache for 2 minute as we want yield to update semi-regularly...  
+	$memcache->delete("$checkrunning");
+   	return $jsonstring;
+   	
+}
+
 
 ##########Code to generate kmer statistics about a run.
 

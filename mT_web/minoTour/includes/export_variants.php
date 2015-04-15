@@ -32,8 +32,10 @@ if ($login->isUserLoggedIn() == true) {
 	//echo cleanname($_SESSION['focusrun']);
 	if($_GET["prev"] == 1){
 		$database =$_SESSION['focusrun'];
+		$barcodecheck = $_SESSION['focusbarcode'];
 	}else{
 		$database =$_SESSION['active_run_name'];
+		$barcodecheck = $_SESSION['currentbarcode'];
 	}
 	// Database connection information
 	$gaSql['user']     = DB_USER;
@@ -59,13 +61,23 @@ if ($login->isUserLoggedIn() == true) {
 	
 	switch ($job) {
     	case "consensus":
-    		$sql = "SELECT ref_id, refname, ref_seq, @var_max_val:= GREATEST(A, T, G, C), CASE @var_max_val WHEN A THEN 'A' WHEN T THEN 'T' WHEN C THEN 'C' WHEN G THEN 'G' END, ref_pos, A, T, G, C, (A + T + G + C), (((A + T + G + C) - GREATEST(A, T, G, C)) / (A + T + G + C)), (GREATEST(A, T, G, C) / (A + T + G + C))
+    		if ($barcodecheck >= 1 && $type == "2d") {
+    			$sql = "SELECT ref_id, refname, ref_seq, @var_max_val:= GREATEST(A, T, G, C), CASE @var_max_val WHEN A THEN 'A' WHEN T THEN 'T' WHEN C THEN 'C' WHEN G THEN 'G' END, ref_pos, A, T, G, C, (A + T + G + C), (((A + T + G + C) - GREATEST(A, T, G, C)) / (A + T + G + C)), (GREATEST(A, T, G, C) / (A + T + G + C))
+FROM reference_coverage_barcode_" . $type . " inner join reference_seq_info WHERE (A + T + G + C) >= " . $coverage . " and ref_id = refid and ref_seq != case greatest(A, T, G, C) WHEN A THEN 'A'
+    WHEN T THEN 'T'
+    WHEN C THEN 'C'
+    WHEN G THEN 'G'
+    END ORDER BY `ref_id` asc;";
+    $headings = "RefID_Barcode,rename,refSEQ,conSEQcount,conSEQ,refPOS,A,T,G,C,Total,mismatched,common\n";
+    		}else{
+	    		$sql = "SELECT ref_id, refname, ref_seq, @var_max_val:= GREATEST(A, T, G, C), CASE @var_max_val WHEN A THEN 'A' WHEN T THEN 'T' WHEN C THEN 'C' WHEN G THEN 'G' END, ref_pos, A, T, G, C, (A + T + G + C), (((A + T + G + C) - GREATEST(A, T, G, C)) / (A + T + G + C)), (GREATEST(A, T, G, C) / (A + T + G + C))
 FROM reference_coverage_" . $type . " inner join reference_seq_info WHERE (A + T + G + C) >= " . $coverage . " and ref_id = refid and ref_seq != case greatest(A, T, G, C) WHEN A THEN 'A'
     WHEN T THEN 'T'
     WHEN C THEN 'C'
     WHEN G THEN 'G'
     END ORDER BY `ref_id` asc;";
     $headings = "RefID,rename,refSEQ,conSEQcount,conSEQ,refPOS,A,T,G,C,Total,mismatched,common\n";
+    		}
     	    break;
     	case "variants":
     	$sql = "SELECT ref_id, refname, ref_seq, @var_max_val:= GREATEST(A, T, G, C), CASE @var_max_val WHEN A THEN 'A' WHEN T THEN 'T' WHEN C THEN 'C' WHEN G THEN 'G' END, ref_pos, A, T, G, C, (A + T + G + C), (((A + T + G + C) - GREATEST(A, T, G, C)) / (A + T + G + C)), (GREATEST(A, T, G, C) / (A + T + G + C))

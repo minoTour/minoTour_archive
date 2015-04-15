@@ -1,7 +1,7 @@
 <?php
 
 //Setting general system wide parameters for various features
-$_SESSION['minotourversion']=0.47;
+$_SESSION['minotourversion']=0.48;
 $_SESSION['pagerefresh']=5000;
 
 
@@ -326,6 +326,14 @@ function checksessionvars(){
 						$_SESSION['currentXML'] = $xmlresult->num_rows;
 					}
 					
+					//Check for the existence of a barcoding table in the active run database:
+					$barcodecheck = "select * from barcode_assignment;";
+					$barcoderesult = $db_connection2->query($barcodecheck);
+					if ($barcoderesult->num_rows >= 1) {
+						$_SESSION['currentbarcode'] = $barcoderesult->num_rows;
+					}else{
+						$_SESSION['currentbarcode'] = $barcoderesult->num_rows;
+					}
 					//echo "The run is called " . key($runarray[1]) .".<br>\n";
 					
 				}else{
@@ -356,6 +364,15 @@ function checksessionvars(){
 						$_SESSION['focusXML'] = $xmlresult->num_rows;
 					}else{
 						$_SESSION['focusXML'] = $xmlresult->num_rows;
+					}
+					
+					//Check for the existence of a barcoding table in the active run database:
+					$barcodecheck = "select * from barcode_assignment;";
+					$barcoderesult = $db_connection2->query($barcodecheck);
+					if ($barcoderesult->num_rows >= 1) {
+						$_SESSION['focusbarcode'] = $barcoderesult->num_rows;
+					}else{
+						$_SESSION['focusbarcode'] = $barcoderesult->num_rows;
 					}
 				}
 				

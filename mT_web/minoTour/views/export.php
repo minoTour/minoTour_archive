@@ -71,6 +71,7 @@ require_once("includes/functions.php");
 		</table>
 		</div>
 		</div>
+		</div>
 	</b>
 		<?php if (count($_SESSION['activerefnames']) > 0) {?>
 				<div class='panel-group'>
@@ -93,20 +94,20 @@ require_once("includes/functions.php");
 		<tr>
 					<td>Template Sequence</td>
 					<td>Generated</td>
-					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['focusrun']; ?>&job=template&align=1&prev=0' type='button' class='btn btn-success btn-xs'>Download Fasta</a></td>
-					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['focusrun']; ?>&job=template&align=1&prev=0&type=fastq' type='button' class='btn btn-success btn-xs'>Download Fastq</a></td>
+					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['active_run_name']; ?>&job=template&align=1&prev=0' type='button' class='btn btn-success btn-xs'>Download Fasta</a></td>
+					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['active_run_name']; ?>&job=template&align=1&prev=0&type=fastq' type='button' class='btn btn-success btn-xs'>Download Fastq</a></td>
 					</tr>
 			<tr>
 					<td>Complement Sequence</td>
 					<td>Generated</td>
-					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['focusrun']; ?>&job=complement&align=1&prev=0' type='button' class='btn btn-success btn-xs'>Download Fasta</a></td>
-					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['focusrun']; ?>&job=complement&align=1&prev=0&type=fastq' type='button' class='btn btn-success btn-xs'>Download Fastq</a></td>
+					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['active_run_name']; ?>&job=complement&align=1&prev=0' type='button' class='btn btn-success btn-xs'>Download Fasta</a></td>
+					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['active_run_name']; ?>&job=complement&align=1&prev=0&type=fastq' type='button' class='btn btn-success btn-xs'>Download Fastq</a></td>
 					</tr>
 					<tr>
 					<td>2D Sequence</td>
 					<td>Generated</td>
-					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['focusrun']; ?>&job=2d&align=1&prev=0' type='button' class='btn btn-success btn-xs'>Download Fasta</a></td>
-					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['focusrun']; ?>&job=2d&align=1&prev=0&type=fastq' type='button' class='btn btn-success btn-xs'>Download Fastq</a></td>
+					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['active_run_name']; ?>&job=2d&align=1&prev=0' type='button' class='btn btn-success btn-xs'>Download Fasta</a></td>
+					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['active_run_name']; ?>&job=2d&align=1&prev=0&type=fastq' type='button' class='btn btn-success btn-xs'>Download Fastq</a></td>
 					</tr>
 </tbody>
 		</table>
@@ -114,6 +115,48 @@ require_once("includes/functions.php");
 		</div>
 		</br>
 		<?php };?>
+
+		<?php if ($_SESSION['currentbarcode'] >= 1 ) {?>
+				<div class='panel-group'>
+			<div class='panel panel-default'>
+			<div class='panel-heading'>
+				<h4>Download Sequences By Barcode</h4>
+			</div>
+		<div class='panel-body'>
+		Barcodes are called from 2d data only. Downloaded reads from here include the barcodes and currently only 2d sequences are available.
+		<table class='table table-condensed'>
+		<thead>
+		<tr>
+		<th>Barcode</th>
+		<th>Fasta</th>
+		<th>Fastq</th>
+		
+		</tr>
+		</thead>
+		<?php //Barcode List
+			$barcodes = ["BC01","BC02","BC03","BC04","BC05","BC06","BC07","BC08","BC09","BC10","BC11","BC12"];
+			?>
+		<tbody>
+		
+		<?php foreach ($barcodes as $barcode) { ?>
+		<tr>
+		
+					<td><?php echo $barcode;?></td>
+					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['active_run_name']; ?>&job=2d&code=<?php echo $barcode;?>&align=0&prev=0&type=fasta' type='button' class='btn btn-success btn-xs'>Download Fasta</a></td>
+					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['active_run_name']; ?>&job=2d&code=<?php echo $barcode;?>&align=1&prev=0&type=fastq' type='button' class='btn btn-success btn-xs'>Download Fastq</a></td>
+					</tr>
+					
+					<?php };?>
+			
+</tbody>
+		</table>
+		</div>
+		</div>
+		</br>
+		<?php };?>
+
+
+
 		<div class='panel-group'>
 			<div class='panel panel-default'>
 			<div class='panel-heading'>

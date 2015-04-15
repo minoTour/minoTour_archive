@@ -790,12 +790,12 @@ require_once("includes/functions.php");
 					    }	
 					    if (ctrue == 'Y') {
 							if ($('#toggle-two').prop('checked') == true) {
-								$.getJSON('jsonencode/squiggles3.php?prev=1&readname='+name+'&type=complement&callback=?', function(data){
+								$.getJSON('jsonencode/squiggles3.php?channel='+channel+'&prev=1&readname='+name+'&type=complement&callback=?', function(data){
 									newdata2.series = data;
 									var chart = new Highcharts.Chart(newdata2);
 								});
 					    	}else{
-					    		$.getJSON('jsonencode/squiggles2.php?prev=1&readname='+name+'&type=complement&callback=?', function(data){
+					    		$.getJSON('jsonencode/squiggles2.php?channel='+channel+'&prev=1&readname='+name+'&type=complement&callback=?', function(data){
 									newdata2.series = data;
 									var chart = new Highcharts.Chart(newdata2);
 								});

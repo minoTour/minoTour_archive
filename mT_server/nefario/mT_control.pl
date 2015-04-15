@@ -129,7 +129,10 @@ while (42) {#If you have to ask the significance of 42 you shouldn't be reading 
 				jobs($ref->{runname},$_,$ref->{reflength});
 			}
 			##proc_align($ref->{runname},$dbh);
-			my $aligncommand = "perl mT_align.pl " . $ref->{runname} . "&";
+			my $aligncommand = "perl mT_align.pl " . $ref->{runname} . " &";
+			if ($verbose){
+				print $aligncommand . "\n";
+			}
 			system ($aligncommand);
 		}
 		if ($verbose){

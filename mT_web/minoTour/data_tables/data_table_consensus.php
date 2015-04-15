@@ -28,8 +28,10 @@ if ($login->isUserLoggedIn() == true) {
 	//echo cleanname($_SESSION['focusrun']);
 	if($_GET["prev"] == 1){
 		$database =$_SESSION['focusrun'];
+		$barcodecheck = $_SESSION['focusbarcode'];
 	}else{
 		$database =$_SESSION['active_run_name'];
+		$barcodecheck = $_SESSION['currentbarcode'];
 	}
 	
 	$type = $_GET["type"];
@@ -50,8 +52,12 @@ if ($login->isUserLoggedIn() == true) {
 	* Array of database columns which should be read and sent back to DataTables. Use a space where
 	* you want to insert a non-database field (for example a counter or static image)
 	*/
-	$aColumns = array( 'ref_id','refname','ref_seq','@var_max_val:= GREATEST(A,T,G,C)','CASE @var_max_val WHEN A THEN \'A\' WHEN T THEN \'T\' WHEN C THEN \'C\' WHEN G THEN \'G\' END' ,'ref_pos','A','T','G','C','(A+T+G+C)','(((A+T+G+C) - GREATEST(A,T,G,C))/(A+T+G+C))','(GREATEST(A,T,G,C)/(A+T+G+C))' );
-  
+	if ($barcodecheck >= 1 && $type == "2d") {
+		//echo "We're looking at barcodes!\n";
+		$aColumns = array( 'ref_id','refname','ref_seq','@var_max_val:= GREATEST(A,T,G,C)','CASE @var_max_val WHEN A THEN \'A\' WHEN T THEN \'T\' WHEN C THEN \'C\' WHEN G THEN \'G\' END' ,'ref_pos','A','T','G','C','(A+T+G+C)','(((A+T+G+C) - GREATEST(A,T,G,C))/(A+T+G+C))','(GREATEST(A,T,G,C)/(A+T+G+C))' );
+	}else{
+		$aColumns = array( 'ref_id','refname','ref_seq','@var_max_val:= GREATEST(A,T,G,C)','CASE @var_max_val WHEN A THEN \'A\' WHEN T THEN \'T\' WHEN C THEN \'C\' WHEN G THEN \'G\' END' ,'ref_pos','A','T','G','C','(A+T+G+C)','(((A+T+G+C) - GREATEST(A,T,G,C))/(A+T+G+C))','(GREATEST(A,T,G,C)/(A+T+G+C))' );
+	}
 	// Indexed column (used for fast and accurate table cardinality)
 	$sIndexColumn = 'ref_pos';
 	
@@ -69,9 +75,13 @@ if ($login->isUserLoggedIn() == true) {
        END   */
   
 	// DB table to use
+	if ($barcodecheck >= 1 && $type == "2d") {
+	$sTable = 'reference_coverage_barcode_' . $type;	
+	}else{
 	$sTable = 'reference_coverage_' . $type;
+	}
 	$sTable2 = 'reference_seq_info';
-	//$sTable3 = 'basecalled_template';
+	//$sTable3 = 'barcode_arrangement';
 	//$sTable4 = 'basecalled_complement';
 	//$sTable5 = 'basecalled_2d';
   

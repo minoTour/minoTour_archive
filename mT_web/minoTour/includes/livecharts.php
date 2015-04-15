@@ -1,3 +1,148 @@
+<!-- Barcode Coverage Information -->
+
+<script>
+
+                            $(document).ready(function() {
+                                var options = {
+                                    chart: {
+                                        renderTo: 'barcodcov',
+                                        type: 'column',
+                                        //type: 'line'
+                                    },
+                                    plotOptions: {
+                                    	column: {
+                                        	animation: false,
+										    //colorByPoint: true
+                                        }
+                                    },
+                                    //colors: [
+								      //  '#4A6D8E',
+								       // '#7cb5ec',
+								       // '#A3CBF2',
+								       // '#CBE1F7',
+								    //],
+                                    title: {
+                                      text: 'Coverage Depth'
+                                    },
+                                    xAxis: {
+                                                title: {
+                                                    text: 'Barcodes'
+                                                },
+                                                labels: {
+						            	enabled:true,
+						            	},
+						            	categories: [
+									                
+									                ]
+						            
+                                                
+                                            },
+                                            yAxis: {
+                                                        title: {
+                                                            text: 'Barcode Coverage Depth'
+                                                        }
+                                                    },
+                                                    credits: {
+                                                        enabled: false
+                                                      },
+                                    legend: {
+                                        layout: 'vertical',
+                                        align: 'center',
+                                        verticalAlign: 'bottom',
+                                        borderWidth: 0
+                                    },
+                                    series: []
+                                };
+                                function loadchirpbarcodcov() {
+									if($('#barcodingcheck').prop('checked')) {
+   										 $.getJSON('jsonencode/barcodingcov.php?prev=0&callback=?', function(data) {
+                                                //alert("success");
+
+                                        options.series = data; // <- just assign the data to the series property.
+
+                                                setTimeout(loadchirpbarcodcov,<?php echo $_SESSION['pagerefresh'] ;?>);
+
+                                        //options.series = JSON2;
+                                                var chart = new Highcharts.Chart(options);
+                                                });} else {
+   setTimeout(loadchirpbarcodcov,<?php echo $_SESSION['pagerefresh'] ;?>);
+}
+
+                                        }
+                                        loadchirpbarcodcov();
+
+                            });
+
+
+
+                                //]]>
+
+                                </script>
+
+
+
+<!-- Barcode Information -->
+
+<script>
+$(document).ready(function() {
+			    var options = {
+			        chart: {
+						renderTo: 'barcod',
+			            type: 'pie',
+			            marginTop: 30,
+			            marginBottom: 30
+			        },
+
+
+			        title: {
+			            text: 'Barcoding Proportions'
+			        },
+
+					credits: {
+					    enabled: false
+					  },
+	            plotOptions: {
+            pie: {
+            	animation: false,
+                allowPointSelect: false,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
+            }
+        },
+				    series: []
+
+			    };
+			    	function loadchirpbarcode() {
+			    		
+if($('#barcodingcheck').prop('checked')) {
+   										 $.getJSON('jsonencode/barcodingpie.php?prev=0&callback=?', function(data) {
+       options.series = data; // <- just assign the data to the series property.
+       
+
+
+	                setTimeout(loadchirpbarcode,<?php echo $_SESSION['pagerefresh'];?>);
+
+	        //options.series = JSON2;
+	                var chart = new Highcharts.Chart(options);
+	                });} else {
+   setTimeout(loadchirpbarcode,<?php echo $_SESSION['pagerefresh'] ;?>);
+}
+
+                                        }
+	        loadchirpbarcode();
+
+});
+
+			   			</script>
+
+
+
 <!-- Pore Mux Data -->
 
 <script>
@@ -247,6 +392,9 @@ if($('#poreactivitycheck').prop('checked')) {
                                                 title: {
                                                     text: 'Strand'
                                                 },
+                                                labels: {
+						            	enabled:false,
+						            },
                                                 categories: [
 									                'Template',
 									                'Complement',
@@ -316,6 +464,9 @@ if($('#poreactivitycheck').prop('checked')) {
 						xAxis: {
 						            title: {
 						                text: 'Strand'
+						            },
+						            labels: {
+						            	enabled:false,
 						            }
 						        },
 								yAxis: {
@@ -380,7 +531,10 @@ if($('#poreactivitycheck').prop('checked')) {
 										xAxis: {
 										            title: {
 										                text: 'Strand'
-										            }
+										            },
+										            labels: {
+						            	enabled:false,
+						            }
 										        },
 												yAxis: {
 												            title: {
@@ -441,7 +595,10 @@ if($('#poreactivitycheck').prop('checked')) {
 										xAxis: {
 										            title: {
 										                text: 'Strand'
-										            }
+										            },
+										            labels: {
+						            	enabled:false,
+						            }
 										        },
 												yAxis: {
 												            title: {
@@ -874,7 +1031,8 @@ if($('#histogramcheck').prop('checked')) {
 						xAxis: {
 						            title: {
 						                text: 'Time (S)'
-						            }
+						            },
+						            
 						        },
 								yAxis: {
 								            title: {

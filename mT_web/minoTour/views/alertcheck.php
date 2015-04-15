@@ -76,7 +76,7 @@ if ($login->isUserLoggedIn() == true) {
 				foreach ($databases as $dbname){
 					//echo $dbname . "<br>";
 					if (isset ($databases)){
-						$getalerts = "SELECT name,threshold,alert_index,twitterhandle,type FROM " . $dbname . ".alerts where complete = 0;";
+						$getalerts = "SELECT name,reference,threshold,alert_index,twitterhandle,type FROM " . $dbname . ".alerts where complete = 0;";
 						$getthemalerts2 = $mindb_connection->query($getalerts);
 						//var_dump ($getthemalerts2);
 						if ($getthemalerts2->num_rows>=1){
@@ -88,6 +88,7 @@ if ($login->isUserLoggedIn() == true) {
 									'twitterhandle' => $row['twitterhandle'],
 									'type' =>$row['type'],
 									'database' => $dbname,
+									'reference' => $row['reference'],
 								  );
 //								$jobstodo[]['job']=$row['name'];
 //								$jobstodo[]['threshold']=$row['threshold'];
@@ -165,6 +166,173 @@ if ($login->isUserLoggedIn() == true) {
 				
 				
 				}
+				if ($index['job'] == "barcodecoverage"){
+					$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$index['database']);
+					//$barcodecheck = "SELECT barcodeid from barcode_control where complete=0;";
+					//$barcodes = $mindb_connection->query($barcodecheck);
+					
+					//Fetch the coverage depth for the barcode of interest
+					$barcov = "select ref_id, avg(count) as avecount from (SELECT ref_id, (A+T+G+C) as count, ref_pos FROM reference_coverage_barcode_2d) as refcounts where ref_id like \"%" . $index['reference'] . "\" group by ref_id;";
+					//echo $barcov . "\n";
+					$barcovquery = $mindb_connection->query($barcov);
+					
+					$barcodlookup=[];
+					if ($barcovquery->num_rows >= 1) {
+						foreach ($barcovquery as $row) {
+							$referenceids = explode("_", $row['ref_id']);
+							$barcodlookup[$reflookup[$referenceids[0]]][$referenceids[1]]=$row['avecount'];
+							#print $reflookup[$referenceids[0]] . " " . $referenceids[1] . " " . $row['avecount'] . "\n";
+						}	
+					}
+					//echo "Here?";
+					foreach ($barcodlookup as $key=>$value) {
+						//echo $value[$index['reference']] . "\n";
+						if ($value[$index['reference']] >= $index['threshold']){
+							//Here we update the row in the table to set the barcode to complete
+									
+							$updatesql = "update barcode_control set complete = 1 where barcodeid = \"".$index['reference'] ."\";"; 
+							//echo $updatesql . "\n";
+							$updatesqlexecute=$mindb_connection->query($updatesql);
+							echo"<script type=\"text/javascript\" id=\"runscript\">
+										new PNotify({
+		    								title: 'Barcode Coverage Alert!',
+								    		text: 'Coverage exceeding ".$index['threshold']."X has been achieved for run ".cleanname($index['database'])." on the " . $index['type'] . " strand for barcode  ".$index['reference'].".',
+		    								type: 'success',
+								    		hide: false
+											});";
+											if (isset($_SESSION['twittername'])) {
+												//echo "alert ('tryingtotweet');";
+												$message = "Coverage >=".$index['threshold']."X on " . $index['type'] . " for barcode ".$index['reference'];
+												$postData = "twitteruser=" . ($_SESSION['twittername']) . "&run=". (urlencode(cleanname($index['database']))) ."&message=" . (urlencode($message));
+												//echo "alert ('".$postData."');";
+												
+
+
+												// Get cURL resource
+												$curl = curl_init();
+												// Set some options - we are passing in a useragent too here
+												curl_setopt_array($curl, array(
+												    CURLOPT_RETURNTRANSFER => 1,
+												    CURLOPT_URL => 'http://www.nottingham.ac.uk/~plzloose/minoTourhome/tweet.php?' .$postData ,
+												    CURLOPT_USERAGENT => 'Codular Sample cURL Request'
+												));
+												// Send the request & save response to $resp
+												$resp = curl_exec($curl);
+												// Close request to clear up some resources
+												curl_close($curl);
+											}
+											echo "</script>";
+							$resetalert="update alerts set complete = 1 where alert_index = " . $index['jobid'] . ";";
+							//echo $resetalert;
+							$resetalerts=$mindb_connection->query($resetalert);
+						}else{
+						//here we might be able to set the global job as complete.	
+						}
+					}
+				}
+				
+				if ($index['job'] == "genbarcodecoverage") {
+					//This task is to identify which barcodes have been sequenced to a given level of coverage and then reject those barcodes from furthre sequencing. It will therefore calculate mean coverage and then set a list of barcodes to reject.	
+					//FIrst get the barcodes that need to be checked
+					$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$index['database']);
+					$barcodecheck = "SELECT barcodeid from barcode_control where complete=0;";
+					$barcodes = $mindb_connection->query($barcodecheck);
+					
+					//Fetch the coverage depth for each barcode:
+					$barcov = "select ref_id, avg(count) as avecount from (SELECT ref_id, (A+T+G+C) as count, ref_pos FROM reference_coverage_barcode_2d) as refcounts group by ref_id;";
+					$barcovquery = $mindb_connection->query($barcov);
+					
+					$barcodlookup=[];
+					if ($barcovquery->num_rows >= 1) {
+						foreach ($barcovquery as $row) {
+							$referenceids = explode("_", $row['ref_id']);
+							$barcodlookup[$reflookup[$referenceids[0]]][$referenceids[1]]=$row['avecount'];
+							#print $reflookup[$referenceids[0]] . " " . $referenceids[1] . " " . $row['avecount'] . "\n";
+						}	
+
+					}
+					
+					if ($barcodes->num_rows >= 1) {
+						foreach ($barcodlookup as $key=>$value){
+							foreach ($barcodes as $row){
+								//echo $value[$row['barcodeid']] . "!";
+								if ($value[$row['barcodeid']] >= $index['threshold']){
+									//Here we update the row in the table to set the barcode to complete
+									
+									$updatesql = "update barcode_control set complete = 1 where barcodeid = \"".$row['barcodeid'] ."\";"; 
+									//echo $updatesql . "\n";
+									$updatesqlexecute=$mindb_connection->query($updatesql); 
+									echo"<script type=\"text/javascript\" id=\"runscript\">
+										new PNotify({
+		    								title: 'Global Barcode Coverage Alert!',
+								    		text: 'Coverage exceeding ".$index['threshold']."X has been achieved for run ".cleanname($index['database'])." on the " . $index['type'] . " strand for barcode  ".$row['barcodeid'].".',
+		    								type: 'success',
+								    		hide: false
+											});";
+											if (isset($_SESSION['twittername'])) {
+												//echo "alert ('tryingtotweet');";
+												$message = "Coverage >=".$index['threshold']."X on " . $index['type'] . " for barcode ".$row['barcodeid'];
+												$postData = "twitteruser=" . ($_SESSION['twittername']) . "&run=". (urlencode(cleanname($index['database']))) ."&message=" . (urlencode($message));
+												//echo "alert ('".$postData."');";
+												
+
+
+												// Get cURL resource
+												$curl = curl_init();
+												// Set some options - we are passing in a useragent too here
+												curl_setopt_array($curl, array(
+												    CURLOPT_RETURNTRANSFER => 1,
+												    CURLOPT_URL => 'http://www.nottingham.ac.uk/~plzloose/minoTourhome/tweet.php?' .$postData ,
+												    CURLOPT_USERAGENT => 'Codular Sample cURL Request'
+												));
+												// Send the request & save response to $resp
+												$resp = curl_exec($curl);
+												// Close request to clear up some resources
+												curl_close($curl);
+											}
+											echo "</script>";
+									
+								}
+							}
+						}							
+					
+					}else{
+						echo"<script type=\"text/javascript\" id=\"runscript\">
+										new PNotify({
+		    								title: 'Global Barcode Coverage Alert!',
+								    		text: 'Coverage exceeding ".$index['threshold']."X has been achieved for run ".cleanname($index['database'])." on the " . $index['type'] . " strand for all barcodes.',
+		    								type: 'success',
+								    		hide: false
+											});";
+											if (isset($_SESSION['twittername'])) {
+												//echo "alert ('tryingtotweet');";
+												$message = "Coverage >=".$index['threshold']."X on " . $index['type'] . " for all barcodes.";
+												$postData = "twitteruser=" . ($_SESSION['twittername']) . "&run=". (urlencode(cleanname($index['database']))) ."&message=" . (urlencode($message));
+												//echo "alert ('".$postData."');";
+												
+
+
+												// Get cURL resource
+												$curl = curl_init();
+												// Set some options - we are passing in a useragent too here
+												curl_setopt_array($curl, array(
+												    CURLOPT_RETURNTRANSFER => 1,
+												    CURLOPT_URL => 'http://www.nottingham.ac.uk/~plzloose/minoTourhome/tweet.php?' .$postData ,
+												    CURLOPT_USERAGENT => 'Codular Sample cURL Request'
+												));
+												// Send the request & save response to $resp
+												$resp = curl_exec($curl);
+												// Close request to clear up some resources
+												curl_close($curl);
+											}
+											echo "</script>";
+							$resetalert="update alerts set complete = 1 where alert_index = " . $index['jobid'] . ";";
+							//echo $resetalert;
+							$resetalerts=$mindb_connection->query($resetalert);	
+					}
+					
+				}
+				
 				if ($index['job'] == "basenotification"){
 					
 					$sql_template = "SELECT sum(length(sequence)) as bases FROM basecalled_" . $index['type'] . ";";

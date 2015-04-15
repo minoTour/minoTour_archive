@@ -1,10 +1,15 @@
 <?php
-
+//echo "test";
 
 $db = $_GET["db"]; 
+
+
 $jobtype = $_GET["job"];
 $id = $db . "_" . $jobtype;
-if (isset ($_GET["type"])) {
+
+if (isset ($_GET["code"])){
+	$filename = $db . "_" . $_GET["code"] . "_" . $_GET["job"] . "-" . $_GET["type"];	
+}elseif (isset ($_GET["type"])) {
 	if ($_GET["type"] == "histogram") {
 		$filename = $db . "_" . $_GET["type"] . "_" . $_GET["length"] . "_" . ($_GET["length"] + 1000) . "_" . $_GET["job"] . ".fasta";
 	}else {
@@ -15,7 +20,7 @@ if (isset ($_GET["type"])) {
 }
 
 header("Content-type: text/plain");
-header("Content-Disposition: attachment; filename=$filename");
+	header("Content-Disposition: attachment; filename=$filename");
 // checking for minimum PHP version
 if (version_compare(PHP_VERSION, '5.3.7', '<')) {
     exit("Sorry, Simple PHP Login does not run on a PHP version smaller than 5.3.7 !");
@@ -54,6 +59,43 @@ if ($login->isUserLoggedIn() == true) {
 
 	if (!$mindb_connection->connect_errno) {
 		$jobtype = strtolower($jobtype);
+		
+		if (isset ($_GET["code"])) {
+			
+			$querytable = "basecalled_" . $jobtype;
+			$lasttable = "last_align_" . $querytable . "_5prime";
+			
+			if ($_GET["align"] == 1) {
+				$sql = "select seqid,sequence, qual from $querytable inner join barcode_assignment using (basename_id) inner join $lasttable using (basename_id) where barcode_arrangement = \"". $_GET['code'] ."\";";
+			}else {
+				$sql = "select seqid,sequence, qual from $querytable inner join barcode_assignment using (basename_id) where barcode_arrangement = \"". $_GET['code'] ."\";";
+				//echo $sql;
+			}
+			$queryresult=$mindb_connection->query($sql);
+			if ($_GET['type'] == "fastq") {
+				if ($queryresult->num_rows >= 1){
+					foreach ($queryresult as $row) {
+						echo "@" . $row['seqid'] . "\n";
+						echo $row['sequence'] . "\n";
+						echo "+\n";
+						$qualscore= substr($row['qual'], 1, -1);
+						$qualarray = str_split($qualscore);
+						foreach ($qualarray as $value){
+							echo chr(ord($value)-31);
+						}
+						print "\n";
+					}
+				}
+			}else{
+				if ($queryresult->num_rows >= 1){
+					foreach ($queryresult as $row) {
+						echo ">" . $row['seqid'] . "\n";
+						echo $row['sequence'] . "\n";
+					}
+				}	
+			}
+			exit;	
+		}
 		if ($_GET["type"] =="histogram"){
 			$querytable = "basecalled_" . $jobtype;
 			$length_start = $_GET["length"];
@@ -75,7 +117,7 @@ if ($login->isUserLoggedIn() == true) {
 			$lasttable = "last_align_" . $querytable . "_5prime";
 			if ($_GET["align"] == 1) {
 				$sql = "select seqid, sequence, qual,refname from $querytable inner join $lasttable using (basename_id) inner join reference_seq_info using (refid);";
-				echo $sql;
+				//echo $sql;
 			}elseif ($_GET["unalign"] == 1) {
 				$sql = "select seqid,sequence, qual from $querytable where basename_id not in (select basename_id from $lasttable);";
 			}elseif (isset($_GET["readname"])){

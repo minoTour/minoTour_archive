@@ -124,8 +124,48 @@ require_once("includes/functions.php");
 						</div>
 						
 					</div>
-					
-					
+					<?php if ($_SESSION['currentbarcode'] >= 1) {?>
+<div class="panel panel-default">
+						  <div class="panel-heading">
+						    <h3 class="panel-title"><input type="checkbox" name="colorCheckbox" id="barcodingcheck" value="BC" checked><!-- Button trigger modal -->
+			<button class="btn btn-info  btn-sm" data-toggle="modal" data-target="#modalbarcode">
+			 <i class="fa fa-info-circle"></i> Barcoding Summary
+			</button>
+
+			<!-- Modal -->
+			<div class="modal fade" id="modalbarcode" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			  <div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close  btn-sm" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			        <h4 class="modal-title" id="myModalLabel">Barcoding Summary</h4>
+			      </div>
+			      <div class="modal-body">
+			        This panel provides information on the number of reads assigned to each barcode using the Oxford Nanopore barcoding protocol.<br><br>
+			        The standard ONT barcoding analysis only searches for barcodes in PASS reads - i.e those reads generating full 2D sequence. Reads which cannot be classified are moved to the fail bin. We therefore show as unclassified (UC) those reads which generated 2D sequence but could not be barcoded by the ONT pipeline in the charts below.<br><br>
+					Note that further barcoding analysis options are availble under the specific barcoding tab in the left hand menu.<br>
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default  btn-sm" data-dismiss="modal">Close</button>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+						  </div>
+						  <div id="barcoding">
+						  <div class="panel-body">
+									<div class="row">
+									<div class="col-md-5" id="barcod" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Barcoding</div>
+									<div class="col-md-7" id="barcodcov" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Barcode Coverage</div>
+
+
+								</div>	
+								
+						  </div>
+						</div>
+						
+					</div>
+					<?php }; ?>
 					
 															
 						<div class="panel panel-default">
@@ -324,6 +364,9 @@ require_once("includes/functions.php");
 				            if($(this).attr("value")=="RS"){
 				                $("#runinfo").toggle();
 				            }
+				             if($(this).attr("value")=="BC"){
+				                $("#barcoding").toggle();
+				            }
 				        });
 				    });
 				</script>
@@ -339,7 +382,6 @@ require_once("includes/functions.php");
 				<!-- Highcharts Addition -->
 				<script src="js/highcharts.js"></script>
 				<script type="text/javascript" src="js/themes/grid-light.js"></script>
-				<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
 				<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
 				<script src="http://code.highcharts.com/modules/exporting.js"></script>
 	

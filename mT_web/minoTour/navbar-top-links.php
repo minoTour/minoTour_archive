@@ -36,12 +36,21 @@
                                 <li>
                                     <a href="switch_run.php"><i class="fa fa-database fa-fw"></i> Switch Active Runs</a>
                                 </li>
-                                <?php }?>
+                                <?php }; ?>
+                                
+                              
                                 
                                 <li>
                                     <a href="live_data.php"><i class="fa fa-cog fa-spin"></i> Live Data</a>
                                 </li>
-                                
+								
+								<?php if ($_SESSION['currentbarcode'] >= 1) {?>
+								<li>
+                                    <a href="current_barcodes.php"><i class="fa fa-barcode"></i> Barcodes</a>
+                                </li>
+								
+								<?php }; ?>
+								                                
                                 <li>
                                     <a href="current_summary.php"><i class="fa fa-bar-chart-o fa-fw"></i> Data Summary</a>
                                 </li>
@@ -67,6 +76,11 @@
                                 <li>
                                     <a href="set_alerts.php"><i class="fa fa-exclamation-circle"></i> Set Alerts</a>
                                 </li>
+                                <?php if ($_SESSION['user_name'] == "interactiondemo"){?>
+                                <li>
+                                	<a href="live_interaction.php"><i class="fa fa-cogs"></i> minION control</a>
+                                </li>
+                                <?php }?>
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
@@ -80,9 +94,21 @@
 	                            <li>
 	                                <a href="previous_runs.php" id="SR"><i class="fa fa-database fa-fw"></i> Change Run</a>
 	                            </li>
+	                            <?php if ($_SESSION['focusbarcode'] >= 1) {?>
+								<li>
+                                    <a href="previous_barcodes.php"><i class="fa fa-barcode"></i> Barcodes</a>
+                                </li>
+								
+								<?php }; ?>
 								<li>
                                     <a href="previous_summary.php"><i class="fa fa-bar-chart-o fa-fw"></i> Data Summary</a>
                                 </li>
+                                <?php if ($_SESSION['previousbarcode'] >= 1) {?>
+								<li>
+                                    <a href="prev_barcode.php"><i class="fa fa-barcode"></i> Barcodes</a>
+                                </li>
+								
+								<?php }; ?>
                                 <?php if ($_SESSION['focusreference'] != "NOREFERENCE") {?>
                                 <li>
                                 	<a href="previous_variants.php"><i class="fa fa-code-fork"></i> Nucleotide Variants</a>
@@ -187,11 +213,11 @@
 				parts = pathname.split("/");
 							var filename = parts[parts.length - 1];
 							//alert(filename);
-							if (filename == "previous_bases.php" || filename == "previous_insertions.php" || filename == "previous_deletions.php" || filename == "previous_variants.php" || filename == "previous_var.php" || filename == "previous_report.php" || filename == "previous_runs.php" || filename  == "previous_summary.php" || filename  == "previous_histogram.php" || filename== "previous_export.php" || filename== "previous_rates.php" || filename== "previous_pores.php" || filename== "previous_quality.php" || filename== "previous_XML.php" || filename== "previous_coverage.php" || filename== "previous_development.php" || filename=="reads_table.php" || filename=="manage_data.php" || filename=="prev_kmers.php"){
+							if (filename == "previous_bases.php" || filename == "previous_insertions.php" || filename == "previous_deletions.php" || filename == "previous_variants.php" || filename == "previous_var.php" || filename == "previous_report.php" || filename == "previous_runs.php" || filename  == "previous_summary.php" || filename  == "previous_histogram.php" || filename== "previous_export.php" || filename== "previous_rates.php" || filename== "previous_pores.php" || filename== "previous_quality.php" || filename== "previous_barcodes.php" || filename== "previous_XML.php" || filename== "previous_coverage.php" || filename== "previous_development.php" || filename=="reads_table.php" || filename=="manage_data.php" || filename=="prev_kmers.php"){
 								var d = document.getElementById("prevruns");
 								d.className = d.className + " active";
 							}
-							if (filename == "current_bases.php" || filename == "current_insertions.php" || filename == "current_deletions.php" || filename == "current_variants.php" || filename == "current_var.php" || filename == "live_report.php" || filename == "switch_run.php" || filename == "live_reads_table.php" || filename  == "current_histogram.php"|| filename == "live_data.php" || filename== "current_XML.php" || filename  == "current_summary.php" || filename== "export.php" || filename== "set_alerts.php" || filename== "current_export.php" || filename== "current_histogram.php" || filename== "current_rates.php" || filename== "current_pores.php" || filename== "current_quality.php" || filename== "current_coverage.php" || filename== "current_development.php") {
+							if (filename == "current_bases.php" || filename == "current_insertions.php" || filename == "current_deletions.php" || filename == "current_variants.php" || filename == "current_var.php" || filename == "live_report.php" || filename == "switch_run.php" || filename == "live_reads_table.php" || filename  == "current_histogram.php"|| filename == "live_data.php" || filename== "current_XML.php" || filename  == "current_summary.php" || filename== "export.php" || filename== "set_alerts.php" || filename== "current_export.php" || filename== "current_histogram.php" || filename== "current_rates.php" || filename== "current_pores.php" || filename== "current_quality.php" || filename=="live_interaction.php" || filename== "current_barcodes.php" || filename== "current_coverage.php" || filename== "current_development.php") {
 								var d = document.getElementById("currentruns");
 								d.className = d.className + " active";
 							}
