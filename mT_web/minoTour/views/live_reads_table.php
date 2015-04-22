@@ -81,6 +81,7 @@ require_once("includes/functions.php");
 			
 			 <div class="row">
 				 <div class="col-lg-12">
+				 <?php if ($_SESSION['currenttelem'] >= 1) {?> 
 				 <h4>Viewer options</h4>
 				 <input type='checkbox' id='toggle-two' data-onstyle='primary' data-offstyle='info' data-size='mini'>If ticked you will see data in base order.
 			<script>
@@ -92,6 +93,8 @@ require_once("includes/functions.php");
 				  })
 				  
 				</script>
+				
+				<?php } ?>
 					 <div id = "read_details">Click on a read from the table above to view specific details.</div>
 				 </div>
 			 </div>
@@ -131,9 +134,8 @@ require_once("includes/functions.php");
 		<script src="js/plugins/dataTables/dataTables.bootstrap.js" type="text/javascript" charset="utf-8"></script>
 
 
-		
-		
-		<script>
+		 	
+		 	<script>
 		$(document).ready(function() {
 		    $('#example').dataTable( {
 		    	"columnDefs": [
@@ -148,8 +150,7 @@ require_once("includes/functions.php");
 			$('#example tbody').on('click', 'tr', function () {
 			        var nameindex = $('td', this).eq(0).text();
 			        var name = oTable.fnGetData(this,2);
-			        var channel = oTable.fnGetData(this,0).slice(-1);;
-			        //alert(channel);
+				var channel = oTable.fnGetData(this,0).slice(-1);;
 			        //alert(name);
 			        var templength = $('td', this).eq(4).text();
 			        var complength = $('td', this).eq(9).text();
@@ -845,6 +846,7 @@ require_once("includes/functions.php");
 		} );
 	
 		 	</script>
+
 		 	<script>
 		 	
 		 	</script>

@@ -81,6 +81,7 @@ require_once("includes/functions.php");
 			
 			 <div class="row">
 				 <div class="col-lg-12">
+				 <?php if ($_SESSION['focustelem'] >= 1) {?> 
 				 <h4>Viewer options</h4>
 				 <input type='checkbox' id='toggle-two' data-onstyle='primary' data-offstyle='info' data-size='mini'>If ticked you will see data in base order.
 			<script>
@@ -92,6 +93,7 @@ require_once("includes/functions.php");
 				  })
 				  
 				</script>
+				<?php } ?>
 					 <div id = "read_details">Click on a read from the table above to view specific details.</div>
 				 </div>
 			 </div>

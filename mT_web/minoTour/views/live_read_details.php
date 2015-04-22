@@ -32,10 +32,12 @@ if ($login->isUserLoggedIn() == true) {
 		$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['focusrun']);
 		$prevval = 1;
 		$database = $_SESSION['focusrun'];
+		$telemetry = $_SESSION['focustelem'];
 	}else{
 		$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['active_run_name']);
 		$prevval = 0;
 		$database = $_SESSION['active_run_name'];
+		$telemetry = $_SESSION['currenttelem'];
 	}
 	//echo cleanname($_SESSION['active_run_name']);;
 
@@ -68,10 +70,12 @@ if ($login->isUserLoggedIn() == true) {
 						
 			
 			
-			
-			echo "<div id='templatefancy' style='width:100%; height:600px;'><i class='fa fa-cog fa-spin fa-3x'></i> Integrating lots of complex numbers...</div>";
-			echo "<div id='complementfancy' style='width:100%; height:600px;'><i class='fa fa-cog fa-spin fa-3x'></i> Integrating more complex numbers...</div>";
-
+			if ($telemetry > 1) {
+				echo "<div id='templatefancy' style='width:100%; height:600px;'><i class='fa fa-cog fa-spin fa-3x'></i> Parsing data...</div>";
+				echo "<div id='complementfancy' style='width:100%; height:600px;'><i class='fa fa-cog fa-spin fa-3x'></i> Still parsing data...</div>";
+			}else {
+				echo "Telmetry data was not uploaded for this run.";
+			}
 		
 		
 		

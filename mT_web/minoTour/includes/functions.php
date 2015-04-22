@@ -73,15 +73,16 @@ function displayalignment($ref,$query,$r_start,$q_start,$align_strand){
 		$q_start++;
 		echo "R:" . return10char($r_start) . " ";
 		echo $refarray[$x];
-		if ($align_strand == "F") {
+		//edit to fix the fact that the reverse stand alignment is already corrected in the maf
+		//if ($align_strand == "F") {
 			$r_start = $r_start + $vislen - substr_count($refarray[$x], '-');
 			echo " " . $r_start . "<br><br>";
 			$r_start++;
-		}else if ($align_strand == "R") {
-			$r_start = $r_start - $vislen + substr_count($refarray[$x], '-');
-			echo " " . $r_start . "<br><br>";
-			$r_start--;
-		}
+		//}else if ($align_strand == "R") {
+		//	$r_start = $r_start - $vislen + substr_count($refarray[$x], '-');
+		//	echo " " . $r_start . "<br><br>";
+		//	$r_start--;
+		//}
 	} 
 	echo "</pre>";
 
@@ -326,6 +327,17 @@ function checksessionvars(){
 						$_SESSION['currentXML'] = $xmlresult->num_rows;
 					}
 					
+					//Check for the existence of squiggle data in the active run database:
+					
+					$telemcheck = "show tables like 'caller_basecalled_template%';";
+					$telemcheckresult = $db_connection2->query($telemcheck);
+					if ($telemcheckresult->num_rows >= 1) {
+						$_SESSION['currenttelem'] = $telemcheckresult->num_rows;
+					}else{
+						$_SESSION['currenttelem'] = $telemcheckresult->num_rows;
+					}
+
+					
 					//Check for the existence of a barcoding table in the active run database:
 					$barcodecheck = "select * from barcode_assignment;";
 					$barcoderesult = $db_connection2->query($barcodecheck);
@@ -365,6 +377,17 @@ function checksessionvars(){
 					}else{
 						$_SESSION['focusXML'] = $xmlresult->num_rows;
 					}
+					
+					//Check for the existence of squiggle data in the active run database:
+					
+					$telemcheck = "show tables like 'caller_basecalled_template%';";
+					$telemcheckresult = $db_connection2->query($telemcheck);
+					if ($telemcheckresult->num_rows >= 1) {
+						$_SESSION['focustelem'] = $telemcheckresult->num_rows;
+					}else{
+						$_SESSION['focustelem'] = $telemcheckresult->num_rows;
+					}
+
 					
 					//Check for the existence of a barcoding table in the active run database:
 					$barcodecheck = "select * from barcode_assignment;";
