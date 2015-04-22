@@ -665,18 +665,26 @@ function Complement($seq){
 
 #### Plot to generate snp coverage over a specific region taking in a fixed point which represents the event of interest also including the read type under investigation
 
-function basesnpcoveragepos($jobname,$currun,$refid,$position,$type) {
+function basesnpcoveragepos($jobname,$currun,$refid,$position,$type,$barcodecheck) {
 	##We're not going to store this in memcahce as it isn't a dynamic plot.
 	##Construct our query...
 	global $mindb_connection;
-
-	$sql = "select *, @var_max_val:= GREATEST(A,T,G,C) AS max_value,
+	if ($barcodecheck >= 1 && $type == "2d") {
+		$sql = "select *, @var_max_val:= GREATEST(A,T,G,C) AS max_value,
+       CASE @var_max_val WHEN A THEN 'A'
+                         WHEN T THEN 'T'
+                         WHEN C THEN 'C'
+                         WHEN G THEN 'G'
+       END AS max_value_column_name from reference_coverage_barcode_" . $type ." where ref_id = '".$refid."' and ref_pos >= ".$position."-100 and ref_pos <= ".$position."+100;";
+      // echo $sql;
+	}else{
+		$sql = "select *, @var_max_val:= GREATEST(A,T,G,C) AS max_value,
        CASE @var_max_val WHEN A THEN 'A'
                          WHEN T THEN 'T'
                          WHEN C THEN 'C'
                          WHEN G THEN 'G'
        END AS max_value_column_name from reference_coverage_" . $type ." where ref_id = ".$refid." and ref_pos >= ".$position."-100 and ref_pos <= ".$position."+100;";
-       
+	}
        //echo $sql;
        $result=$mindb_connection->query($sql);
        
@@ -2429,6 +2437,18 @@ function readnumberupload($jobname,$currun) {
 				$jsonstring = $row['json'];
 			}
 		} else {
+			
+			#Check the number of cached reads - should be a memcached variable if all is going well.
+		$checkcached = $currun."cached";
+		//echo $checkcached . "\n";
+		$memcache->get('$checkcached');
+		//echo $memcache->get("$checkcached");
+		if ( $memcache->get("$checkcached") > 0) {
+			$resultarray['Cached']['template']=$memcache->get("$checkcached");
+			$resultarray['Cached']['complement']=$memcache->get("$checkcached");
+			$resultarray['Cached']['2d']=$memcache->get("$checkcached");
+		}
+			
 			
 			#The number of reads uploaded will always be the current count from tracking_id regardless of wether it is template complement or 2s
 		$current_count = "select count(*) as curr_count from tracking_id;";

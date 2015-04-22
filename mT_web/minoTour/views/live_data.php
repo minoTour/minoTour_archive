@@ -59,7 +59,7 @@ require_once("includes/functions.php");
 						  <div id="processingcoverage">
 						  <div class="panel-body">
 						  <div class="row">
-						  <div class="col-md-12" id="processing" style="height:200px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Processing Rates</div>
+						  <div class="col-md-12" id="processing" style="height:300px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Processing Rates</div>
 						  </div>
 						   </div>
 						</div>

@@ -45,12 +45,14 @@ if ($login->isUserLoggedIn() == true) {
 		$refid = $_GET["refid"];
 		$position = $_GET["position"];
 		$type = $_GET["type"];
+		$barcodecheck = $_SESSION['focusbarcode'];
 	}else{
 		$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['active_run_name']);
 		$currun = $_SESSION['active_run_name'];
 		$refid = $_GET["refid"];
 		$position = $_GET["position"];
 		$type = $_GET["type"];
+		$barcodecheck = $_SESSION['currentbarcode'];
 	}
 	//echo cleanname($_SESSION['active_run_name']);;
 
@@ -65,7 +67,7 @@ if ($login->isUserLoggedIn() == true) {
 		//echo $position;
 		//echo $type;
 		
-		$jsonstring=$jsonjobname($jsonjobname,$currun,$refid,$position,$type);
+		$jsonstring=$jsonjobname($jsonjobname,$currun,$refid,$position,$type,$barcodecheck);
 			
 		$callback = $_GET['callback'];
 		echo $callback.'('.$jsonstring.');';

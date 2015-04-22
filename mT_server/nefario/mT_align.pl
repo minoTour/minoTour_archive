@@ -200,8 +200,8 @@ unless ($checkingrunning) {
 					my $reflength = length($refstring_orig);
 					
 					##Need to get the position in the reference.
-					my $counter = ($refstart - 1);
-					
+					#my $counter = ($refstart - 1);
+					my $counter = ($refstart); ##potential bug fix to prevent accusations of being an idiot.
 					
 					
 					for (my $x=0; $x<=($reflength-1); $x++) {
@@ -339,8 +339,8 @@ unless ($checkingrunning) {
 				my $reflength = length($refstring_orig);
 				
 				##Need to get the position in the reference.
-				my $counter = ($refstart - 1);
-				
+				#my $counter = ($refstart - 1);
+				my $counter = ($refstart); ##Idiot fixes
 				
 				
 				for (my $x=0; $x<=($reflength-1); $x++) {
