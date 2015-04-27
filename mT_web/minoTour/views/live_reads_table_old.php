@@ -93,6 +93,7 @@ require_once("includes/functions.php");
 				  })
 				  
 				</script>
+				
 				<?php } ?>
 					 <div id = "read_details">Click on a read from the table above to view specific details.</div>
 				 </div>
@@ -133,9 +134,8 @@ require_once("includes/functions.php");
 		<script src="js/plugins/dataTables/dataTables.bootstrap.js" type="text/javascript" charset="utf-8"></script>
 
 
-		
-		
-		<script>
+		 	
+		 	<script>
 		$(document).ready(function() {
 		    $('#example').dataTable( {
 		    	"columnDefs": [
@@ -150,7 +150,7 @@ require_once("includes/functions.php");
 			$('#example tbody').on('click', 'tr', function () {
 			        var nameindex = $('td', this).eq(0).text();
 			        var name = oTable.fnGetData(this,2);
-				var channel = oTable.fnGetData(this,0).slice(-1);;
+					var channel = oTable.fnGetData(this,0).slice(-1);;
 			        //alert(name);
 			        var templength = $('td', this).eq(4).text();
 			        var complength = $('td', this).eq(9).text();
@@ -164,6 +164,8 @@ require_once("includes/functions.php");
 			        	var xmin;
 			        	var xmax;
 			        }
+			        //alert ('xmax is ' + xmax);
+			        
 			        
 			        var tstart = parseFloat($('td',this).eq(5).text());
 			        var tdur = parseFloat($('td',this).eq(6).text());
@@ -179,6 +181,7 @@ require_once("includes/functions.php");
 			        	var tmax;	
 			        }
 			        
+			        //alert ('tmax is ' + tmax);
 			        
 			        var compstart = parseFloat($('td',this).eq(10).text());
 			        var compdur = parseFloat($('td',this).eq(11).text());
@@ -191,6 +194,8 @@ require_once("includes/functions.php");
 			        	var cmin;
 			        	var cmax;	
 			        }
+			        
+			        //alert ('cmax is ' +cmax);
 			        
 			        var ttrue = $('td',this).eq(2).text();
 			        var ctrue = $('td',this).eq(7).text();
@@ -217,6 +222,7 @@ require_once("includes/functions.php");
 							    },
 							    min: xmin,
 							    max: xmax,
+							   
 					        },
 							yAxis: {
 					            title: {
@@ -460,6 +466,7 @@ require_once("includes/functions.php");
 					    	
 					    	
 					    }else{
+					    	 //alert ();
 					    	newdata = {
 					    	 rangeSelector: {
 				                selected: 1
@@ -474,6 +481,7 @@ require_once("includes/functions.php");
 					          text: 'Template Combined Squiggle Quality Probability and Called Base Plot',
 					          
 					        },
+					       
 					        xAxis: {
 								title: {
 									text: 'Time (s)'
@@ -846,6 +854,7 @@ require_once("includes/functions.php");
 		} );
 	
 		 	</script>
+
 		 	<script>
 		 	
 		 	</script>
@@ -861,7 +870,7 @@ require_once("includes/functions.php");
 </body>
 	<!-- Highcharts Addition -->
 	<!--<script src='js/highcharts.js'></script>-->
-	<script src='http://code.highcharts.com/stock/2.0.4/highstock.js'></script>
+	<script src='http://code.highcharts.com/stock/highstock.js'></script>
 	<script type='text/javascript' src='js/themes/grid-light.js'></script>
 	<script src='http://code.highcharts.com/4.0.3/modules/heatmap.js'></script>
 	<script src='http://code.highcharts.com/modules/exporting.js'></script>";
