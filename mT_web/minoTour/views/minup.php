@@ -62,6 +62,11 @@ if ($login->isUserLoggedIn() == true) {
 				echo "<body>The latest version of minUP for Windows can be downloaded below. This compressed folder includes a compiled version of the last aligner which in turn requires CYGWIN to be installed on your system (available from <a href='http://www.cygwin.com/' target='_blank'>www.cygwin.com</a>).<br><br> You should pay close attention to the enclosed readme file to ensure that you correctly configure the path to run minUP on Windows.</body><br><br>";
 				echo "<body>This version of minUP can utilise a configuration file to bypass entering some of the standard parameters on the command line. You can download a copy of this configuration specific for your account below. This file only works with the Windows version of minUP.</body><br><br>";
 				echo "<a href='minup/minup.v0.38W.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP for Windows</a><br><br>";
+				
+				echo "<body>A recent change in the metrichor workflow has changed some of the file formats. This is causing minUp some problems when uploading telemetry. Here is our updated version of minUP which deals with this problem. In addition, it handles barcoded data. Whilst we have tested this, we are releasing it earlier than anticipaited to deal with the metrichor change now. For this reason we will leave the earlier minup version here as well.</body><br><br>"; 
+				echo "<a href='minup/minup.v0.41W.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP 41 for Windows</a><br><br>";
+
+				
 				echo "<h4><u>Windows minUP Configuration File</u></h4>";
 				echo "<body>Click the icon below to download your personalised Windows minup configuration file. It should be saved in the folder containing the windows minup executable and you should ensure it is named minup_windows.config - some browsers may append .txt to the end of the file.</body><br><br>";
 				echo "<a href='minup/minupwindowsconfig.php?user_name=" . $_SESSION['user_name'] . "' target='_blank'><i class='fa fa-file-code-o'></i> minUP Windows Config</a><br><br>";
@@ -69,6 +74,8 @@ if ($login->isUserLoggedIn() == true) {
 				echo "<h4><u>minUP for Linux</u></h4>";
 				echo "<body>The latest version of minUP for linux can be downloaded below. This is a python script and requires several dependencies - see the enclosed readme file for details.</body><br><br>";
 				echo "<a href='minup/minup.v0.38.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP for Linux</a><br><br>";
+				echo "<body>A recent change in the metrichor workflow has changed some of the file formats. This is causing minUp some problems when uploading telemetry. Here is our updated version of minUP which deals with this problem. In addition, it handles barcoded data. Whilst we have tested this, we are releasing it earlier than anticipaited to deal with the metrichor change now. For this reason we will leave the earlier minup version here as well.</body><br><br>"; 
+				echo "<a href='minup/minup.v0.41.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP 41 for Linux</a><br><br>";
 				echo "<h4><u>Linux minUP Configuration File</u></h4>";
 				echo "<body>Click the icon below to download your personalised minup configuration file. It should be saved in the same folder as your minup script and you should ensure it is called minup_posix.config - some browsers may append .txt to the end of the file.</body><br><br>";
 				echo "<a href='minup/minupposixconfig.php?user_name=" . $_SESSION['user_name'] . "' target='_blank'><i class='fa fa-file-code-o'></i> minUP Linux Config</a><br><br>";
