@@ -142,8 +142,8 @@ require_once("includes/functions.php");
 		<tr>
 		
 					<td><?php echo $barcode;?></td>
-					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['focusrun']; ?>&job=2d&code=<?php echo $barcode;?>&align=0&prev=0&type=fasta' type='button' class='btn btn-success btn-xs'>Download Fasta</a></td>
-					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['focusrun']; ?>&job=2d&code=<?php echo $barcode;?>&align=1&prev=0&type=fastq' type='button' class='btn btn-success btn-xs'>Download Fastq</a></td>
+					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['focusrun']; ?>&job=2d&code=<?php echo $barcode;?>&align=0&prev=1&type=fasta' type='button' class='btn btn-success btn-xs'>Download Fasta</a></td>
+					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['focusrun']; ?>&job=2d&code=<?php echo $barcode;?>&align=1&prev=1&type=fastq' type='button' class='btn btn-success btn-xs'>Download Fastq</a></td>
 					</tr>
 					
 					<?php };?>
