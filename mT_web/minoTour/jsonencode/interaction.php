@@ -56,8 +56,43 @@ if ($login->isUserLoggedIn() == true) {
 	  <strong>Success!</strong> A start instruction has been sent to the minION device.
 	</div>";
         break;
+    case "testminion":
+    	$command = "insert into interaction (instruction,target,complete) VALUES ('test','all','0');";
+    	$sqlcommand = $mindb_connection->query($command);
+       echo "<div class='alert alert-warning alert-dismissible' role='alert'>
+	  <button type='button' class='close' data-dismiss='alert'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button>
+	  <strong>Success!</strong> A test message has been sent to the minION device.
+	</div>";
+	break;
+	case "biasvoltageget":
+    	$command = "insert into interaction (instruction,target,complete) VALUES ('biasvoltageget','all','0');";
+    	$sqlcommand = $mindb_connection->query($command);
+       echo "<div class='alert alert-warning alert-dismissible' role='alert'>
+	  <button type='button' class='close' data-dismiss='alert'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button>
+	  <strong>Success!</strong> Trying to get bias voltage.
+	</div>";
+	break;
+	case "biasvoltageinc":
+    	$command = "insert into interaction (instruction,target,complete) VALUES ('biasvoltageinc','all','0');";
+    	$sqlcommand = $mindb_connection->query($command);
+       echo "<div class='alert alert-warning alert-dismissible' role='alert'>
+	  <button type='button' class='close' data-dismiss='alert'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button>
+	  <strong>Success!</strong> Trying to increment bias voltage.
+	</div>";
+	break;
+	case "biasvoltagedec":
+    $command = "insert into interaction (instruction,target,complete) VALUES ('biasvoltagedec','all','0');";
+    $sqlcommand = $mindb_connection->query($command);
+      echo "<div class='alert alert-warning alert-dismissible' role='alert'>
+	 <button type='button' class='close' data-dismiss='alert'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button>
+	 <strong>Success!</strong> Trying to decrease bias voltage.
+	</div>";
+	break;
     default:
-        echo "No job has been specified and some kind of error has occurred - sorry about this!";
+    	 echo "<div class='alert alert-danger alert-dismissible' role='alert'>
+	  <button type='button' class='close' data-dismiss='alert'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button>
+	  <strong>ERROR!</strong> No job has been specified and some kind of error has occurred - sorry about this!
+	</div>";
 }
 	
 			

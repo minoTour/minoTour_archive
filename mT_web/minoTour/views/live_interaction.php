@@ -21,12 +21,38 @@ require_once("includes/functions.php");
 
         <div id="page-wrapper">
 						<?php include 'includes/run_check.php';?>
+						
             <div class="row">
                 <div class="col-lg-12">
                     <h1 class="page-header">Live Control - run: <?php echo cleanname($_SESSION['active_run_name']);; ?></h1>
                 </div>
                 
-
+				
+<!-- Modal -->
+<div class="modal fade" id="pincheck" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
+        <h4 class="modal-title" id="myModalLabel">Warnings: Pin Check</h4>
+      </div>
+      <div class="modal-body">
+        This page is in development to exploit both Run Until and ultimately Read Until features in the minION platform.<br>These features provide two way interaction between minoTour and your minION device via minKNOW. You can stop or start runs remotely and interact with the minION device in other ways. This is an alpha service relying on the API developed by Oxford Nanopore.<br><br> We, the developers of minoTour, <strong>take no responsibility for any loss of sequencing data</strong> as a consequence of your use of these features. <br><br><strong>They are used at your own risk.</strong><br>
+       In order to proceed you must provide the pin number you used to configure these features.
+       <br>
+       <div class="form-group">
+    		<label for="inputPassword3" class="control-label">Enter Pin</label>
+    		
+    		  <input type="password" class="form-control" id="pincheckfield" placeholder="pin">
+    		
+      	</div>
+      	<div class="modal-footer">
+        <button type="button" id="pinback" class="btn btn-default">Cancel</button>
+        <button type="button" id="pincheckbutton" class="btn btn-primary">Check Pin</button>
+      </div>
+    </div>
+  </div>
+</div>
                 <?php
 	
 		
@@ -56,10 +82,33 @@ require_once("includes/functions.php");
 )
 CHARACTER SET utf8;";
 			$create_tbl = $mindb_connection->query($create_table);
+		}
 			
-			
+			//Check if messages Table already exists:
+		$query = "SHOW TABLES LIKE 'messages';";
+		$sql = $mindb_connection->query($query);
+		$result = $sql->num_rows;
+		#echo $result;
+		if ($result >= 1){
+			}else{
+				#echo "WE need to make a table...";
+				$create_table2 =
+			"CREATE TABLE `messages` (
+  `message_index` INT NOT NULL AUTO_INCREMENT,
+  `message` MEDIUMTEXT NOT NULL,
+  `target` MEDIUMTEXT NOT NULL,
+  `param1` MEDIUMTEXT,
+  `param2` MEDIUMTEXT,
+ `complete` INT NOT NULL,
+  PRIMARY KEY (`message_index`)
+)
+CHARACTER SET utf8;";
+			#echo $create_table2;
+			$create_tbl2 = $mindb_connection->query($create_table2);
+			#echo $create_tbl2;
 				
 		}
+		
 		if ($_SESSION['currentbarcode'] >= 1){
 			//Check if BARCODE_CONTROL table already exists
 			$query = "SHOW TABLES LIKE 'barcode_control';";
@@ -108,19 +157,30 @@ CHARACTER SET utf8;";
                 <!-- /.col-lg-12 -->
             </div>
             <br>
+            <div id="minknowinfo"></div>
+            <br>
 			 	<div id="messages"></div>
 				<br>
-            <div class="panel panel-danger">
+            <!--<div class="panel panel-danger">
   <div class="panel-heading">
     <h3 class="panel-title">Polite Warning!</h3>
   </div>
   <div class="panel-body">
-    This page is in development to exploit both Run Until and ultimately Read Until features in the minION platform. We must emphasize that these features provide two way interaction between minoTour and your minION device. Thus you can stop or start runs remotely and interact with the minION device in other ways. This is an alpha service relying on the API that is in development by Oxford Nanopore. We, the developers of minoTour, <strong>take no responsibility for any loss of sequencing data</strong> as a consequence of your use of these features. <strong>They are used at your own risk</strong>.
+    This page is in development to exploit both Run Until and ultimately Read Until features in the minION platform.<br>These features provide two way interaction between minoTour and your minION device via minKNOW. You can stop or start runs remotely and interact with the minION device in other ways. This is an alpha service relying on the API developed by Oxford Nanopore.<br><br> We, the developers of minoTour, <strong>take no responsibility for any loss of sequencing data</strong> as a consequence of your use of these features. <br><br><strong>They are used at your own risk.</strong><br>
   </div>
-</div>
+</div>-->
             
-			
-        
+		To test if you have a connection to minKNOW:<br>
+		<button id='testmessage' type='button' class='btn btn-info'><i class='fa fa-magic'></i> Test Communication</button>
+		<br>
+		To get the current bias voltage offset minKNOW:<br>
+		<button id='biasvoltageget' type='button' class='btn btn-info'><i class='fa fa-magic'></i> Get Bias Voltage</button>
+		<br>
+        To increase/decrease the current bias voltage offset in minKNOW by volts:<br>
+		<button id='biasvoltageinc' type='button' class='btn btn-info'><i class='fa fa-arrow-circle-up'></i> Inc Bias Voltage</button>
+		<button id='biasvoltagedec' type='button' class='btn btn-info'><i class='fa fa-arrow-circle-down'></i> Dec Bias Voltage</button>
+		<br>
+		<br>
         As proof of principle we shall begin with a simple remote stop and start switch.
         
         <br><br>
@@ -192,6 +252,8 @@ CHARACTER SET utf8;";
         		</div><br>
 			<br>
 		<?php if ($_SESSION['currentbarcode'] >= 1) {?>
+		<div class="row">
+                <div class="col-md-6">
 <div class="panel panel-default">
 						  <div class="panel-heading">
 						    <h3 class="panel-title"><!-- Button trigger modal -->
@@ -269,6 +331,8 @@ CHARACTER SET utf8;";
 						</div>
 						
 					</div>
+					</div>
+            </div>
 					<?php }; ?>
         </div>
         
@@ -354,9 +418,76 @@ CHARACTER SET utf8;";
 	            })
 				//alert ("button clicked");
 	        })
-	    })	   
+	    })	  
+	     
 	</script>
-
+	<script>
+	$(function(){
+		$('#testmessage').on('click', function(e) {
+			//alert('spam');
+			e.preventDefault();
+			$.ajax({
+				url: 'jsonencode/interaction.php?prev=0&job=testminion',
+					success: function(data){
+					$("#messages").html(data);
+				}, error: function() {
+					alert('ajax failed');
+				},
+			})
+		})
+	})
+	$(function(){
+		$('#biasvoltageget').on('click', function(e) {
+			//alert('spam');
+			e.preventDefault();
+			$.ajax({
+				url: 'jsonencode/interaction.php?prev=0&job=biasvoltageget',
+					success: function(data){
+					$("#messages").html(data);
+				}, error: function() {
+					alert('ajax failed');
+				},
+			})
+		})
+	})
+	$(function(){
+		$('#biasvoltageinc').on('click', function(e) {
+			//alert('spam');
+			e.preventDefault();
+			$.ajax({
+				url: 'jsonencode/interaction.php?prev=0&job=biasvoltageinc',
+					success: function(data){
+					$("#messages").html(data);
+				}, error: function() {
+					alert('ajax failed');
+				},
+			})
+		})
+	})
+	$(function(){
+		$('#biasvoltagedec').on('click', function(e) {
+			//alert('spam');
+			e.preventDefault();
+			$.ajax({
+				url: 'jsonencode/interaction.php?prev=0&job=biasvoltagedec',
+					success: function(data){
+					$("#messages").html(data);
+				}, error: function() {
+					alert('ajax failed');
+				},
+			})
+		})
+	})
+	</script>
+	<script>
+	$("#minknowinfo").load("minknowinfo.php").fadeIn("slow");
+	    var auto_refresh = setInterval(function ()
+            {
+            $( "#minknowinfo").load("minknowinfo.php").fadeIn("slow");
+            //eval(document.getElementById("infodiv").innerHTML);
+            }, 1000); // refresh every 1000 milliseconds
+    
+	</script>
      <script>
         $( "#infodiv" ).load( "alertcheck.php" ).fadeIn("slow");
         var auto_refresh = setInterval(function ()
@@ -428,8 +559,36 @@ CHARACTER SET utf8;";
             })
         })
     </script>
-
-    
+	<script>
+	$(function(){
+		$('#pincheck').modal('show')
+	})
+	$(function(){
+		$('#pinback').click(function(){
+        parent.history.back();
+        return false;
+    });
+		$('#pincheckbutton').on('click', function(e) {
+			e.preventDefault();
+			var pincheck = $('#pincheckfield').val();
+			var monkey = 'jsonencode/checkpin.php?prev=0&pass='+pincheck;
+			$.ajax({
+				url: monkey,
+				success: function (data){
+					if (data == 'pass') {
+						$('#pincheck').modal('hide')
+					}else{
+						alert ('Pin Failed - Try Again');
+					}
+				}, error: function() {
+					alert('ajax failed');
+				},	
+			}
+			)
+		})
+	})
+	</script>
+   
     
 <?php include "includes/reporting.php";?>
 </body>
