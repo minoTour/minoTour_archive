@@ -24,57 +24,132 @@ if ($login->isUserLoggedIn() == true) {
 			 //   <script type=\"text/javascript\">
 			//	PNotify.prototype.options.styling = \"fontawesome\";
 			//	</script>";
-			echo "minKNOW real time data<br><br>";
-			$currentbias = "SELECT * FROM messages where message = 'biasvoltage' order by message_index desc limit 1;";
-			#echo $currentbias . "<br>";
-			$currentbiasis = $mindb_connection2->query($currentbias);
-			if ($currentbiasis->num_rows > 0) {
-				foreach ($currentbiasis as $row) {
-					echo "Current Voltage offset is " . $row['param1'] . "mV<br>";
-				}
-			}else {
-					echo "No information on Voltage Offset is available now. If you should see a value here, please try the magic button below.";
-			}
-			$currentscript = "SELECT * FROM messages where message = 'currentscript' order by message_index desc limit 1;";
-			#echo $currentbias . "<br>";
-			$currentscriptis = $mindb_connection2->query($currentscript);
-			if ($currentscriptis->num_rows > 0) {
-				foreach ($currentscriptis as $row) {
-					echo "Current script is " . $row['param1'] . "<br>";
-				}
-			}else {
-					echo "No information on the current running script is available.";
-			}
-			$currentcomp = "SELECT * FROM messages where message = 'machinename' order by message_index desc limit 1;";
+			echo "<div class='panel panel-info'>
+  				<div class='panel-heading'>
+    				<h3 class='panel-title'>minKNOW real time data</h3>
+				</div>
+  				<div class='panel-body'>
+  				<div class='table-responsive'>
+  				<table class='table table-condensed' >
+ 					 <tr>
+    <th>Category</td>
+    <th>Info</td> 
+  </tr>
+  <tr>
+    <td>minKNOW computer name</td>
+    <td>";
+    $currentcomp = "SELECT * FROM messages where message = 'machinename' order by message_index desc limit 1;";
 			#echo $currentbias . "<br>";
 			$currentcompis = $mindb_connection2->query($currentcomp);
 			if ($currentcompis->num_rows > 0) {
 				foreach ($currentcompis as $row) {
-					echo "The computer name running minKNOW is " . $row['param1'] . "<br>";
+					echo $row['param1'];
 				}
 			}else {
-					echo "No information on the computer name is available.";
+					echo "Not Available";
 			}
-			$currentsample = "SELECT * FROM messages where message = 'sampleid' order by message_index desc limit 1;";
+    echo "</td>
+  </tr>
+  <tr>
+    <td>minKNOW Status</td>
+    <td>";
+    $currentstatus = "SELECT * FROM messages where message = 'Status' order by message_index desc limit 1;";
+			#echo $currentbias . "<br>";
+			$currentstatusis = $mindb_connection2->query($currentstatus);
+			if ($currentstatusis->num_rows > 0) {
+				foreach ($currentstatusis as $row) {
+					echo $row['param1'];
+				}
+			}else {
+					echo "Not Available";
+			}
+
+    echo "</td>
+  </tr>
+  <tr>
+    <td>Current Script</td>
+    <td>";
+    $currentscript = "SELECT * FROM messages where message = 'currentscript' order by message_index desc limit 1;";
+			#echo $currentbias . "<br>";
+			$currentscriptis = $mindb_connection2->query($currentscript);
+			if ($currentscriptis->num_rows > 0) {
+				foreach ($currentscriptis as $row) {
+					$bits = explode("/", $row['param1']);
+					echo end($bits);
+				}
+			}else {
+					echo "Not Available";
+			}
+
+    echo "</td>
+  </tr>
+  <tr>
+    <td>Sample Name</td>
+    <td>";
+    $currentsample = "SELECT * FROM messages where message = 'sampleid' order by message_index desc limit 1;";
 			#echo $currentbias . "<br>";
 			$currentsampleis = $mindb_connection2->query($currentsample);
 			if ($currentsampleis->num_rows > 0) {
 				foreach ($currentsampleis as $row) {
-					echo "The sample name is " . $row['param1'] . "<br>";
+					echo $row['param1'];
 				}
 			}else {
-					echo "No information on the sample name is available.";
+					echo "Not Available";
 			}
-			$currentyield = "SELECT * FROM messages where message = 'yield' order by message_index desc limit 1;";
+    echo "</td>
+  </tr>
+  <tr>
+    <td>Run Name</td>
+    <td>";
+    $currentdataset = "SELECT * FROM messages where message = 'Dataset' order by message_index desc limit 1;";
+			#echo $currentbias . "<br>";
+			$currentdatasetis = $mindb_connection2->query($currentdataset);
+			if ($currentdatasetis->num_rows > 0) {
+				foreach ($currentdatasetis as $row) {
+					echo cleanname($row['param1']);
+				}
+			}else {
+					echo "Not Available";
+			}
+    echo "</td>
+  </tr>
+  <tr>
+    <td>Voltage Offset</td>
+    <td>";
+    $currentbias = "SELECT * FROM messages where message = 'biasvoltage' order by message_index desc limit 1;";
+			$currentbiasis = $mindb_connection2->query($currentbias);
+			if ($currentbiasis->num_rows > 0) {
+				foreach ($currentbiasis as $row) {
+					echo $row['param1'] . " mV";
+				}
+			}else {
+					echo "Not Available";
+			}
+
+    echo "</td>
+  </tr>
+  <tr>
+    <td>Yield</td>
+    <td>";
+    $currentyield = "SELECT * FROM messages where message = 'yield' order by message_index desc limit 1;";
 			#echo $currentbias . "<br>";
 			$currentyieldis = $mindb_connection2->query($currentyield);
 			if ($currentyieldis->num_rows > 0) {
 				foreach ($currentyieldis as $row) {
-					echo "The current yield is " . $row['param1'] . "<br>";
+					echo $row['param1'];
 				}
 			}else {
-					echo "No information on yield is available.";
+					echo "Not Available.";
 			}
+
+    echo "</td>
+  </tr>
+				</table>
+				</div>
+				</div>
+			</div>";
+
+		
 
 			
 		}

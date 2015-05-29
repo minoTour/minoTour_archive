@@ -69,17 +69,17 @@ require_once("includes/functions.php");
 					</div>
 
 
-
+<!--
 						
 			<div class="panel panel-default">
 			  <div class="panel-heading">
 			    <h3 class="panel-title"><!-- Button trigger modal -->
-<button class="btn btn-info" data-toggle="modal" data-target="#modal3">
+<!--<button class="btn btn-info" data-toggle="modal" data-target="#modal3">
  <i class="fa fa-info-circle"></i> Barcodes Over Time</h4>
 </button>
 
 <!-- Modal -->
-<div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<!--<div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -114,7 +114,7 @@ require_once("includes/functions.php");
 					
 			
                 </div>
-                </div>
+                </div>-->
                 
                 
 			<br>

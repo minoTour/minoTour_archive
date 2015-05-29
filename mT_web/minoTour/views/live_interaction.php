@@ -29,12 +29,12 @@ require_once("includes/functions.php");
                 
 				
 <!-- Modal -->
-<div class="modal fade" id="pincheck" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="pincheck" tabindex="-1"  data-keyboard="false" data-backdrop="static" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
-        <h4 class="modal-title" id="myModalLabel">Warnings: Pin Check</h4>
+        <h4 class="modal-title" id="myModalLabel">Warning: Pin Check</h4>
       </div>
       <div class="modal-body">
         This page is in development to exploit both Run Until and ultimately Read Until features in the minION platform.<br>These features provide two way interaction between minoTour and your minION device via minKNOW. You can stop or start runs remotely and interact with the minION device in other ways. This is an alpha service relying on the API developed by Oxford Nanopore.<br><br> We, the developers of minoTour, <strong>take no responsibility for any loss of sequencing data</strong> as a consequence of your use of these features. <br><br><strong>They are used at your own risk.</strong><br>
@@ -144,49 +144,38 @@ CHARACTER SET utf8;";
 				
 		}
 		}
-
-		
-		
-		
-
-	
-	
  
 ?>
 
                 <!-- /.col-lg-12 -->
             </div>
-            <br>
-            <div id="minknowinfo"></div>
-            <br>
-			 	<div id="messages"></div>
-				<br>
-            <!--<div class="panel panel-danger">
-  <div class="panel-heading">
-    <h3 class="panel-title">Polite Warning!</h3>
-  </div>
-  <div class="panel-body">
-    This page is in development to exploit both Run Until and ultimately Read Until features in the minION platform.<br>These features provide two way interaction between minoTour and your minION device via minKNOW. You can stop or start runs remotely and interact with the minION device in other ways. This is an alpha service relying on the API developed by Oxford Nanopore.<br><br> We, the developers of minoTour, <strong>take no responsibility for any loss of sequencing data</strong> as a consequence of your use of these features. <br><br><strong>They are used at your own risk.</strong><br>
-  </div>
-</div>-->
+            </div>
             
-		To test if you have a connection to minKNOW:<br>
-		<button id='testmessage' type='button' class='btn btn-info'><i class='fa fa-magic'></i> Test Communication</button>
+            <div class="row">
+                <div class="col-md-6">
+            		<div id="minknowinfo"></div>
+            	</div>
+            	<div class="col-md-6">
+            		<div class="panel panel-warning">
+  						<div class="panel-heading">
+					    <h3 class="panel-title">minKNOW Control</h3>
+						  </div>
+					  <div class="panel-body">
+						    <h5>To test if you have a connection to minKNOW:</h5>
+		<button id='testmessage' type='button' class='btn btn-info btn-sm'><i class='fa fa-magic'></i> Test Communication</button>
 		<br>
-		To get the current bias voltage offset minKNOW:<br>
-		<button id='biasvoltageget' type='button' class='btn btn-info'><i class='fa fa-magic'></i> Get Bias Voltage</button>
+		<h5>Trigger a mux switch:</h5>
+		<button id='muxswitch' type='button' disabled="disabled" class='btn btn-info btn-sm'><i class='fa fa-magic'></i> Get Mux Switch</button>
 		<br>
-        To increase/decrease the current bias voltage offset in minKNOW by volts:<br>
-		<button id='biasvoltageinc' type='button' class='btn btn-info'><i class='fa fa-arrow-circle-up'></i> Inc Bias Voltage</button>
-		<button id='biasvoltagedec' type='button' class='btn btn-info'><i class='fa fa-arrow-circle-down'></i> Dec Bias Voltage</button>
+        <h5>To increase/decrease the current bias voltage offset in minKNOW by 10 mV:</h5>
+		<button id='biasvoltageinc' type='button' class='btn btn-info btn-sm'><i class='fa fa-arrow-circle-up'></i> Inc Bias Voltage</button>
+		<button id='biasvoltagedec' type='button' class='btn btn-info btn-sm'><i class='fa fa-arrow-circle-down'></i> Dec Bias Voltage</button>
 		<br>
-		<br>
-        As proof of principle we shall begin with a simple remote stop and start switch.
+        <h5>Remote Start/Stop</h5>
         
-        <br><br>
 				<!-- Indicates a dangerous or potentially negative action -->
 				<!-- Button trigger modal -->
-				<button id='stopminion' class='btn btn-danger' data-toggle='modal' data-target='#stopminionmodal'>
+				<button id='stopminion' class='btn btn-danger btn-sm' data-toggle='modal' data-target='#stopminionmodal'>
 				  <i class='fa fa-stop'></i> Stop minION
 				</button>
  
@@ -217,10 +206,10 @@ CHARACTER SET utf8;";
 					</div><!-- /.modal -->
         		</div>
         		
-        <br><br>
+        
 				<!-- Indicates a dangerous or potentially negative action -->
 				<!-- Button trigger modal -->
-				<button id='startminion' class='btn btn-success' data-toggle='modal' data-target='#startminionmodal'>
+				<button id='startminion' class='btn btn-success btn-sm' data-toggle='modal' data-target='#startminionmodal'>
 				  <i class='fa fa-play'></i> Start minION
 				</button>
  
@@ -249,8 +238,23 @@ CHARACTER SET utf8;";
 							</div><!-- /.modal-content -->
 						</div><!-- /.modal-dialog -->
 					</div><!-- /.modal -->
-        		</div><br>
-			<br>
+        		</div>
+					  </div>
+					</div>
+            	</div>
+            	
+            </div>
+			 	<div id="messages"></div>				
+            <!--<div class="panel panel-danger">
+  <div class="panel-heading">
+    <h3 class="panel-title">Polite Warning!</h3>
+  </div>
+  <div class="panel-body">
+    This page is in development to exploit both Run Until and ultimately Read Until features in the minION platform.<br>These features provide two way interaction between minoTour and your minION device via minKNOW. You can stop or start runs remotely and interact with the minION device in other ways. This is an alpha service relying on the API developed by Oxford Nanopore.<br><br> We, the developers of minoTour, <strong>take no responsibility for any loss of sequencing data</strong> as a consequence of your use of these features. <br><br><strong>They are used at your own risk.</strong><br>
+  </div>
+</div>-->
+            
+		
 		<?php if ($_SESSION['currentbarcode'] >= 1) {?>
 		<div class="row">
                 <div class="col-md-6">
@@ -291,6 +295,9 @@ CHARACTER SET utf8;";
 									<div class="col-lg-12">
             Enter Desired Coverage Depth
     			<div class="input-group">
+    			<span class="input-group-addon">
+        <input type="checkbox" id="genbarcode_coverage_stop">
+      </span>
       				<input id="genbarcodecov" type="text" class="form-control">
       			  	<span class="input-group-btn">
         				<button class="btn btn-default" id="genbarcode_coverage" type="button">Set</button>
@@ -312,7 +319,10 @@ CHARACTER SET utf8;";
 				<form class="form-inline">
             	<div class="form-group">
 			    <label for="barcode_coverage_<?php echo $barcode; ?>"><?php echo $barcode; ?></label>
+			    	<input type="checkbox" id="barcode_coverage_<?php echo $barcode; ?>_stop">
+      			
     			<input type="text" class="form-control" id="barcodecov<?php echo $barcode; ?>">
+    			
     			<span class="form-group-btn">
         				<button class="btn btn-default" id="barcode_coverage_<?php echo $barcode; ?>_button" type="button">Set</button>
       			  	</span>

@@ -38,7 +38,6 @@
 				    var options = {
 				        chart: {
 				            renderTo: 'coverage" . $row['refid'] . "',
-							//type: 'scatter',
 							type: 'line',
 							zoomType: 'x'
 				        },
@@ -46,13 +45,13 @@
 				          text: 'Coverage Depth for ".$row['refname']."'
 				        },
 						xAxis: {
-						            title: {
-						                text: 'Ref Position'
-						            }";
+							title: {
+								text: 'Ref Position'
+						    }";
 				if ($row['max_length'] >= $maxlengththreshold) {
 					$max = $row['max_length']/2 + $modamount;
 					$min = $row['max_length']/2 - $modamount;
-					echo ",min: " . $min . ",\nmax: " . $max . ",\n";
+					echo ",\nmin: " . $min . ",\nmax: " . $max . ",\n";
 					$constrain_plot = 1;
 				}
 							

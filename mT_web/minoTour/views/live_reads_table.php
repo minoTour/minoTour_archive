@@ -149,8 +149,11 @@ require_once("includes/functions.php");
 		    oTable = $('#example').dataTable( );
 			$('#example tbody').on('click', 'tr', function () {
 			        var nameindex = $('td', this).eq(0).text();
+			        //alert (nameindex);
 			        var name = oTable.fnGetData(this,2);
-				var channel = oTable.fnGetData(this,0).slice(-1);;
+			        //alert (name);
+					var channel = oTable.fnGetData(this,0).slice(-1);
+					//alert (channel);
 			        //alert(name);
 			        var templength = $('td', this).eq(4).text();
 			        var complength = $('td', this).eq(9).text();
