@@ -55,7 +55,7 @@
 								<input type="submit"  class="btn btn-lg btn-success btn-block" name="login" value="Log in" />
                             </fieldset>
                         </form>
-						<!--<a href="register_new.php">Register new account</a>-->
+						<h5><a href="register_new.php">Click Here To Register New account</a></h5>
                     </div>
                 </div>
 				

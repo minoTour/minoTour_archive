@@ -1,6 +1,5 @@
 <?php
 ini_set('max_execution_time', 300);
-
 // checking for minimum PHP version
 if (version_compare(PHP_VERSION, '5.3.7', '<')) {
     exit("Sorry, Simple PHP Login does not run on a PHP version smaller than 5.3.7 !");
@@ -9,20 +8,15 @@ if (version_compare(PHP_VERSION, '5.3.7', '<')) {
     // (this library adds the PHP 5.5 password hashing functions to older versions of PHP)
     require_once("../libraries/password_compatibility_library.php");
 }
-
 // include the configs / constants for the database connection
 require_once("../config/db.php");
-
 // load the login class
 require_once("../classes/Login.php");
-
 // load the functions
 require_once("../includes/functions.php");
-
 // create a login object. when this object is created, it will do all login/logout stuff automatically
 // so this single line handles the entire login process. in consequence, you can simply ...
 $login = new Login();
-
 // ... ask if we are logged in here:
 if ($login->isUserLoggedIn() == true) {
     // the user is logged in. you can do whatever you want here.
@@ -40,9 +34,7 @@ if ($login->isUserLoggedIn() == true) {
 		$telemetry = $_SESSION['currenttelem'];
 	}
 	//echo cleanname($_SESSION['active_run_name']);;
-
 	//echo '<br>';
-
 	if (!$mindb_connection->connect_errno) {
 		//echo "Try this...";
 		echo "<div class='panel panel-primary'>\n";
@@ -98,7 +90,6 @@ if ($login->isUserLoggedIn() == true) {
 		echo "Experiment Start Time: " . gmdate("Y-m-d\ H:i:s\ ", $timestamp). "<br>";
 		$timestamp2 = $timestamp + $resultsarray['btstarttime'];
 		echo "Template called at: ". gmdate("Y-m-d\ H:i:s\ ", $timestamp2). "<br>";
-
 		echo "</div>
 			</div>";
 			
@@ -189,6 +180,10 @@ if ($login->isUserLoggedIn() == true) {
 		$align_result = $mindb_connection->query($align);
 		$alignarray;
 		
+		$align2 = "SELECT * FROM align_sam_basecalled_2d inner join reference_seq_info inner join config_general using (basename_id) where refname=rname and config_general.basename = '".$_POST['readname'] ."';";
+		$align2_result = $mindb_connection->query($align2);
+		$align2array;
+		
 		if ($align_result->num_rows >=1){
 			foreach ($align_result as $row){
 				while ($property = mysqli_fetch_field($align_result)) {
@@ -204,6 +199,21 @@ if ($login->isUserLoggedIn() == true) {
 			echo "Ref Matches: " . $identityarray[0] . "/" . $identityarray[1] . "<br>";			
 			displayalignment($alignarray['r_align_string'],$alignarray['q_align_string'],$alignarray['r_start'],$alignarray['q_start'],$alignarray['alignstrand']);
 						
+			}elseif ($align2_result->num_rows >= 1){
+				foreach ($align2_result as $row){
+					while ($property = mysqli_fetch_field($align2_result)) {
+						//echo "<p>" . $property->name . " : " . $row[$property->name] . "</p>";
+						$align2array[$property->name]=$row[$property->name];
+					}
+				}
+				$samtomaf = samtomaf($align2array['qname'],$align2array['flag'],$align2array['rname'],$align2array['mapq'],$align2array['cigar'],$align2array['rnext'],$align2array['pnext'],$align2array['tlen'],$align2array['seq'],$align2array['qual'],$align2array['n_m'],$align2array['m_d'],$align2array['pos']);
+				$identityarray = alignsim($samtomaf[0],$samtomaf[1]);
+				echo "Read Name: " . $align2array['basename'] . " Reference Name: " . $align2array['refname'] . "<br>";
+				echo "% identity: " . round((($identityarray[0]*100)/strlen($samtomaf[0])),2) . "<br>";	
+				echo "Query Matches: " . $identityarray[0] . "/" . $identityarray[2] . "<br>";
+				echo "Ref Matches: " . $identityarray[0] . "/" . $identityarray[1] . "<br>";			
+				displayalignment($samtomaf[0],$samtomaf[1],$samtomaf[2],$samtomaf[3],$alignarray['align2strand']);
+	
 			}else{
 			echo "No Alignment<br>";
 		
@@ -226,6 +236,10 @@ if ($login->isUserLoggedIn() == true) {
 		$align_result = $mindb_connection->query($align);
 		$alignarray;
 		
+		$align2 = "SELECT * FROM align_sam_basecalled_template inner join reference_seq_info inner join config_general using (basename_id) where refname=rname and config_general.basename = '".$_POST['readname'] ."';";
+		$align2_result = $mindb_connection->query($align2);
+		$align2array;
+		
 		if ($align_result->num_rows >=1){
 			foreach ($align_result as $row){
 				while ($property = mysqli_fetch_field($align_result)) {
@@ -239,8 +253,22 @@ if ($login->isUserLoggedIn() == true) {
 			echo "Query Matches: " . $identityarray[0] . "/" . $identityarray[2] . "<br>";
 			echo "Ref Matches: " . $identityarray[0] . "/" . $identityarray[1] . "<br>";			
 			displayalignment($alignarray['r_align_string'],$alignarray['q_align_string'],$alignarray['r_start'],$alignarray['q_start'],$alignarray['alignstrand']);
-
-		}else{
+		}elseif ($align2_result->num_rows >= 1){
+				foreach ($align2_result as $row){
+					while ($property = mysqli_fetch_field($align2_result)) {
+						//echo "<p>" . $property->name . " : " . $row[$property->name] . "</p>";
+						$align2array[$property->name]=$row[$property->name];
+					}
+				}
+				$samtomaf = samtomaf($align2array['qname'],$align2array['flag'],$align2array['rname'],$align2array['mapq'],$align2array['cigar'],$align2array['rnext'],$align2array['pnext'],$align2array['tlen'],$align2array['seq'],$align2array['qual'],$align2array['n_m'],$align2array['m_d'],$align2array['pos']);
+				$identityarray = alignsim($samtomaf[0],$samtomaf[1]);
+				echo "Read Name: " . $align2array['basename'] . " Reference Name: " . $align2array['refname'] . "<br>";
+				echo "% identity: " . round((($identityarray[0]*100)/strlen($samtomaf[0])),2) . "<br>";	
+				echo "Query Matches: " . $identityarray[0] . "/" . $identityarray[2] . "<br>";
+				echo "Ref Matches: " . $identityarray[0] . "/" . $identityarray[1] . "<br>";			
+				displayalignment($samtomaf[0],$samtomaf[1],$samtomaf[2],$samtomaf[3],$alignarray['align2strand']);
+	
+			}else{
 			echo "No Alignment<br>";
 		
 		}?>
@@ -260,6 +288,10 @@ if ($login->isUserLoggedIn() == true) {
 		$align_result = $mindb_connection->query($align);
 		$alignarray;
 		
+		$align2 = "SELECT * FROM align_sam_basecalled_complement inner join reference_seq_info inner join config_general using (basename_id) where refname=rname and config_general.basename = '".$_POST['readname'] ."';";
+		$align2_result = $mindb_connection->query($align2);
+		$align2array;
+		
 		if ($align_result->num_rows >=1){
 			foreach ($align_result as $row){
 				while ($property = mysqli_fetch_field($align_result)) {
@@ -274,7 +306,22 @@ if ($login->isUserLoggedIn() == true) {
 			echo "Ref Matches: " . $identityarray[0] . "/" . $identityarray[1] . "<br>";			
 			displayalignment($alignarray['r_align_string'],$alignarray['q_align_string'],$alignarray['r_start'],$alignarray['q_start'],$alignarray['alignstrand']);
 	
-		}else{
+		}elseif ($align2_result->num_rows >= 1){
+				foreach ($align2_result as $row){
+					while ($property = mysqli_fetch_field($align2_result)) {
+						//echo "<p>" . $property->name . " : " . $row[$property->name] . "</p>";
+						$align2array[$property->name]=$row[$property->name];
+					}
+				}
+				$samtomaf = samtomaf($align2array['qname'],$align2array['flag'],$align2array['rname'],$align2array['mapq'],$align2array['cigar'],$align2array['rnext'],$align2array['pnext'],$align2array['tlen'],$align2array['seq'],$align2array['qual'],$align2array['n_m'],$align2array['m_d'],$align2array['pos']);
+				$identityarray = alignsim($samtomaf[0],$samtomaf[1]);
+				echo "Read Name: " . $align2array['basename'] . " Reference Name: " . $align2array['refname'] . "<br>";
+				echo "% identity: " . round((($identityarray[0]*100)/strlen($samtomaf[0])),2) . "<br>";	
+				echo "Query Matches: " . $identityarray[0] . "/" . $identityarray[2] . "<br>";
+				echo "Ref Matches: " . $identityarray[0] . "/" . $identityarray[1] . "<br>";			
+				displayalignment($samtomaf[0],$samtomaf[1],$samtomaf[2],$samtomaf[3],$alignarray['align2strand']);
+	
+			}else{
 			echo "No Alignment<br>";
 		
 		}?>
@@ -295,14 +342,12 @@ if ($login->isUserLoggedIn() == true) {
 		
 		echo "</div>";
 		echo "</div>";
-
 					
 		
 		
 		
 	
 			
-
 				
 	}
 } else {

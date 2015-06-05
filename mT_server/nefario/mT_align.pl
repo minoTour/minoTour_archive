@@ -83,14 +83,19 @@ unless ($checkingrunning) {
 	
 	####We have to check if the last_align_maf_basecalled table exists. If it doesn't then we don't want to run this again.
 		
-	my $check_mode = "SELECT table_name FROM information_schema.tables WHERE table_schema = '" . $dbname . "' AND table_name = 'last_align_maf_basecalled_template';";
+	my $check_mode = "SELECT table_name FROM information_schema.tables WHERE table_schema = '" . $dbname . "' AND (table_name = 'last_align_maf_basecalled_template' or table_name = 'align_sam_basecalled_template');";
 	my $sth3 = $dbh2->prepare($check_mode);
 	$sth3->execute;
 	#print $check_mode . "\n";
 	if ($sth3->rows ==0){
 	#print "We don't have a table\n";	
 	}else{
-		#print "We do have a table\n";	
+		my $tabletype;
+		#print "We do have a table\n";
+		while (my @results = $sth3->fetchrow()) {
+			#print $results[0] . "\n";	
+			$tabletype = $results[0];
+		}
 	#}
 	
 		foreach (@readtypes){
@@ -162,78 +167,350 @@ unless ($checkingrunning) {
 			
 			####OK - attempting to parse the barcoded reads in some kind of meaningful way.
 			if ($_ eq "2d" && $execute_check_barcode->rows >= 1) {
-				#print "parsing barcodes \n";
-				my $barquery = "SELECT * FROM " . $dbname . ".last_align_maf_basecalled_".$_." left join " . $dbname . ".barcode_assignment using (basename_id) where basename_id not in (select basename_id from " . $dbname . ".read_tracking_barcode_".$_.") order by ID limit 100;";
-
-				my $barquerygo = $dbh2->prepare($barquery);
-				$barquerygo->execute;
 				my %barmafhash;
 				my $barmafhash;
 				my %barbasenamehash;
 				my $barbasenamehash;
+				if ($tabletype eq "last_align_maf_basecalled_template") {
+					#print "parsing barcodes \n";
+					my $barquery = "SELECT * FROM " . $dbname . ".last_align_maf_basecalled_".$_." left join " . $dbname . ".barcode_assignment using (basename_id) where basename_id not in (select basename_id from " . $dbname . ".read_tracking_barcode_".$_.") and alignnum = 1 order by ID limit 100;";
+
+					my $barquerygo = $dbh2->prepare($barquery);
+					$barquerygo->execute;
+					
 				
-				while (my $ref = $barquerygo->fetchrow_hashref) {
-					if ($development) {
-						print $ref->{ID} . "\n";
-					}
-					
-					my $refstring_orig = $ref->{r_align_string};
-					my @refstring = split //, $refstring_orig;
-					my $querystring_orig = $ref->{q_align_string};
-					my @querystring = split //, $querystring_orig;
-					my $refstart = $ref->{r_start};
-					my $querystart = $ref->{q_start};
-					my $refid;
-					if (defined $ref->{barcode_arrangement}){
-						$refid = $ref->{refid}. "_" . $ref->{barcode_arrangement};
-					}else{
-						$refid = $ref->{refid}. "_UC";
-					}
-					#my $refid = $ref->{refid};
-					my $basenameid = $ref->{basename_id};
-					if (!exists $barbasenamehash{$basenameid}) {
-						$barbasenamehash{$basenameid} = 1;
-					}	
-					
-					#print "The ref id is " . $refid . "\n";
-					
-					my $reflength = length($refstring_orig);
-					
-					##Need to get the position in the reference.
-					#my $counter = ($refstart - 1);
-					my $counter = ($refstart); ##potential bug fix to prevent accusations of being an idiot.
-					
-					
-					for (my $x=0; $x<=($reflength-1); $x++) {
-						if ($refstring[$x] ne "-") {
-							$counter++;
-							$barmafhash{$refid}{$counter}{'reference'}=$refstring[$x];
+			
+				
+					while (my $ref = $barquerygo->fetchrow_hashref) {
+						if ($development) {
+							print $ref->{ID} . "\n";
 						}
-						#print $counter . "\t" . $refid . "\t";
-						#print $refstring[$x] . "\t" . $querystring[$x] . "\t";
-						##Check if the strings match:
-						if ($refstring[$x] eq $querystring[$x]) {
-					 	#print "m\t";	
-							$barmafhash{$refid}{$counter}{$refstring[$x]}++;
-							#$mafhash{$refid}{$counter}{"result"}="m";
-						}elsif ($refstring[$x] eq "-") {
-							#print "ins\t";
-							$barmafhash{$refid}{$counter}{"i"}++;
-							#$mafhash{$refid}{$counter}{"result"}="i";
-						}elsif ($querystring[$x] eq "-") {
-							#print "del\t";
-							$barmafhash{$refid}{$counter}{"d"}++;
-							#$mafhash{$refid}{$counter}{"result"}="d";
-						}else {
-							#print "mm\t";
-							$barmafhash{$refid}{$counter}{$querystring[$x]}++;
-							#$mafhash{$refid}{$counter}{"result"}="e";
+						
+						my $refstring_orig = $ref->{r_align_string};
+						my @refstring = split //, $refstring_orig;
+						my $querystring_orig = $ref->{q_align_string};
+						my @querystring = split //, $querystring_orig;
+						my $refstart = $ref->{r_start};
+						my $querystart = $ref->{q_start};
+						my $refid;
+						if (defined $ref->{barcode_arrangement}){
+							$refid = $ref->{refid}. "_" . $ref->{barcode_arrangement};
+						}else{
+							$refid = $ref->{refid}. "_UC";
 						}
-						#print "\n";
+						#my $refid = $ref->{refid};
+						my $basenameid = $ref->{basename_id};
+						if (!exists $barbasenamehash{$basenameid}) {
+							$barbasenamehash{$basenameid} = 1;
+						}	
+						
+						#print "The ref id is " . $refid . "\n";
+						
+						my $reflength = length($refstring_orig);
+						
+						#print "The ref length is " . $reflength . "\n";
+						##Need to get the position in the reference.
+						#my $counter = ($refstart - 1);
+						my $counter = ($refstart); ##potential bug fix to prevent accusations of being an idiot.						
+								
+						for (my $x=0; $x<=($reflength-1); $x++) {
+							if ($refstring[$x] ne "-") {
+								$counter++;
+								$barmafhash{$refid}{$counter}{'reference'}=$refstring[$x];
+							}
+							#print $counter . "\t" . $refid . "\t";
+							#print $refstring[$x] . "\t" . $querystring[$x] . "\t";
+							##Check if the strings match:
+							if ($refstring[$x] eq $querystring[$x]) {
+						 	#print "m\t";	
+								$barmafhash{$refid}{$counter}{$refstring[$x]}++;
+								#$mafhash{$refid}{$counter}{"result"}="m";
+							}elsif ($refstring[$x] eq "-") {
+								#print "ins\t";
+								$barmafhash{$refid}{$counter}{"i"}++;
+								#$mafhash{$refid}{$counter}{"result"}="i";
+							}elsif ($querystring[$x] eq "-") {
+								#print "del\t";
+								$barmafhash{$refid}{$counter}{"d"}++;
+								#$mafhash{$refid}{$counter}{"result"}="d";
+							}else {
+								#print "mm\t";
+								$barmafhash{$refid}{$counter}{$querystring[$x]}++;
+								#$mafhash{$refid}{$counter}{"result"}="e";
+							}
+							#print "\n";
+						}
+						#$memd->set($checkreads,$ref->{ID});
 					}
-					#$memd->set($checkreads,$ref->{ID});
+				}elsif ($tabletype eq "align_sam_basecalled_template"){
+					my $barquery = "SELECT * FROM " . $dbname . ".align_sam_basecalled_".$_." inner join " . $dbname . ".reference_seq_info left join " . $dbname . ".barcode_assignment using (basename_id) where rname = refname and basename_id not in (select basename_id from " . $dbname . ".read_tracking_barcode_".$_.") order by ID limit 100;";
+					#$query = "SELECT * FROM " . $dbname . ".align_sam_basecalled_".$_." inner join " . $dbname . ".reference_seq_info where refname=rname and basename_id not in (select basename_id from " . $dbname . ".read_tracking_".$_.") order by ID limit 100;";
+					#print $barquery . "\n";
+					my $barquerygo = $dbh2->prepare($barquery);
+					$barquerygo->execute;
+					while (my $ref = $barquerygo->fetchrow_hashref) {
+						if ($development) {
+							print $ref->{ID} . "\n";
+						}
+						#print $ref->{flag} . "\n";
+						my $qname=$ref->{qname};
+						my $flag=$ref->{flag};
+						my $rname=$ref->{rname};
+						my $pos=$ref->{pos};
+						my $mapq=$ref->{mapq};
+						my $cigar=$ref->{cigar};
+						my $rnext=$ref->{rnext};
+						my $pnext=$ref->{pnext};
+						my $tlen=$ref->{tlen};
+						my $seq=$ref->{seq};
+						my $qual=$ref->{qual};
+						my $n_m=$ref->{n_m};
+						my $m_d=$ref->{m_d};
+						my $rstring="";
+						my $qstring="";
+						
+						my $q_pos=0;
+						my $r_pos=$pos-1;
+						my @q_array=();
+						my @r_array=();
+						my $q_string="";
+						
+						if ($rname ne "*"){ # so it's not an unmapped read
+							my @readbases=split(//,$seq);
+							#print "<<$rname>>\tREFBASES:\t", @readbases,"\n";
+							#print "cigar:\t", $cigar,"\n";
+							#print "LENQ:\t", scalar @readbases,"\n";
+				
+							my @cigparts = split(/([A-Z])/, $cigar);
+							
+							while(my ($cigarpartbasecount,$cigartype) = splice(@cigparts,0,2)) {
+								#print ">>>", "$cigarpartbasecount,$cigartype\n";
+								if ($cigartype eq "S"){# not aligned read section
+									$q_pos=$q_pos+$cigarpartbasecount;
+								}
+								if ($cigartype eq "M"){# so its not a deletion or insertion. Its 0:M
+									for (my $q=$q_pos;$q<=($q_pos+$cigarpartbasecount-1);$q++){
+										push @q_array,$readbases[$q];
+										#$q_string=$q_string.$readbases[$q];
+									}
+									for (my $r=$r_pos;$r<=($r_pos+$cigarpartbasecount-1);$r++){
+										#push @r_array,$refbases[$r];
+										push @r_array,"X";
+									}
+									$q_pos=$q_pos+$cigarpartbasecount;
+									$r_pos=$r_pos+$cigarpartbasecount;
+								}
+								if ($cigartype eq "I"){
+									for (my $q=$q_pos;$q<=($q_pos+$cigarpartbasecount-1);$q++){
+										push @q_array,$readbases[$q];
+										#$q_string=$q_string.$readbases[$q];
+									}
+									for (my $r=$r_pos;$r<=($r_pos+$cigarpartbasecount-1);$r++){
+										push @r_array,"-";
+									}
+									$q_pos=$q_pos+$cigarpartbasecount;
+								}
+								if ($cigartype eq "D"){
+									for (my $q=$q_pos;$q<=($q_pos+$cigarpartbasecount-1);$q++){
+										push @q_array,"-";
+										#$q_string=$q_string."-";
+									}
+									for (my $r=$r_pos;$r<=($r_pos+$cigarpartbasecount-1);$r++){
+										push @r_array,"o";
+									}
+									$r_pos=$r_pos+$cigarpartbasecount;
+								}
+							}
+							#print "$qname\t$#r_array\t$#q_array\t$#readbases\n";
+							#print "$q_string\n";
+							for (my $i=0;$i<=$#r_array;$i++){
+								#print "$r_array[$i]\t$q_array[$i]\n";
+								if ($q_array[$i] ne "-" && $r_array[$i] ne "-"){
+									$r_array[$i]=$q_array[$i];
+								}
+							}
+				
+							my $a=0;
+							my @mdparts=split(/(\d+)|MD:Z:/, $m_d);
+							for my $m (@mdparts){
+								#print "$m,";
+								if ($m){
+									if ($m=~/^\^(.+)/){
+										my @tmp=split(//, $1);
+										for (my $x=0;$x<=$#tmp;$x++){
+											$r_array[$a]=$tmp[$x];
+											$a++;
+										}
+									}
+									
+									elsif ($m eq "A" || $m eq "T" || $m eq "C" || $m eq "G" ){
+										if ($r_array[$a] eq "-"){
+											while ($r_array[$a] eq "-"){
+												$a++;
+											}
+										}
+										$r_array[$a]=$m;
+										#$r_array[$a]="^";
+										$a++;
+									}
+									
+									elsif ( $m == int($m) ){
+										for (my $i=0;$i<$m;$i++){
+											if ($r_array[($a+$i)] eq "-"){
+												while ($r_array[($a+$i)] eq "-"){
+													$a++;
+												}
+											}
+										}
+										$a=$a+$m;
+										#for (my $x=0;$x<$m;$x++){
+										#	$r_array[$a]=$q_array[$a];
+										#	$a++;
+										#	}
+									}
+								}
+							}
+							
+							#print "\n";
+							$qstring=join('', @q_array);
+							$rstring=join('', @r_array);
+							#print "QUERY:\t$qstring\n";
+							#print "REFFF:\t$rstring\n";
+						}
+						
+				#		my $qname=$ref->{qname};
+				#		my $flag=$ref->{flag};
+				#		my $rname=$ref->{rname};
+				#		my $mapq=$ref->{mapq};
+				#		my $cigar=$ref->{cigar};
+				#		my @seq=split(//, $ref->{refsequence});
+				#		my @refbases=@seq;
+				#		my @readbases=split(//,$ref->{seq});
+						#print "REFBASES \n";
+						#print $ref->{refsequence} . "\n\n";
+						#print "REFBASES:\t", @readbases,"\n";	
+						#print "cigar:\t", $cigar,"\n";
+						#print "LENQ:\t", scalar @readbases,"\n";
+						#print "LENR:\t", scalar @refbases,"\n";
+	
+						#ciglist = cigar.split(r'M|I|D|N|S|H|P|=|X')
+						#ciglist = re.split('(\W)', cigar)
+				#		my @cigparts = split(/([A-Z])/, $cigar);
+	
+				#		my $q_pos=0;
+				#		my $r_pos=($ref->{pos})-1;
+						#print $r_pos . "\n\n";
+				#		my $qstring="";
+				#		my $rstring="";
+						#my $r;
+						#my $q;
+				
+				#		while(my ($cigarpartbasecount,$cigartype) = splice(@cigparts,0,2)) {
+				#			#print ">>>", "$cigarpartbasecount,$cigartype\n";
+				#			if ($cigartype eq "S"){# not aligned read section
+				#				$q_pos=$q_pos+$cigarpartbasecount;
+				#			}
+				#			if ($cigartype eq "M"){# so its not a deletion or insertion. Its 0:M
+				#				for (my $q=$q_pos;$q<=($q_pos+$cigarpartbasecount-1);$q++){
+				#					$qstring=$qstring.$readbases[$q];
+				#				}
+				#				for (my $r=$r_pos;$r<=($r_pos+$cigarpartbasecount-1);$r++){
+				#					$rstring=$rstring.$refbases[$r];
+				#				}
+				#				$q_pos=$q_pos+$cigarpartbasecount;
+				#				$r_pos=$r_pos+$cigarpartbasecount;
+				#			}
+				#			if ($cigartype eq "I"){
+				#				for (my $q=$q_pos;$q<=($q_pos+$cigarpartbasecount-1);$q++){
+				#					$qstring=$qstring.$readbases[$q];
+				#				}
+				#				for (my $r=$r_pos;$r<=($r_pos+$cigarpartbasecount-1);$r++){
+				#					$rstring=$rstring."-";
+				#				}
+				#				$q_pos=$q_pos+$cigarpartbasecount;
+				#			}
+				#			if ($cigartype eq "D"){
+				#				for (my $q=$q_pos;$q<=($q_pos+$cigarpartbasecount-1);$q++){
+				#					$qstring=$qstring."-";
+				#				}
+				#				for (my $r=$r_pos;$r<=($r_pos+$cigarpartbasecount-1);$r++){
+				#					$rstring=$rstring.$refbases[$r];
+				#				}
+				#				$r_pos=$r_pos+$cigarpartbasecount;							}
+				#		}
+						#print "QUERY:\t", $qstring, "\n";
+						#print "REF:\t", $rstring, "\n";
+						my $refstring_orig = $rstring;
+						my @refstring = split //, $refstring_orig;
+						my $querystring_orig = $qstring;
+						my @querystring = split //, $querystring_orig;	
+						my $refstart = ($ref->{pos})-1;
+						my $querystart = $q_pos;
+						my $refid = $ref->{refid};
+						if (defined $ref->{barcode_arrangement}){
+							$refid = $ref->{refid}. "_" . $ref->{barcode_arrangement};
+						}else{
+							$refid = $ref->{refid}. "_UC";
+						}
+						my $basenameid = $ref->{basename_id};
+						if (!exists $barbasenamehash{$basenameid}) {
+							$barbasenamehash{$basenameid} = 1;
+						}	
+						
+						#print "The ref id is " . $refid . "\n";
+						
+						my $reflength = length($refstring_orig);
+						my $genreflength = length($ref->{refsequence});
+					
+						#print "The reflength is " . $genreflength . "\n";	
+						##Need to get the position in the reference.
+						#my $counter = ($refstart - 1);
+						
+						###We need to fix the situation where we are mapping reversed reads. So we need to look at the flag:
+						
+						my $counter;
+						if ($flag == 0 || $flag == 2048) {
+							$counter = ($refstart); ##Idiot fixes
+						}else{
+							#$counter = 	$genreflength - $refstart;
+							$counter = ($refstart); ##Idiot fixes
+						}
+					
+								
+						for (my $x=0; $x<=($reflength-1); $x++) {
+							if ($refstring[$x] ne "-") {
+								$counter++;
+								$barmafhash{$refid}{$counter}{'reference'}=$refstring[$x];
+							}
+							#print $counter . "\t" . $refid . "\t";
+							#print $refstring[$x] . "\t" . $querystring[$x] . "\t";
+							##Check if the strings match:
+							if ($refstring[$x] eq $querystring[$x]) {
+						 	#print "m\t";	
+								$barmafhash{$refid}{$counter}{$refstring[$x]}++;
+								#$mafhash{$refid}{$counter}{"result"}="m";
+							}elsif ($refstring[$x] eq "-") {
+								#print "ins\t";
+								$barmafhash{$refid}{$counter}{"i"}++;
+								#$mafhash{$refid}{$counter}{"result"}="i";
+							}elsif ($querystring[$x] eq "-") {
+								#print "del\t";
+								$barmafhash{$refid}{$counter}{"d"}++;
+								#$mafhash{$refid}{$counter}{"result"}="d";
+							}else {
+								#print "mm\t";
+								$barmafhash{$refid}{$counter}{$querystring[$x]}++;
+								#$mafhash{$refid}{$counter}{"result"}="e";
+							}
+							#print "\n";
+						}
+
+					}
+
+					
+					
+					
 				}
-				
 				my $insertsth = $dbh2->prepare("INSERT IGNORE INTO ".$dbname.".read_tracking_barcode_" .$_." (basename_id) VALUES (?);");
 				#print "Insert query generated and prepared at ".(localtime)."\n";
 				my @keys = keys %barbasenamehash;
@@ -299,78 +576,239 @@ unless ($checkingrunning) {
 				
 			}
 			
+			#### This is where we handle the translation of maf or sam alignments into a reference coverage plot.
+			#### First we need to determine if we are dealing with SAM or MAF formatted data.
 			
-			my $query;
-			## Note that we need to deal with multiply aligned sequences still - could do using the alignnum=1 but it doesn't really work...
-			$query = "SELECT * FROM " . $dbname . ".last_align_maf_basecalled_".$_." where basename_id not in (select basename_id from " . $dbname . ".read_tracking_".$_.") order by ID limit 100;";
-			#print "$query to run at ".(localtime)."\n";
-			my $sth = $dbh2->prepare($query);
-			#print "$query prepared at ".(localtime)."\n";
-			##print $query . "\n";
-			$sth->execute;
-			#print "$query executed at ".(localtime)."\n";
 			## Create a hash to store all the info on the alignment
 			my %mafhash;
 			my $mafhash;
-				
+					
 			##Create a hash  of basename_ids;
 			my %basenamehash=();
 			my $basenamehash;
 			
-			while (my $ref = $sth->fetchrow_hashref) {
-				if ($development) {
-					print $ref->{ID} . "\n";
-				}
-				
-				my $refstring_orig = $ref->{r_align_string};
-				my @refstring = split //, $refstring_orig;
-				my $querystring_orig = $ref->{q_align_string};
-				my @querystring = split //, $querystring_orig;
-				my $refstart = $ref->{r_start};
-				my $querystart = $ref->{q_start};
-				my $refid = $ref->{refid};
-				my $basenameid = $ref->{basename_id};
-				if (!exists $basenamehash{$basenameid}) {
-					$basenamehash{$basenameid} = 1;
-				}
-				
-				#print "The ref id is " . $refid . "\n";
-				
-				my $reflength = length($refstring_orig);
-				
-				##Need to get the position in the reference.
-				#my $counter = ($refstart - 1);
-				my $counter = ($refstart); ##Idiot fixes
+			if ($tabletype eq "last_align_maf_basecalled_template"){
+				#print "We have found maf data to process.\n";
+			
+				my $query;
+				## Note that we need to deal with multiply aligned sequences still - could do using the alignnum=1 but it doesn't really work...
+				$query = "SELECT * FROM " . $dbname . ".last_align_maf_basecalled_".$_." where basename_id not in (select basename_id from " . $dbname . ".read_tracking_".$_.") and alignnum = 1 order by ID limit 100;";
+				#print "$query to run at ".(localtime)."\n";
+				my $sth = $dbh2->prepare($query);
+				#print "$query prepared at ".(localtime)."\n";
+				##print $query . "\n";
+				$sth->execute;
+				#print "$query executed at ".(localtime)."\n";
 				
 				
-				for (my $x=0; $x<=($reflength-1); $x++) {
-					if ($refstring[$x] ne "-") {
-						$counter++;
-						$mafhash{$refid}{$counter}{'reference'}=$refstring[$x];
+				while (my $ref = $sth->fetchrow_hashref) {
+					if ($development) {
+						print $ref->{ID} . "\n";
 					}
-					#print $counter . "\t" . $refid . "\t";
-					#print $refstring[$x] . "\t" . $querystring[$x] . "\t";
-					##Check if the strings match:
-					if ($refstring[$x] eq $querystring[$x]) {
-				 	#print "m\t";	
-						$mafhash{$refid}{$counter}{$refstring[$x]}++;
-						#$mafhash{$refid}{$counter}{"result"}="m";
-					}elsif ($refstring[$x] eq "-") {
-						#print "ins\t";
-						$mafhash{$refid}{$counter}{"i"}++;
-						#$mafhash{$refid}{$counter}{"result"}="i";
-					}elsif ($querystring[$x] eq "-") {
-						#print "del\t";
-						$mafhash{$refid}{$counter}{"d"}++;
-						#$mafhash{$refid}{$counter}{"result"}="d";
-					}else {
-						#print "mm\t";
-						$mafhash{$refid}{$counter}{$querystring[$x]}++;
-						#$mafhash{$refid}{$counter}{"result"}="e";
+					
+					my $refstring_orig = $ref->{r_align_string};
+					my @refstring = split //, $refstring_orig;
+					my $querystring_orig = $ref->{q_align_string};
+					my @querystring = split //, $querystring_orig;	
+					my $refstart = $ref->{r_start};
+					my $querystart = $ref->{q_start};
+					my $refid = $ref->{refid};
+					my $basenameid = $ref->{basename_id};
+					if (!exists $basenamehash{$basenameid}) {
+						$basenamehash{$basenameid} = 1;
 					}
-					#print "\n";
+					
+					#print "The ref id is " . $refid . "\n";
+					
+					my $reflength = length($refstring_orig);
+					
+					#print "The ref length is ". $reflength . "\n";
+						
+					##Need to get the position in the reference.
+					#my $counter = ($refstart - 1);
+					my $counter = ($refstart); ##Idiot fixes
+					
+					
+					for (my $x=0; $x<=($reflength-1); $x++) {
+						if ($refstring[$x] ne "-") {
+							$counter++;
+							$mafhash{$refid}{$counter}{'reference'}=$refstring[$x];
+						}
+						#print $counter . "\t" . $refid . "\t";
+						#print $refstring[$x] . "\t" . $querystring[$x] . "\t";
+						##Check if the strings match:
+						if ($refstring[$x] eq $querystring[$x]) {
+					 	#print "m\t";	
+							$mafhash{$refid}{$counter}{$refstring[$x]}++;
+							#$mafhash{$refid}{$counter}{"result"}="m";
+						}elsif ($refstring[$x] eq "-") {
+							#print "ins\t";
+							$mafhash{$refid}{$counter}{"i"}++;
+							#$mafhash{$refid}{$counter}{"result"}="i";
+						}elsif ($querystring[$x] eq "-") {
+							#print "del\t";
+							$mafhash{$refid}{$counter}{"d"}++;
+							#$mafhash{$refid}{$counter}{"result"}="d";
+						}else {
+							#print "mm\t";
+							$mafhash{$refid}{$counter}{$querystring[$x]}++;
+							#$mafhash{$refid}{$counter}{"result"}="e";
+						}
+						#print "\n";
+					}
+					$memd->set($checkreads,$ref->{ID});
 				}
-				$memd->set($checkreads,$ref->{ID});
+				
+			}elsif ($tabletype eq "align_sam_basecalled_template"){
+				#print "We have found sam data to process.\n";
+				my $query;
+				## Note that we need to deal with multiply aligned sequences still - could do using the alignnum=1 but it doesn't really work...
+				$query = "SELECT * FROM " . $dbname . ".align_sam_basecalled_".$_." inner join " . $dbname . ".reference_seq_info where refname=rname and basename_id not in (select basename_id from " . $dbname . ".read_tracking_".$_.") order by ID limit 100;";
+				#print "$query to run at ".(localtime)."\n";
+				my $sth = $dbh2->prepare($query);
+				#print "$query prepared at ".(localtime)."\n";
+				##print $query . "\n";
+				$sth->execute;
+				#print "$query executed at ".(localtime)."\n";
+				
+				while (my $ref = $sth->fetchrow_hashref) {
+					if ($development) {
+						print $ref->{ID} . "\n";
+					}
+					#print $ref->{flag} . "\n";
+					my $qname=$ref->{qname};
+					my $flag=$ref->{flag};
+					my $rname=$ref->{rname};
+					my $mapq=$ref->{mapq};
+					my $cigar=$ref->{cigar};
+					my @seq=split(//, $ref->{refsequence});
+					my @refbases=@seq;
+					my @readbases=split(//,$ref->{seq});
+#					print "REFBASES \n";
+#					print $ref->{refsequence} . "\n\n";
+					#print "REFBASES:\t", @readbases,"\n";	
+					#print "cigar:\t", $cigar,"\n";
+					#print "LENQ:\t", scalar @readbases,"\n";
+					#print "LENR:\t", scalar @refbases,"\n";
+
+					#ciglist = cigar.split(r'M|I|D|N|S|H|P|=|X')
+					#ciglist = re.split('(\W)', cigar)
+					my @cigparts = split(/([A-Z])/, $cigar);
+
+					my $q_pos=0;
+					my $r_pos=($ref->{pos})-1;
+					#print $r_pos . "\n\n";
+					my $qstring="";
+					my $rstring="";
+					#my $r;
+					#my $q;
+			
+					while(my ($cigarpartbasecount,$cigartype) = splice(@cigparts,0,2)) {
+						#print ">>>", "$cigarpartbasecount,$cigartype\n";
+						if ($cigartype eq "S"){# not aligned read section
+							$q_pos=$q_pos+$cigarpartbasecount;
+						}
+						if ($cigartype eq "M"){# so its not a deletion or insertion. Its 0:M
+							for (my $q=$q_pos;$q<=($q_pos+$cigarpartbasecount-1);$q++){
+								$qstring=$qstring.$readbases[$q];
+							}
+							for (my $r=$r_pos;$r<=($r_pos+$cigarpartbasecount-1);$r++){
+								$rstring=$rstring.$refbases[$r];
+							}
+							$q_pos=$q_pos+$cigarpartbasecount;
+							$r_pos=$r_pos+$cigarpartbasecount;
+						}
+						if ($cigartype eq "I"){
+							for (my $q=$q_pos;$q<=($q_pos+$cigarpartbasecount-1);$q++){
+								$qstring=$qstring.$readbases[$q];
+							}
+							for (my $r=$r_pos;$r<=($r_pos+$cigarpartbasecount-1);$r++){
+								$rstring=$rstring."-";
+							}
+							$q_pos=$q_pos+$cigarpartbasecount;
+						}
+						if ($cigartype eq "D"){
+							for (my $q=$q_pos;$q<=($q_pos+$cigarpartbasecount-1);$q++){
+								$qstring=$qstring."-";
+							}
+							for (my $r=$r_pos;$r<=($r_pos+$cigarpartbasecount-1);$r++){
+								$rstring=$rstring.$refbases[$r];
+							}
+							$r_pos=$r_pos+$cigarpartbasecount;							}
+					}
+					#print "QUERY:\t", $qstring, "\n";
+					#print "REF:\t", $rstring, "\n";
+					my $refstring_orig = $rstring;
+					my @refstring = split //, $refstring_orig;
+					my $querystring_orig = $qstring;
+					my @querystring = split //, $querystring_orig;	
+					my $refstart = ($ref->{pos})-1;
+					my $querystart = $q_pos;
+					my $refid = $ref->{refid};
+					my $basenameid = $ref->{basename_id};
+					if (!exists $basenamehash{$basenameid}) {
+						$basenamehash{$basenameid} = 1;
+					}
+					
+					#print "The ref id is " . $refid . "\n";
+					
+					my $reflength = length($refstring_orig);
+					my $genreflength = length($ref->{refsequence});
+					
+					#print "The reflength is " . $genreflength . "\n";	
+					##Need to get the position in the reference.
+					#my $counter = ($refstart - 1);
+					
+					###We need to fix the situation where we are mapping reversed reads. So we need to look at the flag:
+					
+					my $counter;
+					if ($flag == 0 || $flag == 2048) {
+						$counter = ($refstart); ##Idiot fixes
+					}else{
+						#$counter = 	$genreflength - $refstart;
+						$counter = ($refstart); ##Idiot fixes
+					}
+					
+					#print "The refstart is " . $refstart . "\n";
+					
+					
+					for (my $x=0; $x<=($reflength-1); $x++) {
+						if ($refstring[$x] ne "-") {
+							$counter++;
+							$mafhash{$refid}{$counter}{'reference'}=$refstring[$x];
+						}
+						#print $counter . "\t" . $refid . "\t";
+						#print $refstring[$x] . "\t" . $querystring[$x] . "\t";
+						##Check if the strings match:
+						if ($refstring[$x] eq $querystring[$x]) {
+					 	#print "m\t";	
+							$mafhash{$refid}{$counter}{$refstring[$x]}++;
+							#$mafhash{$refid}{$counter}{"result"}="m";
+						}elsif ($refstring[$x] eq "-") {
+							#print "ins\t";
+							$mafhash{$refid}{$counter}{"i"}++;
+							#$mafhash{$refid}{$counter}{"result"}="i";
+						}elsif ($querystring[$x] eq "-") {
+							#print "del\t";
+							$mafhash{$refid}{$counter}{"d"}++;
+							#$mafhash{$refid}{$counter}{"result"}="d";
+						}else {
+							#print "mm\t";
+							$mafhash{$refid}{$counter}{$querystring[$x]}++;
+							#$mafhash{$refid}{$counter}{"result"}="e";
+						}
+						#print "\n";
+					}
+					#print "The refend is " . $counter . "\n";
+					
+					#if ($counter > 49000) {
+					#	print "OH DEAR!\n";
+					#	print "Flag is " . $flag . "\n";
+					#	print $ref->{seq} . "\n";
+					#}
+					$memd->set($checkreads,$ref->{ID});
+				}
+					
 			}
 			my $insertsth = $dbh2->prepare("INSERT IGNORE INTO ".$dbname.".read_tracking_" .$_." (basename_id) VALUES (?);");
 			#print "Insert query generated and prepared at ".(localtime)."\n";

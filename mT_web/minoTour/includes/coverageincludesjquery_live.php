@@ -32,77 +32,73 @@
 				$array[$row['refid']] = $row['refname'] ;
 				
 				echo "
-				<script>
-
+			<script>
 				$(document).ready(function() {
-				    var options = {
-				        chart: {
-				            renderTo: 'coverage" . $row['refid'] . "',
+					var optionscoverage" . $row['refid'] . " = {
+						chart: {
+							renderTo: 'coverage" . $row['refid'] . "',
+							zoomType: 'x',
+							//type: 'scatter',
 							type: 'line',
-							zoomType: 'x'
-				        },
-				        title: {
-				          text: 'Coverage Depth for ".$row['refname']."'
-				        },
+						},
+						title: {
+							text: 'Coverage Depth for ".$row['refname']."',
+						},
 						xAxis: {
 							title: {
-								text: 'Ref Position'
-						    }";
-				if ($row['max_length'] >= $maxlengththreshold) {
-					$max = $row['max_length']/2 + $modamount;
-					$min = $row['max_length']/2 - $modamount;
-					echo ",\nmin: " . $min . ",\nmax: " . $max . ",\n";
-					$constrain_plot = 1;
-				}
-							
-				echo "		        
-						        },
-								yAxis: {
-								            title: {
-								                text: 'Depth'
-								            }
-								        },
-								        min: 0,
-									    plotOptions: {
-									               scatter: {
-									                   marker: {
-									                       radius: 1
-									                   }
-									               }
-									           },
-										credits: {
-										    enabled: false
-										  },
-										  scrollbar: {
-      							  enabled: true
-    						},
-    						navigator: {
- 	  						  enabled: true
-    					    },
-				        legend: {
-				            layout: 'horizontal',
-					            											align: 'center',
-					            											verticalAlign: 'bottom',
-
-				            borderWidth: 0
-				        },
-				        series: []
-				    };
-
+								text: 'Basepairs'
+							},";
+							if ($row['max_length'] >= $maxlengththreshold) {
+								$max = round($row['max_length']/2) + $modamount;
+								$min = round($row['max_length']/2) - $modamount;
+								echo "
+							min: " . $min . ",
+							max: " . $max . ",";
+								$constrain_plot = 1;
+							}
+					echo "
+						},
+						yAxis: {
+							title: {
+								text: 'Depth',
+							}
+						},
+						scrollbar: {
+							enabled: true,
+						},
+						navigator: {
+							enabled: true,
+						},
+						plotOptions: {
+							scatter: {
+								marker: {
+									radius: 1,
+								}	
+							}
+						},
+						credits: {
+							enabled: false,
+						},
+						legend: {
+							layout: 'vertical',
+							align: 'right',
+							verticalAlign: 'middle',
+							borderWidth: 0,
+						},
+						series: []
+					};
+					//alert ('max is ".$max."');
 				    $.getJSON('jsonencode/coverage.php?prev=0&seqid=" . $row['refid'] . "&callback=?', function(data) {
 						//alert('success');
-				        options.series = data; // <- just assign the data to the series property.
+				        optionscoverage" . $row['refid'] . ".series = data; // <- just assign the data to the series property.
     
  
 
 				        //options.series = JSON2;
-						var chart = new Highcharts.Chart(options);
-						});
+						var chart = new Highcharts.Chart(optionscoverage" . $row['refid'] . ");
+					});
 				});
-
-					//]]>  
-
-					</script>";
+			</script>";
 
 
 				
@@ -114,7 +110,7 @@
 			<script>
 
 			$(document).ready(function() {
-			    var options = {
+			    var options5primecoverage" . $key . " = {
 			        chart: {
 			            renderTo: '5primecoverage" . $key . "',
 						//type: 'scatter',
@@ -168,12 +164,12 @@
 
 			    $.getJSON('jsonencode/5primecoverage.php?prev=0&seqid=".$key."&callback=?', function(data) {
 					//alert('success');
-			        options.series = data; // <- just assign the data to the series property.
+			        options5primecoverage" . $key . ".series = data; // <- just assign the data to the series property.
 
 
 
 			        //options.series = JSON2;
-					var chart = new Highcharts.Chart(options);
+					var chart = new Highcharts.Chart(options5primecoverage" . $key . ");
 					});
 			});
 
@@ -183,7 +179,7 @@
 			<script>
 
 			$(document).ready(function() {
-			    var options = {
+			    var options3primecoverage" . $key . " = {
 			        chart: {
 			            renderTo: '3primecoverage" . $key . "',
 						//type: 'scatter',
@@ -236,12 +232,12 @@
 
 			    $.getJSON('jsonencode/3primecoverage.php?prev=0&seqid=" . $key . "&callback=?', function(data) {
 					//alert('success');
-			        options.series = data; // <- just assign the data to the series property.
+			        options3primecoverage" . $key . ".series = data; // <- just assign the data to the series property.
 
 
 
 			        //options.series = JSON2;
-					var chart = new Highcharts.Chart(options);
+					var chart = new Highcharts.Chart(options3primecoverage" . $key . ");
 					});
 			});
 

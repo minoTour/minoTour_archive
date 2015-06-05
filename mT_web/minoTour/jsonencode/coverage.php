@@ -140,8 +140,8 @@ if ($login->isUserLoggedIn() == true) {
 					$j = $j+$value;
 					$k++;
 					if ($k==$countarray[$type]){
-						$i = $i/$k;
-						$j = $j/$k;
+						$i = round($i/$k);
+						$j = round($j/$k);
 						$jsonstring = $jsonstring .  "[$i,$j],\n";
 						$i =0;
 						$j =0;

@@ -117,9 +117,9 @@
                                 <li>
                                     <a href="reads_table.php"><i class="fa fa-eye fa-fw"></i> Individual Read Data</a>
                                 </li>
-								<!--<li>
+								<li>
 									<a href="prev_kmers.php"><i class="fa fa-cogs fa-fw"></i> K-mer summaries</a>
-								</li>--!>
+								</li>
 								
                                 <li>
                                     <a href="previous_export.php"><i class="fa fa-file-text-o fa-fw"></i> Export Reads</a>

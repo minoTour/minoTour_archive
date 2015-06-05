@@ -41,137 +41,39 @@ require_once("includes/jsonfunctions.php");
 				date_default_timezone_set('UTC');
 				$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['focusrun']);
 				if (!$mindb_connection->connect_errno) {
-					//Query to generate basic run report:
-					$kmersample = "SELECT model_state,mp_state,move FROM caller_basecalled_template where move > 0 and rand()<=0.01;";
-					$complementkmersample = "SELECT model_state,mp_state,move FROM caller_basecalled_complement where move > 0 and rand()<=0.01;";
-					$kmersampleresults = $mindb_connection->query($kmersample);
-					$complementkmersampleresults = $mindb_connection->query($complementkmersample);
-					
-					$kmerarray = getkmers()[0];
-					//$counter = 0;
-					//foreach ($kmerarray as $k => $v) {
-					//	$counter++;
- 					//   echo "$counter Current value of $k: $v.<br>"; 
-					//}
-					$basearray = array();
-					if ($kmersampleresults->num_rows>=1) {
-						foreach ($kmersampleresults as $row){
-							//echo $row['model_state'] . " " . $row['mp_state'] . "<br>";
-							$kmerarray[$row['model_state']]['con'] += 1;
-							$kmerarray[$row['mp_state']]['ml'] += 1;
-							//add basecounts to basearray
-							$bases = str_split($row['model_state']);	
-							foreach ($bases as $base) {
-								$basearray[$base]['con']+=1;
-							}
-							$bases = str_split($row['mp_state']);	
-							foreach ($bases as $base) {
-								$basearray[$base]['ml']+=1;	
-							}
+								//Get the frequency of kmers in the reference
+			$ref_kmers="SELECT kmer,freq FROM ref_sequence_kmer order by kmer;";
+			$ref_kmers_result=$mindb_connection->query($ref_kmers);
+			$refkmers=array();
+			foreach ($ref_kmers_result as $key->$value){
+				$refkmers[$key]=$value;	
+			}
+			//Get the frequency of kmers in a random selectio of 500 template reads.
+			$kmersample = "SELECT sequence FROM basecalled_template where rand()<=0.01 limit 500;";
+			$kmersampleresults = $mindb_connection->query($kmersample);
+			$templatekmercount=array();
+			$kmertemplatecount=0;
+			if ($kmersampleresults->num_rows>=1) {
+				foreach ($kmersampleresults as $row){
+					//echo $row[sequence] . "<br>";
+					//Loop through each sequence and get the kmers
+					for ($i = 0; $i <= (strlen($row[sequence])-5) ; $i++) {
+						$substr =  substr($row[sequence], $i, 5); 
+						$kmertemplatecount++;
+						if (isset($templatekmercount[$substr])) {
+							 $templatekmercount[$substr]++;
+						} else {
+							$templatekmercount[$substr] = 1; 
 						}
 					}
-					if ($complementkmersampleresults->num_rows>=1) {
-						foreach ($complementkmersampleresults as $row){
-							//echo $row['model_state'] . " " . $row['mp_state'] . "<br>";
-							//$compmodel_state = Complement($row['model_state']);
-							//$compmp_state = Complement($row['mp_state']);
-							$compmodel_state = $row['model_state'];
-							$compmp_state = $row['mp_state'];
-							
-							$kmerarray[$compmodel_state]['ccon'] += 1;
-							$kmerarray[$compmp_state]['cml'] += 1;
-							//add basecounts to basearray
-							$bases = str_split($compmodel_state);	
-							foreach ($bases as $base) {
-								$basearray[$base]['ccon']+=1;
-							}
-							$bases = str_split($compmp_state);	
-							foreach ($bases as $base) {
-								$basearray[$base]['cml']+=1;	
-							}
-						}
-					}
-					
-					//Calculate the proportion of ATGC
-					foreach ($basearray as $base => $type) {
-						$basearray[$base]['conf'] = $type['con']/(5*$kmersampleresults->num_rows);
-						$basearray[$base]['mlf'] = $type['ml']/(5*$kmersampleresults->num_rows);
-						$basearray[$base]['cconf'] = $type['ccon']/(5*$complementkmersampleresults->num_rows);
-						$basearray[$base]['cmlf'] = $type['cml']/(5*$complementkmersampleresults->num_rows);
-					}
-					
-					
-					
-					echo "<table class='table table-condensed'>";
-					echo "<thead>";
-					echo "<tr>";
-					echo "<th>#</th>";
-					echo "<th>K-mer</th>";
-					echo "<th>Consensus Observed</th>";
-					echo "<th>Consensus Frequency</th>";
-					echo "<th>Consensus Expected</th>";
-					echo "<th>Con Obs/Exp</th>";
-					echo "<th>Most Likely Observed</th>";
-					echo "<th>Most Likely Frequency</th>";
-					echo "<th>Most Likely Expected</th>";
-					echo "<th>ML Obs/Exp</th>";
-					echo "</tr>";
-					echo "</thead>";
-					echo  "<tbody>";
-					
-					$counter = 0;
-					foreach ($kmerarray as $k => $v) {
-						$counter++;
-						echo "<tr>";
-						echo "<th scope='row'>" . $counter . "</th>";
-						echo "<td>" . $k . "</td>";//observed kmer
-						echo "<td>" . $v['con'] . ":" . $v['ccon'] . "</td>";//observed kmer count consensus
-						//Calculate the chance of seeing a given kmer based on the base frequencies observed in the data set
-						$kmersplit=str_split($k);
-						$kmerprob = $basearray[$kmersplit[0]]['conf']*$basearray[$kmersplit[1]]['conf']*$basearray[$kmersplit[2]]['conf']*$basearray[$kmersplit[3]]['conf']*$basearray[$kmersplit[4]]['conf'];
-						$kmernum = $kmerprob * $kmersampleresults->num_rows;
-						$kmerarray[$k]['conf']=($v['con']/$kmersampleresults->num_rows);
-						
-						$ckmerprob = $basearray[$kmersplit[0]]['cconf']*$basearray[$kmersplit[1]]['cconf']*$basearray[$kmersplit[2]]['cconf']*$basearray[$kmersplit[3]]['cconf']*$basearray[$kmersplit[4]]['cconf'];
-						$ckmernum = $ckmerprob * $complementkmersampleresults->num_rows;
-						$ckmerarray[$k]['cconf']=($v['ccon']/$complementkmersampleresults->num_rows);
-
-						
-						echo "<td>" . round(($v['con']/$kmersampleresults->num_rows),6,PHP_ROUND_HALF_UP) . ":" . round(($v['ccon']/$complementkmersampleresults->num_rows),6,PHP_ROUND_HALF_UP) . "</td>";//observed kmer frequency consensus
-						echo "<td>" . round( $kmernum, 0, PHP_ROUND_HALF_UP) . ":" . round ( $ckmernum,0,PHP_ROUND_HALF_UP) . "</td>"; //expected number of kmers
-						echo "<td>" . round(($v['con'] / round( $kmernum, 0, PHP_ROUND_HALF_UP)),3,PHP_ROUND_HALF_UP) . ":" . round(($v['ccon'] / round( $ckmernum, 0, PHP_ROUND_HALF_UP)),3,PHP_ROUND_HALF_UP) . "</td>"; //observed div expected
-						echo "<td>" . $v['ml'] . ":" . $v['cml'] . "</td>";//observed kmer count most probable
-						//Calculate the chance of seeing a given kmer based on the base frequencies observed in the data set
-						//$kmersplit=str_split($k);//don't need to repeat
-						
-						$kmerprob = $basearray[$kmersplit[0]]['mlf']*$basearray[$kmersplit[1]]['mlf']*$basearray[$kmersplit[2]]['mlf']*$basearray[$kmersplit[3]]['mlf']*$basearray[$kmersplit[4]]['mlf'];
-						$kmernum = $kmerprob * $kmersampleresults->num_rows;
-						$kmerarray[$k]['mlf']=($v['ml']/$kmersampleresults->num_rows);
-						
-						$ckmerprob = $basearray[$kmersplit[0]]['cmlf']*$basearray[$kmersplit[1]]['cmlf']*$basearray[$kmersplit[2]]['cmlf']*$basearray[$kmersplit[3]]['cmlf']*$basearray[$kmersplit[4]]['cmlf'];
-						$ckmernum = $ckmerprob * $complementkmersampleresults->num_rows;
-						$ckmerarray[$k]['cmlf']=($v['cml']/$complementkmersampleresults->num_rows);
-						
-						
-						echo "<td>" . round(($v['ml']/$kmersampleresults->num_rows),6,PHP_ROUND_HALF_UP) .  ":" . round(($v['cml']/$complementkmersampleresults->num_rows),6,PHP_ROUND_HALF_UP)  . "</td>";//observed kmer frequency most probable
-						echo "<td>" . round( $kmernum, 0, PHP_ROUND_HALF_UP) . ":" . round( $ckmernum, 0, PHP_ROUND_HALF_UP) . "</td>"; //expected number of kmers
-						echo "<td>" . round(($v['ml'] / round( $kmernum, 0, PHP_ROUND_HALF_UP)),3,PHP_ROUND_HALF_UP) . ":" . round(($v['cml'] / round( $ckmernum, 0, PHP_ROUND_HALF_UP)),3,PHP_ROUND_HALF_UP) . "</td>"; //observed div expected
-						echo "</tr>";
-						
-						
-					
-					}
-					
-					echo "</tbody>";
-					echo "</table>";
+				}	
+			}
+			foreach ($templatelmetcount as $key->$vaule) {
+				echo "$key	$value<br>";
+			}
 
 					
 					
-					//Calculate the proportion of ATGC
-					foreach ($basearray as $base => $type) {
-						$basearray[$base]['conf'] = $type['con']/(5*$kmersampleresults->num_rows);
-						$basearray[$base]['mlf'] = $type['ml']/(5*$kmersampleresults->num_rows);
-					}
 					
 				
 				}

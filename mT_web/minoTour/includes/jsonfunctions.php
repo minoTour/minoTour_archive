@@ -564,6 +564,69 @@ function basicstats($jobname,$currun,$refid) {
 
 ########### Plots considering 5mers
 #### Generate a plot of all 5mers
+function kmercomp($jobname,$currun,$refid) {
+	$checkvar = $currun . $jobname . $type;
+	//echo $type . "\n";
+	$checkrunning = $currun . $jobname . $type . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;
+	//$jsonstring = $memcache->get("$checkvar");
+	$checkingrunning = $memcache->get("$checkrunning");
+	if($checkingrunning === "No" || $checkingrunning === FALSE){
+		//$memcache->set("$checkrunning", "YES", 0, 0); 
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if ($checking->num_rows ==1){
+			//echo "We have already run this!";
+			foreach ($checking as $row){
+				$jsonstring = $row['json'];
+			}
+		} else {	
+			//Get the frequency of kmers in the reference
+			$ref_kmers="SELECT kmer,freq FROM ref_sequence_kmer order by kmer;";
+			$ref_kmers_result=$mindb_connection->query($ref_kmers);
+			$refkmers=array();
+			foreach ($ref_kmers_result as $key->$value){
+				$refkmers[$key]=$value;	
+			}
+			//Get the frequency of kmers in a random selectio of 500 template reads.
+			$kmersample = "SELECT sequence FROM basecalled_template where rand()<=0.01 limit 500;";
+			$kmersampleresults = $mindb_connection->query($kmersample);
+			$templatekmercount=array();
+			$kmertemplatecount=0;
+			if ($kmersampleresults->num_rows>=1) {
+				foreach ($kmersampleresults as $row){
+					//echo $row[sequence] . "<br>";
+					//Loop through each sequence and get the kmers
+					for ($i = 0; $i <= (strlen($row[sequence])-5) ; $i++) {
+						$substr =  substr($row[sequence], $i, 5); 
+						$kmertemplatecount++;
+						if (isset($templatekmercount[$substr])) {
+							 $templatekmercount[$substr]++;
+						} else {
+							$templatekmercount[$substr] = 1; 
+						}
+					}
+				}	
+			}
+			foreach ($templatelmetcount as $key->$vaule) {
+				echo "$key	$value<br>";
+			}
+		}
+		$jsonstring = $jsonstring . "]\n";
+		if ($_GET["prev"] == 1){
+			include 'savejson.php';
+		}
+		$memcache->set("$checkvar", $jsonstring);
+	}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}	
+	// cache for 2 minute as we want yield to update semi-regularly...  
+	$memcache->delete("$checkrunning");
+   	return $jsonstring;
+   	
+}
 
 function kmercoveragereads($jobname,$currun,$refid) {
 	$checkvar = $currun . $jobname . $type;
@@ -1148,6 +1211,109 @@ function whatsinmyminion($jobname,$currun) {
 		
 }
 
+###select sum(ifnull(length(basecalled_template.sequence),0)+ifnull(length(basecalled_complement.sequence),0)) as bases, channel, start_mux as mux from basecalled_template inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by channel,mux;
+
+##Bases per pore - plots the number of bases sequenced on a pore by pore bases corrected for the nanopore map - this calculates the sum of template and complement bases sequenced through the pore based on the basecalled sequence.
+
+function basesperporemux($jobname,$currun) {
+	$checkvar = $currun . $jobname;
+	$checkrunning = $currun . $jobname . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;
+	//$jsonstring = $memcache->get("$checkvar");
+	$checkingrunning = $memcache->get("$checkrunning");
+	if($checkingrunning === "No" || $checkingrunning === FALSE){
+		$memcache->set("$checkrunning", "YES", 0, 0); 
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if ($checking->num_rows ==1){
+			//echo "We have already run this!";
+			foreach ($checking as $row){
+				$jsonstring = $row['json'];
+			}
+		} else {
+			$sql_template = "select sum(ifnull(length(basecalled_template.sequence),0)+ifnull(length(basecalled_complement.sequence),0)) as bases, channel, start_mux as mux from basecalled_template inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by channel,mux;";
+
+		
+			$resultarray;
+	
+			$template=$mindb_connection->query($sql_template);
+			
+			###Get the reverse map to decode from channel and mux to position.
+			$reverse_map = minion_map()[1];
+			
+			if ($template->num_rows >= 1){
+				foreach ($template as $row) {
+					//$resultarray['template'][$row['channel']][$row['mux']]=$row['count'];
+					$tempitem = $row['channel'] . "," . $row['mux'];
+					//echo $tempitem . "\t";
+					$tempitem2 = $reverse_map["$tempitem"];
+					//echo $tempitem2 . "\n";
+					$temparray = explode( ',', $tempitem2 );
+					//echo $temparray[0];
+					$resultarray['template'][$temparray[1]][$temparray[0]]=$row['bases'];
+				}
+			}
+		
+			
+	
+			//var_dump($resultarray);
+			//echo json_encode($resultarray);
+			$jsonstring;
+			$jsonstring = $jsonstring . "[\n";
+			foreach ($resultarray as $key => $value){
+				$jsonstring = $jsonstring . "{\n";
+				$jsonstring = $jsonstring . "\"name\" : \"$key\", \n";
+				$jsonstring = $jsonstring . "\"borderWidth\": 1,\n";
+				$jsonstring = $jsonstring . "\"data\": [";
+				for ($i = 75 ; $i >=1; $i--){
+					if (array_key_exists($i, $resultarray[$key])){
+						for ($j = 75; $j >= 1; $j--) {
+							if (array_key_exists($j, $resultarray[$key][$i])) {
+								$jsonstring = $jsonstring . "[" . ($i-1) . "," . ($j-1) . "," . $resultarray[$key][$i][$j] . "],\n";
+							}else{
+								//$jsonstring = $jsonstring . "[" . ($i-1) . "," . ($j-1) . ",0],\n";
+							}
+						}
+					}else{
+						for ($j = 75; $j >= 1; $j--) {
+							//$jsonstring = $jsonstring . "[" . ($i-1) . "," . ($j-1) . ",0],\n";
+						}
+						
+					} //closing if statement line 51
+				} // closing the for loop at line 50
+
+				
+			$jsonstring = $jsonstring . "],\n\"dataLabels\": {
+            \"enabled\": false,
+            \"color\":\"black\",
+            \"style\": {
+            \"textShadow\": \"none\",
+            \"fontSize\": \"7\"
+            }
+           	}	";
+			$jsonstring = $jsonstring . "},\n";
+				
+		}
+		$jsonstring = $jsonstring .  "]\n";
+		if ($_GET["prev"] == 1){
+			//include 'savejson.php';
+		}
+	}
+	$memcache->set("$checkvar", $jsonstring);
+}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}
+		
+	// cache for 2 minute as we want yield to update semi-regularly...
+   
+	$memcache->delete("$checkrunning");
+    return $jsonstring;
+		
+}
+
+
 ##Reads per pore - plots the production of reads on a pore by pore basis corrected for the nanopore map
 function readsperporemux($jobname,$currun){
 	$checkvar = $currun . $jobname;
@@ -1626,6 +1792,85 @@ function readsperpore($jobname,$currun){
 		
 }
 
+##Bases per pore - plots the production of bases on a pore by pore basis
+function basesperpore($jobname,$currun){
+	$checkvar = $currun . $jobname;
+	$checkrunning = $currun . $jobname . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;
+	//$jsonstring = $memcache->get("$checkvar");
+	$checkingrunning = $memcache->get("$checkrunning");
+	if($checkingrunning === "No" || $checkingrunning === FALSE){
+		$memcache->set("$checkrunning", "YES", 0, 0); 
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if ($checking->num_rows ==1){
+			//echo "We have already run this!";
+			foreach ($checking as $row){
+				$jsonstring = $row['json'];
+			}
+		} else {
+			$sql_template = "select sum(ifnull(length(basecalled_template.sequence),0)+ifnull(length(basecalled_complement.sequence),0)) as bases, channel from basecalled_template inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by channel order by channel;";
+
+		
+			$resultarray;
+	
+			$template=$mindb_connection->query($sql_template);
+		
+			if ($template->num_rows >= 1){
+				foreach ($template as $row) {
+					$resultarray['template'][$row['channel']]=round($row['bases']/1000);
+				}
+			}
+	
+		
+	
+		
+	
+			//var_dump($resultarray);
+			//echo json_encode($resultarray);
+			$jsonstring;
+			$jsonstring = $jsonstring . "[\n";
+			foreach ($resultarray as $key => $value){
+				$jsonstring = $jsonstring . "{\n";
+				$jsonstring = $jsonstring . "\"name\" : \"$key\", \n";
+				$jsonstring = $jsonstring . "\"borderWidth\": 1,\n";
+				$jsonstring = $jsonstring . "\"data\": [";
+				for ($i = 1 ; $i <=512; $i++){
+					if (array_key_exists($i, $resultarray[$key])){
+						$jsonstring = $jsonstring . "[" . getx($i) . "," . gety($i) . "," . $resultarray[$key][$i] . "],\n";
+					}else{
+						$jsonstring = $jsonstring . "[" . getx($i) . "," . gety($i) . ",0],\n";
+					}
+				}
+				
+				$jsonstring = $jsonstring . "],\n\"dataLabels\": {
+                \"enabled\": true,
+                \"color\":\"black\",
+                \"style\": {
+                    \"textShadow\": \"none\"
+                }
+            }	";
+				$jsonstring = $jsonstring . "},\n";
+				
+			}
+			$jsonstring = $jsonstring .  "]\n";
+			if ($_GET["prev"] == 1){
+				include 'savejson.php';
+			}
+		}
+		 $memcache->set("$checkvar", $jsonstring);
+	}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}
+		
+	// cache for 2 minute as we want yield to update semi-regularly...
+   
+	         $memcache->delete("$checkrunning");
+    return $jsonstring;
+		
+}
 
 ##These two functions are used for mapping channels to the minknow pore layout
 function getx($value){
@@ -2491,9 +2736,9 @@ function readnumberupload($jobname,$currun) {
 		}
 		
 		#The number of reads which have aligned to the reference:
-		$sql_template = "select count(*) as aligned from last_align_maf_basecalled_template where alignnum =1;";
-		$sql_complement = "select count(*) as aligned from last_align_maf_basecalled_complement where alignnum =1;";
-		$sql_2d = "select count(*) as aligned from last_align_maf_basecalled_2d where alignnum =1;";
+		$sql_template = "select count(*) as aligned from last_align_basecalled_template_5prime where alignnum =1;";
+		$sql_complement = "select count(*) as aligned from last_align_basecalled_complement_5prime where alignnum =1;";
+		$sql_2d = "select count(*) as aligned from last_align_basecalled_2d_5prime where alignnum =1;";
 		
 				$template=$mindb_connection->query($sql_template);
 		$complement=$mindb_connection->query($sql_complement);

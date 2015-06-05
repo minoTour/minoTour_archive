@@ -1,8 +1,278 @@
 <?php
 
 //Setting general system wide parameters for various features
-$_SESSION['minotourversion']=0.48;
+$_SESSION['minotourversion']=0.5;
 $_SESSION['pagerefresh']=5000;
+
+
+//Updated function for converting sam format data to maf for easy visualisation in a browser
+function samtomaf($qname,$flag,$rname,$mapq,$cigar,$rnext,$pnext,$tlen,$seq,$qual,$n_m,$m_d,$pos) {
+			
+	if ($rname != "*"){ # so it's not an unmapped read
+		$cigparts2 = preg_split("/([A-Z])/",$cigar,-1,PREG_SPLIT_DELIM_CAPTURE);
+		$cigparts=array();
+		for ($i=0;$i<sizeof($cigparts2);$i=$i+2) {
+			$k=$cigparts2[$i];
+			$j=$i+1;
+			$v=$cigparts2[$j];
+			//echo  $k . "\t" . $v . "<br>";
+    		$cigparts[]=array($k=>$v);
+		}
+		$readbases = str_split($seq);
+		//echo "$rname\tREFBASES:\t" . $readbases . "<br>";
+		//echo "cigar:\t" . $cigar . "<br>";
+		//echo "LENQ:\t" . count($readbases) . "<br>";
+		//echo "MDZ:\t" . $m_d . "<br>";
+		$q_pos=0;
+		$r_pos=$pos=1;
+		$q_array=array();
+		$r_array=array();
+		$q_string;
+		$firstcheck=0;
+		$qstart;
+		foreach ($cigparts as $key=>$value) {
+			foreach ($value as $cigarpartbasecount=>$cigartype) {
+				//echo $key . "\t" . $cigartype . "\t" . $cigarpartbasecount .  "<br>";
+			if ($cigartype == "S"){# not aligned read section
+				//echo "we're in <br>";
+				$q_pos=$q_pos+$cigarpartbasecount;
+				if ($firstcheck < 1) {
+					$firstcheck++;
+					$qstart=$q_pos;
+				}
+			}
+			if ($cigartype == "M"){# so its not a deletion or insertion. Its 0:M
+				for ($q=$q_pos;$q<=($q_pos+$cigarpartbasecount-1);$q++){
+					array_push($q_array,$readbases[$q]);
+					//$qstring=$qstring.$readbasesar[$q];
+					}
+				for ($r=$r_pos;$r<=($r_pos+$cigarpartbasecount-1);$r++){
+					//$rstring=$rstring.$refbasesar[$r];
+					array_push($r_array,"X");
+					}
+				$q_pos=$q_pos+$cigarpartbasecount;
+				$r_pos=$r_pos+$cigarpartbasecount;
+				}
+			if ($cigartype == "I"){
+				for ($q=$q_pos;$q<=($q_pos+$cigarpartbasecount-1);$q++){	
+					array_push($q_array,$readbases[$q]);
+					//$qstring=$qstring.$readbasesar[$q];
+					}
+				for ($r=$r_pos;$r<=($r_pos+$cigarpartbasecount-1);$r++){
+					//$rstring=$rstring."-";
+					array_push($r_array,"-");
+					}
+				$q_pos=$q_pos+$cigarpartbasecount;
+				}
+			if ($cigartype == "D"){
+				for ($q=$q_pos;$q<=($q_pos+$cigarpartbasecount-1);$q++){
+					array_push($q_array,"-");
+					//$qstring=$qstring."-";
+					}
+				for ( $r=$r_pos;$r<=($r_pos+$cigarpartbasecount-1);$r++){
+					//$rstring=$rstring.$refbasesar[$r];
+					array_push($r_array,"o");
+				}
+				$r_pos=$r_pos+$cigarpartbasecount;	
+				}
+			}	
+		}
+		$i=0;
+		foreach ($r_array as $key=>$value){
+			if ($q_array[$i] != "-" and $r_array[$i] != "-"){
+				$r_array[$key]=$q_array[$i];
+			}
+			$i++;
+		}
+		//for ($i=0;$i<=count($r_array);$i++){
+		//	if ($q_array[$i] != "-" and $r_array[$i] != "-"){
+		//		echo $q_array[$i] . "<br>";
+				//$r_array[$i]=$q_array[$i];
+		//	}
+		//}
+		$a=0;
+		$mdparts = preg_split("/(\d+)|MD:Z:/",$m_d,-1,PREG_SPLIT_DELIM_CAPTURE);
+		//$mdparts=array();
+		//foreach ($mdparts as $key=>$value) {
+		//	echo  $value . "<br>";
+    	//}
+		foreach ($mdparts as $key=>$m){
+			if ($m) {
+				//echo $m[0] . "<br>";
+				if ($m[0] === "^"){
+					//echo "yes<br>";
+					$tmp = substr($m, 1);
+					for ($x=0;$x<=strlen($tmp)-1;$x++){
+						$r_array[$a]=$tmp[$x];
+						$a++;
+					}
+				}elseif ($m == "A" || $m == "T" || $m == "C" || $m == "G" ){
+					if ($r_array[$a] == "-"){
+						while ($r_array[$a] == "-"){
+							$a++;
+							//echo "inc here$a<br>";
+						}
+					}
+					$r_array[$a]=$m;
+					#$r_array[$a]="^";
+					$a++;
+				}elseif ( is_numeric($m) ){
+					for ($i=0;$i<$m;$i++){
+						if ($r_array[($a+$i)] == "-"){
+							while ($r_array[($a+$i)] == "-"){
+								$a++;
+							}
+						}
+					}
+					$a=$a+$m;
+					#for (my $x=0;$x<$m;$x++){
+					#	$r_array[$a]=$q_array[$a];
+					#	$a++;
+					#	}
+				}	
+			}
+		}
+		$qstring=implode('', $q_array);
+		$rstring=implode('', $r_array);
+		//echo "QUERY:\t$qstring<br>";
+		//echo "REFFF:\t$rstring<br>";
+	
+		/*
+		
+
+		my $a=0;
+		my @mdparts=split(/(\d+)|MD:Z:/, $m_d);
+		for my $m (@mdparts){
+			#print "$m,";
+			if ($m){
+				if ($m=~/^\^(.+)/){
+					my @tmp=split(//, $1);
+					for (my $x=0;$x<=$#tmp;$x++){
+						$r_array[$a]=$tmp[$x];
+						$a++;
+					}
+				}
+					
+				elsif ($m eq "A" || $m eq "T" || $m eq "C" || $m eq "G" ){
+					if ($r_array[$a] eq "-"){
+						while ($r_array[$a] eq "-"){
+							$a++;
+						}
+					}
+					$r_array[$a]=$m;
+					#$r_array[$a]="^";
+					$a++;
+				}
+					
+				elsif ( $m == int($m) ){
+					for (my $i=0;$i<$m;$i++){
+						if ($r_array[($a+$i)] eq "-"){
+							while ($r_array[($a+$i)] eq "-"){
+								$a++;
+							}
+						}
+					}
+					$a=$a+$m;
+					#for (my $x=0;$x<$m;$x++){
+					#	$r_array[$a]=$q_array[$a];
+					#	$a++;
+					#	}
+				}
+			}
+		}
+			
+		print "\n";
+		my $qstring=join('', @q_array);
+		my $rstring=join('', @r_array);
+		print "QUERY:\t$qstring\n";
+		print "REFFF:\t$rstring\n";
+		
+		*/
+		return array ($rstring,$qstring,$pos,$qstart);
+	}
+}
+
+
+//Generic function for converting sam format data to maf for easy visualisation in a browser
+function samtomaf_old($qname,$flag,$rname,$mapq,$cigar,$readbases,$refsequence,$pos) {
+	//echo $qname . "<br>";
+	//echo $flag . "<br>";
+	//echo $rname . "<br>";
+	//echo $mapq . "<br>";
+	//echo $cigar . "<br>";
+	//echo $readbases . "<br>";
+	//echo "Refseq is " .  $refsequence . "<br>";
+	$refbasesar = str_split($refsequence);
+	$readbasesar = str_split($readbases);
+	
+	//echo "LENQ: " . count($readbasesar) . "<br>";
+	//echo "LENR: " . count($refbasesar) .  "<br>";
+	
+	$cigparts2 = preg_split("/([A-Z])/",$cigar,-1,PREG_SPLIT_DELIM_CAPTURE);
+	$cigparts=array();
+	for ($i=0;$i<sizeof($cigparts2);$i=$i+2) {
+		$k=$cigparts2[$i];
+		$j=$i+1;
+		$v=$cigparts2[$j];
+		//echo  $k . "\t" . $v . "<br>";
+    	$cigparts[]=array($k=>$v);
+	}
+	
+		
+	$q_pos = 0;
+	$r_pos = $pos -1;
+	$qstring;
+	$rstring;
+	$firstcheck=0;
+	$qstart=1;
+	
+	#var_dump($output);
+	
+	foreach ($cigparts as $key=>$value) {
+		foreach ($value as $cigarpartbasecount=>$cigartype) {
+			//echo $key . "\t" . $cigartype . "\t" . $cigarpartbasecount .  "<br>";
+			if ($cigartype == "S"){# not aligned read section
+				//echo "we're in <br>";
+				$q_pos=$q_pos+$cigarpartbasecount;
+				if ($firstcheck < 1) {
+					$firstcheck++;
+					$qstart=$q_pos;
+				}
+			}
+			if ($cigartype == "M"){# so its not a deletion or insertion. Its 0:M
+				for ($q=$q_pos;$q<=($q_pos+$cigarpartbasecount-1);$q++){
+					$qstring=$qstring.$readbasesar[$q];
+					}
+				for ($r=$r_pos;$r<=($r_pos+$cigarpartbasecount-1);$r++){
+					$rstring=$rstring.$refbasesar[$r];
+					}
+				$q_pos=$q_pos+$cigarpartbasecount;
+				$r_pos=$r_pos+$cigarpartbasecount;
+				}
+			if ($cigartype == "I"){
+				for ($q=$q_pos;$q<=($q_pos+$cigarpartbasecount-1);$q++){	
+					$qstring=$qstring.$readbasesar[$q];
+					}
+				for ($r=$r_pos;$r<=($r_pos+$cigarpartbasecount-1);$r++){
+					$rstring=$rstring."-";
+					}
+				$q_pos=$q_pos+$cigarpartbasecount;
+				}
+			if ($cigartype == "D"){
+				for ($q=$q_pos;$q<=($q_pos+$cigarpartbasecount-1);$q++){
+					$qstring=$qstring."-";
+					}
+				for ( $r=$r_pos;$r<=($r_pos+$cigarpartbasecount-1);$r++){
+					$rstring=$rstring.$refbasesar[$r];
+				}
+			$r_pos=$r_pos+$cigarpartbasecount;	
+			}
+		}	
+	}
+	//echo "QUERY:\t", $qstring, "<br>";
+	//echo "REF:\t", $rstring, "<br>";
+	return array ($rstring,$qstring,$pos,$qstart);
+}
 
 
 //function for calculating mean mode and median
