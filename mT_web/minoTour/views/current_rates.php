@@ -37,7 +37,7 @@ require_once("includes/functions.php");
   			  <li><a href="current_coverage.php">Coverage Detail</a></li>
   			  <?php }; ?>
   			  <li><a href="current_bases.php">Base Coverage</a></li>
-  			  <li><a href="current_development.php">W.I.M.M (Dev)</a></li>
+  			  <!--<li><a href="current_development.php">W.I.M.M (Dev)</a></li>-->
 			</ul>
 						<div class="panel panel-default">
 			  <div class="panel-heading">

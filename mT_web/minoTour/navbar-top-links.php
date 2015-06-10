@@ -63,11 +63,11 @@
                                     <a href="live_reads_table.php"><i class="fa fa-eye fa-fw"></i> Individual Read Data</a>
                                 </li>
                                 <li>
-                                    <a href="export.php"><i class="fa fa-file-text-o fa-fw"></i> Export Reads</a>
+                                    <a href="export.php"><i class="fa fa-file-text-o fa-fw"></i> Export Reads/Alignments</a>
                                 </li>
                                 <?php if ($_SESSION['currentXML'] >= 1) {?>
 								<li>
-									<a href="current_XML.php"<i class="fa fa-info-circle"></i> ENA Submission Details</a>
+									<a href="current_XML.php"><i class="fa fa-info-circle"></i> ENA Submission Details</a>
 								</li>
 								<?php }; ?>
                                 <li>
@@ -122,7 +122,7 @@
 								</li>
 								
                                 <li>
-                                    <a href="previous_export.php"><i class="fa fa-file-text-o fa-fw"></i> Export Reads</a>
+                                    <a href="previous_export.php"><i class="fa fa-file-text-o fa-fw"></i> Export Reads/Alignments</a>
                                 </li>
                                 <?php if ($_SESSION['focusXML'] >= 1) {?>
 								<li>

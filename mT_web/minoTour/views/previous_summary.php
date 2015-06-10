@@ -37,8 +37,8 @@ require_once("includes/functions.php");
   			  <li><a href="previous_coverage.php">Coverage Detail</a></li>
   			  <?php }; ?>
   			  <li><a href="previous_bases.php">Base Coverage</a></li>
-  			  <li><a href="previous_development.php">W.I.M.M (Dev)</a></li>
-			</ul>
+  			  <!--<li class="active"><a href="previous_development.php">W.I.M.M (Dev)</a></li>-->
+  			</ul>
 			<div class="panel panel-default">
 			  <div class="panel-heading">
 			    <h3 class="panel-title"><!-- Button trigger modal -->

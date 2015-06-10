@@ -30,8 +30,10 @@ if ($login->isUserLoggedIn() == true) {
     //include("views/index_old.php");*/
 	if($_GET["prev"] == 1){
 		$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['focusrun']);
+		$minupver = $_SESSION['focus_minup'];
 	}else{
 		$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['active_run_name']);
+		$minupver = $_SESSION['active_minup'];
 	}
 	//echo cleanname($_SESSION['active_run_name']);;
 
@@ -102,8 +104,14 @@ if ($login->isUserLoggedIn() == true) {
 				$counter = 1;
 				foreach ($qualarray as $value3){
 					//echo $key . "\t" . $counter . "\n";
-					
-					$qualityarray[$key][$counter]['value'] = $qualityarray[$key][$counter]['value']+(ord($value3)-31);
+					if ($minupver < 0.5){ 
+								$qualityarray[$key][$counter]['value'] = $qualityarray[$key][$counter]['value']+(ord($value3)-31);
+							}else{
+								$qualityarray[$key][$counter]['value'] = $qualityarray[$key][$counter]['value']+(ord($value3));
+
+							}
+					#$qualityarray[$key][$counter]['value'] = $qualityarray[$key][$counter]['value']+(ord($value3)-31);
+					#$qualityarray[$key][$counter]['value'] = $qualityarray[$key][$counter]['value']+(ord($value3));
 					$qualityarray[$key][$counter]['number']++;
 					$counter++;
 				}

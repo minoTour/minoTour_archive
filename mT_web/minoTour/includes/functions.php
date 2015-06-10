@@ -619,6 +619,15 @@ function checksessionvars(){
 						$_SESSION['currenttelem'] = $telemcheckresult->num_rows;
 					}
 
+					//Check for the processing type we need to perform. SAM or MAF
+					$mafcheck = "show tables like 'align_sam%';";
+					$mafcheckresult = $db_connection2->query($mafcheck);
+					if ($mafcheckresult->num_rows >= 1) {
+						$_SESSION['currentmaf'] = "SAM";
+					} else {
+						$_SESSION['currentmaf'] = "MAF";
+					}
+
 					
 					//Check for the existence of a barcoding table in the active run database:
 					$barcodecheck = "select * from barcode_assignment;";
@@ -669,6 +678,16 @@ function checksessionvars(){
 					}else{
 						$_SESSION['focustelem'] = $telemcheckresult->num_rows;
 					}
+					
+					//Check for the processing type we need to perform. SAM or MAF
+					$mafcheck = "show tables like 'align_sam%';";
+					$mafcheckresult = $db_connection2->query($mafcheck);
+					if ($mafcheckresult->num_rows >= 1) {
+						$_SESSION['focusmaf'] = "SAM";
+					} else {
+						$_SESSION['focusmaf'] = "MAF";
+					}
+					
 
 					
 					//Check for the existence of a barcoding table in the active run database:

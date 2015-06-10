@@ -33,8 +33,10 @@ if ($login->isUserLoggedIn() == true) {
 
 	if($_GET["prev"] == 1){
 		$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['focusrun']);
+		$minupver = $_SESSION['focus_minup'];
 	}else{
 		$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['active_run_name']);
+		$minupver = $_SESSION['active_minup'];
 	}
 	//$jsonstring = $jsonstring . $_SESSION['active_run_name'];
 	
@@ -189,8 +191,15 @@ if ($login->isUserLoggedIn() == true) {
 							if ($i < 2) {
 								$flagarray[$position_indicator]='i';
 							}
+							if ($minupver < 0.5){ 
+								$qualityarray[$position_indicator]=(ord($qualarray[$position_indicator])-31);
+							}else{
+								$qualityarray[$position_indicator]=(ord($qualarray[$position_indicator]));
+
+							}
+
 							//$qualityarray[$newstart]=(ord($qualarray[$position_indicator])-31);
-							$qualityarray[$position_indicator]=(ord($qualarray[$position_indicator])-31);
+							//$qualityarray[$position_indicator]=(ord($qualarray[$position_indicator]));
 							//can only do this for the third base of the first 5mer
 							//if ($i == 2) {
 								$pAarray[$position_indicator]=$value2['p_A'];
@@ -233,7 +242,13 @@ if ($login->isUserLoggedIn() == true) {
 								$basearray[$position_indicator]["C"]=0;
 							}
 							//$qualityarray[$start]=(ord($qualarray[$position_indicator])-31);
-							$qualityarray[$position_indicator]=(ord($qualarray[$position_indicator])-31);
+							if ($minupver < 0.5){ 
+								$qualityarray[$position_indicator]=(ord($qualarray[$position_indicator])-31);
+							}else{
+								$qualityarray[$position_indicator]=(ord($qualarray[$position_indicator]));
+
+							}
+							//$qualityarray[$position_indicator]=(ord($qualarray[$position_indicator]));
 							$pAarray[$position_indicator]=$value2['p_A'];
 							$pTarray[$position_indicator]=$value2['p_T'];
 							$pCarray[$position_indicator]=$value2['p_C'];
@@ -275,7 +290,13 @@ if ($login->isUserLoggedIn() == true) {
 								}
 							
 								//$qualityarray[$newstart]=(ord($qualarray[$position_indicator])-31);
+								if ($minupver < 0.5){ 
 								$qualityarray[$position_indicator]=(ord($qualarray[$position_indicator])-31);
+							}else{
+								$qualityarray[$position_indicator]=(ord($qualarray[$position_indicator]));
+
+							}
+								//$qualityarray[$position_indicator]=(ord($qualarray[$position_indicator]));
 								$pAarray[$position_indicator]=$value2['p_A'];
 								$pTarray[$position_indicator]=$value2['p_T'];
 								$pCarray[$position_indicator]=$value2['p_C'];
@@ -317,7 +338,13 @@ if ($login->isUserLoggedIn() == true) {
 						$basearray[$position_indicator]["C"]=0;
 					}
 					//$qualityarray[$newstart]=(ord($qualarray[$position_indicator])-31);
-					$qualityarray[$position_indicator]=(ord($qualarray[$position_indicator])-31);
+					//$qualityarray[$position_indicator]=(ord($qualarray[$position_indicator]));
+					if ($minupver < 0.5){ 
+								$qualityarray[$position_indicator]=(ord($qualarray[$position_indicator])-31);
+							}else{
+								$qualityarray[$position_indicator]=(ord($qualarray[$position_indicator]));
+
+							}
 					$pAarray[$position_indicator]=$value2['p_A'];
 					$pTarray[$position_indicator]=$value2['p_T'];
 					$pCarray[$position_indicator]=$value2['p_C'];

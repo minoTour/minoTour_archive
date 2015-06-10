@@ -31,8 +31,10 @@ if ($login->isUserLoggedIn() == true) {
 
 	if($_GET["prev"] == 1){
 		$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['focusrun']);
+		$minupver = $_SESSION['focus_minup'];
 	}else{
 		$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['active_run_name']);
+		$minupver = $_SESSION['active_minup'];
 	}
 	//$jsonstring = $jsonstring . $_SESSION['active_run_name'];
 	
@@ -174,8 +176,16 @@ if ($login->isUserLoggedIn() == true) {
 							if ($i < 2) {
 								$flagarray[($newstart*10000)]='i';
 							}
+							if ($minupver < 0.5){ 
+								$qualityarray[($newstart*10000)]=(ord($qualarray[$position_indicator])-31);
+							}else{
+								$qualityarray[($newstart*10000)]=(ord($qualarray[$position_indicator]));
+
+							}
+
 							//$qualityarray[$newstart]=(ord($qualarray[$position_indicator])-31);
-							$qualityarray[($newstart*10000)]=(ord($qualarray[$position_indicator])-31);
+							//$qualityarray[($newstart*10000)]=(ord($qualarray[$position_indicator])-31);
+							//$qualityarray[($newstart*10000)]=(ord($qualarray[$position_indicator]));
 							//echo $adjustment . "\t" . $newstart . "\t" . $position_indicator . "\tstarting" ."\n";
 							$position_indicator++;
 						}
@@ -209,8 +219,16 @@ if ($login->isUserLoggedIn() == true) {
 							}else{
 								$basearray[($start*10000)]["C"]=0;
 							}
+							if ($minupver < 0.5){ 
+								$qualityarray[($newstart*10000)]=(ord($qualarray[$position_indicator])-31);
+							}else{
+								$qualityarray[($newstart*10000)]=(ord($qualarray[$position_indicator]));
+
+							}
+
 							//$qualityarray[$start]=(ord($qualarray[$position_indicator])-31);
-							$qualityarray[($start*10000)]=(ord($qualarray[$position_indicator])-31);
+							//$qualityarray[($start*10000)]=(ord($qualarray[$position_indicator])-31);
+							//$qualityarray[($start*10000)]=(ord($qualarray[$position_indicator]));
 							//echo $adjustment . "\t" . $start . "\t" . $position_indicator . "\tmove=1" ."\n";
 							$position_indicator++;
 						}else if ($move == 2) {
@@ -245,9 +263,16 @@ if ($login->isUserLoggedIn() == true) {
 								if ($i < 2) {
 									$flagarray[($newstart*10000)]='i';
 								}
-							
-								//$qualityarray[$newstart]=(ord($qualarray[$position_indicator])-31);
+								if ($minupver < 0.5){ 
 								$qualityarray[($newstart*10000)]=(ord($qualarray[$position_indicator])-31);
+							}else{
+								$qualityarray[($newstart*10000)]=(ord($qualarray[$position_indicator]));
+
+							}
+
+								//$qualityarray[$newstart]=(ord($qualarray[$position_indicator])-31);
+								//$qualityarray[($newstart*10000)]=(ord($qualarray[$position_indicator])-31);
+								//$qualityarray[($newstart*10000)]=(ord($qualarray[$position_indicator]));
 								//echo $adjustment . "\t" . $newstart . "\t" . $position_indicator ."\tcorrecting" . "\n";
 								$position_indicator++;
 							}
@@ -283,8 +308,15 @@ if ($login->isUserLoggedIn() == true) {
 					}else{
 						$basearray[($newstart*10000)]["C"]=0;
 					}
+					if ($minupver < 0.5){ 
+								$qualityarray[($newstart*10000)]=(ord($qualarray[$position_indicator])-31);
+							}else{
+								$qualityarray[($newstart*10000)]=(ord($qualarray[$position_indicator]));
+
+							}
 					//$qualityarray[$newstart]=(ord($qualarray[$position_indicator])-31);
-					$qualityarray[($newstart*10000)]=(ord($qualarray[$position_indicator])-31);
+					//$qualityarray[($newstart*10000)]=(ord($qualarray[$position_indicator])-31);
+					//$qualityarray[($newstart*10000)]=(ord($qualarray[$position_indicator]));
 					//echo $adjustment . "\t" . $newstart . "\t" . $position_indicator . "\tending" . "\n";
 					$position_indicator++;
 				}

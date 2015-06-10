@@ -50,8 +50,10 @@ if ($login->isUserLoggedIn() == true) {
     //include("views/index_old.php");*/    
 	if($_GET["prev"] == 1){
 		$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['focusrun']);
+		$minupver = $_SESSION['focus_minup'];
 	}else{
 		$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['active_run_name']);
+		$minupver = $_SESSION['active_minup'];
 	}
 	//echo cleanname($_SESSION['active_run_name']);;
 
@@ -81,7 +83,11 @@ if ($login->isUserLoggedIn() == true) {
 						$qualscore= substr($row['qual'], 1, -1);
 						$qualarray = str_split($qualscore);
 						foreach ($qualarray as $value){
-							echo chr(ord($value)-31);
+							if ($minupver < 0.5){ 
+								echo chr(ord($value)-31);
+							}else{
+								echo chr(ord($value));
+							}
 						}
 						print "\n";
 					}
@@ -138,7 +144,11 @@ if ($login->isUserLoggedIn() == true) {
 					$qualscore= substr($row['qual'], 1, -1);
 					$qualarray = str_split($qualscore);
 					foreach ($qualarray as $value){
-						echo chr(ord($value)-31);
+						if ($minupver < 0.5){ 
+								echo chr(ord($value)-31);
+							}else{
+								echo chr(ord($value));
+							}
 					}
 					print "\n";
 				}

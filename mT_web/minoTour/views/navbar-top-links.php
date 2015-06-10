@@ -54,7 +54,7 @@
                                     <a href="live_reads_table.php"><i class="fa fa-eye fa-fw"></i> Individual Read Data</a>
                                 </li>
                                 <li>
-                                    <a href="export.php"><i class="fa fa-file-text-o fa-fw"></i> Export Reads</a>
+                                    <a href="export.php"><i class="fa fa-file-text-o fa-fw"></i> Export Reads/Alignments</a>
                                 </li>
                                 <li>
                                     <a href="live_report.php"><i class="fa fa-comments-o fa-fw"></i> Run Report</a>
@@ -90,7 +90,7 @@
 									<a href="prev_kmers.php"><i class="fa fa-cogs fa-fw"></i> K-mer summaries</a>
 								</li>
                                 <li>
-                                    <a href="previous_export.php"><i class="fa fa-file-text-o fa-fw"></i> Export Reads</a>
+                                    <a href="previous_export.php"><i class="fa fa-file-text-o fa-fw"></i> Export Reads/Alignments</a>
                                 </li>
                                 <li>
                                 	<a href="previous_XML.php"><i class="fa fa-info-circle fa-fw"></i> XML Reports</a>

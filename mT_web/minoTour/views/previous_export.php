@@ -38,6 +38,10 @@ require_once("includes/functions.php");
 				<h4>Download All Sequences</h4>
 			</div>
 		<div class='panel-body'>
+		
+		
+		
+		
 		<table class='table table-condensed'>
 		<thead>
 		<tr>
@@ -54,6 +58,7 @@ require_once("includes/functions.php");
 					<td>Generated</td>
 					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['focusrun']; ?>&job=template&prev=1' type='button' class='btn btn-success btn-xs'>Download Fasta</a></td>
 					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['focusrun']; ?>&job=template&prev=1&type=fastq' type='button' class='btn btn-success btn-xs'>Download Fastq</a></td>
+					
 					</tr>
 			<tr>
 					<td>Complement Sequence</td>
@@ -79,6 +84,7 @@ require_once("includes/functions.php");
 				<h4>Download Aligned Sequences Only</h4>
 			</div>
 		<div class='panel-body'>
+		Note that alignment files can be very large. These are the raw files reported either from last or BWA.
 		<table class='table table-condensed'>
 		<thead>
 		<tr>
@@ -86,6 +92,7 @@ require_once("includes/functions.php");
 		<th>Result</th>
 		<th>Fasta</th>
 		<th>Fastq</th>
+		<th>Alignments</th>
 		
 		</tr>
 		</thead>
@@ -95,18 +102,26 @@ require_once("includes/functions.php");
 					<td>Generated</td>
 					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['focusrun']; ?>&job=template&align=1&prev=1' type='button' class='btn btn-success btn-xs'>Download Fasta</a></td>
 					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['focusrun']; ?>&job=template&align=1&prev=1&type=fastq' type='button' class='btn btn-success btn-xs'>Download Fastq</a></td>
+					<td><?php if ($_SESSION['focusmaf'] == "MAF") { ?><a href='includes/fetchmaf.php?db=<?php echo $_SESSION['focusrun']; ?>&job=template&prev=1' type='button' class='btn btn-success btn-xs'>Download MAF</a><?php }?>
+					<?php if ($_SESSION['focusmaf'] == "SAM") { ?><a href='includes/fetchsam.php?db=<?php echo $_SESSION['focusrun']; ?>&job=template&prev=1' type='button' class='btn btn-success btn-xs'>Download SAM</a><?php }?>
+					</td>
 					</tr>
 			<tr>
 					<td>Complement Sequence</td>
 					<td>Generated</td>
 					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['focusrun']; ?>&job=complement&align=1&prev=1' type='button' class='btn btn-success btn-xs'>Download Fasta</a></td>
 					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['focusrun']; ?>&job=complement&align=1&prev=1&type=fastq' type='button' class='btn btn-success btn-xs'>Download Fastq</a></td>
+					<td><?php if ($_SESSION['focusmaf'] == "MAF") { ?><a href='includes/fetchmaf.php?db=<?php echo $_SESSION['focusrun']; ?>&job=complement&prev=1' type='button' class='btn btn-success btn-xs'>Download MAF</a><?php }?>
+					<?php if ($_SESSION['focusmaf'] == "SAM") { ?><a href='includes/fetchsam.php?db=<?php echo $_SESSION['focusrun']; ?>&job=complement&prev=1' type='button' class='btn btn-success btn-xs'>Download SAM</a><?php }?></td>
+					
 					</tr>
 					<tr>
 					<td>2D Sequence</td>
 					<td>Generated</td>
 					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['focusrun']; ?>&job=2d&align=1&prev=1' type='button' class='btn btn-success btn-xs'>Download Fasta</a></td>
 					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['focusrun']; ?>&job=2d&align=1&prev=1&type=fastq' type='button' class='btn btn-success btn-xs'>Download Fastq</a></td>
+					<td><?php if ($_SESSION['focusmaf'] == "MAF") { ?><a href='includes/fetchmaf.php?db=<?php echo $_SESSION['focusrun']; ?>&job=2d&prev=1' type='button' class='btn btn-success btn-xs'>Download MAF</a><?php }?>
+					<?php if ($_SESSION['focusmaf'] == "SAM") { ?><a href='includes/fetchsam.php?db=<?php echo $_SESSION['focusrun']; ?>&job=2d&prev=1' type='button' class='btn btn-success btn-xs'>Download SAM</a><?php }?></td>
 					</tr>
 </tbody>
 		</table>
