@@ -597,6 +597,18 @@ function checksessionvars(){
 						$_SESSION['currentXML'] = $xmlresult->num_rows;
 					}
 					
+					//Check for the existence of an interaction table in the active run database:
+
+					$db_connection2 = new mysqli(DB_HOST, DB_USER, DB_PASS, $_SESSION['active_run_name']);
+					$intcheck = "select * from messages;";
+					$intresult = $db_connection2->query($intcheck);
+					if ($intresult->num_rows >= 1) {
+						$_SESSION['currentINT'] = $intresult->num_rows;
+					}else{
+						$_SESSION['currentINT'] = $intresult->num_rows;
+					}
+
+					
 					//Check for the existence of squiggle data in the active run database:
 					
 					$telemcheck = "show tables like 'caller_basecalled_template%';";

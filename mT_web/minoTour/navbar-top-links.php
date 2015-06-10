@@ -76,7 +76,7 @@
                                 <li>
                                     <a href="set_alerts.php"><i class="fa fa-exclamation-circle"></i> Set Alerts</a>
                                 </li>
-                                <?php if ($_SESSION['user_name'] == "interactiondemo"){?>
+                                <?php if ($_SESSION['currentINT'] >=1){?>
                                 <li>
                                 	<a href="live_interaction.php"><i class="fa fa-cogs"></i> minION control</a>
                                 </li>

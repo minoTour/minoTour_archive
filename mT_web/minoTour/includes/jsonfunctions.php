@@ -863,7 +863,119 @@ function basesnpcoveragepos($jobname,$currun,$refid,$position,$type,$barcodechec
 
 #### This aim of this plot is to provide a dynamic view of bases aligned and called over the reference
 
-function basesnpcoverage($jobname,$currun,$refid) {
+function basesnpcoverage($jobname,$currun,$refid,$start,$end,$type) {
+	$checkvar = $currun . $jobname . $refid;
+	$checkrunning = $currun . $jobname .$refid . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;	
+	$checkingrunning = $memcache->get("$checkrunning");
+	if ($checkingrunning === "No" || $checkingrunning === FALSE) {
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if ($checking->num_rows == 1) {
+			foreach ($checking as $row) {
+				$jsonstring=$row['json'];
+			}
+		}else{
+			
+			$sql_query = "select *, @var_max_val:= GREATEST(A,T,G,C) AS max_value,
+       CASE @var_max_val WHEN A THEN 'A'
+                         WHEN T THEN 'T'
+                         WHEN C THEN 'C'
+                         WHEN G THEN 'G'
+       END AS max_value_column_name from reference_coverage_".$type." where ref_id = " . $refid . " and ref_pos >= " . $start ." and ref_pos <= ".$end.";";
+       		
+       		//echo $sql_query ;
+       		$result = $mindb_connection->query($sql_query);
+			//array to store the results
+			$resultarray;
+			//refidarray - to store individual reference elements
+			$refidarray;
+			$refiddescarray;
+			
+			if ($result->num_rows >=1) {
+				foreach ($result as $row) {
+					$resultarray[$type][$row['ref_id']]['A'][$row['ref_pos']]=$row['A'];
+					$resultarray[$type][$row['ref_id']]['T'][$row['ref_pos']]=$row['T'];
+					$resultarray[$type][$row['ref_id']]['G'][$row['ref_pos']]=$row['G'];
+					$resultarray[$type][$row['ref_id']]['C'][$row['ref_pos']]=$row['C'];
+					$resultarray[$type][$row['ref_id']]['D'][$row['ref_pos']]=$row['D'];
+					$resultarray[$type][$row['ref_id']]['I'][$row['ref_pos']]=$row['I'];				
+				}
+			}
+			
+		}
+		$jsonstring;
+		$jsonstring = $jsonstring . "[\n";
+		foreach ($resultarray as $key => $value) {
+			foreach ($value as $key2 => $value2){
+				foreach ($value2 as $key3 => $value3){
+					$jsonstring = $jsonstring . "{\n";
+						$jsonstring = $jsonstring . "\"name\":\"" . $key3 .  "\",\n";
+						#				echo $key . "\n";
+						#			echo $value . "\n";
+						if ($key3 == "A"){
+							$jsonstring = $jsonstring . "\"color\": 'blue',\n";
+						}
+						if ($key3 == "T"){
+							$jsonstring = $jsonstring .  "\"color\": 'yellow',\n";
+						}
+						if ($key3 == "G"){
+							$jsonstring = $jsonstring .  "\"color\": 'green',\n";
+						}
+						if ($key3 == "C"){
+							$jsonstring = $jsonstring .  "\"color\": 'red',\n";
+						}
+						if ($key3 == "I"){
+							$jsonstring = $jsonstring .  "\"color\": 'grey',\n";
+						}
+						if ($key3 == "D"){
+							$jsonstring = $jsonstring .  "\"color\": 'black',\n";
+						}
+						if ($key == "template") {
+							$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+						}else if ($key == "complement") {
+							$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+						}else if ($key == "2d") {
+							$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+						}
+						$jsonstring = $jsonstring . "\"pointPadding\": 0.1,\n";
+						$jsonstring = $jsonstring . "\"groupPadding\": 0.1,\n";
+						$jsonstring = $jsonstring . "\"borderWidth\": 0.1,\n";						
+						$jsonstring = $jsonstring . "\"shadow\": false,\n";						
+						$jsonstring = $jsonstring . "\"data\":[";
+			
+#						echo $key2 . "\n";
+
+#						echo $key3 . "\n";
+						foreach ($value3 as $key4 => $value4){
+#							echo $value4 . "\n";
+							$jsonstring = $jsonstring . "[ $key4 , $value4 ],";
+						}
+						$jsonstring = $jsonstring . "]\n";
+						$jsonstring = $jsonstring . "},\n";	
+				}
+			}
+		}
+		$jsonstring = $jsonstring . "]\n";
+		if ($_GET["prev"] == 1){
+			#include 'savejson.php';
+		}
+		$memcache->set("$checkvar", $jsonstring);
+	}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}	
+	// cache for 2 minute as we want yield to update semi-regularly...  
+	$memcache->delete("$checkrunning");
+   	return $jsonstring;
+   	
+		
+}
+
+
+
+function basesnpcoverage_OLD($jobname,$currun,$refid,$start,$end,$type) {
 	$checkvar = $currun . $jobname . $refid;
 	$checkrunning = $currun . $jobname .$refid . "status";
 	global $memcache;
@@ -884,19 +996,19 @@ function basesnpcoverage($jobname,$currun,$refid) {
                          WHEN T THEN 'T'
                          WHEN C THEN 'C'
                          WHEN G THEN 'G'
-       END AS max_value_column_name from reference_coverage_template where ref_id = " . $refid . ";";
+       END AS max_value_column_name from reference_coverage_template where ref_id = " . $refid . " and ref_pos >= " . $start ." and ref_pos <= ".$end.";";
        		$sql_complement = "select *, @var_max_val:= GREATEST(A,T,G,C) AS max_value,
        CASE @var_max_val WHEN A THEN 'A'
                          WHEN T THEN 'T'
                          WHEN C THEN 'C'
                          WHEN G THEN 'G'
-       END AS max_value_column_name from reference_coverage_complement where ref_id = " . $refid . ";";
+       END AS max_value_column_name from reference_coverage_complement where ref_id = " . $refid . " and ref_pos >= " . $start ." and ref_pos <= ".$end.";";
        		$sql_2d = "select *, @var_max_val:= GREATEST(A,T,G,C) AS max_value,
        CASE @var_max_val WHEN A THEN 'A'
                          WHEN T THEN 'T'
                          WHEN C THEN 'C'
                          WHEN G THEN 'G'
-       END AS max_value_column_name from reference_coverage_2d where ref_id = " . $refid . ";";
+       END AS max_value_column_name from reference_coverage_2d where ref_id = " . $refid . " and ref_pos >= " . $start ." and ref_pos <= ".$end.";";
        		$resulttemplate = $mindb_connection->query($sql_template);
 			$resultcomplement = $mindb_connection->query($sql_complement);
 			$result2d = $mindb_connection->query($sql_2d);	

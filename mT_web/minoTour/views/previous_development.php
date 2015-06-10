@@ -36,7 +36,7 @@ require_once("includes/functions.php");
   			   <?php if ($_SESSION['focusreference'] != "NOREFERENCE") {?>
   			  <li><a href="previous_coverage.php">Coverage Detail</a></li>
   			  <?php }; ?>
-  			  <li><a href="previous_bases.php">Base Coverage (Dev)</a></li>
+  			  <li><a href="previous_bases.php">Base Coverage</a></li>
   			  <li class="active"><a href="previous_development.php">W.I.M.M (Dev)</a></li>
 			</ul>
 			<div class="panel panel-default">
@@ -73,6 +73,7 @@ require_once("includes/functions.php");
 					<?php if ($_SESSION['focusreference'] != "NOREFERENCE") {?>
 					<?php $arr = array("template", "complement", "2d");?>
 					<?php foreach ($arr as $key => $value) {
+						
 						//echo $key . " " . $value . "<br>";?>
 						<div id="wimm<?php echo $key;?>" style="width:100%; height:300px;"><i class="fa fa-cog fa-spin fa-3x" ></i> Calculating <?php echo $value;?> WIMM</div>
 						<?php

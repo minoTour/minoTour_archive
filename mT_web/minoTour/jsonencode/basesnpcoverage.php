@@ -43,10 +43,16 @@ if ($login->isUserLoggedIn() == true) {
 		$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['focusrun']);
 		$currun = $_SESSION['focusrun'];
 		$refid = $_GET["refid"];
+		$start  = $_GET["start"];
+		$end  = $_GET["end"];
+		$type = $_GET["type"];
 	}else{
 		$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['active_run_name']);
 		$currun = $_SESSION['active_run_name'];
 		$refid = $_GET["refid"];
+		$start  = $_GET["start"];
+		$end  = $_GET["end"];
+		$type = $_GET["type"];
 	}
 	//echo cleanname($_SESSION['active_run_name']);;
 
@@ -57,7 +63,7 @@ if ($login->isUserLoggedIn() == true) {
 
 		$jsonjobname="basesnpcoverage";
 		
-		$jsonstring=$jsonjobname($jsonjobname,$currun,$refid);
+		$jsonstring=$jsonjobname($jsonjobname,$currun,$refid,$start,$end,$type);
 			
 		$callback = $_GET['callback'];
 		echo $callback.'('.$jsonstring.');';

@@ -681,9 +681,10 @@ unless ($checkingrunning) {
 					my $rname=$ref->{rname};
 					my $mapq=$ref->{mapq};
 					my $cigar=$ref->{cigar};
-					my @seq=split(//, $ref->{refsequence});
-					my @refbases=@seq;
+					#my @seq=split(//, $ref->{refsequence});
+					#my @refbases=@seq;
 					my @readbases=split(//,$ref->{seq});
+					my $m_d=$ref->{m_d};
 #					print "REFBASES \n";
 #					print $ref->{refsequence} . "\n\n";
 					#print "REFBASES:\t", @readbases,"\n";	
@@ -693,16 +694,13 @@ unless ($checkingrunning) {
 
 					#ciglist = cigar.split(r'M|I|D|N|S|H|P|=|X')
 					#ciglist = re.split('(\W)', cigar)
+					
 					my @cigparts = split(/([A-Z])/, $cigar);
-
 					my $q_pos=0;
 					my $r_pos=($ref->{pos})-1;
-					#print $r_pos . "\n\n";
-					my $qstring="";
-					my $rstring="";
-					#my $r;
-					#my $q;
-			
+					my @q_array=();
+					my @r_array=();
+					my $q_string="";
 					while(my ($cigarpartbasecount,$cigartype) = splice(@cigparts,0,2)) {
 						#print ">>>", "$cigarpartbasecount,$cigartype\n";
 						if ($cigartype eq "S"){# not aligned read section
@@ -710,32 +708,90 @@ unless ($checkingrunning) {
 						}
 						if ($cigartype eq "M"){# so its not a deletion or insertion. Its 0:M
 							for (my $q=$q_pos;$q<=($q_pos+$cigarpartbasecount-1);$q++){
-								$qstring=$qstring.$readbases[$q];
+								push @q_array,$readbases[$q];
+								#$q_string=$q_string.$readbases[$q];
 							}
 							for (my $r=$r_pos;$r<=($r_pos+$cigarpartbasecount-1);$r++){
-								$rstring=$rstring.$refbases[$r];
+								#push @r_array,$refbases[$r];
+								push @r_array,"X";
 							}
 							$q_pos=$q_pos+$cigarpartbasecount;
 							$r_pos=$r_pos+$cigarpartbasecount;
 						}
 						if ($cigartype eq "I"){
 							for (my $q=$q_pos;$q<=($q_pos+$cigarpartbasecount-1);$q++){
-								$qstring=$qstring.$readbases[$q];
+								push @q_array,$readbases[$q];
+								#$q_string=$q_string.$readbases[$q];
 							}
 							for (my $r=$r_pos;$r<=($r_pos+$cigarpartbasecount-1);$r++){
-								$rstring=$rstring."-";
+								push @r_array,"-";
 							}
 							$q_pos=$q_pos+$cigarpartbasecount;
 						}
 						if ($cigartype eq "D"){
 							for (my $q=$q_pos;$q<=($q_pos+$cigarpartbasecount-1);$q++){
-								$qstring=$qstring."-";
+								push @q_array,"-";
+								#$q_string=$q_string."-";
 							}
 							for (my $r=$r_pos;$r<=($r_pos+$cigarpartbasecount-1);$r++){
-								$rstring=$rstring.$refbases[$r];
+								push @r_array,"o";
 							}
-							$r_pos=$r_pos+$cigarpartbasecount;							}
+							$r_pos=$r_pos+$cigarpartbasecount;
+						}
 					}
+					#print "$qname\t$#r_array\t$#q_array\t$#readbases\n";
+					#print "$q_string\n";
+					for (my $i=0;$i<=$#r_array;$i++){
+						#print "$r_array[$i]\t$q_array[$i]\n";
+						if ($q_array[$i] ne "-" && $r_array[$i] ne "-"){
+							$r_array[$i]=$q_array[$i];
+						}
+					}
+		
+					my $a=0;
+					my @mdparts=split(/(\d+)|MD:Z:/, $m_d);
+					for my $m (@mdparts){
+						#print "$m,";
+						if ($m){
+							if ($m=~/^\^(.+)/){
+								my @tmp=split(//, $1);
+								for (my $x=0;$x<=$#tmp;$x++){
+									$r_array[$a]=$tmp[$x];
+									$a++;
+								}
+							}
+							
+							elsif ($m eq "A" || $m eq "T" || $m eq "C" || $m eq "G" ){
+								if ($r_array[$a] eq "-"){
+									while ($r_array[$a] eq "-"){
+										$a++;
+									}
+								}
+								$r_array[$a]=$m;
+								#$r_array[$a]="^";
+								$a++;
+							}
+							
+							elsif ( $m == int($m) ){
+								for (my $i=0;$i<$m;$i++){
+									if ($r_array[($a+$i)] eq "-"){
+										while ($r_array[($a+$i)] eq "-"){
+											$a++;
+										}
+									}
+								}
+								$a=$a+$m;
+								#for (my $x=0;$x<$m;$x++){
+								#	$r_array[$a]=$q_array[$a];
+								#	$a++;
+								#	}
+							}
+						}
+					}
+					
+					#print "\n";
+					my $qstring=join('', @q_array);
+					my $rstring=join('', @r_array);
 					#print "QUERY:\t", $qstring, "\n";
 					#print "REF:\t", $rstring, "\n";
 					my $refstring_orig = $rstring;

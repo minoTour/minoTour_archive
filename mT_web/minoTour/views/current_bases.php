@@ -36,16 +36,15 @@ require_once("includes/functions.php");
   			   <?php if ($_SESSION['activereference'] != "NOREFERENCE") {?>
   			  <li><a href="current_coverage.php">Coverage Detail</a></li>
   			  <?php }; ?>
-  			  <li class="active"><a href="current_bases.php">Base Coverage (Dev)</a></li>
+  			  <li class="active"><a href="current_bases.php">Base Coverage</a></li>
   			  <li><a href="current_development.php">W.I.M.M (Dev)</a></li>
 			</ul>
 			<div class="panel panel-default">
 			  <div class="panel-heading">
 			    <h3 class="panel-title"><!-- Button trigger modal -->
 <button class="btn btn-info" data-toggle="modal" data-target="#modal3">
- <i class="fa fa-info-circle"></i> New Views
-</button></h3><h4>Please note this page can be extremely slow to load.</h4>
-
+ <i class="fa fa-info-circle"></i> Coverage
+</button></h3>
 <!-- Modal -->
 <div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -55,11 +54,10 @@ require_once("includes/functions.php");
         <h4 class="modal-title" id="myModalLabel"> New Views
       </div>
       <div class="modal-body">
-        Work in Progress<br>
-		This is a work in progress - more so than any other area of the site these may produce incorrect or erroneous data. In some cases we are exploring with ways of presenting data or alternative methods for analysing data in real time. Once a view has been more thoroughly analysed the (Dev) marking will be removed.  <br>
-		<h3>Base Coverage</h3>
-		These plots show a view of base coverage across the entire reference. For large reference sequences this view will break the site currently.<br>To generate these plots, we take the MAF alignment data from Last and use it to call bases where they align to the reference. We call either the base which is aligned at that position, a single deletion if no base is placed at that point, or an insertion if extra bases are present. The insertion count is incremented by the number of inserted bases at that position. This is something which will be addressed in more detail in the future.
+        <h3>Base Coverage</h3>
+		These plots show a view of base coverage across the entire reference. <br>To generate these plots, we take the MAF/SAM alignment data from Last/BWA and use it to call bases where they align to the reference. We call either the base which is aligned at that position, a single deletion if no base is placed at that point, or an insertion if extra bases are present. The insertion count is incremented by the number of inserted bases at that position. This is something which will be addressed in more detail in the future.
 		<br>
+
 		  </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -72,12 +70,86 @@ require_once("includes/functions.php");
 					
 					<?php if ($_SESSION['activereference'] != "NOREFERENCE") {?>
 				
-					<?php foreach ($_SESSION['activerefnames'] as $key => $value) {
-						//echo $key . " " . $value . "<br>";?>
-						<div id="basesnpcoverage<?php echo $key;?>" style="width:100%; height:900px;"><i class="fa fa-cog fa-spin fa-3x" ></i> Calculating 'Base SNP Coverage Plots' for <?php echo $value;?></div>
-						<?php
+					
+						
+					
+						
+						<?php if (!empty($_POST)): ?>
+			  	<?php 
+			  	$type = $_POST["type"]; 
+			  	$coverage = $_POST["coverage"];
+			  	$center = $_POST["center"];
+			  	$start = $center - ($coverage/2);
+			  	$end = $center + ($coverage/2);
+			  	$reference = $_POST["reference"];
+			  	$leftshift = $_POST["freddy"];
+			  	$center = $center-$leftshift;
+			  	$_POST["shift"]=0;
+			  	
+			  			?>
+   <?php else: ?>
+				<?php 
+				$type = '2d';
+				$coverage = 100;
+				$center = 500;
+			  	$start = $center - ($coverage/2);
+			  	$end = $center + ($coverage/2);
+			  	$reference =1;
+				 ?>
+				<?php endif; ?>
+				
+						<form action=<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?> method="post" name="form" class="form-inline">
+						<div class="form-group">
+						<label for "reference">Reference:</label>
+						 <select class="form-control" name="reference" id="reference" onchange="this.form.submit()">
+						<?php foreach ($_SESSION['activerefnames'] as $key => $value) {?>
+							<option <?php if ($reference == $key){echo "selected=\"selected\"";};?> value="<?php echo $key;?>"><?php echo $value;?></option>
+							<?php
 					}
 					?>
+						</select>
+						
+						
+    <label for="type">Read Type:</label>
+   <select class="form-control" name="type" id="type" onchange="this.form.submit()">
+        <option <?php if ($type == 'template'){echo "selected=\"selected\"";};?> value="template">Template</option>
+        <option <?php if ($type == 'complement'){echo "selected=\"selected\"";};?> value="complement">Complement</option>
+        <option <?php if ($type == '2d'){echo "selected=\"selected\"";};?> value="2d">2d</option>
+     </select>
+     <label for="coverage">Window Size:</label>
+     <select class="form-control" name="coverage" id="coverage" onchange="this.form.submit()">
+     	<option <?php if ($coverage == 100){echo "selected=\"selected\"";};?> value="100">100bp</option>
+     	<option <?php if ($coverage == 500){echo "selected=\"selected\"";};?> value="500">500bp</option>
+     	<option <?php if ($coverage == 1000){echo "selected=\"selected\"";};?> value="1000">1kb</option>
+     	<option <?php if ($coverage == 2000){echo "selected=\"selected\"";};?> value="2000">2kb</option>
+     	<option <?php if ($coverage == 5000){echo "selected=\"selected\"";};?> value="5000">5kb</option>
+     </select>
+     </div>
+     <br>
+     <br>
+     <button id="button1" type="button" class="btn btn-default" aria-label="Left Align">
+  <span class="fa fa-fast-backward" aria-hidden="true"></span>
+</button>
+<button id="button2" type="button" class="btn btn-default" aria-label="Left Align">
+  <span class="fa fa-backward" aria-hidden="true"></span>
+</button>
+<button id="button3" type="button" class="btn btn-default" aria-label="Left Align">
+  <span class="fa fa-step-backward" aria-hidden="true"></span>
+</button>
+     Genome Position: <input type="text" name="center" id="center" value="<?php echo $center;?>" onchange="this.form.submit()">
+<button id="button4" type="button" class="btn btn-default" aria-label="Left Align">
+  <span class="fa fa-step-forward" aria-hidden="true"></span>
+</button>
+<button id="button5" type="button" class="btn btn-default" aria-label="Left Align">
+  <span class="fa fa-forward" aria-hidden="true"></span>
+</button>
+<button id="button6" type="button" class="btn btn-default" aria-label="Left Align">
+  <span class="fa fa-fast-forward" aria-hidden="true"></span>
+</button>     
+     
+    </form>
+						<div id="basesnpcoverage" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x" ></i> Calculating 'Base Coverage Plots' for <?php echo $value;?></div>
+						
 				
 				<?php }else { ?>
 												<div><p class="text-center"><small>This dataset has not been aligned to a reference sequence and so no SNPs can be called.</small></p></div>
@@ -86,8 +158,7 @@ require_once("includes/functions.php");
 					
 			  </div>
 			</div>
-			
-                <!-- /.col-lg-12 -->
+			                <!-- /.col-lg-12 -->
             </div>
         </div>
         <!-- /#page-wrapper -->
@@ -114,23 +185,26 @@ require_once("includes/functions.php");
 	<script type="text/javascript" src="js/themes/grid-light.js"></script>
 	<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
-	
-	
+	<script>
+		
+	</script>
 	
 	
 					
-		<?php foreach ($_SESSION['activerefnames'] as $key => $value) {
-			//echo $key . " " . $value . "<br>";?>
-				<script>
+						<script>
 			$(document).ready(function() {
+				var start = <?php echo $start;?>;
+				var end = <?php echo $end;?>;
+				var reference = '<?php echo $reference;?>';
+				var type = '<?php echo $type;?>';
 			    var options = {
 			        chart: {
-			            renderTo: 'basesnpcoverage<?php echo $key;?>',
+			            renderTo: 'basesnpcoverage',
 						zoomType: 'x',
 			            type: 'column',
 			        },
 			        title: {
-			          text: 'Base SNP Coverage <?php echo $value;?>'
+			          text: 'Base Coverage <?php echo $_SESSION['activerefnames'][$reference];?>'
 			        },
 			        resetZoomButton: {
 	                position: {
@@ -167,36 +241,11 @@ require_once("includes/functions.php");
 	            	    			    x: -3
 	            	   				},
 	            	    			title: {
-	            	        			text: 'Template'
+	            	        			text: '<?php echo $type; ?> Coverage'
 					                },
-					                height: '33%',
+					                height: '100%',
 					                lineWidth: 1
-					            }, {
-	            				    labels: {
-	                    				align: 'right',
-	         					           x: -3
-	                					},
-					                title: {
-					                    text: 'Complement'
-					                },
-					                top: '33%',
-					                height: '33%',
-					                offset: 0,
-					                lineWidth: 1
-					            }, {
-	            				    labels: {
-	                    				align: 'right',
-	         					           x: -3
-	                					},
-					                title: {
-					                    text: '2D'
-					                },
-					                top: '66%',
-					                height: '33%',
-					                offset: 0,
-					                lineWidth: 1,
-					                min:0
-					            }],
+					            },],
 									credits: {
 									    enabled: false
 									  },
@@ -216,7 +265,7 @@ require_once("includes/functions.php");
 			        series: []
 			    };
 	
-			    $.getJSON('jsonencode/basesnpcoverage.php?prev=0&refid=<?php echo $key;?>&callback=?', function(data) {
+			    $.getJSON('jsonencode/basesnpcoverage.php?prev=0&start=<?php echo $start;?>&end=<?php echo $end; ?>&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
 					//alert("success");
 			        options.series = data; // <- just assign the data to the series property.
 	        
@@ -225,14 +274,110 @@ require_once("includes/functions.php");
 			        //options.series = JSON2;
 					var chart = new Highcharts.Chart(options);
 					});
+					
+					$( "#button1" ).click(function() {
+					start = start - 1000;
+					end = end - 1000;
+					$("#center").val($("#center").val()-1000);
+					//alert ("HOORAY!");
+					$.getJSON('jsonencode/basesnpcoverage.php?prev=0&start='+start+'&end='+end+'&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
+					//alert("success");
+			        options.series = data; // <- just assign the data to the series property.
+	        
+		 
+		
+			        //options.series = JSON2;
+					var chart = new Highcharts.Chart(options);
+					});
+					
+				});
+					$( "#button2" ).click(function() {
+					start = start - 500;
+					end = end - 500;
+					$("#center").val($("#center").val()-500);
+					//alert ("HOORAY!");
+					$.getJSON('jsonencode/basesnpcoverage.php?prev=0&start='+start+'&end='+end+'&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
+					//alert("success");
+			        options.series = data; // <- just assign the data to the series property.
+	        
+		 
+		
+			        //options.series = JSON2;
+					var chart = new Highcharts.Chart(options);
+					});
+					
+				});
+					$( "#button3" ).click(function() {
+					start = start - 100;
+					end = end - 100;
+					$("#center").val($("#center").val()-100);
+					//alert ("HOORAY!");
+					$.getJSON('jsonencode/basesnpcoverage.php?prev=0&start='+start+'&end='+end+'&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
+					//alert("success");
+			        options.series = data; // <- just assign the data to the series property.
+	        
+		 
+		
+			        //options.series = JSON2;
+					var chart = new Highcharts.Chart(options);
+					});
+					
+				});
+				$( "#button6" ).click(function() {
+					start = start + 1000;
+					end = end + 1000;
+					$("#center").val(parseFloat($("#center").val())+1000);
+					//alert ("HOORAY!");
+					$.getJSON('jsonencode/basesnpcoverage.php?prev=0&start='+start+'&end='+end+'&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
+					//alert("success");
+			        options.series = data; // <- just assign the data to the series property.
+	        
+		 
+		
+			        //options.series = JSON2;
+					var chart = new Highcharts.Chart(options);
+					});
+					
+				});
+					$( "#button5" ).click(function() {
+					start = start + 500;
+					end = end + 500;
+					$("#center").val(parseFloat($("#center").val())+500);
+					//alert ("HOORAY!");
+					$.getJSON('jsonencode/basesnpcoverage.php?prev=0&start='+start+'&end='+end+'&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
+					//alert("success");
+			        options.series = data; // <- just assign the data to the series property.
+	        
+		 
+		
+			        //options.series = JSON2;
+					var chart = new Highcharts.Chart(options);
+					});
+					
+				});
+					$( "#button4" ).click(function() {
+					start = start + 100;
+					end = end + 100;
+					$("#center").val(parseFloat($("#center").val())+100);
+					//alert ("HOORAY!");
+					$.getJSON('jsonencode/basesnpcoverage.php?prev=0&start='+start+'&end='+end+'&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
+					//alert("success");
+			        options.series = data; // <- just assign the data to the series property.
+	        
+		 
+		
+			        //options.series = JSON2;
+					var chart = new Highcharts.Chart(options);
+					});
+					
+				});
 			});
 
 				//]]>  
+				
 
 				</script>
-			<?php
-		}
-		?>
+		
 		
 			
  

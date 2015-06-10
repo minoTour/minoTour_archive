@@ -36,7 +36,7 @@ require_once("includes/functions.php");
   			   <?php if ($_SESSION['focusreference'] != "NOREFERENCE") {?>
   			  <li><a href="previous_coverage.php">Coverage Detail</a></li>
   			  <?php }; ?>
-  			  <li><a href="previous_bases.php">Base Coverage (Dev)</a></li>
+  			  <li><a href="previous_bases.php">Base Coverage</a></li>
   			  <li><a href="previous_development.php">W.I.M.M (Dev)</a></li>
 			</ul>
 			<div class="panel panel-default">
