@@ -19,7 +19,21 @@ require_once($directory ."config/db.php");
     // the user is logged in. you can do whatever you want here.
     // for demonstration purposes, we simply show the "you are logged in" view.
     //include("views/index_old.php");*/
-    
+    if (strlen(consumerkey) >= 1 && strlen(consumersecret) >= 1 && strlen(accesstoken) >= 1 && strlen(accesssecret)){
+				#echo "Yay!";
+				$url = $_SERVER['REQUEST_URI']; //returns the current URL
+				$parts = explode('/',$url);
+				array_pop($parts);
+				$thang = implode('/',$parts);
+				$dir = $_SERVER['SERVER_NAME'];
+				//echo $dir. $thang . "<br>";
+				
+				$twiturl = "http://" . $dir . $thang . "/twitmino/";
+
+			}else {
+				#echo "Nay!";
+				$twiturl = "http://www.nottingham.ac.uk/~plzloose/minoTourhome/";
+			}
     //As user is logged in, we can now look at the memcache to retrieve data from here and so reduce the load on the mySQL server
 	// Connection creation
 	$memcache = new Memcache;
@@ -27,7 +41,6 @@ require_once($directory ."config/db.php");
 	$cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT);
     
     $checkalertrunning = $memcache->get("alertcheckrunning");
-    
     if ($checkalertrunning > 0) {
     	#echo "Not going to tweet now!\n";
     	#echo $checkalertrunning . "\n";
@@ -41,7 +54,8 @@ require_once($directory ."config/db.php");
 		// Set some options - we are passing in a useragent too here
 		curl_setopt_array($curl, array(
 			CURLOPT_RETURNTRANSFER => 1,
-			CURLOPT_URL => 'http://www.nottingham.ac.uk/~plzloose/minoTourhome/globaltweet.php?' .$postData ,
+			//CURLOPT_URL => 'http://www.nottingham.ac.uk/~plzloose/minoTourhome/globaltweet.php?' .$postData ,
+			CURLOPT_URL => $twiturl . 'globaltweet.php?' .$postData ,
 			CURLOPT_USERAGENT => 'Codular Sample cURL Request'
 		));
 		// Send the request & save response to $resp
@@ -136,7 +150,7 @@ require_once($directory ."config/db.php");
 								// Set some options - we are passing in a useragent too here
 								curl_setopt_array($curl, array(
 									CURLOPT_RETURNTRANSFER => 1,
-									CURLOPT_URL => 'http://www.nottingham.ac.uk/~plzloose/minoTourhome/tweet.php?' .$postData ,
+									CURLOPT_URL => $twiturl . 'tweet.php?' .$postData ,
 									CURLOPT_USERAGENT => 'Codular Sample cURL Request'
 								));
 								// Send the request & save response to $resp
@@ -177,7 +191,7 @@ require_once($directory ."config/db.php");
 											// Set some options - we are passing in a useragent too here
 											curl_setopt_array($curl, array(
 											    CURLOPT_RETURNTRANSFER => 1,
-											    CURLOPT_URL => 'http://www.nottingham.ac.uk/~plzloose/minoTourhome/tweet.php?' .$postData ,
+											    CURLOPT_URL => $twiturl . 'tweet.php?' .$postData ,
 											    CURLOPT_USERAGENT => 'Codular Sample cURL Request'
 											));
 											// Send the request & save response to $resp

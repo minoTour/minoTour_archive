@@ -21,4 +21,10 @@ define("DB_PORT", 3306);
 // Connection constants
 define('MEMCACHED_HOST', '127.0.0.1');
 define('MEMCACHED_PORT', '11211');
+
+// Twitter connection constants
+define('consumerkey', '');
+define('consumersecret', '');
+define('accesstoken', '');
+define('accesssecret', '');
 ?>

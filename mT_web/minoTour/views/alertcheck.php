@@ -19,7 +19,27 @@ if ($login->isUserLoggedIn() == true) {
     $checkalertrunning = $memcache->get("alertcheckrunning");
 
 	if (!$db_connection->connect_errno) {
-		
+
+			if (strlen(consumerkey) >= 1 && strlen(consumersecret) >= 1 && strlen(accesstoken) >= 1 && strlen(accesssecret)){
+				#echo "Yay!";
+				$url = $_SERVER['REQUEST_URI']; //returns the current URL
+				$parts = explode('/',$url);
+				array_pop($parts);
+				$thang = implode('/',$parts);
+				$dir = $_SERVER['SERVER_NAME'];
+				//echo $dir. $thang . "<br>";
+				
+				$twiturl = "http://" . $dir . $thang . "/twitmino/";
+
+			}else {
+				#echo "Nay!";
+				$twiturl = "http://www.nottingham.ac.uk/~plzloose/minoTourhome/";
+			}
+
+			//echo $twiturl;
+			
+						
+			
 			//echo "<script src=\"js/jquery-1.10.2.js\"></script>
 			//    <script src=\"js/bootstrap.min.js\"></script>
 			  //  <script src=\"js/plugins/metisMenu/jquery.metisMenu.js\"></script>";
@@ -149,7 +169,7 @@ if ($login->isUserLoggedIn() == true) {
 												// Set some options - we are passing in a useragent too here
 												curl_setopt_array($curl, array(
 												    CURLOPT_RETURNTRANSFER => 1,
-												    CURLOPT_URL => 'http://www.nottingham.ac.uk/~plzloose/minoTourhome/tweet.php?' .$postData ,
+												    CURLOPT_URL => $twiturl . 'tweet.php?' .$postData ,
 												    CURLOPT_USERAGENT => 'Codular Sample cURL Request'
 												));
 												// Send the request & save response to $resp
@@ -216,7 +236,7 @@ if ($login->isUserLoggedIn() == true) {
 												// Set some options - we are passing in a useragent too here
 												curl_setopt_array($curl, array(
 												    CURLOPT_RETURNTRANSFER => 1,
-												    CURLOPT_URL => 'http://www.nottingham.ac.uk/~plzloose/minoTourhome/tweet.php?' .$postData ,
+												    CURLOPT_URL => $twiturl . 'tweet.php?' .$postData ,
 												    CURLOPT_USERAGENT => 'Codular Sample cURL Request'
 												));
 												// Send the request & save response to $resp
@@ -285,7 +305,7 @@ if ($login->isUserLoggedIn() == true) {
 												// Set some options - we are passing in a useragent too here
 												curl_setopt_array($curl, array(
 												    CURLOPT_RETURNTRANSFER => 1,
-												    CURLOPT_URL => 'http://www.nottingham.ac.uk/~plzloose/minoTourhome/tweet.php?' .$postData ,
+												    CURLOPT_URL => $twiturl . 'tweet.php?' .$postData ,
 												    CURLOPT_USERAGENT => 'Codular Sample cURL Request'
 												));
 												// Send the request & save response to $resp
@@ -320,7 +340,7 @@ if ($login->isUserLoggedIn() == true) {
 												// Set some options - we are passing in a useragent too here
 												curl_setopt_array($curl, array(
 												    CURLOPT_RETURNTRANSFER => 1,
-												    CURLOPT_URL => 'http://www.nottingham.ac.uk/~plzloose/minoTourhome/tweet.php?' .$postData ,
+												    CURLOPT_URL => $twiturl . 'tweet.php?' .$postData ,
 												    CURLOPT_USERAGENT => 'Codular Sample cURL Request'
 												));
 												// Send the request & save response to $resp
@@ -376,7 +396,7 @@ if ($login->isUserLoggedIn() == true) {
 												// Set some options - we are passing in a useragent too here
 												curl_setopt_array($curl, array(
 												    CURLOPT_RETURNTRANSFER => 1,
-												    CURLOPT_URL => 'http://www.nottingham.ac.uk/~plzloose/minoTourhome/tweet.php?' .$postData ,
+												    CURLOPT_URL => $twiturl . 'tweet.php?' .$postData ,
 												    CURLOPT_USERAGENT => 'Codular Sample cURL Request'
 												));
 												// Send the request & save response to $resp
@@ -424,7 +444,7 @@ if ($login->isUserLoggedIn() == true) {
 							// Set some options - we are passing in a useragent too here
 							curl_setopt_array($curl, array(
 								CURLOPT_RETURNTRANSFER => 1,
-						    	CURLOPT_URL => 'http://www.nottingham.ac.uk/~plzloose/minoTourhome/tweet.php?' .$postData ,
+						    	CURLOPT_URL => $twiturl . 'tweet.php?' .$postData ,
 						    	CURLOPT_USERAGENT => 'Codular Sample cURL Request'
 							));
 							// Send the request & save response to $resp
@@ -470,7 +490,7 @@ if ($login->isUserLoggedIn() == true) {
 							// Set some options - we are passing in a useragent too here
 							curl_setopt_array($curl, array(
 								CURLOPT_RETURNTRANSFER => 1,
-						    	CURLOPT_URL => 'http://www.nottingham.ac.uk/~plzloose/minoTourhome/tweet.php?' .$postData ,
+						    	CURLOPT_URL => $twiturl . 'tweet.php?' .$postData ,
 						    	CURLOPT_USERAGENT => 'Codular Sample cURL Request'
 							));	
 							// Send the request & save response to $resp
