@@ -150,13 +150,13 @@ function ratiopassfail($jobname,$currun,$refid) {
 			}
 		} else {
 			//do something interesting here...
-			$sqltotalcount = "select (floor((basecalled_template.start_time)/60/15)*15*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
-			$sqltemplate = "select (floor((basecalled_template.start_time)/60/15)*15*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) where file_path like '%pass%' group by 1 order by 1;";
-			$sqlcomplement = "select (floor((basecalled_template.start_time)/60/15)*15*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id) where file_path like '%pass%' group by 1 order by 1;";
-			$sql2d = "select (floor((basecalled_template.start_time)/60/15)*15*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) where file_path like '%pass%' group by 1 order by 1;";
-			$sqltemplate2 = "select (floor((basecalled_template.start_time)/60/15)*15*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) where file_path like '%fail%' group by 1 order by 1;";
-			$sqlcomplement2 = "select (floor((basecalled_template.start_time)/60/15)*15*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id) where file_path like '%fail%' group by 1 order by 1;";
-			$sql2d2 = "select (floor((basecalled_template.start_time)/60/15)*15*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) where file_path like '%fail%' group by 1 order by 1;";
+			$sqltotalcount = "select (floor((basecalled_template.start_time)/60/10)*10*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
+			$sqltemplate = "select (floor((basecalled_template.start_time)/60/10)*10*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) where file_path like '%pass%' group by 1 order by 1;";
+			$sqlcomplement = "select (floor((basecalled_template.start_time)/60/10)*10*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id) where file_path like '%pass%' group by 1 order by 1;";
+			$sql2d = "select (floor((basecalled_template.start_time)/60/10)*10*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) where file_path like '%pass%' group by 1 order by 1;";
+			$sqltemplate2 = "select (floor((basecalled_template.start_time)/60/10)*10*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) where file_path like '%fail%' group by 1 order by 1;";
+			$sqlcomplement2 = "select (floor((basecalled_template.start_time)/60/10)*10*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id) where file_path like '%fail%' group by 1 order by 1;";
+			$sql2d2 = "select (floor((basecalled_template.start_time)/60/10)*10*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) where file_path like '%fail%' group by 1 order by 1;";
 
 			$resulttotal = $mindb_connection->query($sqltotalcount);
 
