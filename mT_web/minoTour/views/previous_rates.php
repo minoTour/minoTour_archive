@@ -12,7 +12,7 @@ require_once("includes/functions.php");
     <div id="wrapper">
 
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
-           
+
 			<?php include 'navbar-header.php' ?>
             <!-- /.navbar-top-links -->
 			<?php include 'navbar-top-links.php'; ?>
@@ -39,7 +39,7 @@ require_once("includes/functions.php");
   			  <li><a href="previous_bases.php">Base Coverage</a></li>
   			  <!--<li class="active"><a href="previous_development.php">W.I.M.M (Dev)</a></li>-->
 			</ul>
-			
+
 			<div class="panel panel-default">
 			  <div class="panel-heading">
 			    <h3 class="panel-title"><!-- Button trigger modal -->
@@ -70,16 +70,17 @@ require_once("includes/functions.php");
   </div>
 </div></h3>
 			  </div>
-			  <div class="panel-body">
-			  		<div id="cumulativeyield" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Cumulative Reads</div>
-			  		<div id="ratio2dtemplate" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Ratio 2D to Template.</div>
+              <div class="panel-body">
+					<div id="cumulativeyield" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Cumulative Reads</div>
+			  		<div id="sequencingrate" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Sequencing Rates.</div>
+                    <div id="ratio2dtemplate" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Ratio 2D to Template.</div>
 					<div id="ratiopassfail" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pass Fail Reads.</div>
 					<div id="readrate" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Read Rate</div>
 					<div id="averagelength" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Read Length Over Time</div>
 					<div id="averagetime" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Time To Complete Reads</div>
 			  </div>
 			</div>
-			
+
                 <!-- /.col-lg-12 -->
             </div>
         </div>
@@ -87,8 +88,8 @@ require_once("includes/functions.php");
 
     </div>
     <!-- /#wrapper -->
-	
-	
+
+
     <!-- Core Scripts - Include with every page -->
     <script src="js/jquery-1.10.2.js"></script>
     <script src="js/bootstrap.min.js"></script>
@@ -101,20 +102,21 @@ require_once("includes/functions.php");
 				</script>
     <script src="js/plugins/morris/raphael-2.1.0.min.js"></script>
     <script src="js/plugins/morris/morris.js"></script>
-	
+
 	<!-- Highcharts Addition -->
 	<script src="js/highcharts.js"></script>
 	<script type="text/javascript" src="js/themes/grid-light.js"></script>
 	<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
-	
+
+
 	<script>
 		$(document).ready(function() {
 		    var options = {
-		        chart: {
+                chart: {
 		            renderTo: 'cumulativeyield',
 					zoomType: 'x',
-		            //type: 'area',
+		            type: 'spline',
 		        },
 		        title: {
 		          text: 'Cumulative Reads'
@@ -129,16 +131,16 @@ require_once("includes/functions.php");
                 relativeTo: 'chart'
             },
 		        plotOptions: {
-            area: {
-                stacking: 'normal',
-                lineColor: '#666666',
-                lineWidth: 1,
-                marker: {
-                	enabled: false,
-                    lineWidth: 1,
-                    lineColor: '#666666'
-                }
-            }
+		        	spline: {
+					                animation: false,
+									marker: {
+							            enabled: false
+							        }
+
+				},
+
+
+
         },
 				xAxis: {
 					type: 'datetime',
@@ -155,7 +157,7 @@ require_once("includes/functions.php");
             				        align: 'right',
             	    			    x: -3
             	   				},
-            	   				
+
             	    			title: {
             	        			text: 'Cumulative Reads'
 				                },
@@ -181,24 +183,114 @@ require_once("includes/functions.php");
 		        },
 		        series: []
 		    };
-	
+
 		    $.getJSON('jsonencode/cumulativeyield.php?prev=1&callback=?', function(data) {
 				//alert("success");
 		        options.series = data; // <- just assign the data to the series property.
-	        
-		 
-		
+
+
+
 		        //options.series = JSON2;
 				var chart = new Highcharts.Chart(options);
 				});
 		});
 
-			//]]>  
+			//]]>
 
 			</script>
-			
-			
-			
+
+            <script>
+            		$(document).ready(function() {
+            		    var options = {
+            		        chart: {
+            		            renderTo: 'sequencingrate',
+            					zoomType: 'x',
+            		            type: 'spline',
+            		        },
+            		        title: {
+            		          text: 'Sequencing Rate'
+            		        },
+            		        resetZoomButton: {
+                            position: {
+                                // align: 'right', // by default
+                                // verticalAlign: 'top', // by default
+                                x: -10,
+                                y: 10
+                            },
+                            relativeTo: 'chart'
+                        },
+            		        plotOptions: {
+            		        	spline: {
+            					                animation: false,
+            									marker: {
+            							            enabled: false
+            							        }
+
+            				},
+
+
+
+                    },
+            				xAxis: {
+            					type: 'datetime',
+            			            dateTimeLabelFormats: { // don't display the dummy year
+                           				month: '%e. %b',
+                       				    year: '%b'
+            				            },
+            				            title: {
+            				                text: 'Time/Date'
+            				            }
+            				        },
+            						yAxis:
+            							{
+
+            				                labels: {
+                        				        align: 'right',
+                        	    			    x: -3
+                        	   				},
+
+                        	    			title: {
+                        	        			text: 'Bases/Second'
+            				                },
+            				                height: '100%',
+            				                lineWidth: 1,
+            				                min: 0
+            				            },
+            								credits: {
+            								    enabled: false
+            								  },
+            		        legend: {
+            		        	title: {
+                            text: 'Read Type <span style="font-size: 9px; color: #666; font-weight: normal">(Click to hide)</span>',
+                            style: {
+                                fontStyle: 'italic'
+                            }
+                        },
+
+            		            layout: 'horizontal',
+            		            align: 'center',
+            		            //verticalAlign: 'middle',
+            		            borderWidth: 0
+            		        },
+            		        series: []
+            		    };
+
+               			$.getJSON('jsonencode/sequencingrate.php?prev=1&callback=?', function(data) {
+
+                        options.series = data; // <- just assign the data to the series property.
+
+                        //options.series = JSON2;
+                        var chart = new Highcharts.Chart(options);
+
+            });
+
+
+            			});
+
+            				//]]>
+
+            </script>
+
 			<script>
 
 			$(document).ready(function() {
@@ -210,7 +302,10 @@ require_once("includes/functions.php");
 			        },
 					plotOptions: {
 					            spline: {
-					                animation: false
+					                animation: false,
+                                    marker:{
+                                        enabled: false,
+                                    }
 
 					            }
 					        },
@@ -244,23 +339,26 @@ require_once("includes/functions.php");
 			        },
 			        series: []
 			    };
-			    
+
 			    $.getJSON('jsonencode/ratiopassfail.php?prev=1&callback=?', function(data) {
 				//alert("success");
 		        options.series = data; // <- just assign the data to the series property.
-	        
-		 
-		
+
+
+
 		        //options.series = JSON2;
 				var chart = new Highcharts.Chart(options);
 				});
 		});
 
-			    
-				
+
+
 				//]]>
 
 </script>
+
+
+
 
 <script>
 
@@ -273,7 +371,10 @@ require_once("includes/functions.php");
 			        },
 					plotOptions: {
 					            spline: {
-					                animation: false
+					                animation: false,
+                                    marker: {
+                                        enabled: false,
+                                    }
 
 					            }
 					        },
@@ -310,9 +411,9 @@ require_once("includes/functions.php");
 			    $.getJSON('jsonencode/ratio2dtemplate.php?prev=1&callback=?', function(data) {
 				//alert("success");
 		        options.series = data; // <- just assign the data to the series property.
-	        
-		 
-		
+
+
+
 		        //options.series = JSON2;
 				var chart = new Highcharts.Chart(options);
 				});
@@ -322,12 +423,12 @@ require_once("includes/functions.php");
 
 </script>
 
-			
-			
-			
-	
+
+
+
+
 	<script>
-	
+
 $(document).ready(function() {
     var options = {
 			        chart: {
@@ -376,24 +477,24 @@ $(document).ready(function() {
 			            borderWidth: 0
 			        },
 			        series: []
-			    };	
+			    };
     $.getJSON('jsonencode/reads_over_time2.php?prev=1&callback=?', function(data) {
 		//alert("success");
         options.series = data; // <- just assign the data to the series property.
-        
-	 
-	
+
+
+
         //options.series = JSON2;
 		var chart = new Highcharts.Chart(options);
 		});
 });
 
-	//]]>  
+	//]]>
 
 	</script>
-	
+
 	<script>
-		
+
 	$(document).ready(function() {
 	    var options = {
 	        chart: {
@@ -420,7 +521,7 @@ $(document).ready(function() {
 					            },
 					            min: 0
 					        },
-					        
+
 							credits: {
 							    enabled: false
 							  },
@@ -438,24 +539,24 @@ $(document).ready(function() {
 	        },
 	        series: []
 	    };
-	
+
 	    $.getJSON('jsonencode/average_length_over_time.php?prev=1&callback=?', function(data) {
 			//alert("success");
 	        options.series = data; // <- just assign the data to the series property.
-	        
-		 
-		
+
+
+
 	        //options.series = JSON2;
 			var chart = new Highcharts.Chart(options);
 			});
 	});
 
-		//]]>  
+		//]]>
 
 		</script>
 
 		<script>
-		
+
 	$(document).ready(function() {
 	    var options = {
 	        chart: {
@@ -500,22 +601,22 @@ $(document).ready(function() {
 	        },
 	        series: []
 	    };
-	
+
 	    $.getJSON('jsonencode/average_time_over_time2.php?prev=1&callback=?', function(data) {
 			//alert("success");
 	        options.series = data; // <- just assign the data to the series property.
-	        
-		 
-		
+
+
+
 	        //options.series = JSON2;
 			var chart = new Highcharts.Chart(options);
 			});
 	});
 
-		//]]>  
+		//]]>
 
 		</script>
-			
+
     <!-- SB Admin Scripts - Include with every page -->
     <script src="js/sb-admin.js"></script>
 

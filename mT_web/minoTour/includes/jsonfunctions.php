@@ -88,7 +88,7 @@ function sequencingrate($jobname,$currun,$refid) {
 				}
 			}
 
-		}
+
 
 		$jsonstring;
 		$jsonstring = $jsonstring . "[\n";
@@ -113,7 +113,7 @@ function sequencingrate($jobname,$currun,$refid) {
 		$jsonstring = $jsonstring . "},\n";
 			}
 		$jsonstring = $jsonstring . "]\n";
-
+	}
 		if ($_GET["prev"] == 1){
 			include 'savejson.php';
 		}
