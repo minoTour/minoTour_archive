@@ -61,7 +61,8 @@
 						yAxis: {
 							title: {
 								text: 'Depth',
-							}
+							},
+							min: 0
 						},
 						scrollbar: {
 							enabled: true,
@@ -100,7 +101,78 @@
 				});
 			</script>";
 
+echo "
+			<script>
+				$(document).ready(function() {
+					var optionsprecoverage" . $row['refid'] . " = {
+						chart: {
+							renderTo: 'precoverage" . $row['refid'] . "',
+							zoomType: 'x',
+							//type: 'scatter',
+							type: 'line',
+						},
+						title: {
+							text: 'Raw Coverage Depth for ".$row['refname']."',
+						},
+						xAxis: {
+							title: {
+								text: 'Basepairs'
+							},";
+							if ($row['max_length'] >= $maxlengththreshold) {
+								$max = round($row['max_length']/2) + $modamount;
+								$min = round($row['max_length']/2) - $modamount;
+								echo "
+							min: " . $min . ",
+							max: " . $max . ",";
+								$constrain_plot = 1;
+							}
+					echo "
+						},
+						yAxis: {
+							title: {
+								text: 'Depth',
+							},
+							min: 0
+						},
+						scrollbar: {
+							enabled: true,
+						},
+						navigator: {
+							enabled: true,
+						},
+						plotOptions: {
+							scatter: {
+								marker: {
+									radius: 1,
+								}	
+							}
+						},
+						credits: {
+							enabled: false,
+						},
+						legend: {
+							layout: 'vertical',
+							align: 'right',
+							verticalAlign: 'middle',
+							borderWidth: 0,
+						},
+						series: []
+					};
+					//alert ('max is ".$max."');
+				    $.getJSON('jsonencode/precoverage.php?prev=0&seqid=" . $row['refid'] . "&callback=?', function(data) {
+						//alert('success');
+				        optionsprecoverage" . $row['refid'] . ".series = data; // <- just assign the data to the series property.
+    
+ 
 
+				        //options.series = JSON2;
+						var chart = new Highcharts.Chart(optionsprecoverage" . $row['refid'] . ");
+					});
+				});
+			</script>";
+
+
+			
 				
 			}
 		}
@@ -133,9 +205,10 @@
 							yAxis: {
 							            title: {
 							                text: '5\' End Coverage'
-							            }
+							            },
+							            min: 0,
 							        },
-							        min: 0,
+							        
 								    plotOptions: {
 								               scatter: {
 								                   marker: {
@@ -202,9 +275,10 @@
 							yAxis: {
 							            title: {
 							                text: '3\' Read Coverage'
-							            }
+							            },
+							            min: 0,
 							        },
-							        min: 0,
+
 								    plotOptions: {
 								               scatter: {
 								                   marker: {

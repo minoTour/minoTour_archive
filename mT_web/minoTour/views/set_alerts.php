@@ -32,16 +32,14 @@ require_once("includes/functions.php");
             <div id="messages"></div>
             <div class="row">
                 <div class="col-lg-12">
-			
-			This feature will notify you of specific events occuring during the sequencing run. <br><br>This is a <strong>beta</strong> feature.<br><br> You can browse around the website once these parameters are set and notifications will appear on any page. However, these settings may not be remembered if you log out of the website.
+			One of the benefits of a real time sequencing platform is interacting with the sequencer during the run. This page enables this.<br> You can browse around the website once these parameters are set and notifications will appear on any page. If you leave the website, notifications are only available to you via Twitter. You must set a twitter handle to receive messages at if you wish to receive real time notifications.
             <br>
 
-            As proof of principle we shall consider depth of coverage for the whole genome from template reads. This alert is persistent - it will remain untill dismissed (or you change pages...).
             
                 <!-- /.col-lg-12 -->
 		<div class="row">
             <div class="col-lg-12">
-            Enter Coverage Depth
+            <h4>Coverage Depth</h4>
     			<div class="input-group">
       				<input id="foldchange" type="text" class="form-control">
       			  	<span class="input-group-btn">
@@ -69,7 +67,7 @@ require_once("includes/functions.php");
 			<div class="col-lg-12">
             As an alternative example: set an alert for every X bases sequenced (again with reference to the template). This alert is non-persistent - it disappears.
 			<br>
-            Base notification (strongly suggest minimum setting of 100000)
+            <h4>Base Notification (strongly suggest minimum setting of 100000)</h4>
     			<div class="input-group">
       				<input id="basenotification" type="text" class="form-control">
       			  	<span class="input-group-btn">
@@ -91,12 +89,17 @@ require_once("includes/functions.php");
   		  	</div><!-- /.col-lg-6 -->
 
 		</div>
-				<Strong>Tweeting Features</strong><br>
+		
+		<?php if ($_SESSION['currentbarcode'] >= 1) {?>
+		We are looking at barcodes here...
+		<?php } ?>
+
+				<br><Strong>Tweeting Features</strong><br>
 					<?php if (isset($_SESSION['twittername'])) {
 						echo "You have set a twitter handle to receive messages at - it is " . $_SESSION['twittername'] . ".<br>";
 					}else { ?>
-						You can have your alerts tweeted to you if you so wish. This is a beta feature... If you specify a username below, all the alerts you set above will be sent to your twitter handle from the minoTour twitter account (@minoTour_01). The only exception to this is if you set a base notification for a value of less than 500000 base pairs. This is an 'idiot' check. If you really want to see every base that is sequenced in real time you can kill your own server...
-			            <br>Set Twitter Handle
+						You can have your alerts tweeted to you if you so wish. If you specify a username below, all the alerts you set above will be sent to your twitter handle from the minoTour twitter account (@minoTour_01 on a standard minoTour install. This may be changed depending on your site admins preferences). The only exception to this is if you set a base notification for a value of less than 500000 base pairs.<br>
+			            <br><h4>Set Twitter Handle</h4>
 			    			<div class="input-group">
 								<input id="twitterhandle" type="text" class="form-control">
 								<span class="input-group-btn">

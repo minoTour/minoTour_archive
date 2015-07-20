@@ -81,6 +81,11 @@ unless ($checkingrunning) {
 	my $execute_check_barcode = $dbh2->prepare($check_barcode);
 	$execute_check_barcode->execute;
 	
+	####We want to check if this database contain prebasecalled analysis. If it does we're going to need to create some tables and process this data.
+	my $check_presquiggle = "SELECT table_name FROM information_schema.tables WHERE table_schema = '" . $dbname . "' AND table_name = 'pre_tracking_id';";
+	my $execute_check_presquiggle = $dbh2->prepare($check_presquiggle);
+	$execute_check_presquiggle->execute;
+	
 	####We have to check if the last_align_maf_basecalled table exists. If it doesn't then we don't want to run this again.
 		
 	my $check_mode = "SELECT table_name FROM information_schema.tables WHERE table_schema = '" . $dbname . "' AND (table_name = 'last_align_maf_basecalled_template' or table_name = 'align_sam_basecalled_template');";
@@ -100,7 +105,7 @@ unless ($checkingrunning) {
 	
 		foreach (@readtypes){
 			## Create a new table if one doesn't already exist...
-
+			
 			my $createtable = "CREATE TABLE IF NOT EXISTS `" .$dbname . "`.`read_tracking_" .$_."` (
 			   `readtrackid` INT NOT NULL AUTO_INCREMENT,
 			   `basename_id` INT NOT NULL,
@@ -111,6 +116,13 @@ unless ($checkingrunning) {
 		 	$createsth->execute;
 		 	
 		 	my $createtablebarcod = "CREATE TABLE IF NOT EXISTS `" .$dbname . "`.`read_tracking_barcode_" .$_."` (
+			   `readtrackid` INT NOT NULL AUTO_INCREMENT,
+			   `basename_id` INT NOT NULL,
+			   PRIMARY KEY (`readtrackid`)
+			 	)
+			 	CHARACTER SET utf8;";
+			 	
+			my $createtablepresquig = "CREATE TABLE IF NOT EXISTS `" .$dbname . "`.`read_tracking_pre_" .$_."` (
 			   `readtrackid` INT NOT NULL AUTO_INCREMENT,
 			   `basename_id` INT NOT NULL,
 			   PRIMARY KEY (`readtrackid`)
@@ -127,6 +139,14 @@ unless ($checkingrunning) {
 			  `C` INT,
 			  `D` INT,
 			  `I` INT,
+			  PRIMARY KEY (`ref_id`,`ref_pos`)
+			)
+			CHARACTER SET utf8;";
+			
+			my $createpretable2 = "CREATE TABLE IF NOT EXISTS `" .$dbname . "`.`reference_pre_coverage_" .$_."` (
+			  `ref_id` INT NOT NULL,
+			  `ref_pos` INT NOT NULL,
+			  `count` INT,
 			  PRIMARY KEY (`ref_id`,`ref_pos`)
 			)
 			CHARACTER SET utf8;";
@@ -148,6 +168,14 @@ unless ($checkingrunning) {
 			
 			my $create2sth = $dbh2->prepare($createtable2);
 			$create2sth->execute;
+			
+			if ($execute_check_presquiggle->rows >= 1) {
+				my $createpretable2sth = $dbh2->prepare($createpretable2);
+				$createpretable2sth->execute;
+				my $createtablepresquigsth = $dbh2->prepare($createtablepresquig);
+				$createtablepresquigsth->execute;			
+			}
+
 			
 			if ($_ eq "2d" && $execute_check_barcode->rows != 0) {
 				my $create3sth = $dbh2->prepare($createtable3);
@@ -243,7 +271,7 @@ unless ($checkingrunning) {
 						#$memd->set($checkreads,$ref->{ID});
 					}
 				}elsif ($tabletype eq "align_sam_basecalled_template"){
-					my $barquery = "SELECT * FROM " . $dbname . ".align_sam_basecalled_".$_." inner join " . $dbname . ".reference_seq_info left join " . $dbname . ".barcode_assignment using (basename_id) where rname = refname and basename_id not in (select basename_id from " . $dbname . ".read_tracking_barcode_".$_.") order by ID limit 100;";
+					my $barquery = "SELECT * FROM " . $dbname . ".align_sam_basecalled_".$_." inner join " . $dbname . ".reference_seq_info left join " . $dbname . ".barcode_assignment using (basename_id) where rname = refname and flag != ('2048' or '2064') and basename_id not in (select basename_id from " . $dbname . ".read_tracking_barcode_".$_.") order by ID limit 100;";
 					#$query = "SELECT * FROM " . $dbname . ".align_sam_basecalled_".$_." inner join " . $dbname . ".reference_seq_info where refname=rname and basename_id not in (select basename_id from " . $dbname . ".read_tracking_".$_.") order by ID limit 100;";
 					#print $barquery . "\n";
 					my $barquerygo = $dbh2->prepare($barquery);
@@ -575,7 +603,52 @@ unless ($checkingrunning) {
 				
 				
 			}
+			#### This is where we simply handle pre aligned reads using DTW 
+			##Create a hash to store alignment info
+			my %prehash;
+			my $prehash;
+				
+			##Create a hash of basename_ids
+			my %prebasenamehash=();
+			my $prebasenamehash;
 			
+			if ($execute_check_presquiggle->rows >= 1) {
+				
+				
+				my $query;
+				$query = "SELECT * FROM " . $dbname . ".pre_align_".$_." where basename_id not in (select basename_id from ".$dbname.".read_tracking_pre_".$_.") order by ID limit 100;"; 
+				my $sth = $dbh2->prepare($query);
+				$sth->execute;
+				while (my $ref = $sth->fetchrow_hashref) {
+					if ($development) {
+						print $ref->{ID} . "\n";
+					}
+					
+					#my $refstring_orig = $ref->{r_align_string};
+					#my @refstring = split //, $refstring_orig;
+					#my $querystring_orig = $ref->{q_align_string};
+					#my @querystring = split //, $querystring_orig;	
+					my $refstart = $ref->{r_start};
+					my $reflength = $ref->{r_align_len};
+					my $querystart = $ref->{q_start};
+					my $refid = $ref->{refid};
+					my $basenameid = $ref->{basename_id};
+					if (!exists $prebasenamehash{$basenameid}) {
+						$prebasenamehash{$basenameid} = 1;
+					}
+					
+					#print "The read start is $refstart and it is $reflength bases long.\n";
+					for (my $x=$refstart; $x<=($refstart+$reflength-1); $x++) {
+						$prehash{$refid}{$x}{'count'}++;
+						#print $prehash{$refid}{$x}{'count'} . "\t";
+						
+					}
+					#print "\n";
+
+				}
+				
+				
+			}
 			#### This is where we handle the translation of maf or sam alignments into a reference coverage plot.
 			#### First we need to determine if we are dealing with SAM or MAF formatted data.
 			
@@ -663,7 +736,7 @@ unless ($checkingrunning) {
 				#print "We have found sam data to process.\n";
 				my $query;
 				## Note that we need to deal with multiply aligned sequences still - could do using the alignnum=1 but it doesn't really work...
-				$query = "SELECT * FROM " . $dbname . ".align_sam_basecalled_".$_." inner join " . $dbname . ".reference_seq_info where refname=rname and basename_id not in (select basename_id from " . $dbname . ".read_tracking_".$_.") order by ID limit 100;";
+				$query = "SELECT * FROM " . $dbname . ".align_sam_basecalled_".$_." inner join " . $dbname . ".reference_seq_info where refname=rname and flag != ('2048' or '2064') and basename_id not in (select basename_id from " . $dbname . ".read_tracking_".$_.") order by ID limit 100;";
 				#print "$query to run at ".(localtime)."\n";
 				my $sth = $dbh2->prepare($query);
 				#print "$query prepared at ".(localtime)."\n";
@@ -870,7 +943,48 @@ unless ($checkingrunning) {
 			#print "Insert query generated and prepared at ".(localtime)."\n";
 			my @keys = keys %basenamehash;
 			$insertsth->execute_array({},\@keys);
+			
+			if ($execute_check_presquiggle->rows >= 1) {
+				my $insertsth = $dbh2->prepare("INSERT IGNORE INTO ".$dbname.".read_tracking_pre_" .$_." (basename_id) VALUES (?);");
+				#print "Insert query generated and prepared at ".(localtime)."\n";
+				my @keys = keys %prebasenamehash;
+				$insertsth->execute_array({},\@keys);
+			}
+			
 			#print "Insert query executed at ".(localtime)."\n";
+			
+			## we now need to convert the premafhash tp something we can use in the final sql statements
+			my %prefinalhash;
+			#foreach my $refid (sort {$a<=>$b} keys %premafhash)
+			#$barmafhash{$refid}{$counter}{'count'}=$refstring[$x];
+
+			my @valsarray2=('count');
+			foreach my $refid (sort {$a<=>$b} keys %prehash){
+				foreach my $counter (sort {$a<=>$b} keys %{$prehash{$refid}}) {
+					foreach (@valsarray2) {
+						if (exists $prehash{$refid}{$counter}{$_}) {
+							$prefinalhash{$refid}{$counter}{$_} = $prehash{$refid}{$counter}{$_};
+						}else {
+							$prefinalhash{$refid}{$counter}{$_} = 0;
+						}
+					}
+				}	
+			}
+			foreach my $refid (sort {$a<=>$b} keys %prefinalhash) {
+				my @counter; 
+				my @count;
+				my @refid;
+				#my @reference;
+				foreach my $counter (sort {$a<=>$b} keys %{$prefinalhash{$refid}}) {
+					push @counter, $counter;
+					push @count, $prefinalhash{$refid}{$counter}{'count'};
+					push @refid ,$refid;
+					#push @reference, $prefinalhash{$refid}{$counter}{'reference'};
+				}
+				my $insertsth2 = $dbh2->prepare("INSERT INTO ".$dbname.".reference_pre_coverage_" .$_." (ref_id, ref_pos, count) VALUES( ?,?,?) ON DUPLICATE KEY UPDATE count = count + VALUES(count);");
+				$insertsth2->execute_array({},\@refid,\@counter,\@count);
+				
+			}
 							
 			## We now need to convert the mafhash to something we can use in the final sql insert statements...
 			my %finalhash;

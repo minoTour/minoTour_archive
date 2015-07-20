@@ -477,7 +477,7 @@ function checkalerts(){
 
 		//	}
 $basename = end(preg_split('/\//',$_SERVER['PHP_SELF']));
-			$filesnamestocheck = array("switch_run.php","current_summary.php","live_reads_table.php","live_data.php","export.php","set_alerts.php","current_export.php","current_rates.php","current_pores.php","current_quality.php");
+			$filesnamestocheck = array("switch_run.php","current_summary.php","live_reads_table.php","live_data.php","export.php","set_alerts.php","current_export.php","current_rates.php","current_pores.php","current_quality.php","live_interaction.php");
 			//echo $basename;
 			if ( in_array ($basename, $filesnamestocheck) ) {
                 //echo "This is the region of the page that will check for the existence of the alert table and create it if it does not exist";
@@ -639,6 +639,15 @@ function checksessionvars(){
 					}
 					//echo "The run is called " . key($runarray[1]) .".<br>\n";
 					
+					//Check for the existence of raw data in the database
+					$rawcheck = "select * from pre_tracking_id;";
+					$rawcheckresult = $db_connection2->query($rawcheck);
+					if ($rawcheckresult->num_rows >= 1) {
+						$_SESSION['currentraw'] = $rawcheckresult->num_rows;
+					}else{
+						$_SESSION['currentraw'] = $rawcheckresult->num_rows;
+					}					
+					
 				}else{
 					//echo "You have no currently active runs.<br>\n";
 					unset($_SESSION['active_run_name']);
@@ -698,6 +707,16 @@ function checksessionvars(){
 					}else{
 						$_SESSION['focusbarcode'] = $barcoderesult->num_rows;
 					}
+					
+					//Check for the existence of raw data in the database
+					$rawcheck = "select * from pre_tracking_id;";
+					$rawcheckresult = $db_connection2->query($rawcheck);
+					if ($rawcheckresult->num_rows >= 1) {
+						$_SESSION['focusraw'] = $rawcheckresult->num_rows;
+					}else{
+						$_SESSION['focussraw'] = $rawcheckresult->num_rows;
+					}	
+					
 				}
 				
 			}else{

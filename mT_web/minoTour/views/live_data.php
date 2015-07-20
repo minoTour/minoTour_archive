@@ -12,15 +12,15 @@ require_once("includes/functions.php");
     <div id="wrapper">
 
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
-            
+
 			<?php include 'navbar-header.php' ?>
             <!-- /.navbar-top-links -->
 			<?php include 'navbar-top-links.php'; ?>
             <!-- /.navbar-static-side -->
         </nav>
-		
+
         <div id="page-wrapper">
-						
+
 						<?php include 'includes/run_check.php';?>
             <div class="row">
                 <div class="col-lg-12">
@@ -28,14 +28,14 @@ require_once("includes/functions.php");
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
-			
-			
+
+
             <div class="row">
-				
-				
-				
+
+
+
                 <div class="col-lg-12">
-					
+
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title"><button class="btn btn-info btn-sm" data-toggle="modal" data-target="#modal0"><i class="fa fa-info-circle"></i> Processing Activity</button>
@@ -63,10 +63,10 @@ require_once("includes/functions.php");
 						  </div>
 						   </div>
 						</div>
-						
+
 					</div>
-								
-					
+
+
 						<div class="panel panel-default">
 						  <div class="panel-heading">
 						    <h3 class="panel-title"><input type="checkbox" name="colorCheckbox" id="readsummarycheck" value="RC" checked><!-- Button trigger modal -->
@@ -103,7 +103,7 @@ require_once("includes/functions.php");
 									<div class="col-md-3" id="maxlen" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Read Max Length</div>
 
 
-								</div>	
+								</div>
 								<div class="row">
 								<?php if ($_SESSION['activereference'] != "NOREFERENCE") {?>
 									<?php foreach ($_SESSION['activerefnames'] as $key => $value) {
@@ -115,14 +115,16 @@ require_once("includes/functions.php");
 								<!---<div class="col-md-6" id="percentcoverage" style="width:50%; height:200px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Coverage</div>--->
 								<!---<div class="col-md-6" id="depthcoverage" style="width:50%; height:200px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Depth</div>--->
 
-							
+
 							<?php }else { ?>
 															<div><p class="text-center"><small>This dataset has not been aligned to a reference sequence.</small></p></div>
 							<?php }; ?>
 							</div>
+
+
 						  </div>
 						</div>
-						
+
 					</div>
 					<?php if ($_SESSION['currentbarcode'] >= 1) {?>
 <div class="panel panel-default">
@@ -159,15 +161,15 @@ require_once("includes/functions.php");
 									<div class="col-md-7" id="barcodcov" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Barcode Coverage</div>
 
 
-								</div>	
-								
+								</div>
+
 						  </div>
 						</div>
-						
+
 					</div>
 					<?php }; ?>
-					
-															
+
+
 						<div class="panel panel-default">
 						  <div class="panel-heading">
 						    <h3 class="panel-title"><input type="checkbox" name="colorCheckbox" id="sequencingratecheck" value="SR" checked><!-- Button trigger modal -->
@@ -194,15 +196,23 @@ require_once("includes/functions.php");
 			  </div>
 			</div></h3>
 						  </div>
+						  <div>
+							<div class="row">
+								<div class="col-md-12" id="cumulativeyield" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Cumulative Yield.</div>
+                                <div class="col-md-12" id="sequencingrate" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Sequencing Rates.</div>
+								<div class="col-md-12" id="ratio2dtemplate" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Ratio 2D to Template.</div>
+								<div class="col-md-12" id="ratiopassfail" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pass Fail Reads.</div>
+							</div>
+							</div>
 						  <div id="sequencerate">
 						  <div class="panel-body">
 								<div id="readrate" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Read Rate</div>
-								
+
 						  </div>
 						</div>
 					</div>
-						
-						
+
+
 						<div class="panel panel-default">
 						  <div class="panel-heading">
 						    <h3 class="panel-title"><input type="checkbox" name="colorCheckbox" id="poreactivitycheck" value="PI" checked><!-- Button trigger modal -->
@@ -233,12 +243,12 @@ require_once("includes/functions.php");
 						  <div class="panel-body">
 								<div id="poreproduction" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pore Productivity</div>
 								<?php if ($_SESSION['active_minup'] >= 0.37) {?>
-					<div id="readmuxproduction" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mux Productivity</div>	
+					<div id="readmuxproduction" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mux Productivity</div>
 					<?php } ?>
 						  </div>
 						</div>
 					</div>
-					
+
 						<div class="panel panel-default">
 						  <div class="panel-heading">
 						    <h3 class="panel-title"><input type="checkbox" name="colorCheckbox" id="qualityinfocheck" value="QI" checked> <!-- Button trigger modal -->
@@ -273,11 +283,11 @@ require_once("includes/functions.php");
 															<div><p class="text-center"><small>This dataset has not been aligned to a reference sequence.</small></p></div>
 							<?php }; ?>
 
-				  		  	
+
 								  </div>
 						</div>
 					</div>
-					
+
 						<div class="panel panel-default">
 						  <div class="panel-heading">
 						    <h3 class="panel-title"><input type="checkbox" name="colorCheckbox" value="RS" checked><!-- Button trigger modal -->
@@ -311,23 +321,23 @@ require_once("includes/functions.php");
 				  			Content
 								  </div>
 
-								  
+
 						</div>
-			
+
 			</div>
-			
+
 			                </div>
-			               
+
 			                <!-- /.col-lg-12 -->
 			            </div>
 			        </div>
-					
+
 			        <!-- /#page-wrapper -->
 
 			    </div>
 			    <!-- /#wrapper -->
-	
-	
+
+
 			    <!-- Core Scripts - Include with every page -->
 			    <script src="js/jquery-1.10.2.js"></script>
 			    <script src="js/bootstrap.min.js"></script>
@@ -376,7 +386,7 @@ require_once("includes/functions.php");
 					setInterval(function(){
     			 	$('#runsummary').load('includes/runsummary.php');
     				}, <?php echo $_SESSION['pagerefresh'] ;?>);
-				}); 
+				});
 				</script>
 
 				<!-- Highcharts Addition -->
@@ -384,7 +394,7 @@ require_once("includes/functions.php");
 				<script type="text/javascript" src="js/themes/grid-light.js"></script>
 				<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
 				<script src="http://code.highcharts.com/modules/exporting.js"></script>
-	
+
 
 				<?php if (isset($_SESSION['first_visit'])) {}else{?>
 				<script type="text/javascript">
@@ -400,7 +410,7 @@ require_once("includes/functions.php");
 				<?php }; $_SESSION['first_visit']=1;?>
 
 				<?php include 'includes/livecharts.php'; ?>
-				
+
 			    <!-- SB Admin Scripts - Include with every page -->
 			    <script src="js/sb-admin.js"></script>
 
@@ -415,11 +425,10 @@ require_once("includes/functions.php");
             //eval(document.getElementById("infodiv").innerHTML);
             }, 10000); // refresh every 5000 milliseconds
     </script>
-	
-	
+
+
 
 			<?php include "includes/reporting.php";?>
 </body>
 
 			</html>
- 			

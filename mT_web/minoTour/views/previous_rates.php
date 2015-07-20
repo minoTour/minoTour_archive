@@ -71,6 +71,9 @@ require_once("includes/functions.php");
 </div></h3>
 			  </div>
 			  <div class="panel-body">
+			  		<div id="cumulativeyield" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Cumulative Reads</div>
+			  		<div id="ratio2dtemplate" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Ratio 2D to Template.</div>
+					<div id="ratiopassfail" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pass Fail Reads.</div>
 					<div id="readrate" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Read Rate</div>
 					<div id="averagelength" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Read Length Over Time</div>
 					<div id="averagetime" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Time To Complete Reads</div>
@@ -105,41 +108,275 @@ require_once("includes/functions.php");
 	<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
 	
+	<script>
+		$(document).ready(function() {
+		    var options = {
+		        chart: {
+		            renderTo: 'cumulativeyield',
+					zoomType: 'x',
+		            //type: 'area',
+		        },
+		        title: {
+		          text: 'Cumulative Reads'
+		        },
+		        resetZoomButton: {
+                position: {
+                    // align: 'right', // by default
+                    // verticalAlign: 'top', // by default
+                    x: -10,
+                    y: 10
+                },
+                relativeTo: 'chart'
+            },
+		        plotOptions: {
+            area: {
+                stacking: 'normal',
+                lineColor: '#666666',
+                lineWidth: 1,
+                marker: {
+                	enabled: false,
+                    lineWidth: 1,
+                    lineColor: '#666666'
+                }
+            }
+        },
+				xAxis: {
+					type: 'datetime',
+			            dateTimeLabelFormats: { // don't display the dummy year
+               				month: '%e. %b',
+           				    year: '%b'
+				            },
+				            title: {
+				                text: 'Time (S)'
+				            }
+				        },
+						yAxis: [{
+				                labels: {
+            				        align: 'right',
+            	    			    x: -3
+            	   				},
+            	   				
+            	    			title: {
+            	        			text: 'Cumulative Reads'
+				                },
+				                height: '100%',
+				                lineWidth: 1,
+				                min: 0
+				            }],
+								credits: {
+								    enabled: false
+								  },
+		        legend: {
+		        	title: {
+                text: 'Read Type <span style="font-size: 9px; color: #666; font-weight: normal">(Click to hide)</span>',
+                style: {
+                    fontStyle: 'italic'
+                }
+            },
+
+		            layout: 'horizontal',
+		            align: 'center',
+		            //verticalAlign: 'middle',
+		            borderWidth: 0
+		        },
+		        series: []
+		    };
+	
+		    $.getJSON('jsonencode/cumulativeyield.php?prev=1&callback=?', function(data) {
+				//alert("success");
+		        options.series = data; // <- just assign the data to the series property.
+	        
+		 
+		
+		        //options.series = JSON2;
+				var chart = new Highcharts.Chart(options);
+				});
+		});
+
+			//]]>  
+
+			</script>
+			
+			
+			
+			<script>
+
+			$(document).ready(function() {
+			    var options = {
+			        chart: {
+			            renderTo: 'ratiopassfail',
+						//zoomType: 'x'
+			            type: 'spline'
+			        },
+					plotOptions: {
+					            spline: {
+					                animation: false
+
+					            }
+					        },
+			        title: {
+			          text: '2d, Complement and Template Pass/Fail Counts in 15 minute windows'
+			        },
+					xAxis: {
+						type: 'datetime',
+			            dateTimeLabelFormats: { // don't display the dummy year
+               				month: '%e. %b',
+           				    year: '%b'
+				            },
+					            title: {
+					                text: 'Time/Date'
+					            }
+					        },
+							yAxis: {
+							            title: {
+							                text: 'Reads'
+							            },
+							            min: 0
+							        },
+									credits: {
+									    enabled: false
+									  },
+			        legend: {
+			            layout: 'horizontal',
+                                        align: 'center',
+                                        verticalAlign: 'bottom',
+			            borderWidth: 0
+			        },
+			        series: []
+			    };
+			    
+			    $.getJSON('jsonencode/ratiopassfail.php?prev=1&callback=?', function(data) {
+				//alert("success");
+		        options.series = data; // <- just assign the data to the series property.
+	        
+		 
+		
+		        //options.series = JSON2;
+				var chart = new Highcharts.Chart(options);
+				});
+		});
+
+			    
+				
+				//]]>
+
+</script>
+
+<script>
+
+			$(document).ready(function() {
+			    var options = {
+			        chart: {
+			            renderTo: 'ratio2dtemplate',
+						//zoomType: 'x'
+			            type: 'spline'
+			        },
+					plotOptions: {
+					            spline: {
+					                animation: false
+
+					            }
+					        },
+			        title: {
+			          text: '2d, Complement and Template reads in 15 minute windows'
+			        },
+					xAxis: {
+						type: 'datetime',
+			            dateTimeLabelFormats: { // don't display the dummy year
+               				month: '%e. %b',
+           				    year: '%b'
+				            },
+					            title: {
+					                text: 'Time/Date'
+					            }
+					        },
+							yAxis: {
+							            title: {
+							                text: 'Reads'
+							            },
+							            min: 0
+							        },
+									credits: {
+									    enabled: false
+									  },
+			        legend: {
+			            layout: 'horizontal',
+                                        align: 'center',
+                                        verticalAlign: 'bottom',
+			            borderWidth: 0
+			        },
+			        series: []
+			    };
+			    $.getJSON('jsonencode/ratio2dtemplate.php?prev=1&callback=?', function(data) {
+				//alert("success");
+		        options.series = data; // <- just assign the data to the series property.
+	        
+		 
+		
+		        //options.series = JSON2;
+				var chart = new Highcharts.Chart(options);
+				});
+		});
+
+				//]]>
+
+</script>
+
+			
+			
+			
 	
 	<script>
 	
 $(document).ready(function() {
     var options = {
-        chart: {
-            renderTo: 'readrate',
-			zoomType: 'x'
-            //type: 'line'
-        },
-        title: {
-          text: 'Rate Of BaseCalling'
-        },
-		xAxis: {
-		            title: {
-		                text: 'Time (S)'
-		            }
-		        },
-				yAxis: {
+			        chart: {
+			            renderTo: 'readrate',
+						zoomType: 'x'
+			            //type: 'line'
+			        },
+					plotOptions: {
+					            line: {
+					                animation: false
+
+					            }
+					        },
+			        title: {
+			          text: 'Rate Of BaseCalling'
+			        },
+					xAxis: {
+					type: 'datetime',
+			            dateTimeLabelFormats: { // don't display the dummy year
+               				month: '%e. %b',
+           				    year: '%b',
+				            },
 				            title: {
-				                text: 'Reads/Minute'
+				                text: 'Time/Date'
 				            }
 				        },
-						credits: {
-						    enabled: false
-						  },
-        legend: {
-            layout: 'vertical',
-            align: 'right',
-            verticalAlign: 'middle',
-            borderWidth: 0
-        },
-        series: []
-    };
-	
+							yAxis: {
+							            title: {
+							                text: 'Reads/Minute'
+							            },
+							            min: 0
+							        },
+									credits: {
+									    enabled: false
+									  },
+			        legend: {
+		        	title: {
+                text: 'Read Type <span style="font-size: 9px; color: #666; font-weight: normal">(Click to hide)</span>',
+                style: {
+                    fontStyle: 'italic'
+                }
+            },
+			            layout: 'horizontal',
+                                        align: 'center',
+                                        verticalAlign: 'bottom',
+			            borderWidth: 0
+			        },
+			        series: []
+			    };	
     $.getJSON('jsonencode/reads_over_time2.php?prev=1&callback=?', function(data) {
 		//alert("success");
         options.series = data; // <- just assign the data to the series property.
@@ -168,23 +405,36 @@ $(document).ready(function() {
 	          text: 'Average Read Length Over Time'
 	        },
 			xAxis: {
+				type: 'datetime',
+			            dateTimeLabelFormats: { // don't display the dummy year
+               				month: '%e. %b',
+           				    year: '%b',
+				            },
 			            title: {
-			                text: 'Time (S)'
+			                text: 'Time/Date'
 			            }
 			        },
 					yAxis: {
 					            title: {
 					                text: 'Average Read Length'
-					            }
+					            },
+					            min: 0
 					        },
+					        
 							credits: {
 							    enabled: false
 							  },
 	        legend: {
-	            layout: 'vertical',
-	            align: 'right',
-	            verticalAlign: 'middle',
-	            borderWidth: 0
+	            title: {
+                text: 'Read Type <span style="font-size: 9px; color: #666; font-weight: normal">(Click to hide)</span>',
+                style: {
+                    fontStyle: 'italic'
+                }
+            },
+			            layout: 'horizontal',
+                                        align: 'center',
+                                        verticalAlign: 'bottom',
+			            borderWidth: 0
 	        },
 	        series: []
 	    };
@@ -217,23 +467,36 @@ $(document).ready(function() {
 	          text: 'Average Time to process Reads Over Time'
 	        },
 			xAxis: {
+				type: 'datetime',
+			            dateTimeLabelFormats: { // don't display the dummy year
+               				month: '%e. %b',
+           				    year: '%b',
+				            },
 			            title: {
-			                text: 'Time (S)'
+			                text: 'Time/Date'
 			            }
 			        },
 					yAxis: {
 					            title: {
 					                text: 'Average Time To Process Read (s)'
-					            }
+					            },
+					            min: 0
 					        },
 							credits: {
 							    enabled: false
 							  },
 	        legend: {
-	            layout: 'vertical',
-	            align: 'right',
-	            verticalAlign: 'middle',
-	            borderWidth: 0
+	            title: {
+                text: 'Read Type <span style="font-size: 9px; color: #666; font-weight: normal">(Click to hide)</span>',
+                style: {
+                    fontStyle: 'italic'
+                }
+            },
+			            layout: 'horizontal',
+                                        align: 'center',
+                                        verticalAlign: 'bottom',
+			            borderWidth: 0
+
 	        },
 	        series: []
 	    };

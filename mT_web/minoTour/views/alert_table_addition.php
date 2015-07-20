@@ -26,7 +26,9 @@
   `threshold` INT,
   `start` INT,
   `end` INT,
+  `control` INT,
  `complete` INT,
+ `createtime` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,
   PRIMARY KEY (`alert_index`)
 )
 CHARACTER SET utf8;";

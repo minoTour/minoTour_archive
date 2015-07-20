@@ -1,3 +1,354 @@
+<script>
+		$(document).ready(function() {
+		    var options = {
+		        chart: {
+		            renderTo: 'cumulativeyield',
+					zoomType: 'x',
+		            type: 'spline',
+		        },
+		        title: {
+		          text: 'Cumulative Reads'
+		        },
+		        resetZoomButton: {
+                position: {
+                    // align: 'right', // by default
+                    // verticalAlign: 'top', // by default
+                    x: -10,
+                    y: 10
+                },
+                relativeTo: 'chart'
+            },
+		        plotOptions: {
+		        	spline: {
+					                animation: false,
+									marker: {
+							            enabled: false
+							        }
+
+				},
+
+
+
+        },
+				xAxis: {
+					type: 'datetime',
+			            dateTimeLabelFormats: { // don't display the dummy year
+               				month: '%e. %b',
+           				    year: '%b'
+				            },
+				            title: {
+				                text: 'Time/Date'
+				            }
+				        },
+						yAxis: [{
+				                labels: {
+            				        align: 'right',
+            	    			    x: -3
+            	   				},
+
+            	    			title: {
+            	        			text: 'Cumulative Reads'
+				                },
+				                height: '100%',
+				                lineWidth: 1,
+				                min: 0
+				            }],
+								credits: {
+								    enabled: false
+								  },
+		        legend: {
+		        	title: {
+                text: 'Read Type <span style="font-size: 9px; color: #666; font-weight: normal">(Click to hide)</span>',
+                style: {
+                    fontStyle: 'italic'
+                }
+            },
+
+		            layout: 'horizontal',
+		            align: 'center',
+		            //verticalAlign: 'middle',
+		            borderWidth: 0
+		        },
+		        series: []
+		    };
+			function loadchirpcy() {
+
+					if($('#sequencingratecheck').prop('checked')) {
+   										   $.getJSON('jsonencode/cumulativeyield.php?prev=0&callback=?', function(data) {
+
+                                        options.series = data; // <- just assign the data to the series property.
+
+                                                setTimeout(loadchirpcy,<?php echo $_SESSION['pagerefresh'] ;?>);
+
+                                        //options.series = JSON2;
+                                                var chart = new Highcharts.Chart(options);
+                                                });} else {
+   setTimeout(loadchirpcy,<?php echo $_SESSION['pagerefresh'] ;?>);
+}
+
+                                        }
+
+
+				        loadchirpcy();
+
+			});
+
+				//]]>
+
+</script>
+
+
+<script>
+		$(document).ready(function() {
+		    var options = {
+		        chart: {
+		            renderTo: 'sequencingrate',
+					zoomType: 'x',
+		            type: 'spline',
+		        },
+		        title: {
+		          text: 'Sequencing Rate'
+		        },
+		        resetZoomButton: {
+                position: {
+                    // align: 'right', // by default
+                    // verticalAlign: 'top', // by default
+                    x: -10,
+                    y: 10
+                },
+                relativeTo: 'chart'
+            },
+		        plotOptions: {
+		        	spline: {
+					                animation: false,
+									marker: {
+							            enabled: false
+							        }
+
+				},
+
+
+
+        },
+				xAxis: {
+					type: 'datetime',
+			            dateTimeLabelFormats: { // don't display the dummy year
+               				month: '%e. %b',
+           				    year: '%b'
+				            },
+				            title: {
+				                text: 'Time/Date'
+				            }
+				        },
+						yAxis:
+							{
+
+				                labels: {
+            				        align: 'right',
+            	    			    x: -3
+            	   				},
+
+            	    			title: {
+            	        			text: 'Bases/Second'
+				                },
+				                height: '100%',
+				                lineWidth: 1,
+				                min: 0
+				            },
+								credits: {
+								    enabled: false
+								  },
+		        legend: {
+		        	title: {
+                text: 'Read Type <span style="font-size: 9px; color: #666; font-weight: normal">(Click to hide)</span>',
+                style: {
+                    fontStyle: 'italic'
+                }
+            },
+
+		            layout: 'horizontal',
+		            align: 'center',
+		            //verticalAlign: 'middle',
+		            borderWidth: 0
+		        },
+		        series: []
+		    };
+			function loadchirpsr() {
+
+					if($('#sequencingratecheck').prop('checked')) {
+   										   $.getJSON('jsonencode/sequencingrate.php?prev=0&callback=?', function(data) {
+
+                                        options.series = data; // <- just assign the data to the series property.
+
+                                                setTimeout(loadchirpsr,<?php echo $_SESSION['pagerefresh'] ;?>);
+
+                                        //options.series = JSON2;
+                                                var chart = new Highcharts.Chart(options);
+                                                });} else {
+   setTimeout(loadchirpsr,<?php echo $_SESSION['pagerefresh'] ;?>);
+}
+
+                                        }
+
+
+				        loadchirpsr();
+
+			});
+
+				//]]>
+
+</script>
+
+<script>
+
+			$(document).ready(function() {
+			    var options = {
+			        chart: {
+			            renderTo: 'ratiopassfail',
+						//zoomType: 'x'
+			            type: 'spline'
+			        },
+					plotOptions: {
+					            spline: {
+					                animation: false,
+									marker: {
+							            enabled: false
+							        }
+
+					            }
+					        },
+			        title: {
+			          text: '2d, Complement and Template Pass/Fail Proportions in 15 minute windows'
+			        },
+					xAxis: {
+						type: 'datetime',
+			            dateTimeLabelFormats: { // don't display the dummy year
+               				month: '%e. %b',
+           				    year: '%b'
+				            },
+					            title: {
+					                text: 'Time/Date'
+					            }
+					        },
+							yAxis: {
+							            title: {
+							                text: '% of total template reads'
+							            },
+							            min: 0
+							        },
+									credits: {
+									    enabled: false
+									  },
+			        legend: {
+			            layout: 'horizontal',
+                                        align: 'center',
+                                        verticalAlign: 'bottom',
+			            borderWidth: 0
+			        },
+			        series: []
+			    };
+				function loadchirprpf() {
+
+					if($('#sequencingratecheck').prop('checked')) {
+   										   $.getJSON('jsonencode/ratiopassfail.php?prev=0&callback=?', function(data) {
+
+                                        options.series = data; // <- just assign the data to the series property.
+
+                                                setTimeout(loadchirprpf,<?php echo $_SESSION['pagerefresh'] ;?>);
+
+                                        //options.series = JSON2;
+                                                var chart = new Highcharts.Chart(options);
+                                                });} else {
+   setTimeout(loadchirprpf,<?php echo $_SESSION['pagerefresh'] ;?>);
+}
+
+                                        }
+
+
+				        loadchirprpf();
+
+			});
+
+				//]]>
+
+</script>
+
+<script>
+
+			$(document).ready(function() {
+			    var options = {
+			        chart: {
+			            renderTo: 'ratio2dtemplate',
+						//zoomType: 'x'
+			            type: 'spline'
+			        },
+					plotOptions: {
+					            spline: {
+					                animation: false,
+									marker: {
+							            enabled: false
+							        }
+
+					            }
+					        },
+			        title: {
+			          text: '2d, Complement and Template reads in 15 minute windows'
+			        },
+					xAxis: {
+						type: 'datetime',
+			            dateTimeLabelFormats: { // don't display the dummy year
+               				month: '%e. %b',
+           				    year: '%b'
+				            },
+					            title: {
+					                text: 'Time/Date'
+					            }
+					        },
+							yAxis: {
+							            title: {
+							                text: 'Reads'
+							            },
+							            min: 0
+							        },
+									credits: {
+									    enabled: false
+									  },
+			        legend: {
+			            layout: 'horizontal',
+                                        align: 'center',
+                                        verticalAlign: 'bottom',
+			            borderWidth: 0
+			        },
+			        series: []
+			    };
+				function loadchirpr2t() {
+
+					if($('#sequencingratecheck').prop('checked')) {
+   										   $.getJSON('jsonencode/ratio2dtemplate.php?prev=0&callback=?', function(data) {
+
+                                        options.series = data; // <- just assign the data to the series property.
+
+                                                setTimeout(loadchirpr2t,<?php echo $_SESSION['pagerefresh'] ;?>);
+
+                                        //options.series = JSON2;
+                                                var chart = new Highcharts.Chart(options);
+                                                });} else {
+   setTimeout(loadchirpr2t,<?php echo $_SESSION['pagerefresh'] ;?>);
+}
+
+                                        }
+
+
+				        loadchirpr2t();
+
+			});
+
+				//]]>
+
+</script>
+
+
+
 <!-- Barcode Coverage Information -->
 
 <script>
@@ -32,10 +383,10 @@
 						            	enabled:true,
 						            	},
 						            	categories: [
-									                
+
 									                ]
-						            
-                                                
+
+
                                             },
                                             yAxis: {
                                                         title: {
@@ -119,11 +470,11 @@ $(document).ready(function() {
 
 			    };
 			    	function loadchirpbarcode() {
-			    		
+
 if($('#barcodingcheck').prop('checked')) {
    										 $.getJSON('jsonencode/barcodingpie.php?prev=0&callback=?', function(data) {
        options.series = data; // <- just assign the data to the series property.
-       
+
 
 
 	                setTimeout(loadchirpbarcode,<?php echo $_SESSION['pagerefresh'];?>);
@@ -166,7 +517,7 @@ if($('#barcodingcheck').prop('checked')) {
 						labels: {
 						    enabled: false
 						  },
-						
+
 			        },
 
 			        yAxis: {
@@ -175,7 +526,7 @@ if($('#barcodingcheck').prop('checked')) {
 						labels: {
 						    enabled: false
 						  },
-						
+
 			        },
 					credits: {
 					    enabled: false
@@ -199,11 +550,11 @@ if($('#barcodingcheck').prop('checked')) {
 
 			    };
 			    	function loadchirp23() {
-			    		
+
 if($('#poreactivitycheck').prop('checked')) {
    										 $.getJSON('jsonencode/readsperporemux.php?prev=0&callback=?', function(data) {
        options.series = data; // <- just assign the data to the series property.
-       
+
 
 
 	                setTimeout(loadchirp23,<?php echo $_SESSION['pagerefresh'];?>);
@@ -247,9 +598,9 @@ if($('#poreactivitycheck').prop('checked')) {
 								       // '#CBE1F7',
 								    //],
                                     title: {
-                                    
+
                                       text: 'Read Upload And Processing'
-                                    
+
                                     },
                                     xAxis: {
                                                 title: {
@@ -260,7 +611,7 @@ if($('#poreactivitycheck').prop('checked')) {
 									                'complement',
 									                '2d',
 									                ]
-                                    			
+
                                             },
                                             yAxis: {
                                                         title: {
@@ -299,9 +650,9 @@ if($('#poreactivitycheck').prop('checked')) {
 								       // '#CBE1F7',
 								    //],
                                     title: {
-                                    
+
                                       text: ''
-                                    
+
                                     },
                                     xAxis: {
                                                 title: {
@@ -312,7 +663,7 @@ if($('#poreactivitycheck').prop('checked')) {
 									                'c',
 									                '2d',
 									                ]
-                                    			
+
                                             },
                                             yAxis: {
                                                         title: {
@@ -330,8 +681,8 @@ if($('#poreactivitycheck').prop('checked')) {
                                         reversed: true
                                     },
                                     series: []
-                                };	
-                            		
+                                };
+
                             	}
                                 function loadchirp77() {
 									if($('#readsummarycheck').prop('checked')) {
@@ -400,7 +751,7 @@ if($('#poreactivitycheck').prop('checked')) {
 									                'Complement',
 									                '2d',
 									                ]
-                                    			
+
                                             },
                                             yAxis: {
                                                         title: {
@@ -640,13 +991,13 @@ if($('#poreactivitycheck').prop('checked')) {
 									//]]>
 
 									</script>
-								
-								
+
+
 								<?php if ($_SESSION['activereference'] != "NOREFERENCE") {?>
 									<?php foreach ($_SESSION['activerefnames'] as $key => $value) {
 										//echo $key . " " . $value . "<br>";?>
-										
-										
+
+
 										<script>
 
 																				$(document).ready(function() {
@@ -780,10 +1131,10 @@ if($('#poreactivitycheck').prop('checked')) {
 																						//]]>
 
 																						</script>
-										
-										
-										
-										
+
+
+
+
 										<?php
 										}
 										?>
@@ -965,19 +1316,31 @@ if($('#histogramcheck').prop('checked')) {
 			          text: 'Rate Of BaseCalling'
 			        },
 					xAxis: {
-					            title: {
-					                text: 'Time (S)'
-					            }
-					        },
+					type: 'datetime',
+			            dateTimeLabelFormats: { // don't display the dummy year
+               				month: '%e. %b',
+           				    year: '%b'
+				            },
+				            title: {
+				                text: 'Time/Date'
+				            }
+				        },
 							yAxis: {
 							            title: {
 							                text: 'Reads/Minute'
-							            }
+							            },
+							            min: 0
 							        },
 									credits: {
 									    enabled: false
 									  },
 			        legend: {
+		        	title: {
+                text: 'Read Type <span style="font-size: 9px; color: #666; font-weight: normal">(Click to hide)</span>',
+                style: {
+                    fontStyle: 'italic'
+                }
+            },
 			            layout: 'horizontal',
                                         align: 'center',
                                         verticalAlign: 'bottom',
@@ -1001,7 +1364,7 @@ if($('#histogramcheck').prop('checked')) {
 
                                         }
 
-				   
+
 				        loadchirp();
 
 			});
@@ -1032,7 +1395,7 @@ if($('#histogramcheck').prop('checked')) {
 						            title: {
 						                text: 'Time (S)'
 						            },
-						            
+
 						        },
 								yAxis: {
 								            title: {
@@ -1065,7 +1428,7 @@ if($('#histogramcheck').prop('checked')) {
 }
 
                                         }
-					    
+
 					        loadchirp2();
 
 				});
@@ -1130,7 +1493,7 @@ if($('#histogramcheck').prop('checked')) {
 
                                         }
 
-					   
+
 				   loadchirp3();
 
 				});
@@ -1204,7 +1567,7 @@ if($('#histogramcheck').prop('checked')) {
 						//]]>
 
 						</script>
-			
+
 
 						<script>
 						$(document).ready(function() {
@@ -1276,15 +1639,15 @@ if($('#histogramcheck').prop('checked')) {
 }
 
                                         }
-							   
+
 							        loadchirp5();
 
 						});
 
 						</script>
-						
+
 <!-- Quality info check avgquallength numberoverlength -->
-						
+
 							<script>
 						$(document).ready(function() {
 						    var options = {
@@ -1401,7 +1764,7 @@ if($('#histogramcheck').prop('checked')) {
 }
 
                                         }
-								    
+
 								        loadchirp12();
 
 							});
@@ -1410,7 +1773,3 @@ if($('#histogramcheck').prop('checked')) {
 								//]]>
 
 								</script>
-
-
-
-

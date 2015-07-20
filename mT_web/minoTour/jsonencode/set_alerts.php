@@ -55,6 +55,11 @@ if ($login->isUserLoggedIn() == true) {
 		}else{
 			$threshold = "null";
 		}
+		if (isset ($_GET['rununtil'])){
+			$control = $_GET['rununtil'];
+		}else{
+			$control = 0;
+		}
 		if (isset ($_GET['start'])) {
 			$start = $_GET['start'];	
 		}else{
@@ -93,9 +98,40 @@ if ($login->isUserLoggedIn() == true) {
 		}
 		
 		foreach ($typearray as &$type) {
-			$sqlinsert = "insert into alerts (name,reference,twitterhandle,type,threshold,start,end,complete) values (" . $name .	"," . $reference .	"," . $twitterhandle .	"," . $type .	"," . $threshold .	"," . $start .	"," . $end .	",0);";
+			//echo $name . "<br>";
+			//We need to check if specific alerts which will stop the sequencer are already set and - if they are reset them
+			if ($name === "'barcodecoverage'") {
+				//echo "HELLO - WE NEED TO FIX SOMETHING HERE";
+				$sqldelete = "delete from alerts where name = 'barcodecoverage' and reference = " . $reference . ";";
+				$sqldeleteexecute = $mindb_connection->query($sqldelete);
+				$sqlinsert = "insert into alerts (name,reference,twitterhandle,type,threshold,start,end,control,complete) values (" . $name .	"," . $reference .	"," . $twitterhandle .	"," . $type .	"," . $threshold .	"," . $start .	 "," . $end . "," . $control .	",0);";
 			//echo $sqlinsert;
-			$sqlinsertexecute = $mindb_connection->query($sqlinsert);
+				$sqlinsertexecute = $mindb_connection->query($sqlinsert);
+			}elseif ($name === "'genbarcodecoverage'") {
+				$sqldelete = "delete from alerts where name = 'genbarcodecoverage';";
+				$sqldeleteexecute = $mindb_connection->query($sqldelete);
+				$sqlinsert = "insert into alerts (name,reference,twitterhandle,type,threshold,start,end,control,complete) values (" . $name .	"," . $reference .	"," . $twitterhandle .	"," . $type .	"," . $threshold .	"," . $start .	 "," . $end . "," . $control .	",0);";	
+				$sqlinsertexecute = $mindb_connection->query($sqlinsert);
+			}elseif ($name === "'genbarcodecoveragedelete'"){
+				$sqldelete = "delete from alerts where name = 'genbarcodecoverage';";
+				$sqldeleteexecute = $mindb_connection->query($sqldelete);
+				//echo $sqldelete . "<br>";
+			}elseif ($name === "'barcodecoveragedelete'"){
+				$sqldelete = "delete from alerts where name = 'barcodecoverage';";
+				$sqldeleteexecute = $mindb_connection->query($sqldelete);
+				//echo $sqldelete . "<br>";
+			}elseif ($name === "'referencecoveragedelete'"){
+				//echo "YELLOW";
+				$alert_index = substr($reference, 10,-1);
+				$sqldelete = "delete from alerts where alert_index = " . $alert_index . ";";
+				//echo $sqldelete . "<br>";
+				$sqldeleteexecute = $mindb_connection->query($sqldelete);
+				//echo $sqldelete . "<br>";
+			}else{
+				$sqlinsert = "insert into alerts (name,reference,twitterhandle,type,threshold,start,end,control,complete) values (" . $name .	"," . $reference .	"," . $twitterhandle .	"," . $type .	"," . $threshold .	"," . $start .	 "," . $end . "," . $control .	",0);";
+			//echo $sqlinsert;
+				$sqlinsertexecute = $mindb_connection->query($sqlinsert);
+			}
 		}
 		echo "<div class='alert alert-success alert-dismissible' role='alert'>  <button type='button' class='close' data-dismiss='alert'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button>  <strong>Success!</strong> An alert has been set for the following run: " .cleanname($_SESSION['active_run_name']) . "<br> The alert is for $name on $typeref strands. </div>";
 	}else{

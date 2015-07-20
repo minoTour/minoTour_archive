@@ -129,23 +129,35 @@ require_once("includes/functions.php");
 		          text: 'Active Channels Over Time'
 		        },
 				xAxis: {
+					type: 'datetime',
+			            dateTimeLabelFormats: { // don't display the dummy year
+               				month: '%e. %b',
+           				    year: '%b',
+				            },
 				            title: {
-				                text: 'Time (S)'
+				                text: 'Time/Date'
 				            }
 				        },
 						yAxis: {
 						            title: {
 						                text: 'Number of Active Channels'
-						            }
+						            },
+						            min: 0
 						        },
 								credits: {
 								    enabled: false
 								  },
 		        legend: {
-		            layout: 'vertical',
-		            align: 'right',
-		            verticalAlign: 'middle',
-		            borderWidth: 0
+		            title: {
+                text: 'Read Type <span style="font-size: 9px; color: #666; font-weight: normal">(Click to hide)</span>',
+                style: {
+                    fontStyle: 'italic'
+                }
+            },
+			            layout: 'horizontal',
+                                        align: 'center',
+                                        verticalAlign: 'bottom',
+			            borderWidth: 0
 		        },
 		        series: []
 		    };

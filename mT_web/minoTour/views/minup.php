@@ -39,8 +39,8 @@ if ($login->isUserLoggedIn() == true) {
     <div id="wrapper">
 
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
-            
-			<?php 
+
+			<?php
 			include 'navbar-header.php';
 			?>
             <!-- /.navbar-top-links -->
@@ -56,26 +56,26 @@ if ($login->isUserLoggedIn() == true) {
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
-			<?php  if (checkminup($_SESSION['user_name']) > 0){ 
+			<?php  if (checkminup($_SESSION['user_name']) > 0){
 				echo "You are authorised to upload data to this minoTour installation. All versions of the minup script are available to download from here. Please see the notes below.<br>";
-				echo "<h4><u>minUP for Windows</u></h4>";
-				echo "<body>The latest version of minUP for Windows can be downloaded below. This compressed folder includes a compiled version of the last aligner which in turn requires CYGWIN to be installed on your system (available from <a href='http://www.cygwin.com/' target='_blank'>www.cygwin.com</a>).<br><br> You should pay close attention to the enclosed readme file to ensure that you correctly configure the path to run minUP on Windows.</body><br><br>";
+				echo "<h4><u>minUP for Windows 0.5</u></h4>";
+				echo "<body>The latest version of minUP for Windows can be downloaded below. This compressed folder includes a compiled version of the last aligner which in turn requires CYGWIN to be installed on your system (available from <a href='http://www.cygwin.com/' target='_blank'>www.cygwin.com</a>).<br><br> This version also allows you to use BWA and additinal alignment options will be introduced in the near future.<br><br> It also provides remote control facilities for your minION. This is EXPERIMENTAL now and more information will be provided soon. <br><br> You should pay close attention to the enclosed readme file to ensure that you correctly configure the path to run minUP on Windows.</body><br><br>";
 				echo "<body>This version of minUP can utilise a configuration file to bypass entering some of the standard parameters on the command line. You can download a copy of this configuration specific for your account below. This file only works with the Windows version of minUP.</body><br><br>";
-				echo "<a href='minup/minup.v0.38W.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP for Windows</a><br><br>";
-				
-				echo "<body>A recent change in the metrichor workflow has changed some of the file formats. This is causing minUp some problems when uploading telemetry. Here is our updated version of minUP which deals with this problem. In addition, it handles barcoded data. Whilst we have tested this, we are releasing it earlier than anticipaited to deal with the metrichor change now. For this reason we will leave the earlier minup version here as well.</body><br><br>"; 
+				echo "<a href='minup/minUPW.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP 0.5 for Windows</a><br><br>";
+
+				echo "<body>For backwards compatability we provide a previous version of minUP as well.</body><br><br>";
 				echo "<a href='minup/minup.v0.42W.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP 42 for Windows</a><br><br>";
 
-				
+
 				echo "<h4><u>Windows minUP Configuration File</u></h4>";
 				echo "<body>Click the icon below to download your personalised Windows minup configuration file. It should be saved in the folder containing the windows minup executable and you should ensure it is named minup_windows.config - some browsers may append .txt to the end of the file.</body><br><br>";
 				echo "<a href='minup/minupwindowsconfig.php?user_name=" . $_SESSION['user_name'] . "' target='_blank'><i class='fa fa-file-code-o'></i> minUP Windows Config</a><br><br>";
 				echo "<body>You are free to edit this file and the parameters within it can be overridden by the parameter settings on the command line. Do not distribute this file to others as it is specific to you. Within the file is a hashed out line containing your password for uploading data to the database.</body><br><br>";
 				echo "<h4><u>minUP for Linux</u></h4>";
-				echo "<body>The latest version of minUP for linux can be downloaded below. This is a python script and requires several dependencies - see the enclosed readme file for details.</body><br><br>";
-				echo "<a href='minup/minup.v0.38.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP for Linux</a><br><br>";
-				echo "<body>A recent change in the metrichor workflow has changed some of the file formats. This is causing minUp some problems when uploading telemetry. Here is our updated version of minUP which deals with this problem. In addition, it handles barcoded data. Whilst we have tested this, we are releasing it earlier than anticipaited to deal with the metrichor change now. For this reason we will leave the earlier minup version here as well.</body><br><br>"; 
-				echo "<a href='minup/minup.v0.42.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP 42 for Linux</a><br><br>";
+				echo "<body>The latest version of minUP for linux can be downloaded below. This is a python script and requires several dependencies - see the enclosed readme file for details. This includes the option to run BWA or LAST. It also provides remote control facilities for your minION. This is EXPERIMENTAL now and more information will be provided soon.</body><br><br>";
+				echo "<a href='minup/minup.v0.5.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP 0.5 for Linux</a><br><br>";
+				echo "<body>For backwards compatability we provide a previous version of minUP as well.</body><br><br>";
+				echo "<a href='minup/minup.v0.42.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP 0.42 for Linux</a><br><br>";
 				echo "<h4><u>Linux minUP Configuration File</u></h4>";
 				echo "<body>Click the icon below to download your personalised minup configuration file. It should be saved in the same folder as your minup script and you should ensure it is called minup_posix.config - some browsers may append .txt to the end of the file.</body><br><br>";
 				echo "<a href='minup/minupposixconfig.php?user_name=" . $_SESSION['user_name'] . "' target='_blank'><i class='fa fa-file-code-o'></i> minUP Linux Config</a><br><br>";
@@ -85,8 +85,8 @@ if ($login->isUserLoggedIn() == true) {
 				echo "<a href='minup/demo_data_set.zip' target='_blank'><i class='fa fa-file-code-o'></i> Demo Data Set</a><br><br>";
 			}else {
 				echo "We're sorry, but your user account is not configured to allow data upload at this time. If you think you should be able to do so, please contact the system administrator for this installation.<br>";
-			}; ?>	
-	
+			}; ?>
+
 	    </div>
         <!-- /#page-wrapper -->
     </div>
@@ -119,17 +119,17 @@ if ($login->isUserLoggedIn() == true) {
             //eval(document.getElementById("infodiv").innerHTML);
             }, 10000); // refresh every 5000 milliseconds
     </script>
-	
+
 <?php include "includes/reporting.php";?>
 </body>
 
 </html>
-<?php 
+<?php
 } else {
-	
+
 	    // the user is not logged in. you can do whatever you want here.
 	    // for demonstration purposes, we simply show the "you are not logged in" view.
 	    include("views/not_logged_in.php");
 	}
-	
+
 	?>
