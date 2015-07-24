@@ -1936,6 +1936,139 @@ function basesperporemux($jobname,$currun) {
 
 }
 
+##Plot the ratio of pass to fail reads per pore.
+function passfailperporemux($jobname,$currun){
+	$checkvar = $currun . $jobname;
+	$checkrunning = $currun . $jobname . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;
+	//$jsonstring = $memcache->get("$checkvar");
+	$checkingrunning = $memcache->get("$checkrunning");
+	if($checkingrunning === "No" || $checkingrunning === FALSE){
+		$memcache->set("$checkrunning", "YES", 0, 0);
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if ($checking->num_rows ==1){
+			//echo "We have already run this!";
+			foreach ($checking as $row){
+				$jsonstring = $row['json'];
+			}
+		} else {
+			$sql_pass = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like '%pass%' group by channel,start_mux;";
+			$sql_fail = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like '%fail%' group by channel,start_mux;";
+			$sql_all = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) group by channel,start_mux;";
+
+			$resultarray;
+
+			$pass=$mindb_connection->query($sql_pass);
+			$fail=$mindb_connection->query($sql_fail);
+			$all=$mindb_connection->query($sql_all);
+
+			###Get the reverse map to decode from channel and mux to position.
+			$reverse_map = minion_map()[1];
+
+			#if ($all->num_rows >= 1){
+			#	foreach ($template as $row) {
+			#		//$resultarray['template'][$row['channel']][$row['mux']]=$row['count'];
+			#		$tempitem = $row['channel'] . "," . $row['mux'];
+			#		//echo $tempitem . "\t";
+			#		$tempitem2 = $reverse_map["$tempitem"];
+			#		//echo $tempitem2 . "\n";
+			#		$temparray = explode( ',', $tempitem2 );
+			#		//echo $temparray[0];
+			#		$resultarray['all'][$temparray[1]][$temparray[0]]=$row['count'];
+			#	}
+			#}
+			if ($all->num_rows >= 1){
+				foreach ($all as $row) {
+					$tempitem = $row['channel'] . "," . $row['start_mux'];
+					$tempitem = (string)$tempitem;
+					$resultarray["$tempitem"]['all']=$row['count'];
+				}
+			}
+			if ($pass->num_rows >= 1){
+				foreach ($pass as $row) {
+					$tempitem = $row['channel'] . "," . $row['start_mux'];
+					$tempitem = (string)$tempitem;
+					//echo $tempitem . "tempitem \n";
+					$resultarray["$tempitem"]['pass']=$row['count'];
+				}
+			}
+			if ($fail->num_rows >= 1){
+				foreach ($fail as $row) {
+					$tempitem = $row['channel'] . "," . $row['start_mux'];
+
+					$tempitem = (string)$tempitem;
+					$resultarray["$tempitem"]['fail']=$row['count'];
+				}
+			}
+
+			$resultarrayproc;
+			foreach ($resultarray as $chanmux => $value ){
+				//echo $chanmux['pass'] . "\n";
+				$tempitem2 = $reverse_map["$chanmux"];
+				//echo $tempitem2 . "\n";
+				$temparray = explode( ',', $tempitem2 );
+				$resultarrayproc['percentpass'][$temparray[1]][$temparray[0]]=($chanmux['pass']/$chanmux['fail'])*100;
+			}
+
+			//var_dump($resultarray);
+			//var_dump($resultarrayproc);
+			//echo json_encode($resultarray);
+			$jsonstring;
+			$jsonstring = $jsonstring . "[\n";
+			foreach ($resultarrayproc as $key => $value){
+				$jsonstring = $jsonstring . "{\n";
+				$jsonstring = $jsonstring . "\"name\" : \"$key\", \n";
+				$jsonstring = $jsonstring . "\"borderWidth\": 1,\n";
+				$jsonstring = $jsonstring . "\"data\": [";
+				for ($i = 75 ; $i >=1; $i--){
+					if (array_key_exists($i, $resultarrayproc[$key])){
+						for ($j = 75; $j >= 1; $j--) {
+							if (array_key_exists($j, $resultarrayproc[$key][$i])) {
+								$jsonstring = $jsonstring . "[" . ($i-1) . "," . ($j-1) . "," . $resultarrayproc[$key][$i][$j] . "],\n";
+							}else{
+								//$jsonstring = $jsonstring . "[" . ($i-1) . "," . ($j-1) . ",0],\n";
+							}
+						}
+					}else{
+						for ($j = 75; $j >= 1; $j--) {
+							//$jsonstring = $jsonstring . "[" . ($i-1) . "," . ($j-1) . ",0],\n";
+						}
+
+					} //closing if statement line 51
+				} // closing the for loop at line 50
+
+
+			$jsonstring = $jsonstring . "],\n\"dataLabels\": {
+            \"enabled\": false,
+            \"color\":\"black\",
+            \"style\": {
+            \"textShadow\": \"none\",
+            \"fontSize\": \"7\"
+            }
+           	}	";
+			$jsonstring = $jsonstring . "},\n";
+
+		}
+		$jsonstring = $jsonstring .  "]\n";
+		if ($_GET["prev"] == 1){
+			//include 'savejson.php';
+		}
+	}
+	$memcache->set("$checkvar", $jsonstring);
+}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}
+
+	// cache for 2 minute as we want yield to update semi-regularly...
+
+	$memcache->delete("$checkrunning");
+    return $jsonstring;
+
+}
+
 
 ##Reads per pore - plots the production of reads on a pore by pore basis corrected for the nanopore map
 function readsperporemux($jobname,$currun){
