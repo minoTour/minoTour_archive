@@ -204,7 +204,7 @@ Key details on the run.<br><br>
                                     },
 
                                     title: {
-                                        text: 'Bases/Second'
+                                        text: 'Average Read Length'
                                     },
                                     height: '100%',
                                     lineWidth: 1,
