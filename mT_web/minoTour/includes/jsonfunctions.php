@@ -127,6 +127,101 @@ function sequencingrate($jobname,$currun,$refid) {
 
 }
 
+function lengthtimewindow($jobname,$currun,$refid) {
+	$checkvar = $currun . $jobname . $type;
+	//echo $type . "\n";
+	$checkrunning = $currun . $jobname . $type . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;
+	//$jsonstring = $memcache->get("$checkvar");
+	$checkingrunning = $memcache->get("$checkrunning");
+	if($checkingrunning === "No" || $checkingrunning === FALSE){
+		//$memcache->set("$checkrunning", "YES", 0, 0);
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if ($checking->num_rows ==1){
+			//echo "We have already run this!";
+			foreach ($checking as $row){
+				$jsonstring = $row['json'];
+			}
+		} else {
+			//do something interesting here...
+			$sqltemplate = "select (floor((basecalled_template.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor,   sum(length(sequence))/count(*) as meanlength from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
+			$sqlcomplement = "select (floor((basecalled_complement.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor,   sum(length(sequence))/count(*) as meanlength from basecalled_complement inner join tracking_id using (basename_id) group by 1 order by 1;";
+			$sql2d = "select (floor((basecalled_template.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor,   sum(length(basecalled_2d.sequence))/count(*) as meanlength from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
+
+
+			$resulttemplate = $mindb_connection->query($sqltemplate);
+			$resultcomplement = $mindb_connection->query($sqlcomplement);
+			$result2d = $mindb_connection->query($sql2d);
+
+			$resultarray;
+
+			if ($resulttemplate->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resulttemplate as $row) {
+					#$cumucount++;
+					$resultarray['template length'][$row['bin_floor']]=$row['meanlength'];
+					#$resultarray['template effective rate'][$row['bin_floor']]=$row['effective_rate'];
+				}
+			}
+			if ($resultcomplement->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultcomplement as $row) {
+					#$cumucount++;
+					$resultarray['complement length'][$row['bin_floor']]=$row['meanlength'];
+					#$resultarray['complement effective rate'][$row['bin_floor']]=$row['effective_rate'];
+				}
+			}
+			if ($result2d->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($result2d as $row) {
+					#$cumucount++;
+					$resultarray['2d length'][$row['bin_floor']]=$row['meanlength'];
+					#$resultarray['complement effective rate'][$row['bin_floor']]=$row['effective_rate'];
+				}
+			}
+
+
+
+		$jsonstring;
+		$jsonstring = $jsonstring . "[\n";
+
+		foreach ($resultarray as $key => $value) {
+				$jsonstring = $jsonstring . "{\n";
+				$jsonstring = $jsonstring . "\"name\": \"" . $key .  "\",\n";
+
+				//if ($key == "template") {
+					//$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+				//}else if ($key == "complement") {
+				//	$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+				//}else if ($key == "2d") {
+				//	$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+				//}
+				$jsonstring = $jsonstring . "\"data\":[";
+				foreach ($value as $key2 => $value2) {
+					$jsonstring = $jsonstring . "[  $key2 , $value2 ],";
+				}
+
+			$jsonstring = $jsonstring . "]\n";
+		$jsonstring = $jsonstring . "},\n";
+			}
+		$jsonstring = $jsonstring . "]\n";
+	}
+		if ($_GET["prev"] == 1){
+			include 'savejson.php';
+		}
+		$memcache->set("$checkvar", $jsonstring);
+	}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}
+	// cache for 2 minute as we want yield to update semi-regularly...
+	$memcache->delete("$checkrunning");
+   	return $jsonstring;
+
+}
+
 
 ##### ratiopassfail
 
