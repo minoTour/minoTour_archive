@@ -1955,45 +1955,38 @@ function passfailperporemux($jobname,$currun){
 				$jsonstring = $row['json'];
 			}
 		} else {
-			$sql_pass = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like '%pass%' group by channel,start_mux;";
-			$sql_fail = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like '%fail%' group by channel,start_mux;";
-			$sql_all = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) group by channel,start_mux;";
+			$sql_allpass = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like \"%pass%\" group by channel,start_mux;";
+			$sql_fail = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like \"\%fail\%\" group by channel,start_mux;";
+			$sql_all = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like \"%a%\" group by channel,start_mux;";
 
 			$resultarray;
 
-			$pass=$mindb_connection->query($sql_pass);
+			$allpass=$mindb_connection->query($sql_allpass);
 			$fail=$mindb_connection->query($sql_fail);
 			$all=$mindb_connection->query($sql_all);
 
 			###Get the reverse map to decode from channel and mux to position.
 			$reverse_map = minion_map()[1];
 
-			#if ($all->num_rows >= 1){
-			#	foreach ($template as $row) {
-			#		//$resultarray['template'][$row['channel']][$row['mux']]=$row['count'];
-			#		$tempitem = $row['channel'] . "," . $row['mux'];
-			#		//echo $tempitem . "\t";
-			#		$tempitem2 = $reverse_map["$tempitem"];
-			#		//echo $tempitem2 . "\n";
-			#		$temparray = explode( ',', $tempitem2 );
-			#		//echo $temparray[0];
-			#		$resultarray['all'][$temparray[1]][$temparray[0]]=$row['count'];
-			#	}
-			#}
 			if ($all->num_rows >= 1){
+				//echo "we're in all.\n";
 				foreach ($all as $row) {
 					$tempitem = $row['channel'] . "," . $row['start_mux'];
 					$tempitem = (string)$tempitem;
+					//echo "tempitem " . $tempitem . "\n";
 					$resultarray["$tempitem"]['all']=$row['count'];
 				}
 			}
-			if ($pass->num_rows >= 1){
-				foreach ($pass as $row) {
+			if ($allpass->num_rows >= 1){
+				//echo "we're in pass";
+				foreach ($allpass as $row) {
 					$tempitem = $row['channel'] . "," . $row['start_mux'];
 					$tempitem = (string)$tempitem;
 					//echo $tempitem . "tempitem \n";
 					$resultarray["$tempitem"]['pass']=$row['count'];
 				}
+			}else{
+				echo "non result badger";
 			}
 			if ($fail->num_rows >= 1){
 				foreach ($fail as $row) {
@@ -2010,7 +2003,8 @@ function passfailperporemux($jobname,$currun){
 				$tempitem2 = $reverse_map["$chanmux"];
 				//echo $tempitem2 . "\n";
 				$temparray = explode( ',', $tempitem2 );
-				$resultarrayproc['percentpass'][$temparray[1]][$temparray[0]]=($chanmux['pass']/$chanmux['all'])*100;
+				//echo $chanmux . "\t" . $value['pass'] . "\t" . $chanmux['pass'] . "\t". $chanmux['fail'] . "\t" . ($chanmux['pass']/$chanmux['all'])*100 . "\n";
+				$resultarrayproc['percentpass'][$temparray[1]][$temparray[0]]=($value['pass']/$value['all'])*100;
 			}
 
 			//var_dump($resultarray);
