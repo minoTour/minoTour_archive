@@ -2010,7 +2010,7 @@ function passfailperporemux($jobname,$currun){
 				$tempitem2 = $reverse_map["$chanmux"];
 				//echo $tempitem2 . "\n";
 				$temparray = explode( ',', $tempitem2 );
-				$resultarrayproc['percentpass'][$temparray[1]][$temparray[0]]=($chanmux['pass']/$chanmux['fail'])*100;
+				$resultarrayproc['percentpass'][$temparray[1]][$temparray[0]]=($chanmux['pass']/$chanmux['all'])*100;
 			}
 
 			//var_dump($resultarray);
