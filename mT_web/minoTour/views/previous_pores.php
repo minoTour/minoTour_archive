@@ -598,7 +598,7 @@ $(document).ready(function() {
         plotOptions: {
             scatter: {
                 marker: {
-                    radius: 5,
+                    radius: 2,
                     states: {
                         hover: {
                             enabled: true,
