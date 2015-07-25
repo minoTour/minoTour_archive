@@ -84,6 +84,7 @@ require_once("includes/functions.php");
 					<?php if ($_SESSION['focus_minup'] >= 0.37) {?>
 					<div id="basemuxproduction" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pore Base Productivity</div>
                     <div id="passfailperporemux" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pore Pass Fail Rates</div>
+                    <div id="passfailcountperporemux" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pore Pass Fail Rates</div>
 					<?php } ?>		  </div>
 			</div>
 
@@ -561,6 +562,75 @@ $(document).ready(function() {
     });
 });
 </script>
+<script>
+    $(document).ready(function() {
+        var options = {
+            chart: {
+                renderTo: 'passfailcountperporemux',
+                type: 'scatter',
+                zoomType: 'xy'
+            },
+            title: {
+            text: 'Percentage Pass Reads against Number of Reads Generated'
+        },
+        xAxis: {
+            title: {
+                enabled: true,
+                text: 'Read Counts',
+            },
+            startOnTick: true,
+            endOnTick: true,
+            showLastLabel: true
+        },
+        yAxis: {
+            max : 100,
+            min : 0,
+            title: {
+                text: '% Pass Reads',
+            }
+        },
+        credits: {
+            enabled: false
+          },
+        legend: {
+            enabled: false,
+        },
+        plotOptions: {
+            scatter: {
+                marker: {
+                    radius: 5,
+                    states: {
+                        hover: {
+                            enabled: true,
+                            lineColor: 'rgb(100,100,100)'
+                        }
+                    }
+                },
+                states: {
+                    hover: {
+                        marker: {
+                            enabled: false
+                        }
+                    }
+                },
+                tooltip: {
+                    headerFormat: '<b>Reads and Pass</b><br>',
+                    pointFormat: '{point.x} read, {point.y} % pass'
+                }
+            }
+        },
+            series: []
+
+        };
+        $.getJSON('jsonencode/passfailcountperporemux.php?prev=1&callback=?', function(data) {
+//alert("success");
+            options.series = data; // <- just assign the data to the series property.
+//options.series = JSON2;
+            var chart = new Highcharts.Chart(options);
+        });
+    });
+</script>
+
 
     <!-- SB Admin Scripts - Include with every page -->
     <script src="js/sb-admin.js"></script>

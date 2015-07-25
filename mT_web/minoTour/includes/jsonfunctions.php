@@ -1936,6 +1936,105 @@ function basesperporemux($jobname,$currun) {
 
 }
 
+##Plot the ratio pass reads per pore against the number of reads produced by a Pore
+##Plot the ratio of pass to fail reads per pore.
+function passfailcountperporemux($jobname,$currun){
+	$checkvar = $currun . $jobname;
+	$checkrunning = $currun . $jobname . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;
+	//$jsonstring = $memcache->get("$checkvar");
+	$checkingrunning = $memcache->get("$checkrunning");
+	if($checkingrunning === "No" || $checkingrunning === FALSE){
+		$memcache->set("$checkrunning", "YES", 0, 0);
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if ($checking->num_rows ==1){
+			//echo "We have already run this!";
+			foreach ($checking as $row){
+				$jsonstring = $row['json'];
+			}
+		} else {
+			$sql_allpass = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like \"%pass%\" group by channel,start_mux;";
+			$sql_fail = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like \"\%fail\%\" group by channel,start_mux;";
+			$sql_all = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) group by channel,start_mux;";
+
+
+			$allpass=$mindb_connection->query($sql_allpass);
+			$fail=$mindb_connection->query($sql_fail);
+			$all=$mindb_connection->query($sql_all);
+
+			###Get the reverse map to decode from channel and mux to position.
+			$reverse_map = minion_map()[1];
+
+			if ($all->num_rows >= 1){
+				//echo "we're in all.\n";
+				foreach ($all as $row) {
+					$tempitem = $row['channel'] . "," . $row['start_mux'];
+					$tempitem = (string)$tempitem;
+					//echo "tempitem " . $tempitem . "\n";
+					$resultarray["$tempitem"]['all']=$row['count'];
+				}
+			}
+			if ($allpass->num_rows >= 1){
+				//echo "we're in pass";
+				foreach ($allpass as $row) {
+					$tempitem = $row['channel'] . "," . $row['start_mux'];
+					$tempitem = (string)$tempitem;
+					//echo $tempitem . "tempitem \n";
+					$resultarray["$tempitem"]['pass']=$row['count'];
+				}
+			}else{
+				echo "non result badger";
+			}
+			if ($fail->num_rows >= 1){
+				foreach ($fail as $row) {
+					$tempitem = $row['channel'] . "," . $row['start_mux'];
+
+					$tempitem = (string)$tempitem;
+					$resultarray["$tempitem"]['fail']=$row['count'];
+				}
+			}
+
+
+
+			//var_dump($resultarray);
+			//var_dump($resultarrayproc);
+			//echo json_encode($resultarray);
+			$jsonstring;
+			$jsonstring = $jsonstring . "[\n";
+			$jsonstring = $jsonstring . "{\n";
+			$jsonstring = $jsonstring . "\"name\" : \"counttopass\", \n";
+			$jsonstring = $jsonstring . "\"data\": [";
+			foreach ($resultarray as $key => $value){
+				$jsonstring = $jsonstring . "[" . $resultarray[$key]['all'] . "," . $resultarray[$key]['pass']/$resultarray[$key]['all']*100 . "],\n";
+			} // closing the for loop at line 50
+
+
+			$jsonstring = $jsonstring . "]";
+			$jsonstring = $jsonstring . "},\n";
+
+		//}
+		$jsonstring = $jsonstring .  "]\n";
+		if ($_GET["prev"] == 1){
+			//include 'savejson.php';
+		}
+	}
+	$memcache->set("$checkvar", $jsonstring);
+}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}
+
+	// cache for 2 minute as we want yield to update semi-regularly...
+
+	$memcache->delete("$checkrunning");
+    return $jsonstring;
+
+}
+
+
+
 ##Plot the ratio of pass to fail reads per pore.
 function passfailperporemux($jobname,$currun){
 	$checkvar = $currun . $jobname;
@@ -1957,7 +2056,7 @@ function passfailperporemux($jobname,$currun){
 		} else {
 			$sql_allpass = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like \"%pass%\" group by channel,start_mux;";
 			$sql_fail = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like \"\%fail\%\" group by channel,start_mux;";
-			$sql_all = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like \"%a%\" group by channel,start_mux;";
+			$sql_all = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) group by channel,start_mux;";
 
 			$resultarray;
 
