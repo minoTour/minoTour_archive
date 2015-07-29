@@ -104,6 +104,7 @@ require_once("includes/functions.php");
 
 
 								</div>
+                                <div id="lengthtimewindow" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Read Lengths Over Time.</div>
 								<div class="row">
 								<?php if ($_SESSION['activereference'] != "NOREFERENCE") {?>
 									<?php foreach ($_SESSION['activerefnames'] as $key => $value) {

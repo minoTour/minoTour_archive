@@ -12,7 +12,7 @@ require_once("includes/functions.php");
     <div id="wrapper">
 
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
-           
+
 			<?php include 'navbar-header.php' ?>
             <!-- /.navbar-top-links -->
 			<?php include 'navbar-top-links.php'; ?>
@@ -74,23 +74,24 @@ require_once("includes/functions.php");
 						<div class="col-md-3" id="maxlen" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Read Max Length</div>
 
 					</div>
+                    <div id="lengthtimewindow" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Read Lengths Over Time.</div>
 				<div class="row">
 								<?php if ($_SESSION['activereference'] != "NOREFERENCE") {?>
-							
+
 								<?php foreach ($_SESSION['activerefnames'] as $key => $value) {
 									//echo $key . " " . $value . "<br>";?>
 									<div class="col-md-6" id="percentcoverage<?php echo $key;?>" style="height:200px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Coverage for <?php echo $value;?></div>
 									<div class="col-md-6" id="depthcoverage<?php echo $key;?>" style="height:200px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Depth for <?php echo $value;?></div><?php
 								}
 								?>
-							
+
 							<?php }else { ?>
 															<div><p class="text-center"><small>This dataset has not been aligned to a reference sequence.</small></p></div>
 							<?php }; ?>
 							</div>
 			  </div>
 			</div>
-			
+
 			<div class="panel panel-default">
 			  <div class="panel-heading">
 			    <h3 class="panel-title"><!-- Button trigger modal -->
@@ -120,9 +121,9 @@ Key details on the run.<br><br>
 				  			Content
 								  </div>
 			</div>
-			
-			
-			
+
+
+
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -131,8 +132,8 @@ Key details on the run.<br><br>
 
     </div>
     <!-- /#wrapper -->
-	
-	
+
+
     <!-- Core Scripts - Include with every page -->
     <script src="js/jquery-1.10.2.js"></script>
     <script src="js/bootstrap.min.js"></script>
@@ -145,21 +146,112 @@ Key details on the run.<br><br>
 				</script>
     <script src="js/plugins/morris/raphael-2.1.0.min.js"></script>
     <script src="js/plugins/morris/morris.js"></script>
-	
+
 	<!-- Highcharts Addition -->
 	<script src="js/highcharts.js"></script>
 	<script type="text/javascript" src="js/themes/grid-light.js"></script>
 	<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
-	
+
 	<script>
 				$(document).ready(function(){
 					$('#runsummary').load('includes/runsummary.php');
 					setInterval(function(){
     			 	$('#runsummary').load('includes/runsummary.php');
     				}, 1000);
-				}); 
+				});
 	</script>
+    <script>
+            $(document).ready(function() {
+                var options = {
+                    chart: {
+                        renderTo: 'lengthtimewindow',
+                        zoomType: 'x',
+                        type: 'spline',
+                    },
+                    title: {
+                      text: 'Average Read Lengths Over Time'
+                    },
+                    resetZoomButton: {
+                    position: {
+                        // align: 'right', // by default
+                        // verticalAlign: 'top', // by default
+                        x: -10,
+                        y: 10
+                    },
+                    relativeTo: 'chart'
+                },
+                    plotOptions: {
+                        spline: {
+                                        animation: false,
+                                        marker: {
+                                            enabled: false
+                                        }
+
+                    },
+
+
+
+            },
+                    xAxis: {
+                        type: 'datetime',
+                            dateTimeLabelFormats: { // don't display the dummy year
+                                month: '%e. %b',
+                                year: '%b'
+                                },
+                                title: {
+                                    text: 'Time/Date'
+                                }
+                            },
+                            yAxis:
+                                {
+
+                                    labels: {
+                                        align: 'right',
+                                        x: -3
+                                    },
+
+                                    title: {
+                                        text: 'Average Read Length'
+                                    },
+                                    height: '100%',
+                                    lineWidth: 1,
+                                    min: 0
+                                },
+                                    credits: {
+                                        enabled: false
+                                      },
+                    legend: {
+                        title: {
+                    text: 'Read Type <span style="font-size: 9px; color: #666; font-weight: normal">(Click to hide)</span>',
+                    style: {
+                        fontStyle: 'italic'
+                    }
+                },
+
+                        layout: 'horizontal',
+                        align: 'center',
+                        //verticalAlign: 'middle',
+                        borderWidth: 0
+                    },
+                    series: []
+                };
+
+                $.getJSON('jsonencode/lengthtimewindow.php?prev=0&callback=?', function(data) {
+
+                options.series = data; // <- just assign the data to the series property.
+
+                //options.series = JSON2;
+                var chart = new Highcharts.Chart(options);
+
+    });
+
+
+                });
+
+                    //]]>
+
+    </script>
 	<script>
 
 	$(document).ready(function() {
@@ -172,7 +264,7 @@ Key details on the run.<br><br>
 						plotOptions: {
 						            column: {
 						                animation: false
-						          
+
 						            }
 						        },
 				        title: {
@@ -201,18 +293,18 @@ Key details on the run.<br><br>
 				    };
 					    $.getJSON('jsonencode/readnumber.php?prev=0&callback=?', function(data) {
 					                //alert("success");
-    
+
 					        options.series = data; // <- just assign the data to the series property.
 
 					        //options.series = JSON2;
 					                var chart = new Highcharts.Chart(options);
 					                });
-					     
-				});
-			    
-				    
 
-					//]]>  
+				});
+
+
+
+					//]]>
 
 					</script>
 					<script>
@@ -227,7 +319,7 @@ Key details on the run.<br><br>
 							plotOptions: {
 							            column: {
 							                animation: false
-							          
+
 							            }
 							        },
 					        title: {
@@ -254,20 +346,20 @@ Key details on the run.<br><br>
 					        },
 					        series: []
 					    };
-						
+
 						    $.getJSON('jsonencode/avelen.php?prev=0&callback=?', function(data) {
 						                //alert("success");
-    
+
 						        options.series = data; // <- just assign the data to the series property.
 
-						
+
 						        //options.series = JSON2;
 						                var chart = new Highcharts.Chart(options);
 						                });
-						        
+
 
 					});
-					      
+
 
 						</script>
 					<script>
@@ -282,7 +374,7 @@ Key details on the run.<br><br>
 							plotOptions: {
 							            column: {
 							                animation: false
-							          
+
 							            }
 							        },
 					        title: {
@@ -311,23 +403,23 @@ Key details on the run.<br><br>
 					    };
 							    $.getJSON('jsonencode/maxlen.php?prev=0&callback=?', function(data) {
 						                //alert("success");
-    
+
 						        options.series = data; // <- just assign the data to the series property.
 
-						   
+
 						        //options.series = JSON2;
 						                var chart = new Highcharts.Chart(options);
 						                });
-						    
-					});
-					   
 
-						//]]>  
+					});
+
+
+						//]]>
 
 						</script>
-				
+
 				<script>
-	
+
 				$(document).ready(function() {
 				    var options = {
 				        chart: {
@@ -338,7 +430,7 @@ Key details on the run.<br><br>
 						plotOptions: {
 						            column: {
 						                animation: false
-					          
+
 						            }
 						        },
 				        title: {
@@ -367,24 +459,24 @@ Key details on the run.<br><br>
 				    };
 					    $.getJSON('jsonencode/volume.php?prev=0&callback=?', function(data) {
 					                //alert("success");
-                
+
 					        options.series = data; // <- just assign the data to the series property.
-        
+
 					                 var chart = new Highcharts.Chart(options);
 					                });
-					 
+
 				});
 
-				   
 
-					//]]>  
+
+					//]]>
 
 					</script>
 				<?php if ($_SESSION['activereference'] != "NOREFERENCE") {?>
 					<?php foreach ($_SESSION['activerefnames'] as $key => $value) {
 						//echo $key . " " . $value . "<br>";?>
-						
-						
+
+
 						<script>
 
 																$(document).ready(function() {
@@ -430,7 +522,7 @@ Key details on the run.<br><br>
 
 						                                        options.series = data; // <- just assign the data to the series property.
 
-						                                               
+
 						                                                var chart = new Highcharts.Chart(options);
 						                                                });
 
@@ -479,14 +571,14 @@ Key details on the run.<br><br>
 																	        },
 																	        series: []
 																	    };
-																		
+
 						   										 $.getJSON('jsonencode/depthcoverage.php?prev=0&refid=<?php echo $key;?>&callback=?', function(data) {
 
 						                                                //alert("success");
 
 						                                        options.series = data; // <- just assign the data to the series property.
 
-						                                               
+
 						                                                var chart = new Highcharts.Chart(options);
 						                                                });
 																	});
@@ -494,16 +586,16 @@ Key details on the run.<br><br>
 																		//]]>
 
 																		</script>
-						
-						
-						
-						
+
+
+
+
 						<?php
 						}
 						?>
 						<?php }
-						?>					     
-									
+						?>
+
     <!-- SB Admin Scripts - Include with every page -->
     <script src="js/sb-admin.js"></script>
 
