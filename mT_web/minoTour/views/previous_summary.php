@@ -85,7 +85,7 @@ require_once("includes/functions.php");
 									<div class="col-md-6" id="depthcoverage<?php echo $key;?>" style="width:50%; height:200px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Depth for <?php echo $value;?></div><?php
 								}
 								?>
-
+                                <div class="col-md-12" id="mappabletime" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> 2D Reads Mapping Over Time.</div>
 							<?php }else { ?>
 															<div><p class="text-center"><small>This dataset has not been aligned to a reference sequence.</small></p></div>
 							<?php }; ?>
@@ -153,6 +153,94 @@ Key details on the run.<br><br>
 	<script type="text/javascript" src="js/themes/grid-light.js"></script>
 	<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
+
+    <script>
+            $(document).ready(function() {
+                var options = {
+                    chart: {
+                        renderTo: 'mappabletime',
+                        zoomType: 'x',
+                        type: 'spline',
+                    },
+                    title: {
+                      text: 'Proportion of reads mapping over time'
+                    },
+                    resetZoomButton: {
+                    position: {
+                        // align: 'right', // by default
+                        // verticalAlign: 'top', // by default
+                        x: -10,
+                        y: 10
+                    },
+                    relativeTo: 'chart'
+                },
+                    plotOptions: {
+                        spline: {
+                                        animation: false,
+                                        marker: {
+                                            enabled: false
+                                        }
+
+                    },
+
+
+
+            },
+                    xAxis: {
+                        type: 'datetime',
+                            dateTimeLabelFormats: { // don't display the dummy year
+                                month: '%e. %b',
+                                year: '%b'
+                                },
+                                title: {
+                                    text: 'Time/Date'
+                                }
+                            },
+                            yAxis:
+                                {
+
+                                    labels: {
+                                        align: 'right',
+                                        x: -3
+                                    },
+
+                                    title: {
+                                        text: 'Proportion Reads'
+                                    },
+                                    height: '100%',
+                                    lineWidth: 1,
+                                    min: 0
+                                },
+                                    credits: {
+                                        enabled: false
+                                      },
+                    legend: {
+                        title: {
+                    text: 'Read Type <span style="font-size: 9px; color: #666; font-weight: normal">(Click to hide)</span>',
+                    style: {
+                        fontStyle: 'italic'
+                    }
+                },
+
+                        layout: 'horizontal',
+                        align: 'center',
+                        //verticalAlign: 'middle',
+                        borderWidth: 0
+                    },
+                    series: []
+                };
+                $.getJSON('jsonencode/mappabletime.php?prev=1&callback=?', function(data) {
+
+                    options.series = data; // <- just assign the data to the series property.
+
+                var chart = new Highcharts.Chart(options);
+
+                });
+});
+                    //]]>
+
+    </script>
+
     <script>
             $(document).ready(function() {
                 var options = {

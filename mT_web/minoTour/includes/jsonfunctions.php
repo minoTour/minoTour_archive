@@ -39,6 +39,147 @@ function blanktemplate($jobname,$currun,$refid) {
 
 }
 
+###Calculate the proportion of mappable reads over time
+
+function mappabletime($jobname,$currun,$refid) {
+	$checkvar = $currun . $jobname . $type;
+	//echo $type . "\n";
+	$checkrunning = $currun . $jobname . $type . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;
+	//$jsonstring = $memcache->get("$checkvar");
+	$checkingrunning = $memcache->get("$checkrunning");
+	if($checkingrunning === "No" || $checkingrunning === FALSE){
+		//$memcache->set("$checkrunning", "YES", 0, 0);
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if ($checking->num_rows ==1){
+			//echo "We have already run this!";
+			foreach ($checking as $row){
+				$jsonstring = $row['json'];
+			}
+		} else {
+			//do something interesting here...
+			#$sqltemplate = "select (floor((basecalled_template.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor, sum(basecalled_template.duration) as time,  sum(length(sequence))/60/5/count(*) as effective_rate, count(*) as channels, sum(length(sequence))/sum(basecalled_template.duration) as rate from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
+			#$sqlcomplement = "select (floor((basecalled_complement.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor, sum(basecalled_complement.duration) as time,  sum(length(sequence))/60/5/count(*) as effective_rate, count(*) as channels, sum(length(sequence))/sum(basecalled_complement.duration) as rate from basecalled_complement inner join tracking_id using (basename_id) group by 1 order by 1;";
+			$sql2dmapping ="select (floor((basecalled_template.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as alignedreads from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) inner join last_align_basecalled_2d_5prime using (basename_id) group by 1 order by 1;";
+			$sql2dtotal ="select (floor((basecalled_template.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as allreads from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
+
+			$sqltempmapping ="select (floor((basecalled_template.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as alignedreads from basecalled_template inner join tracking_id using (basename_id) inner join last_align_basecalled_template_5prime using (basename_id) group by 1 order by 1;";
+			$sqltemptotal ="select (floor((basecalled_template.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as allreads from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
+
+			$sqlcompmapping ="select (floor((basecalled_template.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as alignedreads from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id) inner join last_align_basecalled_complement_5prime using (basename_id) group by 1 order by 1;";
+			$sqlcomptotal ="select (floor((basecalled_template.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as allreads from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
+
+
+			$resultsql2dmap = $mindb_connection->query($sql2dmapping);
+			$resultsql2dtotal = $mindb_connection->query($sql2dtotal);
+
+			$resultsqltempmap = $mindb_connection->query($sqltempmapping);
+			$resultsqltemptotal = $mindb_connection->query($sqltemptotal);
+
+			$resultsqlcompmap = $mindb_connection->query($sqlcompmapping);
+			$resultsqlcomptotal = $mindb_connection->query($sqlcomptotal);
+
+
+			#$resulttemplate = $mindb_connection->query($sqltemplate);
+			#$resultcomplement = $mindb_connection->query($sqlcomplement);
+
+			$resultarray;
+
+			if ($resultsql2dtotal->num_rows >=1) {
+				#$cumucount = 0;
+
+				foreach ($resultsql2dtotal as $row) {
+					#$cumucount++;
+					$resultarray['2d'][$row['bin_floor']]['allreads']=$row['allreads'];
+
+				}
+			}
+			if ($resultsql2dmap->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultsql2dmap as $row) {
+					#$cumucount++;
+					$resultarray['2d'][$row['bin_floor']]['alignedreads']=$row['alignedreads'];
+
+				}
+			}
+
+			if ($resultsqltemptotal->num_rows >=1) {
+				#$cumucount = 0;
+
+				foreach ($resultsqltemptotal as $row) {
+					#$cumucount++;
+					$resultarray['Template'][$row['bin_floor']]['allreads']=$row['allreads'];
+
+				}
+			}
+			if ($resultsqltempmap->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultsqltempmap as $row) {
+					#$cumucount++;
+					$resultarray['Template'][$row['bin_floor']]['alignedreads']=$row['alignedreads'];
+
+				}
+			}
+
+
+			if ($resultsqlcomptotal->num_rows >=1) {
+				#$cumucount = 0;
+
+				foreach ($resultsqlcomptotal as $row) {
+					#$cumucount++;
+					$resultarray['Complement'][$row['bin_floor']]['allreads']=$row['allreads'];
+
+				}
+			}
+			if ($resultsqlcompmap->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultsqlcompmap as $row) {
+					#$cumucount++;
+					$resultarray['Complement'][$row['bin_floor']]['alignedreads']=$row['alignedreads'];
+
+				}
+			}
+		$jsonstring;
+		$jsonstring = $jsonstring . "[\n";
+
+		foreach ($resultarray as $key => $value) {
+				$jsonstring = $jsonstring . "{\n";
+				$jsonstring = $jsonstring . "\"name\": \"" . $key .  "\",\n";
+
+				//if ($key == "template") {
+					//$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+				//}else if ($key == "complement") {
+				//	$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+				//}else if ($key == "2d") {
+				//	$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+				//}
+				$jsonstring = $jsonstring . "\"data\":[";
+				foreach ($value as $key2 => $value2) {
+					$jsonstring = $jsonstring . "[  $key2 , " .$value2['alignedreads']/$value2['allreads']." ],";
+				}
+
+			$jsonstring = $jsonstring . "]\n";
+		$jsonstring = $jsonstring . "},\n";
+			}
+		$jsonstring = $jsonstring . "]\n";
+	}
+		if ($_GET["prev"] == 1){
+			include 'savejson.php';
+		}
+		$memcache->set("$checkvar", $jsonstring);
+	}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}
+	// cache for 2 minute as we want yield to update semi-regularly...
+	$memcache->delete("$checkrunning");
+   	return $jsonstring;
+
+}
+
+
 ###Calculates an approximation of the speed of sequencing by caluclating the number of bases sequenced in a 5 minute window per channel - this is a measure of speed through the pore.
 
 

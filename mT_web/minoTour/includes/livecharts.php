@@ -2,6 +2,109 @@
 		$(document).ready(function() {
 			var options = {
 				chart: {
+					renderTo: 'mappabletime',
+					zoomType: 'x',
+					type: 'spline',
+				},
+				title: {
+				  text: 'Proportion of reads mapping over time'
+				},
+				resetZoomButton: {
+				position: {
+					// align: 'right', // by default
+					// verticalAlign: 'top', // by default
+					x: -10,
+					y: 10
+				},
+				relativeTo: 'chart'
+			},
+				plotOptions: {
+					spline: {
+									animation: false,
+									marker: {
+										enabled: false
+									}
+
+				},
+
+
+
+		},
+				xAxis: {
+					type: 'datetime',
+						dateTimeLabelFormats: { // don't display the dummy year
+							month: '%e. %b',
+							year: '%b'
+							},
+							title: {
+								text: 'Time/Date'
+							}
+						},
+						yAxis:
+							{
+
+								labels: {
+									align: 'right',
+									x: -3
+								},
+
+								title: {
+									text: 'Proportion Reads'
+								},
+								height: '100%',
+								lineWidth: 1,
+								min: 0
+							},
+								credits: {
+									enabled: false
+								  },
+				legend: {
+					title: {
+				text: 'Read Type <span style="font-size: 9px; color: #666; font-weight: normal">(Click to hide)</span>',
+				style: {
+					fontStyle: 'italic'
+				}
+			},
+
+					layout: 'horizontal',
+					align: 'center',
+					//verticalAlign: 'middle',
+					borderWidth: 0
+				},
+				series: []
+			};
+			function loadchirpmtw() {
+
+					if($('#readsummarycheck').prop('checked')) {
+   										   $.getJSON('jsonencode/mappabletime.php?prev=0&callback=?', function(data) {
+
+                                        options.series = data; // <- just assign the data to the series property.
+
+                                                setTimeout(loadchirpmtw,<?php echo $_SESSION['pagerefresh'] ;?>);
+
+                                        //options.series = JSON2;
+                                                var chart = new Highcharts.Chart(options);
+                                                });} else {
+   setTimeout(loadchirpmtw,<?php echo $_SESSION['pagerefresh'] ;?>);
+}
+
+                                        }
+
+
+				        loadchirpmtw();
+
+			});
+
+				//]]>
+
+</script>
+
+
+
+<script>
+		$(document).ready(function() {
+			var options = {
+				chart: {
 					renderTo: 'lengthtimewindow',
 					zoomType: 'x',
 					type: 'spline',

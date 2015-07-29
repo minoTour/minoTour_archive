@@ -12,7 +12,7 @@ require_once("includes/functions.php");
     <div id="wrapper">
 
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
-           
+
 			<?php include 'navbar-header.php' ?>
             <!-- /.navbar-top-links -->
 			<?php include 'navbar-top-links.php'; ?>
@@ -73,11 +73,11 @@ require_once("includes/functions.php");
 				</div>
 			  </div>
 			</div>
-			
-			
-			
-			
-			
+
+
+
+
+
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -86,8 +86,8 @@ require_once("includes/functions.php");
 
     </div>
     <!-- /#wrapper -->
-	
-	
+
+
     <!-- Core Scripts - Include with every page -->
     <script src="js/jquery-1.10.2.js"></script>
     <script src="js/bootstrap.min.js"></script>
@@ -100,33 +100,34 @@ require_once("includes/functions.php");
 				</script>
     <script src="js/plugins/morris/raphael-2.1.0.min.js"></script>
     <script src="js/plugins/morris/morris.js"></script>
-	
+
 	<!-- Highcharts Addition -->
 	<script src="js/highcharts.js"></script>
 	<script type="text/javascript" src="js/themes/grid-light.js"></script>
 	<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
-	
+
 	<script>
 				$(document).ready(function(){
 					$('#runsummary').load('includes/runsummary.php');
 					setInterval(function(){
     			 	$('#runsummary').load('includes/runsummary.php');
     				}, 1000);
-				}); 
+				});
 				</script>
-			
+
 					        <script type="text/javascript">
 					        $(document).ready(function() {
 					            var options = {
 					                chart: {
 					                    renderTo: 'container',
+                                        zoomType: 'x',
 					                    type: 'column'
 					                },
 									plotOptions: {
 									            column: {
 									                animation: false
-								          
+
 									            },
 									            series: {
 									                cursor: 'pointer',
@@ -136,7 +137,7 @@ require_once("includes/functions.php");
 									                            //alert('Category: ' + this.category + ', series: ' + this.series.name);
 									                            var sequrl = "includes/fetchreads.php?db=<?php echo $_SESSION['active_run_name']?>&type=histogram&job="+this.series.name+"&prev=0&length="+this.category;
 									                            window.open(sequrl);
-									                            
+
 									                        }
 									                    }
 									                }
@@ -162,7 +163,7 @@ require_once("includes/functions.php");
 					                    title: {
 					                        text: 'Number of Reads'
 					                    },
-					                   
+
 					                },
 					                tooltip: {
 					                    formatter: function() {
@@ -189,23 +190,24 @@ require_once("includes/functions.php");
 								        //options.series = JSON2;
 								                var chart = new Highcharts.Chart(options);
 								                });
-								 
+
 							});
-					            
-					              
+
+
 					        </script>
-							
+
 					        <script type="text/javascript">
 					        $(document).ready(function() {
 					            var options = {
 					                chart: {
 					                    renderTo: 'container2',
+                                        zoomType: 'x',
 					                    type: 'column'
 					                },
 									plotOptions: {
 									            column: {
 									                animation: false
-								          
+
 									            },
 									            series: {
 									                cursor: 'pointer',
@@ -215,7 +217,7 @@ require_once("includes/functions.php");
 									                            //alert('Category: ' + this.category + ', series: ' + this.series.name);
 									                            var sequrl = "includes/fetchreads.php?db=<?php echo $_SESSION['active_run_name']?>&type=histogram&job="+this.series.name+"&prev=0&length="+this.category;
 									                            window.open(sequrl);
-									                            
+
 									                        }
 									                    }
 									                }
@@ -241,7 +243,7 @@ require_once("includes/functions.php");
 					                    title: {
 					                        text: 'Number of Bases'
 					                    },
-					                   
+
 					                },
 					                tooltip: {
 					                    formatter: function() {
@@ -268,12 +270,12 @@ require_once("includes/functions.php");
 								        //options.series = JSON2;
 								                var chart = new Highcharts.Chart(options);
 								                });
-							
+
 							});
-					            
-					              
+
+
 					        </script>
-									
+
     <!-- SB Admin Scripts - Include with every page -->
     <script src="js/sb-admin.js"></script>
 
