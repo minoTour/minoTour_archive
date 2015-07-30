@@ -591,10 +591,10 @@ function checksessionvars(){
 					$db_connection2 = new mysqli(DB_HOST, DB_USER, DB_PASS, $_SESSION['active_run_name']);
 					$xmlcheck = "select * from XML;";
 					$xmlresult = $db_connection2->query($xmlcheck);
-					if ($xmlresult->num_rows >= 1) {
+					if (!empty ($xmlresult) && ($xmlresult->num_rows >= 1)) {
 						$_SESSION['currentXML'] = $xmlresult->num_rows;
 					}else{
-						$_SESSION['currentXML'] = $xmlresult->num_rows;
+						$_SESSION['currentXML'] = 0;//$xmlresult->num_rows;
 					}
 
 					//Check for the existence of an interaction table in the active run database:
@@ -602,10 +602,10 @@ function checksessionvars(){
 					$db_connection2 = new mysqli(DB_HOST, DB_USER, DB_PASS, $_SESSION['active_run_name']);
 					$intcheck = "select * from messages;";
 					$intresult = $db_connection2->query($intcheck);
-					if ($intresult->num_rows >= 1) {
+					if (!empty ($intresult) && ($intresult->num_rows >= 1)) {
 						$_SESSION['currentINT'] = $intresult->num_rows;
 					}else{
-						$_SESSION['currentINT'] = $intresult->num_rows;
+						$_SESSION['currentINT'] = 0; //$intresult->num_rows;
 					}
 
 
