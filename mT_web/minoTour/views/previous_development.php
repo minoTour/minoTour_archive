@@ -12,7 +12,7 @@ require_once("includes/functions.php");
     <div id="wrapper">
 
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
-           
+
 			<?php include 'navbar-header.php' ?>
             <!-- /.navbar-top-links -->
 			<?php include 'navbar-top-links.php'; ?>
@@ -73,21 +73,21 @@ require_once("includes/functions.php");
 					<?php if ($_SESSION['focusreference'] != "NOREFERENCE") {?>
 					<?php $arr = array("template", "complement", "2d");?>
 					<?php foreach ($arr as $key => $value) {
-						
+
 						//echo $key . " " . $value . "<br>";?>
 						<div id="wimm<?php echo $key;?>" style="width:100%; height:300px;"><i class="fa fa-cog fa-spin fa-3x" ></i> Calculating <?php echo $value;?> WIMM</div>
 						<?php
 					}
 					?>
-				
+
 				<?php }else { ?>
 												<div><p class="text-center"><small>This dataset has not been aligned to a reference sequence - we cannot determine a WIMM plot for it.</small></p></div>
 				<?php }; ?>
-										
-					
+
+
 			  </div>
 			</div>
-			
+
                 <!-- /.col-lg-12 -->
             </div>
         </div>
@@ -95,8 +95,8 @@ require_once("includes/functions.php");
 
     </div>
     <!-- /#wrapper -->
-	
-	
+
+
     <!-- Core Scripts - Include with every page -->
     <script src="js/jquery-1.10.2.js"></script>
     <script src="js/bootstrap.min.js"></script>
@@ -109,18 +109,19 @@ require_once("includes/functions.php");
 				</script>
     <script src="js/plugins/morris/raphael-2.1.0.min.js"></script>
     <script src="js/plugins/morris/morris.js"></script>
-	
+
 	<!-- Highcharts Addition -->
 	<script src="js/highcharts.js"></script>
 	<script type="text/javascript" src="js/themes/grid-light.js"></script>
 	<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
-	
-	
+    <script src="http://highslide-software.github.io/export-csv/export-csv.js"></script>
+
+
 					<?php $arr = array("template", "complement", "2d");?>
 					<?php foreach ($arr as $key => $value) {
 						//echo $key . " " . $value . "<br>";?>
-	
+
 			<script>
 		$(document).ready(function() {
 		    var options = {
@@ -187,27 +188,27 @@ require_once("includes/functions.php");
 		        },
 		        series: []
 		    };
-	
+
 		    $.getJSON('jsonencode/wimm.php?prev=1&type=<?php echo $value; ?>&callback=?', function(data) {
 				//alert("success");
 		        options.series = data; // <- just assign the data to the series property.
-	        
-		 
-		
+
+
+
 		        //options.series = JSON2;
 				var chart = new Highcharts.Chart(options);
 				});
 		});
 
-			//]]>  
+			//]]>
 
 			</script>
 		<?php } ?>
-		
-				
-			
- 
-			
+
+
+
+
+
     <!-- SB Admin Scripts - Include with every page -->
     <script src="js/sb-admin.js"></script>
 

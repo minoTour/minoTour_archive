@@ -12,7 +12,7 @@ require_once("includes/functions.php");
     <div id="wrapper">
 
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
-           
+
 			<?php include 'navbar-header.php' ?>
             <!-- /.navbar-top-links -->
 			<?php include 'navbar-top-links.php'; ?>
@@ -39,7 +39,7 @@ require_once("includes/functions.php");
   			  <li><a href="previous_bases.php">Base Coverage</a></li>
   			  <!--<li class="active"><a href="previous_development.php">W.I.M.M (Dev)</a></li>-->
 			</ul>
-			
+
 						<div class="panel panel-default">
 						  <div class="panel-heading">
 						    <h3 class="panel-title"><!-- Button trigger modal -->
@@ -68,10 +68,10 @@ This series of plots shows xy scatter graphs for coverage against the reference 
 </div></h3>
 			  </div>
 			  <div class="panel-body">
-	  			<?php include 'includes/coverageincludes.php';?>  
+	  			<?php include 'includes/coverageincludes.php';?>
 					  </div>
 			</div>
-			
+
                 <!-- /.col-lg-12 -->
             </div>
         </div>
@@ -79,8 +79,8 @@ This series of plots shows xy scatter graphs for coverage against the reference 
 
     </div>
     <!-- /#wrapper -->
-	
-	
+
+
     <!-- Core Scripts - Include with every page -->
     <script src="js/jquery-1.10.2.js"></script>
     <script src="js/bootstrap.min.js"></script>
@@ -93,18 +93,19 @@ This series of plots shows xy scatter graphs for coverage against the reference 
 				</script>
     <script src="js/plugins/morris/raphael-2.1.0.min.js"></script>
     <script src="js/plugins/morris/morris.js"></script>
-	
+
 	<!-- Highcharts Addition -->
 	<script src='http://code.highcharts.com/stock/highstock.js'></script>
 	<!--<script src="js/highcharts.js"></script>-->
 	<script type="text/javascript" src="js/themes/grid-light.js"></script>
 	<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
+    <script src="http://highslide-software.github.io/export-csv/export-csv.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
-	
-	
-	
+
+
+
 						<?php include 'includes/coverageincludesjquery.php';?>
-						
+
     <!-- SB Admin Scripts - Include with every page -->
     <script src="js/sb-admin.js"></script>
 

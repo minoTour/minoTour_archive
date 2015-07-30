@@ -116,6 +116,7 @@ require_once("includes/functions.php");
 	<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
 	<script src="http://code.highcharts.com/modules/data.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
+    <script src="http://highslide-software.github.io/export-csv/export-csv.js"></script>
 
 
 

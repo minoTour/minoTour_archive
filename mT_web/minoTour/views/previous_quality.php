@@ -12,7 +12,7 @@ require_once("includes/functions.php");
     <div id="wrapper">
 
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
-           
+
 			<?php include 'navbar-header.php' ?>
             <!-- /.navbar-top-links -->
 			<?php include 'navbar-top-links.php'; ?>
@@ -39,7 +39,7 @@ require_once("includes/functions.php");
   			  <li><a href="previous_bases.php">Base Coverage</a></li>
   			  <!--<li class="active"><a href="previous_development.php">W.I.M.M (Dev)</a></li>-->
 			</ul>
-			
+
 			<div class="panel panel-default">
 			  <div class="panel-heading">
 			    <h3 class="panel-title"><!-- Button trigger modal -->
@@ -70,7 +70,7 @@ require_once("includes/functions.php");
 			    </div>
 			  </div></h3>
 			</div>
-						 
+
 						  <div class="panel-body">
 				  			<?php if ($_SESSION['focusreference'] != "NOREFERENCE") {?>
 				  			<div id="avgquallength"  style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Quality Scores for Aligned Reads</div>
@@ -80,10 +80,10 @@ require_once("includes/functions.php");
 							<?php }; ?>
 				  		  	<div id="allqualities"  style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Quality Scores for 100 Random Reads</div>
 				</div>
-								  
+
 						</div>
-						
-						
+
+
                 <!-- /.col-lg-12 -->
             </div>
         </div>
@@ -91,8 +91,8 @@ require_once("includes/functions.php");
 
     </div>
     <!-- /#wrapper -->
-	
-	
+
+
     <!-- Core Scripts - Include with every page -->
     <script src="js/jquery-1.10.2.js"></script>
     <script src="js/bootstrap.min.js"></script>
@@ -105,16 +105,16 @@ require_once("includes/functions.php");
 				</script>
     <script src="js/plugins/morris/raphael-2.1.0.min.js"></script>
     <script src="js/plugins/morris/morris.js"></script>
-	
+
 	<!-- Highcharts Addition -->
 	<script src="js/highcharts.js"></script>
 	<script type="text/javascript" src="js/themes/grid-light.js"></script>
 	<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
-	
-	
-	
-	
+	<script src="http://highslide-software.github.io/export-csv/export-csv.js"></script>
+
+
+
 				<script>
 			$(document).ready(function() {
 			    var options = {
@@ -147,19 +147,19 @@ require_once("includes/functions.php");
 			        },
 			        series: []
 			    };
-	
+
 			    $.getJSON('jsonencode/readlengthqual.php?prev=1&callback=?', function(data) {
 					//alert("success");
 			        options.series = data; // <- just assign the data to the series property.
-	        
-		 
-		
+
+
+
 			        //options.series = JSON2;
 					var chart = new Highcharts.Chart(options);
 					});
 			});
 
-				//]]>  
+				//]]>
 
 				</script>
 					<script>
@@ -202,19 +202,19 @@ require_once("includes/functions.php");
 				        },
 				        series: []
 				    };
-	
+
 				    $.getJSON('jsonencode/allqualities.php?prev=1&callback=?', function(data) {
 						//alert("success");
 				        options.series = data; // <- just assign the data to the series property.
-	        
-		 
-		
+
+
+
 				        //options.series = JSON2;
 						var chart = new Highcharts.Chart(options);
 						});
 				});
 
-					//]]>  
+					//]]>
 
 					</script>
 									<script>
@@ -249,20 +249,20 @@ require_once("includes/functions.php");
 							        },
 							        series: []
 							    };
-								
+
 								    $.getJSON('jsonencode/readnumberlength.php?prev=1&callback=?', function(data) {
 								                //alert("success");
-                
+
 								        options.series = data; // <- just assign the data to the series property.
-        
-								
+
+
 								        //options.series = JSON2;
 								                var chart = new Highcharts.Chart(options);
 								        });
 							});
-						    
 
-								//]]>  
+
+								//]]>
 
 								</script>
     <!-- SB Admin Scripts - Include with every page -->

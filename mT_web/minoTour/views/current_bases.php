@@ -12,7 +12,7 @@ require_once("includes/functions.php");
     <div id="wrapper">
 
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
-           
+
 			<?php include 'navbar-header.php' ?>
             <!-- /.navbar-top-links -->
 			<?php include 'navbar-top-links.php'; ?>
@@ -67,16 +67,16 @@ require_once("includes/functions.php");
 </div></h3>
 			  </div>
 			  <div class="panel-body">
-					
+
 					<?php if ($_SESSION['activereference'] != "NOREFERENCE") {?>
-				
-					
-						
-					
-						
+
+
+
+
+
 						<?php if (!empty($_POST)): ?>
-			  	<?php 
-			  	$type = $_POST["type"]; 
+			  	<?php
+			  	$type = $_POST["type"];
 			  	$coverage = $_POST["coverage"];
 			  	$center = $_POST["center"];
 			  	$start = $center - ($coverage/2);
@@ -85,10 +85,10 @@ require_once("includes/functions.php");
 			  	$leftshift = $_POST["freddy"];
 			  	$center = $center-$leftshift;
 			  	$_POST["shift"]=0;
-			  	
+
 			  			?>
    <?php else: ?>
-				<?php 
+				<?php
 				$type = '2d';
 				$coverage = 100;
 				$center = 500;
@@ -97,7 +97,7 @@ require_once("includes/functions.php");
 			  	$reference =1;
 				 ?>
 				<?php endif; ?>
-				
+
 						<form action=<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?> method="post" name="form" class="form-inline">
 						<div class="form-group">
 						<label for "reference">Reference:</label>
@@ -108,8 +108,8 @@ require_once("includes/functions.php");
 					}
 					?>
 						</select>
-						
-						
+
+
     <label for="type">Read Type:</label>
    <select class="form-control" name="type" id="type" onchange="this.form.submit()">
         <option <?php if ($type == 'template'){echo "selected=\"selected\"";};?> value="template">Template</option>
@@ -145,17 +145,17 @@ require_once("includes/functions.php");
 </button>
 <button id="button6" type="button" class="btn btn-default" aria-label="Left Align">
   <span class="fa fa-fast-forward" aria-hidden="true"></span>
-</button>     
-     
+</button>
+
     </form>
 						<div id="basesnpcoverage" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x" ></i> Calculating 'Base Coverage Plots' for <?php echo $value;?></div>
-						
-				
+
+
 				<?php }else { ?>
 												<div><p class="text-center"><small>This dataset has not been aligned to a reference sequence and so no SNPs can be called.</small></p></div>
 				<?php }; ?>
-					
-					
+
+
 			  </div>
 			</div>
 			                <!-- /.col-lg-12 -->
@@ -165,8 +165,8 @@ require_once("includes/functions.php");
 
     </div>
     <!-- /#wrapper -->
-	
-	
+
+
     <!-- Core Scripts - Include with every page -->
     <script src="js/jquery-1.10.2.js"></script>
     <script src="js/bootstrap.min.js"></script>
@@ -179,18 +179,19 @@ require_once("includes/functions.php");
 				</script>
     <script src="js/plugins/morris/raphael-2.1.0.min.js"></script>
     <script src="js/plugins/morris/morris.js"></script>
-	
+
 	<!-- Highcharts Addition -->
 	<script src="js/highcharts.js"></script>
 	<script type="text/javascript" src="js/themes/grid-light.js"></script>
 	<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
+    <script src="http://highslide-software.github.io/export-csv/export-csv.js"></script>
 	<script>
-		
+
 	</script>
-	
-	
-					
+
+
+
 						<script>
 			$(document).ready(function() {
 				var start = <?php echo $start;?>;
@@ -214,7 +215,7 @@ require_once("includes/functions.php");
 	                    y: 10
 	                },
 	                relativeTo: 'chart'
-	            }, 
+	            },
 			        plotOptions: {
 			        	column: {
 	                stacking: 'normal',
@@ -264,17 +265,17 @@ require_once("includes/functions.php");
 	        },
 			        series: []
 			    };
-	
+
 			    $.getJSON('jsonencode/basesnpcoverage.php?prev=0&start=<?php echo $start;?>&end=<?php echo $end; ?>&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
 					//alert("success");
 			        options.series = data; // <- just assign the data to the series property.
-	        
-		 
-		
+
+
+
 			        //options.series = JSON2;
 					var chart = new Highcharts.Chart(options);
 					});
-					
+
 					$( "#button1" ).click(function() {
 					start = start - 1000;
 					end = end - 1000;
@@ -283,13 +284,13 @@ require_once("includes/functions.php");
 					$.getJSON('jsonencode/basesnpcoverage.php?prev=0&start='+start+'&end='+end+'&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
 					//alert("success");
 			        options.series = data; // <- just assign the data to the series property.
-	        
-		 
-		
+
+
+
 			        //options.series = JSON2;
 					var chart = new Highcharts.Chart(options);
 					});
-					
+
 				});
 					$( "#button2" ).click(function() {
 					start = start - 500;
@@ -299,13 +300,13 @@ require_once("includes/functions.php");
 					$.getJSON('jsonencode/basesnpcoverage.php?prev=0&start='+start+'&end='+end+'&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
 					//alert("success");
 			        options.series = data; // <- just assign the data to the series property.
-	        
-		 
-		
+
+
+
 			        //options.series = JSON2;
 					var chart = new Highcharts.Chart(options);
 					});
-					
+
 				});
 					$( "#button3" ).click(function() {
 					start = start - 100;
@@ -315,13 +316,13 @@ require_once("includes/functions.php");
 					$.getJSON('jsonencode/basesnpcoverage.php?prev=0&start='+start+'&end='+end+'&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
 					//alert("success");
 			        options.series = data; // <- just assign the data to the series property.
-	        
-		 
-		
+
+
+
 			        //options.series = JSON2;
 					var chart = new Highcharts.Chart(options);
 					});
-					
+
 				});
 				$( "#button6" ).click(function() {
 					start = start + 1000;
@@ -331,13 +332,13 @@ require_once("includes/functions.php");
 					$.getJSON('jsonencode/basesnpcoverage.php?prev=0&start='+start+'&end='+end+'&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
 					//alert("success");
 			        options.series = data; // <- just assign the data to the series property.
-	        
-		 
-		
+
+
+
 			        //options.series = JSON2;
 					var chart = new Highcharts.Chart(options);
 					});
-					
+
 				});
 					$( "#button5" ).click(function() {
 					start = start + 500;
@@ -347,13 +348,13 @@ require_once("includes/functions.php");
 					$.getJSON('jsonencode/basesnpcoverage.php?prev=0&start='+start+'&end='+end+'&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
 					//alert("success");
 			        options.series = data; // <- just assign the data to the series property.
-	        
-		 
-		
+
+
+
 			        //options.series = JSON2;
 					var chart = new Highcharts.Chart(options);
 					});
-					
+
 				});
 					$( "#button4" ).click(function() {
 					start = start + 100;
@@ -363,25 +364,25 @@ require_once("includes/functions.php");
 					$.getJSON('jsonencode/basesnpcoverage.php?prev=0&start='+start+'&end='+end+'&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
 					//alert("success");
 			        options.series = data; // <- just assign the data to the series property.
-	        
-		 
-		
+
+
+
 			        //options.series = JSON2;
 					var chart = new Highcharts.Chart(options);
 					});
-					
+
 				});
 			});
 
-				//]]>  
-				
+				//]]>
+
 
 				</script>
-		
-		
-			
- 
-			
+
+
+
+
+
     <!-- SB Admin Scripts - Include with every page -->
     <script src="js/sb-admin.js"></script>
 

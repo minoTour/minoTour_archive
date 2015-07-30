@@ -13,7 +13,7 @@ require_once("includes/functions.php");
     <div id="wrapper">
 
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
-           
+
 			<?php include 'navbar-header.php' ?>
             <!-- /.navbar-top-links -->
 			<?php include 'navbar-top-links.php'; ?>
@@ -31,11 +31,11 @@ require_once("includes/functions.php");
             <div class="row">
                 <div class="col-lg-12">
                 <div id="messages"></div>
-					
+
 					<?php checkuserruns(); ?>
-					<br>	
+					<br>
 					<?php // getallruns();?>
-					
+
                     <div class="row">
    					 <div class="col-lg-12">
 					 	<div class='table-responsive'>
@@ -52,8 +52,8 @@ require_once("includes/functions.php");
 									 <th>Ref Length</th>
    								 </tr>
    							 </thead>
- 
-   							 <tfoot>	
+
+   							 <tfoot>
    								 <tr>
    									 <th>Date</th>
    									 <th>Flow Cell ID</th>
@@ -77,8 +77,8 @@ require_once("includes/functions.php");
 
     </div>
     <!-- /#wrapper -->
-	
-	
+
+
     <!-- Core Scripts - Include with every page -->
     <script src="js/jquery-1.10.2.js"></script>
     <script src="js/bootstrap.min.js"></script>
@@ -91,13 +91,13 @@ require_once("includes/functions.php");
 				</script>
     <script src="js/plugins/morris/raphael-2.1.0.min.js"></script>
     <script src="js/plugins/morris/morris.js"></script>
-	
+
 	<!-- Highcharts Addition -->
 	<script src="js/highcharts.js"></script>
 	<script type="text/javascript" src="js/themes/grid-light.js"></script>
 	<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
-	
+
 	<script>
 	//jQuery(document).ready(function($) {
 	//     $(".clickableRow").click(function() {
@@ -105,7 +105,7 @@ require_once("includes/functions.php");
 	//      });
 	//});
 	</script>
-	
+
     <!-- Page-Level Demo Scripts - Dashboard - Use for reference -->
 		<script src="js/plugins/dataTables/jquery.dataTables.js" type="text/javascript" charset="utf-8"></script>
 		<script src="js/plugins/dataTables/dataTables.bootstrap.js" type="text/javascript" charset="utf-8"></script>
@@ -125,10 +125,10 @@ require_once("includes/functions.php");
 						$('html, body').animate({
 						           'scrollTop':   $('#'+name).offset().top
 						}, 1000);
-						
+
 					});
 			    } );
-			    
+
 			    $(document).on('click', '#example tr', function(){
     					var tableData = $(this).children("td").map(function() {
        						 return $(this).text();
@@ -136,13 +136,13 @@ require_once("includes/functions.php");
 					    var targetrun = $.trim(tableData[4]);
 					    var cleanedtarget = targetrun.replace(/ /g, "_");
 					    //alert (cleanedtarget);
-						
+
 						var url = "previous_summary.php?roi=" + cleanedtarget;
 						window.location.href = url;
 					});
-		
+
 		} );
-	
+
 		 	</script>
 
     <!-- SB Admin Scripts - Include with every page -->
@@ -159,8 +159,8 @@ require_once("includes/functions.php");
             //eval(document.getElementById("infodiv").innerHTML);
             }, 10000); // refresh every 5000 milliseconds
     </script>
-	
-   
+
+
 
 <?php include "includes/reporting.php";?>
 </body>

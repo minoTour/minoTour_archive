@@ -397,6 +397,7 @@ require_once("includes/functions.php");
 				<script type="text/javascript" src="js/themes/grid-light.js"></script>
 				<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
 				<script src="http://code.highcharts.com/modules/exporting.js"></script>
+                <script src="http://highslide-software.github.io/export-csv/export-csv.js"></script>
 
 
 				<?php if (isset($_SESSION['first_visit'])) {}else{?>
