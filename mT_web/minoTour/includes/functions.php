@@ -7,7 +7,7 @@ $_SESSION['pagerefresh']=5000;
 
 //Updated function for converting sam format data to maf for easy visualisation in a browser
 function samtomaf($qname,$flag,$rname,$mapq,$cigar,$rnext,$pnext,$tlen,$seq,$qual,$n_m,$m_d,$pos) {
-			
+
 	if ($rname != "*"){ # so it's not an unmapped read
 		$cigparts2 = preg_split("/([A-Z])/",$cigar,-1,PREG_SPLIT_DELIM_CAPTURE);
 		$cigparts=array();
@@ -54,7 +54,7 @@ function samtomaf($qname,$flag,$rname,$mapq,$cigar,$rnext,$pnext,$tlen,$seq,$qua
 				$r_pos=$r_pos+$cigarpartbasecount;
 				}
 			if ($cigartype == "I"){
-				for ($q=$q_pos;$q<=($q_pos+$cigarpartbasecount-1);$q++){	
+				for ($q=$q_pos;$q<=($q_pos+$cigarpartbasecount-1);$q++){
 					array_push($q_array,$readbases[$q]);
 					//$qstring=$qstring.$readbasesar[$q];
 					}
@@ -73,9 +73,9 @@ function samtomaf($qname,$flag,$rname,$mapq,$cigar,$rnext,$pnext,$tlen,$seq,$qua
 					//$rstring=$rstring.$refbasesar[$r];
 					array_push($r_array,"o");
 				}
-				$r_pos=$r_pos+$cigarpartbasecount;	
+				$r_pos=$r_pos+$cigarpartbasecount;
 				}
-			}	
+			}
 		}
 		$i=0;
 		foreach ($r_array as $key=>$value){
@@ -129,16 +129,16 @@ function samtomaf($qname,$flag,$rname,$mapq,$cigar,$rnext,$pnext,$tlen,$seq,$qua
 					#	$r_array[$a]=$q_array[$a];
 					#	$a++;
 					#	}
-				}	
+				}
 			}
 		}
 		$qstring=implode('', $q_array);
 		$rstring=implode('', $r_array);
 		//echo "QUERY:\t$qstring<br>";
 		//echo "REFFF:\t$rstring<br>";
-	
+
 		/*
-		
+
 
 		my $a=0;
 		my @mdparts=split(/(\d+)|MD:Z:/, $m_d);
@@ -152,7 +152,7 @@ function samtomaf($qname,$flag,$rname,$mapq,$cigar,$rnext,$pnext,$tlen,$seq,$qua
 						$a++;
 					}
 				}
-					
+
 				elsif ($m eq "A" || $m eq "T" || $m eq "C" || $m eq "G" ){
 					if ($r_array[$a] eq "-"){
 						while ($r_array[$a] eq "-"){
@@ -163,7 +163,7 @@ function samtomaf($qname,$flag,$rname,$mapq,$cigar,$rnext,$pnext,$tlen,$seq,$qua
 					#$r_array[$a]="^";
 					$a++;
 				}
-					
+
 				elsif ( $m == int($m) ){
 					for (my $i=0;$i<$m;$i++){
 						if ($r_array[($a+$i)] eq "-"){
@@ -180,13 +180,13 @@ function samtomaf($qname,$flag,$rname,$mapq,$cigar,$rnext,$pnext,$tlen,$seq,$qua
 				}
 			}
 		}
-			
+
 		print "\n";
 		my $qstring=join('', @q_array);
 		my $rstring=join('', @r_array);
 		print "QUERY:\t$qstring\n";
 		print "REFFF:\t$rstring\n";
-		
+
 		*/
 		return array ($rstring,$qstring,$pos,$qstart);
 	}
@@ -204,10 +204,10 @@ function samtomaf_old($qname,$flag,$rname,$mapq,$cigar,$readbases,$refsequence,$
 	//echo "Refseq is " .  $refsequence . "<br>";
 	$refbasesar = str_split($refsequence);
 	$readbasesar = str_split($readbases);
-	
+
 	//echo "LENQ: " . count($readbasesar) . "<br>";
 	//echo "LENR: " . count($refbasesar) .  "<br>";
-	
+
 	$cigparts2 = preg_split("/([A-Z])/",$cigar,-1,PREG_SPLIT_DELIM_CAPTURE);
 	$cigparts=array();
 	for ($i=0;$i<sizeof($cigparts2);$i=$i+2) {
@@ -217,17 +217,17 @@ function samtomaf_old($qname,$flag,$rname,$mapq,$cigar,$readbases,$refsequence,$
 		//echo  $k . "\t" . $v . "<br>";
     	$cigparts[]=array($k=>$v);
 	}
-	
-		
+
+
 	$q_pos = 0;
 	$r_pos = $pos -1;
 	$qstring;
 	$rstring;
 	$firstcheck=0;
 	$qstart=1;
-	
+
 	#var_dump($output);
-	
+
 	foreach ($cigparts as $key=>$value) {
 		foreach ($value as $cigarpartbasecount=>$cigartype) {
 			//echo $key . "\t" . $cigartype . "\t" . $cigarpartbasecount .  "<br>";
@@ -250,7 +250,7 @@ function samtomaf_old($qname,$flag,$rname,$mapq,$cigar,$readbases,$refsequence,$
 				$r_pos=$r_pos+$cigarpartbasecount;
 				}
 			if ($cigartype == "I"){
-				for ($q=$q_pos;$q<=($q_pos+$cigarpartbasecount-1);$q++){	
+				for ($q=$q_pos;$q<=($q_pos+$cigarpartbasecount-1);$q++){
 					$qstring=$qstring.$readbasesar[$q];
 					}
 				for ($r=$r_pos;$r<=($r_pos+$cigarpartbasecount-1);$r++){
@@ -265,9 +265,9 @@ function samtomaf_old($qname,$flag,$rname,$mapq,$cigar,$readbases,$refsequence,$
 				for ( $r=$r_pos;$r<=($r_pos+$cigarpartbasecount-1);$r++){
 					$rstring=$rstring.$refbasesar[$r];
 				}
-			$r_pos=$r_pos+$cigarpartbasecount;	
+			$r_pos=$r_pos+$cigarpartbasecount;
 			}
-		}	
+		}
 	}
 	//echo "QUERY:\t", $qstring, "<br>";
 	//echo "REF:\t", $rstring, "<br>";
@@ -276,41 +276,41 @@ function samtomaf_old($qname,$flag,$rname,$mapq,$cigar,$readbases,$refsequence,$
 
 
 //function for calculating mean mode and median
-function mmmr($array, $output = 'mean'){ 
-    if(!is_array($array)){ 
-        return FALSE; 
-    }else{ 
-        switch($output){ 
-            case 'mean': 
-                $count = count($array); 
-                $sum = array_sum($array); 
-                $total = $sum / $count; 
-            break; 
-            case 'median': 
-                rsort($array); 
-                $middle = round(count($array) / 2); 
-                $total = $array[$middle-1]; 
-            break; 
-            case 'mode': 
-                $v = array_count_values($array); 
-                arsort($v); 
-                foreach($v as $k => $v){$total = $k; break;} 
-            break; 
-            case 'range': 
-                sort($array); 
-                $sml = $array[0]; 
-                rsort($array); 
-                $lrg = $array[0]; 
-                $total = $lrg - $sml; 
+function mmmr($array, $output = 'mean'){
+    if(!is_array($array)){
+        return FALSE;
+    }else{
+        switch($output){
+            case 'mean':
+                $count = count($array);
+                $sum = array_sum($array);
+                $total = $sum / $count;
             break;
-            case 'max': 
-                rsort($array); 
-                $total = $array[0]; 
+            case 'median':
+                rsort($array);
+                $middle = round(count($array) / 2);
+                $total = $array[$middle-1];
             break;
-            case 'min': 
-                sort($array); 
-                $total = $array[0]; 
-            break; 
+            case 'mode':
+                $v = array_count_values($array);
+                arsort($v);
+                foreach($v as $k => $v){$total = $k; break;}
+            break;
+            case 'range':
+                sort($array);
+                $sml = $array[0];
+                rsort($array);
+                $lrg = $array[0];
+                $total = $lrg - $sml;
+            break;
+            case 'max':
+                rsort($array);
+                $total = $array[0];
+            break;
+            case 'min':
+                sort($array);
+                $total = $array[0];
+            break;
             case 'stddev':
             $fMean = array_sum($array) / count($array);
    			 $fVariance = 0.0;
@@ -320,20 +320,20 @@ function mmmr($array, $output = 'mean'){
     				}
     				$fVariance /= ( $bSample ? count($array) - 1 : count($array) );
     				$total = (float) sqrt($fVariance);
-        } 
-        return $total; 
-    } 
-} 
+        }
+        return $total;
+    }
+}
 
 
 //functions for viewing alignments
 
 function displayalignment($ref,$query,$r_start,$q_start,$align_strand){
 	$vislen = 60;
-	
+
 	$refarray = str_split($ref,$vislen);
 	$querarray = str_split($query,$vislen);
-	
+
 	echo "<pre>";
 	for ($x = 0; $x < count($refarray); $x++) {
 		echo "Q:" .return10char($q_start) . " ";
@@ -353,7 +353,7 @@ function displayalignment($ref,$query,$r_start,$q_start,$align_strand){
 		//	echo " " . $r_start . "<br><br>";
 		//	$r_start--;
 		//}
-	} 
+	}
 	echo "</pre>";
 
 
@@ -398,12 +398,12 @@ function getkmers(){
 						$kmer = $letter1.$letter2.$letter3.$letter4.$letter5;
 						$kmerarray[$kmer]['con'] = 0;
 						$kmerarray[$kmer]['ml'] = 0;
-					}	
+					}
 				}
 			}
 		}
 	}
-	return array ($kmerarray);	
+	return array ($kmerarray);
 }
 
 //given an array of kmer counts, calculate the expected abundancies of individual kmers in the data
@@ -418,15 +418,15 @@ function getallusers(){
 			if ($checkuser_result->num_rows>=1) {
 				foreach ($checkuser_result as $row){
 					$users[] = $row['user_name'];
-				
+
 				}
 				return $users;
 			}
-			
+
 		}
 	}
-}		
-	
+}
+
 
 function checkminup($username) {
 	if (isset($_SESSION['user_login_status']) and $_SESSION['user_login_status'] == 1) {
@@ -438,10 +438,10 @@ function checkminup($username) {
 				$result_row = $checkuser_result->fetch_object();
 				return $result_row->status;
 			}
-			
+
 		}
-	}		
-	
+	}
+
 }
 
 function cleanname($nametoclean){
@@ -469,8 +469,8 @@ function checkalerts(){
 		//	$getruns = "SELECT runname FROM minIONruns inner join userrun using (runindex) inner join users using (user_id) where users.user_name = '" . $_SESSION['user_name'] ."' and activeflag = 1;";
 		//	$getthemruns = $db_connection->query($getruns);
 		//	if ($getthemruns->num_rows>=1){
-				
-				
+
+
 				echo "<div id='infodiv'></div>";
 		//	}else{
 		//		echo "<small>Active run alerts can be monitored here.</small>";
@@ -499,11 +499,11 @@ function getusers(){
 			$checkusers = "SELECT user_id,users.user_name, user_email FROM users inner join userrun using (user_id) inner join minIONruns using (runindex) where runname = '". $_GET['roi'] . "';";
 			$getthem = $db_connection->query($checkusers);
 			$rowcounter=$getthemusers->num_rows;
-			
+
 			if ($getthem->num_rows>=1) {
 				foreach ($getthem as $row){
 					$exist_user[] = $row['user_name'];
-				
+
 				}
 			}
 			if ($getthemusers->num_rows>=1){
@@ -530,12 +530,12 @@ function getusers(){
 }
 
 function checksessionvars(){
-	
+
 	if (isset($_SESSION['user_login_status']) and $_SESSION['user_login_status'] == 1) {
 		$db_connection = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 		if (!$db_connection->connect_errno) {
 			$user_name=$_SESSION['user_name'];
-			
+
 			$checkadmin = "select admin from users where user_name = '".$user_name."';";
 			$checkrights = $db_connection->query($checkadmin);
 			if ($checkrights->num_rows ==1) {
@@ -546,13 +546,13 @@ function checksessionvars(){
 					$_SESSION['adminuser']=0;
 				}
 			}
-			
+
 			$sql = "select users.user_name,runname, activeflag,reference,reflength from users inner join userrun using (user_id) inner join minIONruns where userrun.runindex=minIONruns.runindex and users.user_name = '" . $user_name . "';";
 			$runs_available = $db_connection->query($sql);
 			if ($runs_available->num_rows >=1) {
-				
+
 				$runarray;
-				
+
 				foreach ($runs_available as $row) {
 					$runarray[$row['activeflag']][$row['runname']]=$row['user_name'];
 				}
@@ -562,7 +562,7 @@ function checksessionvars(){
 				//echo "You have " . $runs_available->num_rows . " minION runs available to view.<br>\n";
 				if (array_key_exists('1', $runarray)) {
 					//var_dump($runarray);
-					
+
 				//	echo "You have 1 currently active run.<br>\n";
 					if (isset ($_SESSION['chosenactiverun']) && array_key_exists($_SESSION['chosenactiverun'],$runarray[1])){
 						$_SESSION['active_run_name'] = $_SESSION['chosenactiverun'];
@@ -570,7 +570,7 @@ function checksessionvars(){
 						$_SESSION['active_run_name']=key($runarray[1]);
 					}
 					$sql2 = "select reference,reflength,minup_version from minIONruns where runname='" . $_SESSION['active_run_name'] . "';";
-					
+
 					$activerundetails = $db_connection->query($sql2);
 					if ($activerundetails->num_rows >= 1){
 						//echo "Hello World";
@@ -579,44 +579,44 @@ function checksessionvars(){
 						$_SESSION['activereflength']=$result_row2->reflength;
 						$_SESSION['active_minup']=$result_row2->minup_version;
 					}
-					
+
 					$sql3  = "SELECT refid,refname FROM " . $_SESSION['active_run_name'] . ".reference_seq_info;";
 					$refnamedetails = $db_connection->query($sql3);
 					foreach ($refnamedetails as $row){
 						$refnames[$row['refid']] = $row['refname'];
 					}
 					$_SESSION['activerefnames'] = $refnames;
-					
+
 					//Check for the existence of an XML table in the active run database:
 					$db_connection2 = new mysqli(DB_HOST, DB_USER, DB_PASS, $_SESSION['active_run_name']);
 					$xmlcheck = "select * from XML;";
 					$xmlresult = $db_connection2->query($xmlcheck);
-					if ($xmlresult->num_rows >= 1) {
+					if (!empty ($xmlresult) && ($xmlresult->num_rows >= 1)) {
 						$_SESSION['currentXML'] = $xmlresult->num_rows;
 					}else{
-						$_SESSION['currentXML'] = $xmlresult->num_rows;
+						$_SESSION['currentXML'] = 0;//$xmlresult->num_rows;
 					}
-					
+
 					//Check for the existence of an interaction table in the active run database:
 
 					$db_connection2 = new mysqli(DB_HOST, DB_USER, DB_PASS, $_SESSION['active_run_name']);
 					$intcheck = "select * from messages;";
 					$intresult = $db_connection2->query($intcheck);
-					if ($intresult->num_rows >= 1) {
+					if (!emtpy ($intresult) && ($intresult->num_rows >= 1)) {
 						$_SESSION['currentINT'] = $intresult->num_rows;
 					}else{
-						$_SESSION['currentINT'] = $intresult->num_rows;
+						$_SESSION['currentINT'] = 0; //$intresult->num_rows;
 					}
 
-					
+
 					//Check for the existence of squiggle data in the active run database:
-					
+
 					$telemcheck = "show tables like 'caller_basecalled_template%';";
 					$telemcheckresult = $db_connection2->query($telemcheck);
-					if ($telemcheckresult->num_rows >= 1) {
+					if (!empty ($telemcheckresult) && ($telemcheckresult->num_rows >= 1)) {
 						$_SESSION['currenttelem'] = $telemcheckresult->num_rows;
 					}else{
-						$_SESSION['currenttelem'] = $telemcheckresult->num_rows;
+						$_SESSION['currenttelem'] = 0; // $telemcheckresult->num_rows;
 					}
 
 					//Check for the processing type we need to perform. SAM or MAF
@@ -628,26 +628,27 @@ function checksessionvars(){
 						$_SESSION['currentmaf'] = "MAF";
 					}
 
-					
+
 					//Check for the existence of a barcoding table in the active run database:
 					$barcodecheck = "select * from barcode_assignment;";
 					$barcoderesult = $db_connection2->query($barcodecheck);
-					if ($barcoderesult->num_rows >= 1) {
+
+					if (!empty ($barcoderesult)  && ($barcoderesult->num_rows >= 1)) {
 						$_SESSION['currentbarcode'] = $barcoderesult->num_rows;
 					}else{
-						$_SESSION['currentbarcode'] = $barcoderesult->num_rows;
+						$_SESSION['currentbarcode'] = 0;// $barcoderesult->num_rows;
 					}
 					//echo "The run is called " . key($runarray[1]) .".<br>\n";
-					
+
 					//Check for the existence of raw data in the database
 					$rawcheck = "select * from pre_tracking_id;";
 					$rawcheckresult = $db_connection2->query($rawcheck);
-					if ($rawcheckresult->num_rows >= 1) {
+					if (!empty ($rawcheckresult) && ($rawcheckresult->num_rows >= 1)) {
 						$_SESSION['currentraw'] = $rawcheckresult->num_rows;
 					}else{
-						$_SESSION['currentraw'] = $rawcheckresult->num_rows;
-					}					
-					
+						$_SESSION['currentraw'] = 0;// $rawcheckresult->num_rows;
+					}
+
 				}else{
 					//echo "You have no currently active runs.<br>\n";
 					unset($_SESSION['active_run_name']);
@@ -677,17 +678,17 @@ function checksessionvars(){
 					}else{
 						$_SESSION['focusXML'] = $xmlresult->num_rows;
 					}
-					
+
 					//Check for the existence of squiggle data in the active run database:
-					
+
 					$telemcheck = "show tables like 'caller_basecalled_template%';";
 					$telemcheckresult = $db_connection2->query($telemcheck);
-					if ($telemcheckresult->num_rows >= 1) {
+					if (!empty ($telemcheckresult) && ($telemcheckresult->num_rows >= 1)) {
 						$_SESSION['focustelem'] = $telemcheckresult->num_rows;
 					}else{
-						$_SESSION['focustelem'] = $telemcheckresult->num_rows;
+						$_SESSION['focustelem'] =0;// $telemcheckresult->num_rows;
 					}
-					
+
 					//Check for the processing type we need to perform. SAM or MAF
 					$mafcheck = "show tables like 'align_sam%';";
 					$mafcheckresult = $db_connection2->query($mafcheck);
@@ -696,36 +697,36 @@ function checksessionvars(){
 					} else {
 						$_SESSION['focusmaf'] = "MAF";
 					}
-					
 
-					
+
+
 					//Check for the existence of a barcoding table in the active run database:
 					$barcodecheck = "select * from barcode_assignment;";
 					$barcoderesult = $db_connection2->query($barcodecheck);
-					if ($barcoderesult->num_rows >= 1) {
+					if (!empty ($barcoderesult) && ($barcoderesult->num_rows >= 1)) {
 						$_SESSION['focusbarcode'] = $barcoderesult->num_rows;
 					}else{
-						$_SESSION['focusbarcode'] = $barcoderesult->num_rows;
+						$_SESSION['focusbarcode'] = 0; // $barcoderesult->num_rows;
 					}
-					
+
 					//Check for the existence of raw data in the database
 					$rawcheck = "select * from pre_tracking_id;";
 					$rawcheckresult = $db_connection2->query($rawcheck);
-					if ($rawcheckresult->num_rows >= 1) {
+					if (!empty ($rawcheckresult) && ($rawcheckresult->num_rows >= 1)) {
 						$_SESSION['focusraw'] = $rawcheckresult->num_rows;
 					}else{
-						$_SESSION['focussraw'] = $rawcheckresult->num_rows;
-					}	
-					
+						$_SESSION['focussraw'] = 0; // $rawcheckresult->num_rows;
+					}
+
 				}
-				
+
 			}else{
 				//echo "You have no minION runs available to view.<br>\n";
 			}
 		}
 		return true;
 	}
-	
+
 	return false;
 }
 
@@ -737,7 +738,7 @@ function getallruns()
 		if (!$db_connection->connect_errno) {
 			$user_name=$_SESSION['user_name'];
 			$sql = "select users.user_name,runname, activeflag,date,flowcellid,comment,FlowCellOwner,RunNumber,reference,reflength from users inner join userrun using (user_id) inner join minIONruns where userrun.runindex=minIONruns.runindex and minIONruns.activeflag=0 and users.user_name = '" . $user_name . "';";
-			
+
 			//echo "$sql";
 			$runs_available = $db_connection->query($sql);
 			if ($runs_available->num_rows >=1) {
@@ -773,14 +774,14 @@ function getallruns()
 					echo "<td>" . $row['reference'] . "</td>";
 					echo "<td>" . $row['reflength'] . "</td>";
 					echo "</tr>";
-					
+
 				}
 				echo "</tbody>";
 				echo "</table>";
 			}
 		}
 	}
-			
+
 }
 function checkuserruns()
 {
@@ -789,16 +790,16 @@ function checkuserruns()
 		if (!$db_connection->connect_errno) {
 			$user_name=$_SESSION['user_name'];
 			$sql = "select users.user_name,runname, activeflag from users inner join userrun using (user_id) inner join minIONruns where userrun.runindex=minIONruns.runindex and users.user_name = '" . $user_name . "';";
-			
+
 			$runs_available = $db_connection->query($sql);
 			if ($runs_available->num_rows >=1) {
-				
+
 				$runarray;
-				
+
 				foreach ($runs_available as $row) {
 					$runarray[$row['activeflag']][$row['runname']]=$row['user_name'];
 				}
-				
+
 				echo "You have " . $runs_available->num_rows . " minION runs available to view.<br>\n";
 				if (array_key_exists('1', $runarray)) {
 					echo "You have active runs available.<br>\n";
@@ -807,19 +808,19 @@ function checkuserruns()
 				//}
 
 					$_SESSION['active_run_name']=key($runarray[1]);
-					echo "The currently selected active run is " . cleanname(key($runarray[1])) .".<br>\n";	
+					echo "The currently selected active run is " . cleanname(key($runarray[1])) .".<br>\n";
 				}else{
 					echo "You have no currently active runs.<br>\n";
 					unset($_SESSION['active_run_name']);
 				}
-				
+
 			}else{
 				echo "You have no minION runs available to view.<br>\n";
 			}
 		}
 		return true;
 	}
-	
+
 	return false;
 }
 function checknumactive() {
@@ -828,10 +829,10 @@ function checknumactive() {
 		if (!$db_connection->connect_errno) {
 			$user_name=$_SESSION['user_name'];
 			$sql = "select users.user_name,runname, activeflag from users inner join userrun using (user_id) inner join minIONruns where userrun.runindex=minIONruns.runindex and activeflag=1 and users.user_name = '" . $user_name . "';";
-			
+
 			$runs_available = $db_connection->query($sql);
 			if ($runs_available->num_rows >=1) {
-				$numactiveruns = $runs_available->num_rows;	
+				$numactiveruns = $runs_available->num_rows;
 			}else {
 				$numactiveruns = 0;
 			}
@@ -845,22 +846,22 @@ function checkactiverun() {
 		if (!$db_connection->connect_errno) {
 			$user_name=$_SESSION['user_name'];
 			$sql = "select users.user_name,runname, activeflag from users inner join userrun using (user_id) inner join minIONruns where userrun.runindex=minIONruns.runindex and users.user_name = '" . $user_name . "';";
-			
+
 			$runs_available = $db_connection->query($sql);
 			if ($runs_available->num_rows >=1) {
-				
+
 				$runarray;
-				
+
 				foreach ($runs_available as $row) {
 					$runarray[$row['activeflag']][$row['runname']]=$row['user_name'];
 				}
-				
+
 				if (array_key_exists('1', $runarray)) {
 					return true;
 				}else{
 					return false;
 				}
-				
+
 			}
 		}
 	}
@@ -872,7 +873,7 @@ function checkallruns() {
 		if (!$db_connection->connect_errno) {
 			$user_name=$_SESSION['user_name'];
 			$sql = "select users.user_name,runname, activeflag from users inner join userrun using (user_id) inner join minIONruns where minIONruns.activeflag != 1 and userrun.runindex=minIONruns.runindex and users.user_name = '" . $user_name . "';";
-			
+
 			$runs_available = $db_connection->query($sql);
 			if ($runs_available->num_rows >=1) {
 				return true;
@@ -890,8 +891,8 @@ function runsummary() {
 		$mindb_connection = new mysqli(DB_HOST, DB_USER, DB_PASS, $_SESSION['active_run_name']);
 		if (!$mindb_connection->connect_errno) {
 			$sql = "select device_id, exp_script_purpose,exp_start_time,run_id,version_name from tracking_id group by run_id order by exp_start_time;";
-			
-			
+
+
 			$runsummary=$mindb_connection->query($sql);
 			if ($runsummary->num_rows >= 1) {
 				echo " <div class='table-responsive'>
@@ -928,7 +929,7 @@ function runsummary() {
 						echo "<td>" . $row['version_name'] . "</td>";
 						echo "</tr>";
 					}
-						
+
 				echo"</tbody>
 					</table>
 					</div>
@@ -963,12 +964,12 @@ function runsummary() {
 					echo "<td>" . $row['minlen']. "</td>";
 					echo "</tr>";
 				}
-						
+
 				echo"</tbody>
 					</table>
 					</div>
 					";
-				
+
 			}
 			echo "<h4>Basecalled Complement</h4>";
 			$sql4 = "select count(*) as readnum,exp_script_purpose,ROUND(AVG(length(sequence))) as average_length,STDDEV(length(sequence)) as standard_dev,MAX(length(sequence)) as maxlen,MIN(length(sequence)) as minlen from basecalled_complement inner join tracking_id using (basename_id) group by exp_script_purpose;";
@@ -997,12 +998,12 @@ function runsummary() {
 					echo "<td>" . $row['minlen']. "</td>";
 					echo "</tr>";
 				}
-						
+
 				echo"</tbody>
 					</table>
 					</div>
 					";
-				
+
 			}
 			echo "<h4>Basecalled 2d</h4>";
 			$sql5 = "select count(*) as readnum,exp_script_purpose,ROUND(AVG(length(sequence))) as average_length,STDDEV(length(sequence)) as standard_dev,MAX(length(sequence)) as maxlen,MIN(length(sequence)) as minlen from basecalled_2d inner join tracking_id using (basename_id) group by exp_script_purpose;";
@@ -1031,14 +1032,14 @@ function runsummary() {
 					echo "<td>" . $row['minlen']. "</td>";
 					echo "</tr>";
 				}
-						
+
 				echo"</tbody>
 					</table>
 					</div>
 					";
-				
+
 			}
-			
+
 		}
 }
 function prevrunsummary() {
@@ -1046,8 +1047,8 @@ function prevrunsummary() {
 		$mindb_connection = new mysqli(DB_HOST, DB_USER, DB_PASS, $_SESSION['focusrun']);
 		if (!$mindb_connection->connect_errno) {
 			$sql = "select device_id, exp_script_purpose,exp_start_time,run_id,version_name from tracking_id group by run_id order by exp_start_time;";
-			
-			
+
+
 			$runsummary=$mindb_connection->query($sql);
 			if ($runsummary->num_rows >= 1) {
 				echo " <table class='table table-condensed'>
@@ -1083,7 +1084,7 @@ function prevrunsummary() {
 						echo "<td>" . $row['version_name'] . "</td>";
 						echo "</tr>";
 					}
-						
+
 				echo"</tbody>
 					</table>
 					";
@@ -1116,11 +1117,11 @@ function prevrunsummary() {
 					echo "<td>" . $row['minlen']. "</td>";
 					echo "</tr>";
 				}
-						
+
 				echo"</tbody>
 					</table>
 					";
-				
+
 			}
 			echo "<h4>Basecalled Complement</h4>";
 			$sql4 = "select count(*) as readnum,exp_script_purpose,ROUND(AVG(length(sequence))) as average_length,STDDEV(length(sequence)) as standard_dev,MAX(length(sequence)) as maxlen,MIN(length(sequence)) as minlen from basecalled_complement inner join tracking_id using (basename_id) group by exp_script_purpose;";
@@ -1148,11 +1149,11 @@ function prevrunsummary() {
 					echo "<td>" . $row['minlen']. "</td>";
 					echo "</tr>";
 				}
-						
+
 				echo"</tbody>
 					</table>
 					";
-				
+
 			}
 			echo "<h4>Basecalled 2d</h4>";
 			$sql5 = "select count(*) as readnum,exp_script_purpose,ROUND(AVG(length(sequence))) as average_length,STDDEV(length(sequence)) as standard_dev,MAX(length(sequence)) as maxlen,MIN(length(sequence)) as minlen from basecalled_2d inner join tracking_id using (basename_id) group by exp_script_purpose;";
@@ -1180,13 +1181,13 @@ function prevrunsummary() {
 					echo "<td>" . $row['minlen']. "</td>";
 					echo "</tr>";
 				}
-						
+
 				echo"</tbody>
 					</table>
 					";
-				
+
 			}
-			
+
 		}
 }
 
@@ -1220,7 +1221,7 @@ function averagechannels(){
 			return($average);
 		}
 	}
-	
+
 }
 
 //mySQL useful checks and balances
