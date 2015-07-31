@@ -142,7 +142,7 @@ function mappabletime($jobname,$currun,$refid) {
 
 				}
 			}
-		$jsonstring;
+		$jsonstring="";
 		$jsonstring = $jsonstring . "[\n";
 
 		foreach ($resultarray as $key => $value) {
@@ -501,7 +501,7 @@ function ratiopassfail($jobname,$currun,$refid) {
 
 ##### ratio2dtemplate
 
-function ratio2dtemplate($jobname,$currun,$refid) {
+function ratio2dtemplate($jobname,$currun,$refid,$one,$two,$three) {
 	$checkvar = $currun . $jobname . $type;
 	//echo $type . "\n";
 	$checkrunning = $currun . $jobname . $type . "status";
@@ -1421,7 +1421,7 @@ function basesnpcoveragepos($jobname,$currun,$refid,$position,$type,$barcodechec
                          WHEN C THEN 'C'
                          WHEN G THEN 'G'
        END AS max_value_column_name from reference_coverage_barcode_" . $type ." where ref_id = '".$refid."' and ref_pos >= ".$position."-100 and ref_pos <= ".$position."+100;";
-      // echo $sql;
+	   //echo $sql;
 	}else{
 		$sql = "select *, @var_max_val:= GREATEST(A,T,G,C) AS max_value,
        CASE @var_max_val WHEN A THEN 'A'
@@ -1430,7 +1430,7 @@ function basesnpcoveragepos($jobname,$currun,$refid,$position,$type,$barcodechec
                          WHEN G THEN 'G'
        END AS max_value_column_name from reference_coverage_" . $type ." where ref_id = ".$refid." and ref_pos >= ".$position."-100 and ref_pos <= ".$position."+100;";
 	}
-       //echo $sql;
+      // echo $sql;
        $result=$mindb_connection->query($sql);
 
        $resultarray;
@@ -1568,7 +1568,10 @@ function basesnpcoverage($jobname,$currun,$refid,$start,$end,$type) {
                          WHEN G THEN 'G'
        END AS max_value_column_name from reference_coverage_".$type." where ref_id = " . $refid . " and ref_pos >= " . $start ." and ref_pos <= ".$end.";";
 
-       		//echo $sql_query ;
+       		//
+			//echo $sql_query ;
+			//echo "\n$currun\n";
+			//echo "\nRefPOS\tA\tT\tG\tC\tD\tI\n";
        		$result = $mindb_connection->query($sql_query);
 			//array to store the results
 			$resultarray;
@@ -1578,12 +1581,20 @@ function basesnpcoverage($jobname,$currun,$refid,$start,$end,$type) {
 
 			if ($result->num_rows >=1) {
 				foreach ($result as $row) {
+					//echo $row['ref_pos'] . "\t";
+					//echo $row['A'] . "\t";
+					//echo $row['T'] . "\t";
+					//echo $row['G'] . "\t";
+					//echo $row['C'] . "\t";
+					//echo $row['D'] . "\t";
+					//echo $row['I'] . "\t";
 					$resultarray[$type][$row['ref_id']]['A'][$row['ref_pos']]=$row['A'];
 					$resultarray[$type][$row['ref_id']]['T'][$row['ref_pos']]=$row['T'];
 					$resultarray[$type][$row['ref_id']]['G'][$row['ref_pos']]=$row['G'];
 					$resultarray[$type][$row['ref_id']]['C'][$row['ref_pos']]=$row['C'];
 					$resultarray[$type][$row['ref_id']]['D'][$row['ref_pos']]=$row['D'];
 					$resultarray[$type][$row['ref_id']]['I'][$row['ref_pos']]=$row['I'];
+					//echo "\n";
 				}
 			}
 
@@ -2481,7 +2492,7 @@ function minion_map() {
 
 
 ##Average Length Over Time - chart showing read lengths over time
-function average_length_over_time($jobname,$currrun){
+function average_length_over_time($jobname,$currun){
 	$checkvar = $currun . $jobname;
 	$checkrunning = $currun . $jobname . "status";
 	global $memcache;

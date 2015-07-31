@@ -263,7 +263,7 @@ require_once("includes/functions.php");
 			        series: []
 			    };
 
-			    $.getJSON('jsonencode/basesnpcoverage.php?prev1&start=<?php echo $start;?>&end=<?php echo $end; ?>&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
+			    $.getJSON('jsonencode/basesnpcoverage.php?prev=1&start=<?php echo $start;?>&end=<?php echo $end; ?>&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
 					//alert("success");
 			        options.series = data; // <- just assign the data to the series property.
 
@@ -278,7 +278,7 @@ require_once("includes/functions.php");
 					end = end - 1000;
 					$("#center").val($("#center").val()-1000);
 					//alert ("HOORAY!");
-					$.getJSON('jsonencode/basesnpcoverage.php?prev1&start='+start+'&end='+end+'&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
+					$.getJSON('jsonencode/basesnpcoverage.php?prev=1&start='+start+'&end='+end+'&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
 					//alert("success");
 			        options.series = data; // <- just assign the data to the series property.
 
@@ -294,7 +294,7 @@ require_once("includes/functions.php");
 					end = end - 500;
 					$("#center").val($("#center").val()-500);
 					//alert ("HOORAY!");
-					$.getJSON('jsonencode/basesnpcoverage.php?prev1&start='+start+'&end='+end+'&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
+					$.getJSON('jsonencode/basesnpcoverage.php?prev=1&start='+start+'&end='+end+'&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
 					//alert("success");
 			        options.series = data; // <- just assign the data to the series property.
 
@@ -310,7 +310,7 @@ require_once("includes/functions.php");
 					end = end - 100;
 					$("#center").val($("#center").val()-100);
 					//alert ("HOORAY!");
-					$.getJSON('jsonencode/basesnpcoverage.php?prev1&start='+start+'&end='+end+'&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
+					$.getJSON('jsonencode/basesnpcoverage.php?prev=1&start='+start+'&end='+end+'&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
 					//alert("success");
 			        options.series = data; // <- just assign the data to the series property.
 
@@ -326,7 +326,7 @@ require_once("includes/functions.php");
 					end = end + 1000;
 					$("#center").val(parseFloat($("#center").val())+1000);
 					//alert ("HOORAY!");
-					$.getJSON('jsonencode/basesnpcoverage.php?prev1&start='+start+'&end='+end+'&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
+					$.getJSON('jsonencode/basesnpcoverage.php?prev=1&start='+start+'&end='+end+'&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
 					//alert("success");
 			        options.series = data; // <- just assign the data to the series property.
 
@@ -342,7 +342,7 @@ require_once("includes/functions.php");
 					end = end + 500;
 					$("#center").val(parseFloat($("#center").val())+500);
 					//alert ("HOORAY!");
-					$.getJSON('jsonencode/basesnpcoverage.php?prev1&start='+start+'&end='+end+'&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
+					$.getJSON('jsonencode/basesnpcoverage.php?prev=1&start='+start+'&end='+end+'&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
 					//alert("success");
 			        options.series = data; // <- just assign the data to the series property.
 
@@ -358,7 +358,7 @@ require_once("includes/functions.php");
 					end = end + 100;
 					$("#center").val(parseFloat($("#center").val())+100);
 					//alert ("HOORAY!");
-					$.getJSON('jsonencode/basesnpcoverage.php?prev1&start='+start+'&end='+end+'&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
+					$.getJSON('jsonencode/basesnpcoverage.php?prev=1&start='+start+'&end='+end+'&type=<?php echo $type;?>&refid=<?php echo $reference;?>&callback=?', function(data) {
 					//alert("success");
 			        options.series = data; // <- just assign the data to the series property.
 
