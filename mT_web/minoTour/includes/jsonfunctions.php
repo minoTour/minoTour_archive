@@ -2394,9 +2394,9 @@ function passfailperporemux($jobname,$currun){
 				$jsonstring = $row['json'];
 			}
 		} else {
-			$sql_allpass = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like \"%pass%\" and start_mux != 0 group by channel,start_mux;";
-			$sql_fail = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like \"\%fail\%\"  and start_mux != 0 group by channel,start_mux;";
-			$sql_all = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) and start_mux != 0 group by channel,start_mux;";
+			$sql_allpass = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like \"%pass%\" group by channel,start_mux;";
+			$sql_fail = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like \"\%fail\%\"  group by channel,start_mux;";
+			$sql_all = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) group by channel,start_mux;";
 
 			$resultarray;
 
