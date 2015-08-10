@@ -579,6 +579,7 @@ $(document).ready(function() {
                 enabled: true,
                 text: 'Read Counts',
             },
+            min : 0,
             startOnTick: true,
             endOnTick: true,
             showLastLabel: true
