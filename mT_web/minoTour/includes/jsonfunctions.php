@@ -39,6 +39,164 @@ function blanktemplate($jobname,$currun,$refid) {
 
 }
 
+
+###Attempt to calculate a boxplot of read lengths
+
+function boxplotlength($jobname,$currun,$refid) {
+	$checkvar = $currun . $jobname . $type;
+	//echo $type . "\n";
+	$checkrunning = $currun . $jobname . $type . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;
+	//$jsonstring = $memcache->get("$checkvar");
+	$checkingrunning = $memcache->get("$checkrunning");
+	if($checkingrunning === "No" || $checkingrunning === FALSE){
+		//$memcache->set("$checkrunning", "YES", 0, 0);
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if ($checking->num_rows ==1){
+			//echo "We have already run this!";
+			foreach ($checking as $row){
+				$jsonstring = $row['json'];
+			}
+		} else {
+			//do something interesting here...
+
+			$sqltempquartiles = "select (select floor(count(*)/4)) as first_q, (select floor(count(*)/2) from basecalled_template) as mid_pos, (select floor(count(*)/4*3) from basecalled_template) as third_q from basecalled_template order by length(sequence) limit 1;";
+			$sqlcompquartiles = "select (select floor(count(*)/4)) as first_q, (select floor(count(*)/2) from basecalled_complement) as mid_pos, (select floor(count(*)/4*3) from basecalled_complement) as third_q from basecalled_complement order by length(sequence) limit 1;";
+			$sql2dquartiles = "select (select floor(count(*)/4)) as first_q, (select floor(count(*)/2) from basecalled_2d) as mid_pos, (select floor(count(*)/4*3) from basecalled_2d) as third_q from basecalled_2d order by length(sequence) limit 1;";
+			//echo $sql2dquartiles . "\n";
+			$resulttempquartiles = $mindb_connection->query($sqltempquartiles);
+			$resultcompquartiles = $mindb_connection->query($sqlcompquartiles);
+			$result2dquartiles = $mindb_connection->query($sql2dquartiles);
+
+
+			$variablearray;
+			if ($resulttempquartiles->num_rows ==1) {
+				#$cumucount = 0;
+				foreach ($resulttempquartiles as $row) {
+					#$cumucount++;
+					$variablearray['template']['first_q']=$row['first_q'];
+					$variablearray['template']['mid_pos']=$row['mid_pos'];
+					$variablearray['template']['third_q']=$row['third_q'];
+					//echo $row['third_q'] . "\n";
+				}
+			}
+			if ($resultcompquartiles->num_rows ==1) {
+				#$cumucount = 0;
+				foreach ($resultcompquartiles as $row) {
+					#$cumucount++;
+					$variablearray['complement']['first_q']=$row['first_q'];
+					$variablearray['complement']['mid_pos']=$row['mid_pos'];
+					$variablearray['complement']['third_q']=$row['third_q'];
+				}
+			}
+			if ($result2dquartiles->num_rows ==1) {
+				#$cumucount = 0;
+				foreach ($result2dquartiles as $row) {
+					#$cumucount++;
+					$variablearray['2d']['first_q']=$row['first_q'];
+					$variablearray['2d']['mid_pos']=$row['mid_pos'];
+					$variablearray['2d']['third_q']=$row['third_q'];
+				}
+			}
+
+			$sqltemp = "select min(length(sequence)) as min,(select length(sequence) from basecalled_template order by length(sequence) limit " .$variablearray['template']['first_q'] . ",1) as firstq, (select length(sequence) from basecalled_template order by length(sequence) limit ".$variablearray['template']['mid_pos'].",1) as median, (select length(sequence) from basecalled_template order by length(sequence) limit ".$variablearray['template']['third_q'].",1) as lastq, max(length(sequence)) as max from basecalled_template;";
+			$sqlcomp = "select min(length(sequence)) as min,(select length(sequence) from basecalled_complement order by length(sequence) limit " .$variablearray['complement']['first_q'] . ",1) as firstq, (select length(sequence) from basecalled_complement order by length(sequence) limit ".$variablearray['complement']['mid_pos'].",1) as median, (select length(sequence) from basecalled_complement order by length(sequence) limit ".$variablearray['complement']['third_q'].",1) as lastq, max(length(sequence)) as max from basecalled_complement;";
+			$sql2d = "select min(length(sequence)) as min,(select length(sequence) from basecalled_2d order by length(sequence) limit " .$variablearray['2d']['first_q'] . ",1) as firstq, (select length(sequence) from basecalled_2d order by length(sequence) limit ".$variablearray['2d']['mid_pos'].",1) as median, (select length(sequence) from basecalled_2d order by length(sequence) limit ".$variablearray['2d']['third_q'].",1) as lastq, max(length(sequence)) as max from basecalled_2d;";
+
+			//echo $sqlcomp . "\n";
+
+			$resultsqltemp = $mindb_connection->query($sqltemp);
+			$resultsqlcomp = $mindb_connection->query($sqlcomp);
+			$resultsql2d = $mindb_connection->query($sql2d);
+
+
+			$resultarray;
+
+			if ($resultsqltemp->num_rows >=1) {
+				#$cumucount = 0;
+
+				foreach ($resultsqltemp as $row) {
+					#$cumucount++;
+					$resultarray['template']['min']=$row['min'];
+					$resultarray['template']['firstq']=$row['firstq'];
+					$resultarray['template']['median']=$row['median'];
+					$resultarray['template']['lastq']=$row['lastq'];
+					$resultarray['template']['max']=$row['max'];
+				}
+			}
+			if ($resultsqlcomp->num_rows >=1) {
+				#$cumucount = 0;
+
+				foreach ($resultsqlcomp as $row) {
+					#$cumucount++;
+					$resultarray['complement']['min']=$row['min'];
+					$resultarray['complement']['firstq']=$row['firstq'];
+					$resultarray['complement']['median']=$row['median'];
+					$resultarray['complement']['lastq']=$row['lastq'];
+					$resultarray['complement']['max']=$row['max'];
+				}
+			}
+			if ($resultsql2d->num_rows >=1) {
+				#$cumucount = 0;
+
+				foreach ($resultsql2d as $row) {
+					#$cumucount++;
+					$resultarray['2d']['min']=$row['min'];
+					$resultarray['2d']['firstq']=$row['firstq'];
+					$resultarray['2d']['median']=$row['median'];
+					$resultarray['2d']['lastq']=$row['lastq'];
+					$resultarray['2d']['max']=$row['max'];
+				}
+			}
+
+
+
+
+
+		$jsonstring="";
+		$jsonstring = $jsonstring . "[\n";
+		//$jsonstring = $jsonstring . "{\n";
+		//$jsonstring = $jsonstring . "\"name\": \"Read Names\",\n";
+		//$jsonstring = $jsonstring . "\"data\":[\"Template\",\"Complement\",\"2D\"]\n},\n";
+		$jsonstring = $jsonstring . "{\n";
+		$jsonstring = $jsonstring . "\"name\": \"Observations\",\n";
+		$jsonstring = $jsonstring . "\"data\":[\n";
+		foreach ($resultarray as $key => $value) {
+				//echo $key;
+				$jsonstring = $jsonstring . "[";
+				$jsonstring = $jsonstring . $value['min'] . ",";
+				$jsonstring = $jsonstring . $value['firstq'] . ",";
+				$jsonstring = $jsonstring . $value['median'] . ",";
+				$jsonstring = $jsonstring . $value['lastq'] . ",";
+				$jsonstring = $jsonstring . $value['max'] . "";
+				//$jsonstring = $jsonstring . "\"data\":[";
+				//foreach ($value as $key2 => $value2) {
+				//	$jsonstring = $jsonstring . "[  $key2 , " .$value2['alignedreads']/$value2['allreads']." ],";
+				//}
+				$jsonstring = $jsonstring . "],\n";
+				}
+
+		$jsonstring = $jsonstring . "]\n";
+		$jsonstring = $jsonstring . "},\n";
+		$jsonstring = $jsonstring . "]\n";
+	}
+		if ($_GET["prev"] == 1){
+			include 'savejson.php';
+		}
+		$memcache->set("$checkvar", $jsonstring);
+	}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}
+	// cache for 2 minute as we want yield to update semi-regularly...
+	$memcache->delete("$checkrunning");
+   	return $jsonstring;
+
+}
+
+
 ###Calculate the proportion of mappable reads over time
 
 function mappabletime($jobname,$currun,$refid) {
@@ -2038,7 +2196,7 @@ function basesperporemux($jobname,$currun) {
 				$jsonstring = $row['json'];
 			}
 		} else {
-			$sql_template = "select sum(ifnull(length(basecalled_template.sequence),0)+ifnull(length(basecalled_complement.sequence),0)) as bases, channel, start_mux as mux from basecalled_template inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by channel,mux;";
+			$sql_template = "select sum(ifnull(length(basecalled_template.sequence),0)+ifnull(length(basecalled_complement.sequence),0)) as bases, channel, start_mux as mux from basecalled_template inner join config_general using (basename_id) left join basecalled_complement using (basename_id) where start_mux != 0  group by channel,mux;";
 
 
 			$resultarray;
@@ -2138,9 +2296,9 @@ function passfailcountperporemux($jobname,$currun){
 				$jsonstring = $row['json'];
 			}
 		} else {
-			$sql_allpass = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like \"%pass%\" group by channel,start_mux;";
-			$sql_fail = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like \"\%fail\%\" group by channel,start_mux;";
-			$sql_all = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) group by channel,start_mux;";
+			$sql_allpass = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like \"%pass%\" and start_mux != 0  group by channel,start_mux;";
+			$sql_fail = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like \"\%fail\%\" and start_mux != 0 group by channel,start_mux;";
+			$sql_all = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) and start_mux != 0 group by channel,start_mux;";
 
 
 			$allpass=$mindb_connection->query($sql_allpass);
@@ -2236,9 +2394,9 @@ function passfailperporemux($jobname,$currun){
 				$jsonstring = $row['json'];
 			}
 		} else {
-			$sql_allpass = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like \"%pass%\" group by channel,start_mux;";
-			$sql_fail = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like \"\%fail\%\" group by channel,start_mux;";
-			$sql_all = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) group by channel,start_mux;";
+			$sql_allpass = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like \"%pass%\" and start_mux != 0 group by channel,start_mux;";
+			$sql_fail = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like \"\%fail\%\"  and start_mux != 0 group by channel,start_mux;";
+			$sql_all = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) and start_mux != 0 group by channel,start_mux;";
 
 			$resultarray;
 
@@ -2364,7 +2522,7 @@ function readsperporemux($jobname,$currun){
 				$jsonstring = $row['json'];
 			}
 		} else {
-			$sql_template = "select count(*) as count, channel, start_mux as mux from basecalled_template inner join config_general using (basename_id) group by channel,mux;";
+			$sql_template = "select count(*) as count, channel, start_mux as mux from basecalled_template inner join config_general using (basename_id) where start_mux != 0 group by channel,mux;";
 
 
 			$resultarray;

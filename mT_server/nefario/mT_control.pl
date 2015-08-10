@@ -68,14 +68,14 @@ my $memd = Cache::Memcached->new(servers => [$memcache]);
 
 #Set up a connection to the Gru database to monitor for active runs.
 
-my $dbh = DBI->connect('DBI:mysql:host=' . $dbhost . ';database=Gru',$dbuser,$dbpass,{ AutoCommit => 1, mysql_auto_reconnect=>1}) or die "Connection Error: $DBI::errstr\n"; 
+my $dbh = DBI->connect('DBI:mysql:host=' . $dbhost . ';database=Gru',$dbuser,$dbpass,{ AutoCommit => 1, mysql_auto_reconnect=>1}) or die "Connection Error: $DBI::errstr\n";
 
 
 #Define an array with a list of tasks that need to be completed for each database if the reference length is greater than 0
-my @alignjobarray = ("depthcoverage","percentcoverage","readlengthqual","readnumberlength");
+my @alignjobarray = ("depthcoverage","percentcoverage","readlengthqual","readnumberlength","mappabletime");
 
 #Define an array of jobs regardless of reflength
-my @jobarray = ("readnumber","maxlen","avelen","bases","histogram","histogrambases","reads_over_time2","average_time_over_time2","active_channels_over_time","readsperpore","average_length_over_time","whatsinmyminion2");
+my @jobarray = ("readnumber","maxlen","avelen","bases","histogram","histogrambases","reads_over_time2","average_time_over_time2","active_channels_over_time","readsperpore","average_length_over_time","lengthtimewindow","cumulativeyield","sequencingrate","ratiopassfail","ratio2dtemplate","readnumber2");#"whatsinmyminion2"
 
 #Define an array of characters to print to the screen as a heartbeat...
 my @heartbeat = (".","!","\#","!");
@@ -95,31 +95,31 @@ while (42) {#If you have to ask the significance of 42 you shouldn't be reading 
  	if ($heartcount == 4) {
  		$heartcount = 0;
  	}
- 	
+
  	#Run the twitter script to send background notifications
  	if ($twitter) {
  		my $command = $phploc . "php " . $directory . "/views/alertcheck_background.php";
  		system($command);
  	}
- 	
- 	
+
+
  	#Query the database to see if there are any active minION runs that need processing
- 	my $query = "SELECT * FROM Gru.minIONruns where activeflag = 1;"; 	
+ 	my $query = "SELECT * FROM Gru.minIONruns where activeflag = 1;";
  	my $sth = $dbh->prepare($query);
 	$sth->execute;
-	
-	
+
+
 	#Loop through results and if we have any, set a memcache variable containing a list of database names:
 	my $run_counter = 0; # Set counter for number of active runs.
 	while (my $ref = $sth->fetchrow_hashref) {
 		$run_counter++;
-		
+
 		if ($verbose){
 			print $run_counter . "\t" . $ref->{runname} . "\n";
 		}
 		my $runname = "perl_active_" . $run_counter;
 		$memd->set($runname, $ref->{runname},$sleeptime);
-		
+
 		foreach (@jobarray){
 			#print "$_\n";
 			jobs($ref->{runname},$_,$ref->{reflength});
@@ -138,28 +138,28 @@ while (42) {#If you have to ask the significance of 42 you shouldn't be reading 
 		if ($verbose){
 			print "Executed...\n";
 		}
-		
+
 	}
 	#set the variable in memcached with an expiry of the same as the program is running.
 	$memd->set("perl_proc_active", $run_counter ,$sleeptime);
-	
-	
+
+
 
 	#check we have set the variable by getting it from memcahced
-	
+
 	my $num_active = $memd->get("perl_proc_active");
- 	
+
  	#print "We have $num_active active runs retrieved from memcache\n";
- 	
+
 }
 
 exit;
 
 #### We now define a series of sub routines which will be run to write data to json and store it in memcache for access by the php scripts on the server. These will run at three different rates. Rapidly updating material will be written frequently (every 10 seconds), intermediate datasets every 60 seconds and complex analysis every 180 seconds. We will write a second set of subroutines to manipulate data from table to table whilst still keeping results available in memcache.
 
-#As standard we pass variables as database_name, 
+#As standard we pass variables as database_name,
 sub jobs {
-	my $dbname = $_[0];	
+	my $dbname = $_[0];
 	my $jobname = $_[1];
 	my $reflength = $_[2];
 	my $checkvar = $dbname . $jobname;
@@ -170,7 +170,7 @@ sub jobs {
 		if ($verbose){
 			print "replacing $checkvar\n";
 		}
-		
+
 		##At the moment waits for script to complete before calculating next - need to check if process still running and not execute new version until it has finished...
  	    my $command = $phploc . "php mT_control_scripts.php " . "dbname=$dbname jobname=$jobname reflength=$reflength prev=0 &";
 		system($command);
@@ -178,7 +178,7 @@ sub jobs {
     	if ($verbose){
 			print "already running $checkvar\n";
 		}
-			
+
     }
 
 }

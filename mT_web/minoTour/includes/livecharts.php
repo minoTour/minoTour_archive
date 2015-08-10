@@ -2,6 +2,66 @@
 		$(document).ready(function() {
 			var options = {
 				chart: {
+					type: 'boxplot',
+					renderTo: 'boxplotlength'
+				},
+				title: {
+				  text: 'Boxplot of Read Lengths'
+				},
+				legend: {
+					enabled: false
+				},
+
+				xAxis: {
+					categories: ['1', '2', '3'],
+					title: {
+						text: 'Read Type'
+					}
+				},
+				yAxis: {
+					title: {
+						text: 'Read Length'
+					}
+
+				},
+
+
+
+
+				series: []
+			};
+			function loadchirpbpl() {
+
+					if($('#readsummarycheck').prop('checked')) {
+   										   $.getJSON('jsonencode/mappabletime.php?prev=0&callback=?', function(data) {
+										//	   options.xAxis.categories = json[0]['data'];
+       				   					//		options.series[0] = json[1];
+                                        options.series = data; // <- just assign the data to the series property.
+										//alert (data);
+                                                setTimeout(loadchirpbpl,<?php echo $_SESSION['pagerefresh'] ;?>);
+
+                                        //options.series = JSON2;
+                                                var chart = new Highcharts.Chart(options);
+                                                });} else {
+   setTimeout(loadchirpbpl,<?php echo $_SESSION['pagerefresh'] ;?>);
+}
+
+                                        }
+
+
+				        loadchirpbpl();
+
+			});
+
+				//]]>
+
+</script>
+
+
+<script>
+		$(document).ready(function() {
+			var options = {
+				chart: {
 					renderTo: 'mappabletime',
 					zoomType: 'x',
 					type: 'spline',
