@@ -101,7 +101,7 @@ require_once("includes/functions.php");
 									<div class="col-md-3" id="yield" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Yield</div>
 									<div class="col-md-3" id="avglen" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Read Average Length</div>
 									<div class="col-md-3" id="maxlen" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Read Max Length</div>
-                                    <!--<div class="col-md-3" id="boxplotlength" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Box Plots</div>-->
+                                    <div class="col-md-12" id="boxplotlength" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Box Plots</div>
 
 
 								</div>

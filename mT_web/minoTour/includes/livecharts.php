@@ -5,6 +5,12 @@
 					type: 'boxplot',
 					renderTo: 'boxplotlength'
 				},
+				plotOptions: {
+					boxplot: {
+						animation: false,
+						//colorByPoint: true
+					}
+				},
 				title: {
 				  text: 'Boxplot of Read Lengths'
 				},
@@ -13,15 +19,18 @@
 				},
 
 				xAxis: {
-					categories: ['1', '2', '3'],
+					categories: ['Template', 'Complement', '2D'],
 					title: {
 						text: 'Read Type'
 					}
 				},
 				yAxis: {
+					//type: 'logarithmic',
 					title: {
 						text: 'Read Length'
-					}
+					},
+					type: 'logarithmic',
+					//min :0,
 
 				},
 
@@ -33,7 +42,7 @@
 			function loadchirpbpl() {
 
 					if($('#readsummarycheck').prop('checked')) {
-   										   $.getJSON('jsonencode/mappabletime.php?prev=0&callback=?', function(data) {
+   										   $.getJSON('jsonencode/boxplotlength.php?prev=0&callback=?', function(data) {
 										//	   options.xAxis.categories = json[0]['data'];
        				   					//		options.series[0] = json[1];
                                         options.series = data; // <- just assign the data to the series property.

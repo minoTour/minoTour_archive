@@ -109,8 +109,12 @@ require_once("includes/functions.php");
 
 	<!-- Highcharts Addition -->
 	<script src="js/highcharts.js"></script>
-	<script type="text/javascript" src="js/themes/grid-light.js"></script>
-	<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
+    <!--<script src="http://code.highcharts.com/highcharts.js"</script>-->
+    <script type="text/javascript" src="js/themes/grid-light.js"></script>
+    <!--<script src="https://raw.githubusercontent.com/highslide-software/highcharts.com/master/js/themes/grid-light.js"></script>-->
+    <script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
+    <!--<script src="js/modules/heatmap.js"></script>-->
+    <!--<script src="http://code.highcharts.com/modules/heatmap.js"></script>-->
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
 	<script src="http://highslide-software.github.io/export-csv/export-csv.js"></script>
 

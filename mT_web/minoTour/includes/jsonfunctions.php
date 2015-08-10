@@ -63,9 +63,9 @@ function boxplotlength($jobname,$currun,$refid) {
 		} else {
 			//do something interesting here...
 
-			$sqltempquartiles = "select (select floor(count(*)/4)) as first_q, (select floor(count(*)/2) from basecalled_template) as mid_pos, (select floor(count(*)/4*3) from basecalled_template) as third_q from basecalled_template order by length(sequence) limit 1;";
-			$sqlcompquartiles = "select (select floor(count(*)/4)) as first_q, (select floor(count(*)/2) from basecalled_complement) as mid_pos, (select floor(count(*)/4*3) from basecalled_complement) as third_q from basecalled_complement order by length(sequence) limit 1;";
-			$sql2dquartiles = "select (select floor(count(*)/4)) as first_q, (select floor(count(*)/2) from basecalled_2d) as mid_pos, (select floor(count(*)/4*3) from basecalled_2d) as third_q from basecalled_2d order by length(sequence) limit 1;";
+			$sqltempquartiles = "select (select floor(count(*)/4) from basecalled_template) as first_q, (select floor(count(*)/2) from basecalled_template) as mid_pos, (select floor(count(*)/4*3) from basecalled_template) as third_q from basecalled_template order by length(sequence) limit 1;";
+			$sqlcompquartiles = "select (select floor(count(*)/4) from basecalled_complement) as first_q, (select floor(count(*)/2) from basecalled_complement) as mid_pos, (select floor(count(*)/4*3) from basecalled_complement) as third_q from basecalled_complement order by length(sequence) limit 1;";
+			$sql2dquartiles = "select (select floor(count(*)/4) from basecalled_2d) as first_q, (select floor(count(*)/2) from basecalled_2d) as mid_pos, (select floor(count(*)/4*3) from basecalled_2d) as third_q from basecalled_2d order by length(sequence) limit 1;";
 			//echo $sql2dquartiles . "\n";
 			$resulttempquartiles = $mindb_connection->query($sqltempquartiles);
 			$resultcompquartiles = $mindb_connection->query($sqlcompquartiles);
@@ -2557,21 +2557,30 @@ function readsperporemux($jobname,$currun){
 				$jsonstring = $jsonstring . "\"borderWidth\": 1,\n";
 				$jsonstring = $jsonstring . "\"data\": [";
 				for ($i = 75 ; $i >=1; $i--){
-					if (array_key_exists($i, $resultarray[$key])){
-						for ($j = 75; $j >= 1; $j--) {
-							if (array_key_exists($j, $resultarray[$key][$i])) {
-								$jsonstring = $jsonstring . "[" . ($i-1) . "," . ($j-1) . "," . $resultarray[$key][$i][$j] . "],\n";
-							}else{
-								//$jsonstring = $jsonstring . "[" . ($i-1) . "," . ($j-1) . ",0],\n";
-							}
-						}
-					}else{
-						for ($j = 75; $j >= 1; $j--) {
+					for ($j = 31; $j >= 1; $j--) {
+						if (array_key_exists($i, $resultarray[$key]) && array_key_exists($j, $resultarray[$key][$i]) ){
+							$jsonstring = $jsonstring . "[" . ($i-1) . "," . ($j-1) . "," . $resultarray[$key][$i][$j] . "],\n";
+						}else{
 							//$jsonstring = $jsonstring . "[" . ($i-1) . "," . ($j-1) . ",0],\n";
 						}
+					}
+				}
+		//		for ($i = 75 ; $i >=1; $i--){
+		//			if (array_key_exists($i, $resultarray[$key])){
+		//				for ($j = 32; $j >= 1; $j--) {
+		//					if (array_key_exists($j, $resultarray[$key][$i])) {
+		//						$jsonstring = $jsonstring . "[" . ($i-1) . "," . ($j-1) . "," . $resultarray[$key][$i][$j] . "],\n";
+		//					}else{
+		//						$jsonstring = $jsonstring . "[" . ($i-1) . "," . ($j-1) . ",0],\n";
+		//					}
+		//				}
+		//			}//else{
+						//for ($j = 32; $j >= 1; $j--) {
+							//$jsonstring = $jsonstring . "[" . ($i-1) . "," . ($j-1) . ",0],\n";
+						//}
 
-					} //closing if statement line 51
-				} // closing the for loop at line 50
+					//} //closing if statement line 51
+		//		} // closing the for loop at line 50
 
 
 			$jsonstring = $jsonstring . "],\n\"dataLabels\": {

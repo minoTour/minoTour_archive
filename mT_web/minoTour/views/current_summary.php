@@ -72,6 +72,7 @@ require_once("includes/functions.php");
 						<div class="col-md-3" id="yield" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Yield</div>
 						<div class="col-md-3" id="avglen" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Read Average Length</div>
 						<div class="col-md-3" id="maxlen" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Read Max Length</div>
+                        <div class="col-md-12" id="boxplotlength" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Box Plots</div>
 
 					</div>
                     <div id="lengthtimewindow" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Read Lengths Over Time.</div>
@@ -152,6 +153,7 @@ Key details on the run.<br><br>
 	<script type="text/javascript" src="js/themes/grid-light.js"></script>
 	<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
+    <script src="http://code.highcharts.com/highcharts-more.js">
     <script src="http://highslide-software.github.io/export-csv/export-csv.js"></script>
 
 	<script>
@@ -162,6 +164,61 @@ Key details on the run.<br><br>
     				}, 1000);
 				});
 	</script>
+
+    <script>
+    		$(document).ready(function() {
+    			var options = {
+    				chart: {
+    					type: 'boxplot',
+    					renderTo: 'boxplotlength'
+    				},
+    				plotOptions: {
+    					boxplot: {
+    						animation: false,
+    						//colorByPoint: true
+    					}
+    				},
+    				title: {
+    				  text: 'Boxplot of Read Lengths'
+    				},
+    				legend: {
+    					enabled: false
+    				},
+
+    				xAxis: {
+    					categories: ['Template', 'Complement', '2D'],
+    					title: {
+    						text: 'Read Type'
+    					}
+    				},
+    				yAxis: {
+    					//type: 'logarithmic',
+    					title: {
+    						text: 'Read Length'
+    					},
+    					type: 'logarithmic',
+    					//min :0,
+
+    				},
+
+
+
+
+    				series: []
+    			};
+                $.getJSON('jsonencode/boxplotlength.php?prev=0&callback=?', function(data) {
+
+                    options.series = data; // <- just assign the data to the series property.
+
+                var chart = new Highcharts.Chart(options);
+
+    			});
+});
+    				//]]>
+
+    </script>
+
+
 
     <script>
     		$(document).ready(function() {
