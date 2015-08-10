@@ -122,8 +122,8 @@ require_once("includes/functions.php");
 					            var options = {
 					                chart: {
 					                    renderTo: 'container',
+					                    type: 'column',
                                         zoomType: 'x',
-					                    type: 'column'
 					                },
 									plotOptions: {
 									            column: {
@@ -202,8 +202,8 @@ require_once("includes/functions.php");
 					            var options = {
 					                chart: {
 					                    renderTo: 'container2',
-                                        zoomType: 'x',
-					                    type: 'column'
+					                    type: 'column',
+                                        zoomType: 'x', 
 					                },
 									plotOptions: {
 									            column: {

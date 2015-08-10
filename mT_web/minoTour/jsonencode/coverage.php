@@ -30,7 +30,7 @@ if ($login->isUserLoggedIn() == true) {
 	$memcache = new Memcache;
 	#$cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT) or die ("Memcached Failure");
 	$cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT);
-	
+
     // the user is logged in. you can do whatever you want here.
     // for demonstration purposes, we simply show the "you are logged in" view.
     //include("views/index_old.php");*/
@@ -46,11 +46,11 @@ if ($login->isUserLoggedIn() == true) {
 	//echo '<br>';
 
 	if (!$mindb_connection->connect_errno) {
-		
+
 		$jsonjobname="coverage_" . $_GET['seqid'];
 		$checkvar = $currun . $jsonjobname;
 		$jsonstring = $memcache->get("$checkvar");
-		if($jsonstring === false){	
+		if($jsonstring === false){
 			$checkrow = "select name,json from jsonstore where name = '" . $jsonjobname . "' ;";
 			$checking=$mindb_connection->query($checkrow);
 			if ($checking->num_rows ==1){
@@ -59,7 +59,7 @@ if ($login->isUserLoggedIn() == true) {
 					$jsonstring = $row['json'];
 				}
 			} else {
-			
+
 			//$sql_template = "select refpos, count(*) as count from last_align_basecalled_template where refpos != \'null\' and (cigarclass = 7 or cigarclass = 8) group by refpos;";
 			$table_check = "SHOW TABLES LIKE 'last_align_basecalled_template'";
 			$table_exists = $mindb_connection->query($table_check);
@@ -70,36 +70,40 @@ if ($login->isUserLoggedIn() == true) {
 				$sql_template = "SELECT refpos, count(*) as count FROM last_align_basecalled_template where (cigarclass=7 or cigarclass=8) and refid = '" . $_GET['seqid'] . "' and covcount = 1 group by refpos order by refpos;";
 				$sql_complement = "SELECT refpos, count(*) as count FROM last_align_basecalled_complement where (cigarclass=7 or cigarclass=8) and refid = '" . $_GET['seqid'] . "' and covcount = 1  group by refpos order by refpos;";
 				$sql_2d = "SELECT refpos, count(*) as count FROM last_align_basecalled_2d where (cigarclass=7 or cigarclass=8) and refid = '" . $_GET['seqid'] . "' and covcount = 1 group by refpos order by refpos;";
-			}else{	
-				$sql_template = "SELECT ref_pos as refpos, (A+T+G+C) as count FROM reference_coverage_template where ref_id = '" . $_GET['seqid'] . "' and ref_pos >= 0 and ref_pos <= 2000000 order by ref_pos;";
-				$sql_complement = "SELECT ref_pos as refpos, (A+T+G+C) as count FROM reference_coverage_complement where ref_id = '" . $_GET['seqid'] . "' and ref_pos >= 0 and ref_pos <= 2000000 order by ref_pos;";
-				$sql_2d = "SELECT ref_pos as refpos, (A+T+G+C) as count FROM reference_coverage_2d where ref_id = '" . $_GET['seqid'] . "' and ref_pos >= 0 and ref_pos <= 2000000 order by ref_pos;";
+			}else{
+				//$sql_template = "SELECT ref_pos as refpos, (A+T+G+C) as count FROM reference_coverage_template where ref_id = '" . $_GET['seqid'] . "' and ref_pos >= 0 and ref_pos <= 2000000 order by ref_pos;";
+				//$sql_complement = "SELECT ref_pos as refpos, (A+T+G+C) as count FROM reference_coverage_complement where ref_id = '" . $_GET['seqid'] . "' and ref_pos >= 0 and ref_pos <= 2000000 order by ref_pos;";
+				//$sql_2d = "SELECT ref_pos as refpos, (A+T+G+C) as count FROM reference_coverage_2d where ref_id = '" . $_GET['seqid'] . "' and ref_pos >= 0 and ref_pos <= 2000000 order by ref_pos;";
+                $sql_template = "SELECT ref_pos as refpos, (A+T+G+C) as count FROM reference_coverage_template where ref_id = '" . $_GET['seqid'] . "' order by ref_pos;";
+				$sql_complement = "SELECT ref_pos as refpos, (A+T+G+C) as count FROM reference_coverage_complement where ref_id = '" . $_GET['seqid'] . "' order by ref_pos;";
+				$sql_2d = "SELECT ref_pos as refpos, (A+T+G+C) as count FROM reference_coverage_2d where ref_id = '" . $_GET['seqid'] . "'  order by ref_pos;";
+
 			}
 			//echo $sql_template;
 			$covarray;
-			
+
 			$template=$mindb_connection->query($sql_template);
 			$complement=$mindb_connection->query($sql_complement);
 			$read2d=$mindb_connection->query($sql_2d);
 			if ($template->num_rows >= 1){
 				foreach ($template as $row) {
 					$covarray['template'][$row['refpos']]=$row['count'];
-	
+
 				}
 			}
 			if ($complement->num_rows >= 1){
 				foreach ($complement as $row) {
 					$covarray['complement'][$row['refpos']]=$row['count'];
-	
+
 				}
 			}
 			if ($read2d->num_rows >= 1){
 				foreach ($read2d as $row) {
 					$covarray['2d'][$row['refpos']]=$row['count'];
-	
+
 				}
 			}
-		
+
 			//echo $sql_template . "\n";
 			//Count the number of entries...
 			$countarray;
@@ -110,16 +114,16 @@ if ($login->isUserLoggedIn() == true) {
 				}
 				$valtosplit = strval(floor($mycount/1000));
 				//echo "we will take every $valtosplit read\n";
-			
+
 				if ($valtosplit < 1) {
 					$valtosplit = 1;
 				}
 				$countarray[$type]=$valtosplit;
 			}
-			
-			
+
+
 			//echo "there are $mycount entries...\n";
-			
+
 	//		echo "$valtosplit";
 			//var_dump($countarray);
 			//echo json_encode($resultarray);
@@ -151,7 +155,7 @@ if ($login->isUserLoggedIn() == true) {
 				}
 				$jsonstring = $jsonstring .  "]\n";
 				$jsonstring = $jsonstring .  "},\n";
-				
+
 			}
 			$jsonstring = $jsonstring .  "]\n";
 			if ($_GET["prev"] == 1){
@@ -163,9 +167,9 @@ if ($login->isUserLoggedIn() == true) {
 	}else {
 		//echo "Using memcached!";
 	}
-		
+
 	$callback = $_GET['callback'];
-	echo $callback.'('.$jsonstring.');';	
+	echo $callback.'('.$jsonstring.');';
 	}
 } else {
 	echo "ERROR";

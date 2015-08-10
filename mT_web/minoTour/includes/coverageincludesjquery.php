@@ -1,7 +1,7 @@
 <?php
 
 
-	
+
 	$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['focusrun']);
 		//echo cleanname($_SESSION['active_run_name']);;
 
@@ -13,9 +13,9 @@
 		$max;
 		$min;
 		$constrain_plot=0;
-				
+
 		$sql_template = "SELECT refid,refname, max(refpos) as max_length FROM last_align_basecalled_template_5prime inner join reference_seq_info using (refid) group by refid;";
-		
+
 		$template=$mindb_connection->query($sql_template);
 			$array;
 		if ($template->num_rows >= 1){
@@ -45,13 +45,15 @@
 					echo ",min: " . $min . ",\nmax: " . $max . ",\n";
 					$constrain_plot = 1;
 				}
-							
+
 				echo "		        },
 								yAxis: {
 								            title: {
 								                text: 'Depth'
-								            }
+								            },
+											min: 0,
 								        },
+
 									    plotOptions: {
 									               scatter: {
 									                   marker: {
@@ -81,25 +83,25 @@
 				    $.getJSON('jsonencode/coverage.php?prev=1&seqid=" . $row['refid'] . "&callback=?', function(data) {
 						//alert('success');
 				        options.series = data; // <- just assign the data to the series property.
-    
- 
+
+
 
 				        //options.series = JSON2;
 						var chart = new Highcharts.Chart(options);
 						});
 				});
 
-					//]]>  
+					//]]>
 
 					</script>";
 
 
-				
+
 			}
 		}
-		
+
 		foreach ($array as $key => $value){
-			echo "			
+			echo "
 			<script>
 
 			$(document).ready(function() {
@@ -120,8 +122,8 @@
 				if ($constrain_plot == 1) {
 					echo ",min: " . $min . ",\nmax: " . $max . ",\n";
 				}
-							
-				echo "		        
+
+				echo "
 					        },
 							yAxis: {
 							            title: {
@@ -164,7 +166,7 @@
 					});
 			});
 
-				//]]>  
+				//]]>
 
 				</script>
 			<script>
@@ -187,8 +189,8 @@
 				if ($constrain_plot == 1) {
 					echo ",min: " . $min . ",\nmax: " . $max . ",\n";
 				}
-							
-				echo "		
+
+				echo "
 					        },
 							yAxis: {
 							            title: {
@@ -232,10 +234,10 @@
 					});
 			});
 
-				//]]>  
+				//]]>
 
 				</script>";
-			
+
 		}
 	}
 

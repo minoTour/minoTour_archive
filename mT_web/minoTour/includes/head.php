@@ -1,5 +1,5 @@
 <head>
-    
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
@@ -12,7 +12,7 @@
 
 
     <!-- Page-Level Plugin CSS - Dashboard -->
-    <link href="css/plugins/morris/morris-0.4.3.min.css" rel="stylesheet">
+    <!--<link href="css/plugins/morris/morris-0.4.3.min.css" rel="stylesheet">-->
     <link href="css/plugins/timeline/timeline.css" rel="stylesheet">
 
     <!-- SB Admin CSS - Include with every page -->
