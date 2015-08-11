@@ -35,50 +35,92 @@
 				        title: {
 				          text: 'Coverage Depth for ".$row['refname']."'
 				        },
-						xAxis: {
-						            title: {
-						                text: 'Ref Position'
-						            }";
+						tooltip: {
+		            formatter: function () {
+		                var s = 'Coverage Depth at Position: <b>' + this.x + '</b>';
+
+		                $.each(this.points, function () {
+		                    s += '<br/>' + this.series.name + ': ' +
+		                        this.y.toPrecision(5) ;
+		                });
+
+		                return s;
+		            },
+		            shared: true
+		        },
+				xAxis: {
+                    title: {
+                        text: 'Position'
+                    },
+                    labels: {
+                        formatter: function () {
+                            return this.value + ' bp';
+                },
+				";
 				if ($row['max_length'] >= $maxlengththreshold) {
-					$max = $row['max_length']/2 + $modamount;
-					$min = $row['max_length']/2 - $modamount;
-					echo ",min: " . $min . ",\nmax: " . $max . ",\n";
+					$max = round($row['max_length']/2) + $modamount;
+					$min = round($row['max_length']/2) - $modamount;
+					echo "
+				min: " . $min . ",
+				max: " . $max . ",";
 					$constrain_plot = 1;
 				}
+		echo "
+            }
+                },
+                yAxis: {
+                    title: {
+                        text: 'Depth',
+                    },
+                    labels: {
+                        align: 'left',
+                        x: 2,
+                        y: 5
+                    },
+                    min: 0
+                },
 
-				echo "		        },
-								yAxis: {
-								            title: {
-								                text: 'Depth'
-								            },
-											min: 0,
-								        },
 
-									    plotOptions: {
-									               scatter: {
-									                   marker: {
-									                       radius: 1
-									                   }
-									               }
-									           },
-										credits: {
-										    enabled: false
-										  },
-				        scrollbar: {
-      							  enabled: true
-    						},
-    						navigator: {
- 	  						  enabled: true
-    					    },
-
-				        legend: {
-				            layout: 'vertical',
-				            align: 'right',
-				            verticalAlign: 'middle',
-				            borderWidth: 0
-				        },
-				        series: []
-				    };
+						scrollbar: {
+							enabled: true,
+						},
+						navigator: {
+		            xAxis: {
+		                labels: {
+		                formatter: function () {
+		                    return this.value + ' bp';
+		                }
+		            }
+		            }
+		        },
+						plotOptions: {
+							scatter: {
+								marker: {
+									radius: 1,
+								}
+							}
+						},
+						rangeSelector: {
+		                    selected: 4,
+		                    inputEnabled: false,
+		                    buttonTheme: {
+		                        visibility: 'hidden'
+		                    },
+		                    labelStyle: {
+		                        visibility: 'hidden'
+		                    }
+		                },
+						credits: {
+							enabled: false,
+						},
+						legend: {
+							layout: 'vertical',
+							align: 'right',
+							verticalAlign: 'middle',
+							borderWidth: 0,
+						},
+						series: []
+					};
 
 				    $.getJSON('jsonencode/coverage.php?prev=1&seqid=" . $row['refid'] . "&callback=?', function(data) {
 						//alert('success');
@@ -87,7 +129,7 @@
 
 
 				        //options.series = JSON2;
-						var chart = new Highcharts.Chart(options);
+						var chart = new Highcharts.StockChart(options);
 						});
 				});
 
@@ -115,46 +157,92 @@
 			        title: {
 			          text: '5 prime Read Coverage for ".$value."'
 			        },
-					xAxis: {
-					            title: {
-					                text: 'Ref Position'
-					            }";
-				if ($constrain_plot == 1) {
-					echo ",min: " . $min . ",\nmax: " . $max . ",\n";
-				}
+					tooltip: {
+				formatter: function () {
+					var s = 'Coverage Depth at Position: <b>' + this.x + '</b>';
 
+					$.each(this.points, function () {
+						s += '<br/>' + this.series.name + ': ' +
+							this.y.toPrecision(5) ;
+					});
+
+					return s;
+				},
+				shared: true
+			},
+			xAxis: {
+				title: {
+					text: 'Position'
+				},
+				labels: {
+					formatter: function () {
+						return this.value + ' bp';
+			},
+			";
+			if ($row['max_length'] >= $maxlengththreshold) {
+				$max = round($row['max_length']/2) + $modamount;
+				$min = round($row['max_length']/2) - $modamount;
 				echo "
-					        },
-							yAxis: {
-							            title: {
-							                text: '5\' End Coverage'
-							            }
-							        },
-								    plotOptions: {
-								               scatter: {
-								                   marker: {
-								                       radius: 3
-								                   }
-								               }
-								           },
-									credits: {
-									    enabled: false
-									  },
-			        scrollbar: {
-      							  enabled: true
-    						},
-    						navigator: {
- 	  						  enabled: true
-    					    },
+			min: " . $min . ",
+			max: " . $max . ",";
+				$constrain_plot = 1;
+			}
+	echo "
+		}
+			},
+			yAxis: {
+				title: {
+					text: 'Depth',
+				},
+				labels: {
+					align: 'left',
+					x: 2,
+					y: 5
+				},
+				min: 0
+			},
 
-			        legend: {
-			            layout: 'vertical',
-			            align: 'right',
-			            verticalAlign: 'middle',
-			            borderWidth: 0
-			        },
-			        series: []
-			    };
+
+					scrollbar: {
+						enabled: true,
+					},
+					navigator: {
+				xAxis: {
+					labels: {
+					formatter: function () {
+						return this.value + ' bp';
+					}
+				}
+				}
+			},
+					plotOptions: {
+						scatter: {
+							marker: {
+								radius: 1,
+							}
+						}
+					},
+					rangeSelector: {
+						selected: 4,
+						inputEnabled: false,
+						buttonTheme: {
+							visibility: 'hidden'
+						},
+						labelStyle: {
+							visibility: 'hidden'
+						}
+					},
+					credits: {
+						enabled: false,
+					},
+					legend: {
+						layout: 'vertical',
+						align: 'right',
+						verticalAlign: 'middle',
+						borderWidth: 0,
+					},
+					series: []
+				};
 			    $.getJSON('jsonencode/5primecoverage.php?prev=1&seqid=".$key."&callback=?', function(data) {
 					//alert('success');
 			        options.series = data; // <- just assign the data to the series property.
@@ -162,7 +250,7 @@
 
 
 			        //options.series = JSON2;
-					var chart = new Highcharts.Chart(options);
+					var chart = new Highcharts.StockChart(options);
 					});
 			});
 
@@ -182,46 +270,92 @@
 			        title: {
 			          text: '3 prime read coverage for " . $value . "'
 			        },
-					xAxis: {
-					            title: {
-					                text: 'Ref Position'
-					            }";
-				if ($constrain_plot == 1) {
-					echo ",min: " . $min . ",\nmax: " . $max . ",\n";
-				}
+					tooltip: {
+				formatter: function () {
+					var s = 'Coverage Depth at Position: <b>' + this.x + '</b>';
 
+					$.each(this.points, function () {
+						s += '<br/>' + this.series.name + ': ' +
+							this.y.toPrecision(5) ;
+					});
+
+					return s;
+				},
+				shared: true
+			},
+			xAxis: {
+				title: {
+					text: 'Position'
+				},
+				labels: {
+					formatter: function () {
+						return this.value + ' bp';
+			},
+			";
+			if ($row['max_length'] >= $maxlengththreshold) {
+				$max = round($row['max_length']/2) + $modamount;
+				$min = round($row['max_length']/2) - $modamount;
 				echo "
-					        },
-							yAxis: {
-							            title: {
-							                text: '3\' Read Coverage'
-							            }
-							        },
-								    plotOptions: {
-								               scatter: {
-								                   marker: {
-								                       radius: 3
-								                   }
-								               }
-								           },
-									credits: {
-									    enabled: false
-									  },
-			        scrollbar: {
-      							  enabled: true
-    						},
-    						navigator: {
- 	  						  enabled: true
-    					    },
+			min: " . $min . ",
+			max: " . $max . ",";
+				$constrain_plot = 1;
+			}
+	echo "
+		}
+			},
+			yAxis: {
+				title: {
+					text: 'Depth',
+				},
+				labels: {
+					align: 'left',
+					x: 2,
+					y: 5
+				},
+				min: 0
+			},
 
-			        legend: {
-			            layout: 'vertical',
-			            align: 'right',
-			            verticalAlign: 'middle',
-			            borderWidth: 0
-			        },
-			        series: []
-			    };
+
+					scrollbar: {
+						enabled: true,
+					},
+					navigator: {
+				xAxis: {
+					labels: {
+					formatter: function () {
+						return this.value + ' bp';
+					}
+				}
+				}
+			},
+					plotOptions: {
+						scatter: {
+							marker: {
+								radius: 1,
+							}
+						}
+					},
+					rangeSelector: {
+						selected: 4,
+						inputEnabled: false,
+						buttonTheme: {
+							visibility: 'hidden'
+						},
+						labelStyle: {
+							visibility: 'hidden'
+						}
+					},
+					credits: {
+						enabled: false,
+					},
+					legend: {
+						layout: 'vertical',
+						align: 'right',
+						verticalAlign: 'middle',
+						borderWidth: 0,
+					},
+					series: []
+				};
 
 			    $.getJSON('jsonencode/3primecoverage.php?prev=1&seqid=" . $key . "&callback=?', function(data) {
 					//alert('success');
@@ -230,7 +364,7 @@
 
 
 			        //options.series = JSON2;
-					var chart = new Highcharts.Chart(options);
+					var chart = new Highcharts.StockChart(options);
 					});
 			});
 
