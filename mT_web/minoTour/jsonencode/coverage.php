@@ -67,7 +67,7 @@ if ($login->isUserLoggedIn() == true) {
 			$sql_complement;
 			$sql_2d;
 			if ($table_exists->num_rows >= 1){
-                if ($_GET['start']>= 0 && $_GET['end']>= 0 ){
+                if ($_GET['start']>= 0 || $_GET['end']>= 0 ){
                     $sql_template = "SELECT refpos, count(*) as count FROM last_align_basecalled_template where (cigarclass=7 or cigarclass=8) and refid = '" . $_GET['seqid'] . "' and refpos>=".$_GET['start']." and refpos<=".$_GET['end']." and covcount = 1 group by refpos order by refpos;";
 				    $sql_complement = "SELECT refpos, count(*) as count FROM last_align_basecalled_complement where (cigarclass=7 or cigarclass=8) and refid = '" . $_GET['seqid'] . "' and refpos>=".$_GET['start']." and refpos<=".$_GET['end']." and covcount = 1  group by refpos order by refpos;";
 				    $sql_2d = "SELECT refpos, count(*) as count FROM last_align_basecalled_2d where (cigarclass=7 or cigarclass=8) and refid = '" . $_GET['seqid'] . "' and refpos>=".$_GET['start']." and refpos<=".$_GET['end']." and covcount = 1 group by refpos order by refpos;";
@@ -78,7 +78,7 @@ if ($login->isUserLoggedIn() == true) {
 				    $sql_2d = "SELECT refpos, count(*) as count FROM last_align_basecalled_2d where (cigarclass=7 or cigarclass=8) and refid = '" . $_GET['seqid'] . "' and covcount = 1 group by refpos order by refpos;";
 			    }
             }else{
-                if ($_GET['start']>= 0 && $_GET['end']>= 0 ){
+                if ($_GET['start']>= 0 || $_GET['end']>= 0 ){
                     $sql_template = "SELECT ref_pos as refpos, (A+T+G+C) as count FROM reference_coverage_template where ref_id = '" . $_GET['seqid'] . "'  and ref_pos>=".$_GET['start']." and ref_pos<=".$_GET['end']." order by ref_pos;";
 				    $sql_complement = "SELECT ref_pos as refpos, (A+T+G+C) as count FROM reference_coverage_complement where ref_id = '" . $_GET['seqid'] . "'  and ref_pos>=".$_GET['start']." and ref_pos<=".$_GET['end']." order by ref_pos;";
 				    $sql_2d = "SELECT ref_pos as refpos, (A+T+G+C) as count FROM reference_coverage_2d where ref_id = '" . $_GET['seqid'] . "'  and ref_pos>=".$_GET['start']." and ref_pos<=".$_GET['end']."  order by ref_pos;";

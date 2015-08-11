@@ -8,8 +8,8 @@
 	//echo '<br>';
 
 	if (!$mindb_connection->connect_errno) {
-		$maxlengththreshold = 100000;
-		$modamount = 2500;
+		$maxlengththreshold = 10000;
+		$modamount = 5000;
 		$max;
 		$min;
 		$constrain_plot=0;
@@ -126,14 +126,14 @@
 						hide_min_max: true,
 						keyboard: false,
 						min: 0,
-						max: 500000,
-						from: 0,
+						max: ".$row['max_length'].",
+						from: ".($maxlengththreshold/2).",
 						type: 'single',
-						step: 1000,
+						step: 500,
 						grid: true,
 						onFinish: function(data){
-
-							$.getJSON('jsonencode/coverage.php?prev=1&start='+(Number(data.from)-50000)+'&end='+(Number(data.from)+50000)+'&seqid=" . $row['refid'] . "&callback=?', function(data) {
+							//alert(data.from);
+							$.getJSON('jsonencode/coverage.php?prev=1&start='+(Number(data.from)-".$modamount.")+'&end='+(Number(data.from)+".$modamount.")+'&seqid=" . $row['refid'] . "&callback=?', function(data) {
 								//alert('success');
 
 						        options.series = data; // <- just assign the data to the series property.

@@ -20,7 +20,7 @@
 			foreach ($template as $row) {
 				$array[] = $row['refid'];
 
-				if ($row['max_length'] > 100000){
+				if ($row['max_length'] > 10000){
 					//echo "LONG MAN LONG";
 					echo "As this is a long sequence use this slider to set the mid point for the coverage plot.";
 					?>
