@@ -107,10 +107,15 @@ This series of plots shows xy scatter graphs for coverage against the reference 
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
 
 
-
+    <?php
+    $maxlengththreshold = 15000;
+    $modamount = 7500;
+    $max;
+    $min;
+    $constrain_plot=0; ?>
 						<?php include 'includes/coverageincludesjquery.php';?>
 
-                        
+
 
     <!-- SB Admin Scripts - Include with every page -->
     <script src="js/sb-admin.js"></script>

@@ -8,11 +8,7 @@
 	//echo '<br>';
 
 	if (!$mindb_connection->connect_errno) {
-		$maxlengththreshold = 10000;
-		$modamount = 5000;
-		$max;
-		$min;
-		$constrain_plot=0;
+		
 
 		$sql_template = "SELECT refid,refname, max(refpos) as max_length FROM last_align_basecalled_template_5prime inner join reference_seq_info using (refid) group by refid;";
 

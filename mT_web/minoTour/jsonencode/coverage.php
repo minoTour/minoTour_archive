@@ -169,7 +169,7 @@ if ($login->isUserLoggedIn() == true) {
 			}
 			$jsonstring = $jsonstring .  "]\n";
 			if ($_GET["prev"] == 1){
-				include 'savejson.php';
+				//include 'savejson.php';
 			}
 		}
 	// cache for 2 minute as we want yield to update semi-regularly...
