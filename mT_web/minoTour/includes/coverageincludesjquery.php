@@ -8,7 +8,7 @@
 	//echo '<br>';
 
 	if (!$mindb_connection->connect_errno) {
-		$maxlengththreshold = 10000;
+		$maxlengththreshold = 100000;
 		$modamount = 2500;
 		$max;
 		$min;
@@ -21,11 +21,19 @@
 		if ($template->num_rows >= 1){
 			foreach ($template as $row) {
 				$array[$row['refid']] = $row['refname'] ;
+				if ($row['max_length'] > $maxlengththreshold) {
+					$start = 0;
+					$end = $maxlengththreshold;
+				}else{
+					$start = -1;
+					$end = -1;
+				}
 				echo "
+
 				<script>
 
 				$(document).ready(function() {
-				    var options = {
+					var options = {
 				        chart: {
 				            renderTo: 'coverage" . $row['refid'] . "',
 							//type: 'scatter',
@@ -57,14 +65,7 @@
                             return this.value + ' bp';
                 },
 				";
-				if ($row['max_length'] >= $maxlengththreshold) {
-					$max = round($row['max_length']/2) + $modamount;
-					$min = round($row['max_length']/2) - $modamount;
-					echo "
-				min: " . $min . ",
-				max: " . $max . ",";
-					$constrain_plot = 1;
-				}
+
 		echo "
             }
                 },
@@ -121,8 +122,31 @@
 						},
 						series: []
 					};
+					$('#range".$row['refid']."').ionRangeSlider({
+						hide_min_max: true,
+						keyboard: false,
+						min: 0,
+						max: 500000,
+						from: 0,
+						type: 'single',
+						step: 1000,
+						grid: true,
+						onFinish: function(data){
 
-				    $.getJSON('jsonencode/coverage.php?prev=1&seqid=" . $row['refid'] . "&callback=?', function(data) {
+							$.getJSON('jsonencode/coverage.php?prev=1&start='+(Number(data.from)-50000)+'&end='+(Number(data.from)+50000)+'&seqid=" . $row['refid'] . "&callback=?', function(data) {
+								//alert('success');
+
+						        options.series = data; // <- just assign the data to the series property.
+
+
+
+						        //options.series = JSON2;
+								var chart = new Highcharts.StockChart(options);
+								});
+						}
+
+					});
+				    $.getJSON('jsonencode/coverage.php?prev=1&start=".$start."&end=".$end."&seqid=" . $row['refid'] . "&callback=?', function(data) {
 						//alert('success');
 				        options.series = data; // <- just assign the data to the series property.
 
@@ -134,6 +158,13 @@
 				});
 
 					//]]>
+
+
+
+
+
+
+
 
 					</script>";
 
