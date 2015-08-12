@@ -18,8 +18,8 @@
 			foreach ($template as $row) {
 				$array[$row['refid']] = $row['refname'] ;
 				if ($row['max_length'] > $maxlengththreshold) {
-					$start = 0;
-					$end = $maxlengththreshold;
+					$start = 10000;
+					$end = 2 * $maxlengththreshold;
 				}else{
 					$start = -1;
 					$end = -1;
@@ -129,7 +129,7 @@
 						grid: true,
 						onFinish: function(data){
 							$.getJSON('jsonencode/coverage.php?prev=1&start='+(Number(data.from)-".$modamount.")+'&end='+(Number(data.from)+".$modamount.")+'&seqid=" . $row['refid'] . "&callback=?', function(data) {
-								alert('testing success');
+								//alert('testing success');
 						        options1.series = data; // <- just assign the data to the series property.
 								var chart1 = new Highcharts.StockChart(options1);
 								});
