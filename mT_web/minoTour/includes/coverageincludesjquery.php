@@ -128,15 +128,9 @@
 						step: 500,
 						grid: true,
 						onFinish: function(data){
-
 							$.getJSON('jsonencode/coverage.php?prev=1&start='+(Number(data.from)-".$modamount.")+'&end='+(Number(data.from)+".$modamount.")+'&seqid=" . $row['refid'] . "&callback=?', function(data) {
-								//alert('success');
-
+								alert('testing success');
 						        options1.series = data; // <- just assign the data to the series property.
-
-
-
-						        //options.series = JSON2;
 								var chart1 = new Highcharts.StockChart(options1);
 								});
 						}
