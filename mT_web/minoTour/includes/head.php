@@ -9,9 +9,9 @@
     <!-- Core CSS - Include with every page -->
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="font-awesome/css/font-awesome.css" rel="stylesheet">
-    <!--<link rel="stylesheet" href="css/normalize.css" />-->
-    <link rel="stylesheet" href="css/ion.rangeSlider.css" />
-    <link rel="stylesheet" href="css/ion.rangeSlider.skinModern.css" />
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/ion.rangeSlider.css">
+    <link rel="stylesheet" href="css/ion.rangeSlider.skinModern.css">
 
 
     <!-- Page-Level Plugin CSS - Dashboard -->

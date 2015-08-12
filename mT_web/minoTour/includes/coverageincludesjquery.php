@@ -8,7 +8,7 @@
 	//echo '<br>';
 
 	if (!$mindb_connection->connect_errno) {
-		
+
 
 		$sql_template = "SELECT refid,refname, max(refpos) as max_length FROM last_align_basecalled_template_5prime inner join reference_seq_info using (refid) group by refid;";
 
@@ -29,7 +29,7 @@
 				<script>
 
 				$(document).ready(function() {
-					var options = {
+					var options1 = {
 				        chart: {
 				            renderTo: 'coverage" . $row['refid'] . "',
 							//type: 'scatter',
@@ -128,28 +128,28 @@
 						step: 500,
 						grid: true,
 						onFinish: function(data){
-							//alert(data.from);
+
 							$.getJSON('jsonencode/coverage.php?prev=1&start='+(Number(data.from)-".$modamount.")+'&end='+(Number(data.from)+".$modamount.")+'&seqid=" . $row['refid'] . "&callback=?', function(data) {
 								//alert('success');
 
-						        options.series = data; // <- just assign the data to the series property.
+						        options1.series = data; // <- just assign the data to the series property.
 
 
 
 						        //options.series = JSON2;
-								var chart = new Highcharts.StockChart(options);
+								var chart1 = new Highcharts.StockChart(options1);
 								});
 						}
 
 					});
 				    $.getJSON('jsonencode/coverage.php?prev=1&start=".$start."&end=".$end."&seqid=" . $row['refid'] . "&callback=?', function(data) {
 						//alert('success');
-				        options.series = data; // <- just assign the data to the series property.
+				        options1.series = data; // <- just assign the data to the series property.
 
 
 
 				        //options.series = JSON2;
-						var chart = new Highcharts.StockChart(options);
+						var chart1 = new Highcharts.StockChart(options1);
 						});
 				});
 
