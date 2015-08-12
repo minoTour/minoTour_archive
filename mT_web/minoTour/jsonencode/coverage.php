@@ -53,12 +53,12 @@ if ($login->isUserLoggedIn() == true) {
 		if($jsonstring === false){
 			$checkrow = "select name,json from jsonstore where name = '" . $jsonjobname . "' ;";
 			$checking=$mindb_connection->query($checkrow);
-			if ($checking->num_rows ==1){
+			//if ($checking->num_rows ==1){
 				//echo "We have already run this!";
-				foreach ($checking as $row){
-					$jsonstring = $row['json'];
-				}
-			} else {
+			//	foreach ($checking as $row){
+			//		$jsonstring = $row['json'];
+			//	}
+			//} else {
 
 			//$sql_template = "select refpos, count(*) as count from last_align_basecalled_template where refpos != \'null\' and (cigarclass = 7 or cigarclass = 8) group by refpos;";
 			$table_check = "SHOW TABLES LIKE 'last_align_basecalled_template'";
@@ -171,7 +171,7 @@ if ($login->isUserLoggedIn() == true) {
 			if ($_GET["prev"] == 1){
 				//include 'savejson.php';
 			}
-		}
+		//}
 	// cache for 2 minute as we want yield to update semi-regularly...
 	    $memcache->set("$checkvar", $jsonstring, 0, 120);
 	}else {
