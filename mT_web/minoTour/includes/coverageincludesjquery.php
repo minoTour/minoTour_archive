@@ -18,8 +18,8 @@
 			foreach ($template as $row) {
 				$array[$row['refid']] = $row['refname'] ;
 				if ($row['max_length'] > $maxlengththreshold) {
-					$start = 10000;
-					$end = 2 * $maxlengththreshold;
+					$start = 0;
+					$end = $maxlengththreshold;
 				}else{
 					$start = -1;
 					$end = -1;

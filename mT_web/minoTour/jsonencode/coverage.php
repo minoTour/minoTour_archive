@@ -1,5 +1,3 @@
-
-
 <?php
 
 header('Content-Type: application/json');
@@ -181,7 +179,7 @@ if ($login->isUserLoggedIn() == true) {
 			}
 		//}
 	// cache for 2 minute as we want yield to update semi-regularly...
-	    $memcache->set("$checkvar", $jsonstring, 0, 120);
+	    //$memcache->set("$checkvar", $jsonstring, 0, 120);
 	}else {
 		//echo "Using memcached!";
 	}

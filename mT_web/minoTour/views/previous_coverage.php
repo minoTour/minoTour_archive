@@ -70,6 +70,12 @@ This series of plots shows xy scatter graphs for coverage against the reference 
 </div></h3>
 			  </div>
 			  <div class="panel-body">
+                  <?php
+                  $maxlengththreshold = 500000;
+                  $modamount = 25000;
+                  $max;
+                  $min;
+                  $constrain_plot=0; ?>
 	  			<?php include 'includes/coverageincludes.php';?>
 					  </div>
 			</div>
@@ -107,12 +113,7 @@ This series of plots shows xy scatter graphs for coverage against the reference 
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
 
 
-    <?php
-    $maxlengththreshold = 15000;
-    $modamount = 7500;
-    $max;
-    $min;
-    $constrain_plot=0; ?>
+
 						<?php include 'includes/coverageincludesjquery.php';?>
 
 
