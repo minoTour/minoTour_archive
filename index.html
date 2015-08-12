@@ -43,21 +43,25 @@ If you wish to use our server you will need to register at <a href="http://minot
 
 <p><code>:-$ sudo apt-get install lamp-server^</code></p>
 
+<p>Note - you really should set a password for the mySQL root user when prompted to at this point…you will use this later on. Also make sure your local firewalls are configured to allow access for http, https, ssh (for admin) and mySQL and the necessary ports are open on your server.</p>
+
 <p><code>:-$ sudo apt-get install memcached php5-memcache</code></p>
 
 <p><code>:-$ sudo apt-get install php5-curl</code></p>
 
-<p>Note - you really should set a password for the mySQL root user when prompted to at this point…you will use this later on. Also make sure your local firewalls are configured to allow access for http, https, ssh (for admin) and mySQL and the necessary ports are open on your server.</p>
+
 
 <p>Step 2 - Perl Background Processes</p>
 
 <p>You need to install the perl memcached module</p>
 
-<p><code>sudo apt-get install libcache-memcached-perl</code></p>
+<p><code>sudo apt-get install libcache-memcached-perl</code></p>
 
 <p>You should also install the following perl module (#idiot check - you may need to install make if it isn't already on your system… <code>sudo apt-get install make</code> )</p>
 
 <p><code>Parallel-Loops</code></p>
+
+<p>To do this - we suggest you use CPAN.</p>
 
 <p>Step 3 - Configure mySQL for minoTour.</p>
 
@@ -74,14 +78,31 @@ run the command </p>
 
 <p><code>bind-address = 0.0.0.0</code></p>
 
+<p>You also need to modify the maximum packet sie that can be uploaded in a single transaction. We strongly suggest setting this to something big! e.g: change the following line to something like</p>
+
+<p><code>max_allowed_packet = 200M</code></p>
+
 <p>Just check you understand firewalls and mySQL!</p>
 
-<p>restart your mysql server once.</p>
+<p>restart mysql once.</p>
 
 <p><code>sudo /etc/init.d/mysql restart</code></p>
 
+<p>Note: You may find that you need to restart your server at this point. Check you can log in to mySQL. If you can't, restart the server. </p>
+
 <h3>
 <a id="configuring-the-minotour-package" class="anchor" href="#configuring-the-minotour-package" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuring the minoTour package.</h3>
+
+
+<p>The easiest way to install minoTour is via GIT so - first off install git!</p>
+
+<p><code>:-$ sudo apt-get install git</code></p>
+
+Next you need to clone the minoTour git repository as follows:
+
+<p><code>git clone https://github.com/minoTour/minoTour.git</code></p>
+
+<p>The advantage of using GIT is that future updates can be applied very easily.</p>
 
 <p>The database works as follows. Each new run is added to its own unique database. This allows for relatively simple management of run data and shifting of databases to different locations in the future. To manage these databases, a master database is created (‘Gru’ - it controls the minIONs…). Gru allocates databases to users, controls access to the website and is absolutely essential to the operation of minoTour.</p>
 
@@ -99,7 +120,7 @@ run the command </p>
 
 <p><code>&gt;mysql -u &lt;webusername&gt; -p</code></p>
 
-<p>and provide the  on request. Typing </p>
+<p>and provide the password on request. Typing </p>
 
 <p><code>mysql&gt; show databases;</code></p>
 
@@ -107,11 +128,11 @@ run the command </p>
 
 <p>The username and password created here will be used later to connect the minoTour website to your mySQL database.</p>
 
-<p>Next you need to create accounts for users to actually upload data to the database. How you manage this process is up to you. We allow users to log in to the website and create an account for accessing the website choosing there own username. We then use this username to enable connection to the mySQL database. However these account names do not have to be the same.</p>
+<p>Next you need to create accounts for users to actually upload data to the database. How you manage this process is up to you. We allow users to log in to the website and create an account for accessing the website choosing there own username. We then use this username to enable connection to the mySQL database.</p>
 
 <p>IMPORTANT: Do not use _ in the user name. This will break functionality elsewhere in the package.</p>
 
-<p>To create an account use the ‘createuser’ script (located in 'mT_server/db_control/admin'). This requires 3 arguments. The ,  and the  address from which they are connecting to your mySQL server. This is an important security feature as it limits the possibility of malicious connection to your database. To add additional IP addresses in the future we provide the script addusersource (see below). The simplest option is to use the wildcard symbol %. This will allow the user to connect from any computer anywhere. It will also resolve an issue where the machine connecting to the database does not have a fixed IP address. To create a user account execute the ‘createuser’ script. The username you use here must be associated with an account on the web site. e.g If Joe Bloggs creates a user account on the website called JB123, his account for uploading data in mySQL should also be called JB123.</p>
+<p>To create an account use the ‘createuser’ script (located in 'mT_server/db_control/admin'). This requires 3 arguments. The username, password  and the  address from which they are connecting to your mySQL server. This is an important security feature as it limits the possibility of malicious connection to your database. To add additional IP addresses in the future we provide the script addusersource (see below). The simplest option is to use the wildcard symbol %. This will allow the user to connect from any computer anywhere. It will also resolve an issue where the machine connecting to the database does not have a fixed IP address. To create a user account execute the ‘createuser’ script. The username you use here must be associated with an account on the web site. e.g If Joe Bloggs creates a user account on the website called JB123, his account for uploading data in mySQL should also be called JB123.</p>
 
 <p><code>&gt;./createuser &lt;username&gt; &lt;userpassword&gt; &lt;ip&gt;</code></p>
 
@@ -142,17 +163,7 @@ To add additional connection points for this user run the addusersource script p
 
 <p>The name of the folder dictates the url for your website. You can change this if you wish.</p>
 
-<p>Upgrade Notes: You may wish to install your new version of minoTour in place of the previous version. We would suggest first setting the site up in an alternative location and checking the configuration before writing over your previous installation. The new version of minoTour includes a 'previous versions' tab which will allow you to go back and use older versions of minoTour. Most importantly you need to keep note of the DB-HOST and DB_PASS values from the db.php file in the config folder and ensure these values are used in the new minoTour install.</p>
-
 <p>You may need to use 'sudo' privileges to copy this folder into the appropriate location.</p>
-
-<p>Now - assuming you are on the same machine as your webServer and have not changed the folder name, open a browser window and navigate to:</p>
-
-<p><code>http://localhost/minoTour</code></p>
-
-<p>And you should see a nice welcoming page… - if you don’t - check that you have php and apache correctly configured on your machine. Google is your friend…</p>
-
-<p>If you do not see the video, then your webServer is unable to connect to the outside world. This isn’t critical but will limit some functionality in our system. In particular it will prevent you submitting bug reports and feature requests via the website to us.</p>
 
 <p>Before going any further, you need to configure the website to talk to your database.</p>
 
@@ -165,10 +176,22 @@ define("DB_USER", ""); <br>
 define("DB_PASS", ""); <br>
 define("DB_PORT", 3306);</p>
 
-<p>If your database is on the same machine as your webserver, leave DB_HOST set to “127.0.01”. If this doesn’t work, switch it to “localhost”. If your mySQL database is on a remote machine, then enter the IP address of that machine here. Then set DB_USER and DB_PASS to the user name and password that you used when setting up the database above. If you have mySQL configured on a non standard port you can set that here. When you save this file, save it as db.php in the config folder. </p>
+<p>If your database is on the same machine as your webserver, leave DB_HOST set to “127.0.01”. If this doesn’t work, switch it to “localhost”. If your mySQL database is on a remote machine, then enter the IP address of that machine here. Then set DB_USER and DB_PASS to the user name and password that you used when setting up the database above. If you have mySQL configured on a non standard port you can set that here. When you save this file, <strong>save it as db.php in the config folder</strong>. </p>
 
 <pre><code>Important: Each time a new release of minoTour is made available you should check the db_example.php file to see if new global parameters have been established. For example the twitter features which are discussed at the end of this post!
 </code></pre>
+
+<p>Now - assuming you are on the same machine as your webServer and have not changed the folder name, open a browser window and navigate to:</p>
+
+<p><code>http://localhost/minoTour</code></p>
+
+<p>And you should see a nice welcoming page… - if you don’t - check that you have php and apache correctly configured on your machine. Google is your friend…</p>
+
+<p>If you do not see the video, then your webServer is unable to connect to the outside world. This will limit some functionality in our system. In particular it will prevent you submitting bug reports and feature requests via the website to us but it may also cause problems with code required from other repositories. We strongly suggest that you ensure your server can connect with the outside world!</p>
+
+<p>Upgrade Notes: You may wish to install your new version of minoTour in place of the previous version. We would suggest first setting the site up in an alternative location and checking the configuration before writing over your previous installation. The new version of minoTour includes a 'previous versions' tab which will allow you to go back and use older versions of minoTour. Most importantly you need to keep note of the DB-HOST and DB_PASS values from the db.php file in the config folder and ensure these values are used in the new minoTour install.</p>
+
+
 
 <p>Now return to your web browser - we will make an account for you to access the site - to do so go to register_new.php . </p>
 
@@ -184,7 +207,7 @@ define("DB_PORT", 3306);</p>
 
 <p><code>mysql&gt; USE Gru;</code></p>
 
-<p><code>mysql&gt; UPDATE USERS SET admin=1 WHERE user_name = 'minoTouruser';</code></p>
+<p><code>mysql&gt; UPDATE users SET admin=1 WHERE user_name = 'minoTouruser';</code></p>
 
 <p>Now return to the website and refresh the page… Assuming all has gone to plan you will have an admin account and you should see a new ‘Admin’ menu has appeared. Currently the Admin processes are limited - you can allocate databases to different users.  The second page 'cache administration' allows you to check if the new optimised features of minoTour are working correctly.</p>
 
@@ -217,6 +240,8 @@ define("DB_PORT", 3306);</p>
 <p>dbpass - the database password you configured on page 2 of this document</p>
 
 <p>phploc - the path to php to execute php from the command line</p>
+
+<p><strong>Save this file with the name mT_param.conf</strong></p>
 
 <p>Now you can set the background processes running by executing the command:</p>
 
