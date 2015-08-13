@@ -1,0 +1,17 @@
+#!/bin/bash
+ 
+EXPECTED_ARGS=3
+E_BADARGS=65
+MYSQL=`which mysql`
+
+Q1="use Gru;"
+Q2="insert into users (user_name,user_password_hash,user_email,admin) VALUES ('$1','$2','$3',1);"
+SQL="${Q1}${Q2}"
+ 
+if [ $# -ne $EXPECTED_ARGS ]
+then
+  echo "Usage: $0 dbuser dbpass useremail"
+  exit $E_BADARGS
+fi
+ 
+$MYSQL -uroot -p -e "$SQL"
