@@ -95,7 +95,7 @@ if ($login->isUserLoggedIn() == true) {
 						$getalerts = "SELECT name,reference,username,threshold,alert_index,twitterhandle,type,start,end,control FROM " . $dbname . ".alerts where complete = 0;";
 						$getthemalerts2 = $mindb_connection->query($getalerts);
 						//echo "Num rows is " . $getthemalerts2->num_rows . "\n";
-						if ($getthemalerts2->num_rows >= 1){
+						if (is_object($getthemalerts2) && $getthemalerts2->num_rows >= 1){
 							foreach ($getthemalerts2 as $row){
 								$jobstodo[] = array(
 								    'job' => $row['name'],
