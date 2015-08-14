@@ -37,14 +37,14 @@ if ($login->isUserLoggedIn() == true) {
 		$minupver = $_SESSION['active_minup'];
 	}
 	//$jsonstring = $jsonstring . $_SESSION['active_run_name'];
-	
+
 	//$jsonstring = $jsonstring . '<br>';
-	
+
 	if (!$mindb_connection->connect_errno) {
-		
+
 		//Check if entry already exists in jsonstore table:
 		//$jsonjobname="average_time_over_time";
-		
+
 		//$checkrow = "select name,json from jsonstore where name = '" . $jsonjobname . "' ;";
 		//$checking=$mindb_connection->query($checkrow);
 		//if ($checking->num_rows ==1){
@@ -53,11 +53,11 @@ if ($login->isUserLoggedIn() == true) {
 		//		$jsonstring = $row['json'];
 		//	}
 		//} else {
-		
+
 		if (isset($_GET["readname"])) {
 			$sqlsequence = "SELECT sequence,qual from basecalled_" . $_GET['type'] . " inner join tracking_id using (basename_id) where basename = '" .$_GET['readname'] . "';";
 			$sqlsquiggle;
-			
+
 			// Select 1 from table_name will return false if the table does not exist.
 			$testquery = 'select 1 from caller_basecalled_template';
 			$val = $mindb_connection->query($testquery);
@@ -77,7 +77,7 @@ if ($login->isUserLoggedIn() == true) {
 			}
 			//echo $sqlsquiggle . "\n";
 			//echo $sqlsequence . "\n";
-			$resultarray;
+			$resultarray=array();
 			$squiggleresult = $mindb_connection->query($sqlsquiggle);
 			if ($squiggleresult->num_rows>= 1){
 				foreach ($squiggleresult as $row) {
@@ -96,12 +96,12 @@ if ($login->isUserLoggedIn() == true) {
 					$resultarray[$_GET['type']][$row['start']]['p_T']=$row['p_T'];
 				}
 			}
-			$sequencearray;
-			$letterarray;
-			$qualarray;
+			$sequencearray=array();
+			$letterarray=array();
+			$qualarray=array();
 			$sequenceresult = $mindb_connection->query($sqlsequence);
 			if ($sequenceresult->num_rows == 1) {
-				$sequence_row = $sequenceresult->fetch_object();	
+				$sequence_row = $sequenceresult->fetch_object();
 				//var_dump ($sequence_row);
 				//echo $sequence_row->sequence . "\n";
 				//echo $sequence_row->qual . "\n";
@@ -109,43 +109,44 @@ if ($login->isUserLoggedIn() == true) {
 				$letterarray = str_split($sequence_row->sequence);
 				$qualarray = str_split($string);
 			}
-			
+
 			//make sure we know where we are in the sequence and the quality position
 			settype($position_indicator, "int");
 			$position_indicator = 0;
-			
+
 			//note that the first event is always going to be a 0 but after that a 0 means that we haven't moved...
 			$firstcheck = 0;
-			
+
 			//BUT - dam - we need to read the previous 5 bases to get the new sequences...
 			$previous5;
 			$previousstep;
 			$previousstart;
 			$previouscount;
-			
-			
+
+
 			//Create an array to store the base position values, quality scores and so on...
-			$basearray;
-			
+			$basearray=array();
+
 			//create an array to store flags indicated inferred positions
-			$flagarray;
-			
+			$flagarray=array();
+
 			//create an array to store quality scores based on position
-			$qualityarray;
+			$qualityarray=array();
 			$callback = $_GET['callback'];
 			echo $callback.'([';
 			foreach ($resultarray as $type => $value) {
 				//So the first entry we need to take the first three positions for. After that we just take the middle position UNLESS the step is 0 (the base hasn't changed) or 2 in which case we need to take the 2 and third positions.
-				$lastletarray;
+				$lastletarray=array();
 				$lastadjust;
 				$laststart;
-				
+                $newstart;
+
 				foreach ($value as $start => $value2) {
 					$letarray = str_split($value2['model_state']);
 					$adjustment = ($value2['length']/4);
 					if ($firstcheck == 0) {
 						//we're going to take the first three positions here and we are going to add a fictional time point for the first two.
-						//echo $value2['model_state'] . "\n";						
+						//echo $value2['model_state'] . "\n";
 						for ($i = 0; $i <= 2; $i++) {
 							$newstart = $start - ((2-$i)*$adjustment);
 							//echo $newstart . "\t";
@@ -176,7 +177,7 @@ if ($login->isUserLoggedIn() == true) {
 							if ($i < 2) {
 								$flagarray[($newstart*10000)]='i';
 							}
-							if ($minupver < 0.5){ 
+							if ($minupver < 0.5){
 								$qualityarray[($newstart*10000)]=(ord($qualarray[$position_indicator])-31);
 							}else{
 								$qualityarray[($newstart*10000)]=(ord($qualarray[$position_indicator]));
@@ -190,12 +191,12 @@ if ($login->isUserLoggedIn() == true) {
 							$position_indicator++;
 						}
 						$firstcheck = 1;
-					}	
+					}
 					if ($firstcheck != 0) {
 						$move = $value2['move'];
 						if ($move == 0) {
 							//echo "nothing to see here\n";
-							next;
+							//next;
 						}else if ($move == 1) {
 							//echo $start . "\t";
 							//echo $letarray[2] . "\n";
@@ -219,7 +220,7 @@ if ($login->isUserLoggedIn() == true) {
 							}else{
 								$basearray[($start*10000)]["C"]=0;
 							}
-							if ($minupver < 0.5){ 
+							if ($minupver < 0.5){
 								$qualityarray[($newstart*10000)]=(ord($qualarray[$position_indicator])-31);
 							}else{
 								$qualityarray[($newstart*10000)]=(ord($qualarray[$position_indicator]));
@@ -263,7 +264,7 @@ if ($login->isUserLoggedIn() == true) {
 								if ($i < 2) {
 									$flagarray[($newstart*10000)]='i';
 								}
-								if ($minupver < 0.5){ 
+								if ($minupver < 0.5){
 								$qualityarray[($newstart*10000)]=(ord($qualarray[$position_indicator])-31);
 							}else{
 								$qualityarray[($newstart*10000)]=(ord($qualarray[$position_indicator]));
@@ -282,7 +283,7 @@ if ($login->isUserLoggedIn() == true) {
 					$lastadjust = $value2['length'];
 					$laststart = $start;
 				}
-				
+
 				for ($i = 3; $i <= 4; $i++) {
 					settype($newstart, "string");
 					$newstart = $laststart + (($i-2)*$lastadjust);
@@ -308,7 +309,7 @@ if ($login->isUserLoggedIn() == true) {
 					}else{
 						$basearray[($newstart*10000)]["C"]=0;
 					}
-					if ($minupver < 0.5){ 
+					if ($minupver < 0.5){
 								$qualityarray[($newstart*10000)]=(ord($qualarray[$position_indicator])-31);
 							}else{
 								$qualityarray[($newstart*10000)]=(ord($qualarray[$position_indicator]));
@@ -323,13 +324,13 @@ if ($login->isUserLoggedIn() == true) {
 
 
 				//Outputting all the data for the plots.
-				
+
 				echo "{\"type\": \"line\",\n";
 				echo "\"name\":\"Squiggle\",\n";
 				echo "\"color\": 'black',\n";
 				echo "\"yAxis\": 0,\n";
 				echo "\"step\": \"left\",\n";
-				echo "\"data\":[";				
+				echo "\"data\":[";
 				$position_indicator=0;
 				$firstcheck=0;
 				//echo "Squiggle Data\n";
@@ -340,23 +341,23 @@ if ($login->isUserLoggedIn() == true) {
 					echo "],\n";
 				}
 				echo "]},\n";
-				
-				
+
+
 				echo "{\"type\": \"line\",\n";
 				echo "\"name\":\"Quality\",\n";
 				echo "\"color\": 'darkgrey',\n";
 				echo "\"yAxis\": 1,\n";
 				echo "\"step\": \"left\",\n";
-				echo "\"data\":[";	
+				echo "\"data\":[";
 				foreach ($qualityarray as $sausage => $monkey) {
 //					foreach ($value2 as $value2=> $monkey) {
-						echo "[" . ($sausage/10000) ."," . $qualityarray[$sausage]. "],\n";	
+						echo "[" . ($sausage/10000) ."," . $qualityarray[$sausage]. "],\n";
 //					}
-				}			
-				
-				
+				}
+
+
 				echo "]},\n";
-				
+
 				echo "{\"type\": \"line\",\n";
 				echo "\"name\":\"p_A\",\n";
 				echo "\"color\": 'blue',\n";
@@ -413,7 +414,7 @@ if ($login->isUserLoggedIn() == true) {
 				echo "\"data\":[";
 				foreach ($basearray as $sausage => $monkey) {
 //					foreach ($value2 as $value2=> $monkey) {
-						echo "[" . ($sausage/10000) ."," . $basearray[$sausage]['A']. "],\n";	
+						echo "[" . ($sausage/10000) ."," . $basearray[$sausage]['A']. "],\n";
 //					}
 				}
 				echo "]},\n";
@@ -425,7 +426,7 @@ if ($login->isUserLoggedIn() == true) {
 				echo "\"data\":[";
 				foreach ($basearray as $sausage => $monkey) {
 //					foreach ($value2 as $value2=> $monkey) {
-						echo "[" . ($sausage/10000) ."," . $basearray[$sausage]['T']. "],\n";	
+						echo "[" . ($sausage/10000) ."," . $basearray[$sausage]['T']. "],\n";
 //					}
 				}
 				echo "]},\n";
@@ -437,7 +438,7 @@ if ($login->isUserLoggedIn() == true) {
 				echo "\"data\":[";
 				foreach ($basearray as $sausage => $monkey) {
 //					foreach ($value2 as $value2=> $monkey) {
-						echo "[" . ($sausage/10000) ."," . $basearray[$sausage]['G']. "],\n";	
+						echo "[" . ($sausage/10000) ."," . $basearray[$sausage]['G']. "],\n";
 //					}
 				}
 				echo "]},\n";
@@ -449,19 +450,19 @@ if ($login->isUserLoggedIn() == true) {
 				echo "\"data\":[";
 				foreach ($basearray as $sausage => $monkey) {
 //					foreach ($value2 as $value2=> $monkey) {
-						echo "[" . ($sausage/10000) ."," . $basearray[$sausage]['C']. "],\n";	
+						echo "[" . ($sausage/10000) ."," . $basearray[$sausage]['C']. "],\n";
 //					}
 				}
 				echo "]},\n";
 			echo "]);";
-			
-			
-			
-	
+
+
+
+
 		}
-		
-		
-			
+
+
+
 	}
 }
 	//} else {

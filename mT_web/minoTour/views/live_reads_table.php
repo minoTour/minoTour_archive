@@ -14,7 +14,7 @@ require_once("includes/functions.php");
     <div id="wrapper">
 
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
-           
+
 			<?php include 'navbar-header.php' ?>
             <!-- /.navbar-top-links -->
 			<?php include 'navbar-top-links.php'; ?>
@@ -29,7 +29,7 @@ require_once("includes/functions.php");
                                                        <!-- /.col-lg-12 -->
                  <div class="row">
 					 <div class="col-lg-12">
-					 
+
             			 <table id="example" class="display table table-condensed table-hover " cellspacing="0" width="100%">
 							 <thead>
 								 <tr>
@@ -51,8 +51,8 @@ require_once("includes/functions.php");
 									 <th>2d Length</th>
 								 </tr>
 							 </thead>
- 
-							 <tfoot>	
+
+							 <tfoot>
 								 <tr>
 								 		<th>Channel</th>
 								 		<th>Read</th>
@@ -77,11 +77,11 @@ require_once("includes/functions.php");
 					 </div>
 				 </div>
              </div>
-			 
-			
+
+
 			 <div class="row">
 				 <div class="col-lg-12">
-				 <?php if ($_SESSION['currenttelem'] >= 1) {?> 
+				 <?php if ($_SESSION['currenttelem'] >= 1) {?>
 				 <h4>Viewer options</h4>
 				 <input type='checkbox' id='toggle-two' data-onstyle='primary' data-offstyle='info' data-size='mini'>If ticked you will see data in base order.
 			<script>
@@ -91,13 +91,13 @@ require_once("includes/functions.php");
 				      off: 'Time View'
 				    });
 				  })
-				  
+
 				</script>
 				<?php } ?>
 					 <div id = "read_details">Click on a read from the table above to view specific details.</div>
 				 </div>
 			 </div>
-			
+
                 <!-- /.col-lg-12 -->
             </div>
         </div>
@@ -105,8 +105,8 @@ require_once("includes/functions.php");
 
     </div>
     <!-- /#wrapper -->
-	
-	
+
+
     <!-- Core Scripts - Include with every page -->
     <script src="js/jquery-1.10.2.js"></script>
     <script src="js/bootstrap.min.js"></script>
@@ -117,14 +117,14 @@ require_once("includes/functions.php");
 			    <script type="text/javascript">
 				PNotify.prototype.options.styling = "fontawesome";
 				</script>
-	
 
-	
+
+
 	<!-- Highcharts Addition -->
-	
-	
-	
-	
+
+
+
+
     <!-- SB Admin Scripts - Include with every page -->
     <script src="js/sb-admin.js"></script>
 
@@ -133,8 +133,8 @@ require_once("includes/functions.php");
 		<script src="js/plugins/dataTables/dataTables.bootstrap.js" type="text/javascript" charset="utf-8"></script>
 
 
-		
-		
+
+
 		<script>
 		$(document).ready(function() {
 		    $('#example').dataTable( {
@@ -158,7 +158,7 @@ require_once("includes/functions.php");
 			        var templength = $('td', this).eq(4).text();
 			        var complength = $('td', this).eq(9).text();
 			        var length2d = $('td', this).eq(14).text();
-			        
+
 			        if (templength >= 1000 || complength >= 1000 || length2d >= 1000) {
 			        	var midpoint = templength/2;
 			        	var xmin = midpoint-250;
@@ -167,40 +167,40 @@ require_once("includes/functions.php");
 			        	var xmin;
 			        	var xmax;
 			        }
-			        
+
 			        var tstart = parseFloat($('td',this).eq(5).text());
 			        var tdur = parseFloat($('td',this).eq(6).text());
-			        
+
 			        if (tdur >= 15) {
 			        	//alert (tdur);
 						var mod = 5;
 			        	var tmin = tstart+(tdur/2)-mod;
 			        	var tmax = tstart+(tdur/2)+mod;
-			        	//alert (tmax);	
+			        	//alert (tmax);
 			        }else {
 			        	var tmin;
-			        	var tmax;	
+			        	var tmax;
 			        }
-			        
-			        
+
+
 			        var compstart = parseFloat($('td',this).eq(10).text());
 			        var compdur = parseFloat($('td',this).eq(11).text());
 			        //alert (compdur);
 			        if (compdur >= 15) {
 			        	var mod = 5;
 			        	var cmin = compstart+(compdur/2)-mod;
-			        	var cmax = compstart+(compdur/2)+mod;	
+			        	var cmax = compstart+(compdur/2)+mod;
 			        }else {
 			        	var cmin;
-			        	var cmax;	
+			        	var cmax;
 			        }
-			        
+
 			        var ttrue = $('td',this).eq(2).text();
 			        var ctrue = $('td',this).eq(7).text();
    			        var d2true = $('td',this).eq(12).text();
-			        
 
-					$.post( "views/live_read_details.php?prev=0", { readname: name })
+
+					$.post( "live_read_details.php?prev=0", { readname: name })
 					  .done(function( data ) {
 						  //alert('badger');
 					    $("#read_details").html(data);
@@ -236,7 +236,7 @@ require_once("includes/functions.php");
 					    	    scatter: {
 			 	                   marker: {
 				                       radius: 2
-				                   }	
+				                   }
 				     	         }
 			   	           },
 							credits: {
@@ -250,7 +250,7 @@ require_once("includes/functions.php");
 					        },
 					        series: []
 					    };
-					    
+
 					    var options = {
 					    	chart: {
 					            renderTo: 'templatesquiggles',
@@ -283,7 +283,7 @@ require_once("includes/functions.php");
 					    	    scatter: {
 			 	                   marker: {
 				                       radius: 1
-				                   }	
+				                   }
 				     	         },
 				     	         series: {
                 						lineWidth: 1
@@ -300,7 +300,7 @@ require_once("includes/functions.php");
 					        },
 					        series: []
 					    };
-					    
+
 					    var optionscomplement = {
 					    	chart: {
 					            renderTo: 'complementsquiggles',
@@ -333,7 +333,7 @@ require_once("includes/functions.php");
 					    	    scatter: {
 			 	                   marker: {
 				                       radius: 1
-				                   }	
+				                   }
 				     	         },
 				     	         series: {
                 						lineWidth: 1
@@ -357,7 +357,7 @@ require_once("includes/functions.php");
                 				'second',
                 					[1, 2, 5, 10, 15, 30]
 					            ]];
-					            
+
 					    var newdata;
 					    if ($('#toggle-two').prop('checked') == true) {
 					    	newdata = {
@@ -372,7 +372,7 @@ require_once("includes/functions.php");
 					        },
 					        title: {
 					          text: 'Template Combined Squiggle Quality Probability and Called Base Plot',
-					          
+
 					        },
 					        xAxis: {
 								title: {
@@ -441,7 +441,7 @@ require_once("includes/functions.php");
 					    	    scatter: {
 			 	                   marker: {
 				                       enabled: false
-				                   }	
+				                   }
 				     	         },
 				     	         line: {
 				     	         	marker: {
@@ -460,8 +460,8 @@ require_once("includes/functions.php");
 					        },
 					        series: []
 					    };
-					    	
-					    	
+
+
 					    }else{
 					    	newdata = {
 					    	 rangeSelector: {
@@ -475,7 +475,7 @@ require_once("includes/functions.php");
 					        },
 					        title: {
 					          text: 'Template Combined Squiggle Quality Probability and Called Base Plot',
-					          
+
 					        },
 					        xAxis: {
 								title: {
@@ -544,7 +544,7 @@ require_once("includes/functions.php");
 					    	    scatter: {
 			 	                   marker: {
 				                       enabled: false
-				                   }	
+				                   }
 				     	         },
 				     	         line: {
 				     	         	marker: {
@@ -578,7 +578,7 @@ require_once("includes/functions.php");
 					        },
 					        title: {
 					          text: 'Complement Combi - Squiggle/Quality/Probability/Called Bases',
-					          
+
 					        },
 					        xAxis: {
 								title: {
@@ -647,7 +647,7 @@ require_once("includes/functions.php");
 					    	    scatter: {
 			 	                   marker: {
 				                       enabled: false
-				                   }	
+				                   }
 				     	         },
 				     	         line: {
 				     	         	marker: {
@@ -665,7 +665,7 @@ require_once("includes/functions.php");
 					            borderWidth: 0
 					        },
 					        series: []
-					    };    	
+					    };
 					    }else{
 					    	newdata2 = {
 					    	 rangeSelector: {
@@ -679,7 +679,7 @@ require_once("includes/functions.php");
 					        },
 					        title: {
 					          text: 'Complement Combi - Squiggle/Quality/Probability/Called Bases',
-					          
+
 					        },
 					        xAxis: {
 								title: {
@@ -748,7 +748,7 @@ require_once("includes/functions.php");
 					    	    scatter: {
 			 	                   marker: {
 				                       enabled: false
-				                   }	
+				                   }
 				     	         },
 				     	         line: {
 				     	         	marker: {
@@ -766,9 +766,9 @@ require_once("includes/functions.php");
 					            borderWidth: 0
 					        },
 					        series: []
-					    };   
+					    };
 					    }
-					    
+
 
 						//if 	(ttrue == 'Y') {
 					    //$.getJSON('jsonencode/allqualities.php?prev=0&readname='+name+'&callback=?', function(data) {
@@ -789,10 +789,10 @@ require_once("includes/functions.php");
 									newdata.series = data;
 									var chart = new Highcharts.Chart(newdata);
 								});
-					    	}		
+					    	}
 						}else{
 					    	$( '#templatefancy' ).remove();
-					    }	
+					    }
 					    if (ctrue == 'Y') {
 							if ($('#toggle-two').prop('checked') == true) {
 								$.getJSON('jsonencode/squiggles3.php?channel='+channel+'&prev=0&readname='+name+'&type=complement&callback=?', function(data){
@@ -804,15 +804,15 @@ require_once("includes/functions.php");
 									newdata2.series = data;
 									var chart = new Highcharts.Chart(newdata2);
 								});
-					    	}					   
+					    	}
 						}else{
 					    	$( '#complementfancy' ).remove();
 					    }
-					    	
+
 						$('html, body').animate({
 						           'scrollTop':   $('#'+name).offset().top
 						}, 1000);
-						
+
 					});
 			    } );
 			    $(function() {
@@ -820,7 +820,7 @@ require_once("includes/functions.php");
 					 	var checker = $(this).prop('checked');
 					 	if (checker == true) {
 							//$.getJSON('jsonencode/squiggles3.php?prev=0&readname='+name+'&type=template&callback=?', function(data){
-									
+
 							//		var chart = $('#templatefancy').highcharts();
 									//chart.destroy();
 							//		chart.series = data;
@@ -845,12 +845,12 @@ require_once("includes/functions.php");
 					 	}
 				    })
 				  });
-		
+
 		} );
-	
+
 		 	</script>
 		 	<script>
-		 	
+
 		 	</script>
 		 	<script>
         $( "#infodiv" ).load( "alertcheck.php" ).fadeIn("slow");
@@ -868,6 +868,6 @@ require_once("includes/functions.php");
 	<script type='text/javascript' src='js/themes/grid-light.js'></script>
 	<script src='http://code.highcharts.com/4.0.3/modules/heatmap.js'></script>
 	<script src='http://code.highcharts.com/modules/exporting.js'></script>";
-	
+
 
 </html>

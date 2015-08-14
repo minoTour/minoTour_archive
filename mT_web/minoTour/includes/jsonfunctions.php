@@ -1713,7 +1713,7 @@ function basesnpcoverage($jobname,$currun,$refid,$start,$end,$type) {
 	if ($checkingrunning === "No" || $checkingrunning === FALSE) {
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows == 1) {
+		if (is_object($checking) && $checking->num_rows == 1) {
 			foreach ($checking as $row) {
 				$jsonstring=$row['json'];
 			}
@@ -1836,7 +1836,7 @@ function basesnpcoverage_OLD($jobname,$currun,$refid,$start,$end,$type) {
 	if ($checkingrunning === "No" || $checkingrunning === FALSE) {
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows == 1) {
+		if (is_object($checking) && $checking->num_rows == 1) {
 			foreach ($checking as $row) {
 				$jsonstring=$row['json'];
 			}
