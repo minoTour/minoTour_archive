@@ -35,7 +35,7 @@ if ($login->isUserLoggedIn() == true) {
 	$memcache = new Memcache;
 	#$cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT) or die ("Memcached Failure");
 	$cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT);
-	
+
     // the user is logged in. you can do whatever you want here.
     // for demonstration purposes, we simply show the "you are logged in" view.
     //include("views/index_old.php");*/
@@ -54,11 +54,11 @@ if ($login->isUserLoggedIn() == true) {
 		//Check if entry already exists in jsonstore table:
 		$jsonjobname="readlengthqual";
 		$jsonstring=$jsonjobname($jsonjobname,$currun);
-	
+
 		$callback = $_GET['callback'];
 		echo $callback.'('.$jsonstring.');';
-	//echo $jsonstring;	
-		
+	//echo $jsonstring;
+
 	}
 } else {
 	echo "ERROR";

@@ -35,24 +35,22 @@ if ($login->isUserLoggedIn() == true) {
 	$memcache = new Memcache;
 	#$cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT) or die ("Memcached Failure");
 	$cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT);
-	
+
     // the user is logged in. you can do whatever you want here.
     // for demonstration purposes, we simply show the "you are logged in" view.
     //include("views/index_old.php");*/
+    $refid="";
+    $start="";
+    $end="";
+    $type="";
 	if($_GET["prev"] == 1){
 		$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['focusrun']);
 		$currun = $_SESSION['focusrun'];
-		$refid = $_GET["refid"];
-		$start  = $_GET["start"];
-		$end  = $_GET["end"];
-		$type = $_GET["type"];
+
 	}else{
 		$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['active_run_name']);
 		$currun = $_SESSION['active_run_name'];
-		$refid = $_GET["refid"];
-		$start  = $_GET["start"];
-		$end  = $_GET["end"];
-		$type = $_GET["type"];
+
 	}
 	//echo cleanname($_SESSION['active_run_name']);;
 
@@ -62,13 +60,13 @@ if ($login->isUserLoggedIn() == true) {
 		//Check if entry already exists in jsonstore table:
 		//echo "hello";
 		$jsonjobname="ratio2dtemplate";
-		
-		$jsonstring=$jsonjobname($jsonjobname,$currun,$refid,$start,$end,$type);
-			
+
+		$jsonstring=$jsonjobname($jsonjobname,$currun);
+
 		$callback = $_GET['callback'];
 		echo $callback.'('.$jsonstring.');';
-	
-		
+
+
 	}
 } else {
 	echo "ERROR";

@@ -582,9 +582,12 @@ function checksessionvars(){
 
 					$sql3  = "SELECT refid,refname FROM " . $_SESSION['active_run_name'] . ".reference_seq_info;";
 					$refnamedetails = $db_connection->query($sql3);
-					foreach ($refnamedetails as $row){
-						$refnames[$row['refid']] = $row['refname'];
-					}
+					$refnames=array();
+					if (is_object($refnamedetails)){
+						foreach ($refnamedetails as $row){
+							$refnames[$row['refid']] = $row['refname'];
+						}
+					}	
 					$_SESSION['activerefnames'] = $refnames;
 
 					//Check for the existence of an XML table in the active run database:

@@ -41,10 +41,10 @@ if ($login->isUserLoggedIn() == true) {
 	if (!$mindb_connection->connect_errno) {
 		//Check if entry already exists in jsonstore table:
 		$jsonjobname="tracessperpore";
-			
+
 		$checkrow = "select name,json from jsonstore where name = '" . $jsonjobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -52,24 +52,24 @@ if ($login->isUserLoggedIn() == true) {
 		} else {
 		$sql_template = "select count(*) as count,channel from config_general group by channel order by channel;";
 
-		
+
 		$resultarray;
-	
+
 		$template=$mindb_connection->query($sql_template);
-		
+
 		if ($template->num_rows >= 1){
 			foreach ($template as $row) {
 				$resultarray['template'][$row['channel']]=$row['count'];
 			}
 		}
-	
-		
-	
-		
-	
+
+
+
+
+
 		//var_dump($resultarray);
 		//echo json_encode($resultarray);
-		$jsonstring;
+		$jsonstring="";
 		$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value){
 				$jsonstring = $jsonstring . "{\n";
@@ -83,7 +83,7 @@ if ($login->isUserLoggedIn() == true) {
 						$jsonstring = $jsonstring . "[" . getx($i) . "," . gety($i) . ",0],\n";
 					}
 				}
-				
+
 				$jsonstring = $jsonstring . "],\n\"dataLabels\": {
                 \"enabled\": true,
                 \"color\":\"black\",
@@ -92,20 +92,20 @@ if ($login->isUserLoggedIn() == true) {
                 }
             }	";
 				$jsonstring = $jsonstring . "},\n";
-				
+
 			}
 			$jsonstring = $jsonstring .  "]\n";
 			if ($_GET["prev"] == 1){
 				include 'savejson.php';
 			}
 		}
-	
-			
-			
+
+
+
 	$callback = $_GET['callback'];
 	echo $callback.'('.$jsonstring.');';
-	
-		
+
+
 	}
 } else {
 	echo "ERROR";

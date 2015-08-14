@@ -17,7 +17,7 @@ function blanktemplate($jobname,$currun,$refid) {
 		//$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -42,10 +42,10 @@ function blanktemplate($jobname,$currun,$refid) {
 
 ###Attempt to calculate a boxplot of read lengths
 
-function boxplotlength($jobname,$currun,$refid) {
-	$checkvar = $currun . $jobname . $type;
+function boxplotlength($jobname,$currun) {
+	$checkvar = $currun . $jobname;
 	//echo $type . "\n";
-	$checkrunning = $currun . $jobname . $type . "status";
+	$checkrunning = $currun . $jobname . "status";
 	global $memcache;
 	global $mindb_connection;
 	global $reflength;
@@ -55,7 +55,7 @@ function boxplotlength($jobname,$currun,$refid) {
 		//$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -113,7 +113,7 @@ function boxplotlength($jobname,$currun,$refid) {
 			$resultsql2d = $mindb_connection->query($sql2d);
 
 
-			$resultarray;
+			$resultarray=array();
 
 			if ($resultsqltemp->num_rows >=1) {
 				#$cumucount = 0;
@@ -199,10 +199,10 @@ function boxplotlength($jobname,$currun,$refid) {
 
 ###Calculate the proportion of mappable reads over time
 
-function mappabletime($jobname,$currun,$refid) {
-	$checkvar = $currun . $jobname . $type;
+function mappabletime($jobname,$currun) {
+	$checkvar = $currun . $jobname;
 	//echo $type . "\n";
-	$checkrunning = $currun . $jobname . $type . "status";
+	$checkrunning = $currun . $jobname . "status";
 	global $memcache;
 	global $mindb_connection;
 	global $reflength;
@@ -212,7 +212,7 @@ function mappabletime($jobname,$currun,$refid) {
 		//$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -244,7 +244,7 @@ function mappabletime($jobname,$currun,$refid) {
 			#$resulttemplate = $mindb_connection->query($sqltemplate);
 			#$resultcomplement = $mindb_connection->query($sqlcomplement);
 
-			$resultarray;
+			$resultarray=array();
 
 			if ($resultsql2dtotal->num_rows >=1) {
 				#$cumucount = 0;
@@ -341,10 +341,10 @@ function mappabletime($jobname,$currun,$refid) {
 ###Calculates an approximation of the speed of sequencing by caluclating the number of bases sequenced in a 5 minute window per channel - this is a measure of speed through the pore.
 
 
-function sequencingrate($jobname,$currun,$refid) {
-	$checkvar = $currun . $jobname . $type;
+function sequencingrate($jobname,$currun) {
+	$checkvar = $currun . $jobname;
 	//echo $type . "\n";
-	$checkrunning = $currun . $jobname . $type . "status";
+	$checkrunning = $currun . $jobname . "status";
 	global $memcache;
 	global $mindb_connection;
 	global $reflength;
@@ -354,7 +354,7 @@ function sequencingrate($jobname,$currun,$refid) {
 		//$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -368,7 +368,7 @@ function sequencingrate($jobname,$currun,$refid) {
 			$resulttemplate = $mindb_connection->query($sqltemplate);
 			$resultcomplement = $mindb_connection->query($sqlcomplement);
 
-			$resultarray;
+			$resultarray=array();
 
 			if ($resulttemplate->num_rows >=1) {
 				#$cumucount = 0;
@@ -389,7 +389,7 @@ function sequencingrate($jobname,$currun,$refid) {
 
 
 
-		$jsonstring;
+		$jsonstring="";
 		$jsonstring = $jsonstring . "[\n";
 
 		foreach ($resultarray as $key => $value) {
@@ -426,10 +426,10 @@ function sequencingrate($jobname,$currun,$refid) {
 
 }
 
-function lengthtimewindow($jobname,$currun,$refid) {
-	$checkvar = $currun . $jobname . $type;
+function lengthtimewindow($jobname,$currun) {
+	$checkvar = $currun . $jobname;
 	//echo $type . "\n";
-	$checkrunning = $currun . $jobname . $type . "status";
+	$checkrunning = $currun . $jobname . "status";
 	global $memcache;
 	global $mindb_connection;
 	global $reflength;
@@ -439,7 +439,7 @@ function lengthtimewindow($jobname,$currun,$refid) {
 		//$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -455,7 +455,7 @@ function lengthtimewindow($jobname,$currun,$refid) {
 			$resultcomplement = $mindb_connection->query($sqlcomplement);
 			$result2d = $mindb_connection->query($sql2d);
 
-			$resultarray;
+			$resultarray=array();
 
 			if ($resulttemplate->num_rows >=1) {
 				#$cumucount = 0;
@@ -484,7 +484,7 @@ function lengthtimewindow($jobname,$currun,$refid) {
 
 
 
-		$jsonstring;
+		$jsonstring="";
 		$jsonstring = $jsonstring . "[\n";
 
 		foreach ($resultarray as $key => $value) {
@@ -524,10 +524,10 @@ function lengthtimewindow($jobname,$currun,$refid) {
 
 ##### ratiopassfail
 
-function ratiopassfail($jobname,$currun,$refid) {
-	$checkvar = $currun . $jobname . $type;
+function ratiopassfail($jobname,$currun) {
+	$checkvar = $currun . $jobname;
 	//echo $type . "\n";
-	$checkrunning = $currun . $jobname . $type . "status";
+	$checkrunning = $currun . $jobname . "status";
 	global $memcache;
 	global $mindb_connection;
 	global $reflength;
@@ -537,7 +537,7 @@ function ratiopassfail($jobname,$currun,$refid) {
 		//$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -572,7 +572,7 @@ function ratiopassfail($jobname,$currun,$refid) {
 				}
 			}
 
-			$resultarray;
+			$resultarray=array();
 
 			if ($resulttemplate->num_rows >=1) {
 				#$cumucount = 0;
@@ -618,8 +618,8 @@ function ratiopassfail($jobname,$currun,$refid) {
 			}
 
 		}
-
-		$jsonstring;
+		$resultarray=array();
+		$jsonstring="";
 		$jsonstring = $jsonstring . "[\n";
 
 		foreach ($resultarray as $key => $value) {
@@ -659,10 +659,10 @@ function ratiopassfail($jobname,$currun,$refid) {
 
 ##### ratio2dtemplate
 
-function ratio2dtemplate($jobname,$currun,$refid,$one,$two,$three) {
-	$checkvar = $currun . $jobname . $type;
+function ratio2dtemplate($jobname,$currun) {
+	$checkvar = $currun . $jobname;
 	//echo $type . "\n";
-	$checkrunning = $currun . $jobname . $type . "status";
+	$checkrunning = $currun . $jobname . "status";
 	global $memcache;
 	global $mindb_connection;
 	global $reflength;
@@ -672,7 +672,7 @@ function ratio2dtemplate($jobname,$currun,$refid,$one,$two,$three) {
 		//$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -687,7 +687,7 @@ function ratio2dtemplate($jobname,$currun,$refid,$one,$two,$three) {
 			$resultcomplement = $mindb_connection->query($sqlcomplement);
 			$result2d = $mindb_connection->query($sql2d);
 
-			$resultarray;
+			$resultarray=array();
 
 			if ($resulttemplate->num_rows >=1) {
 				#$cumucount = 0;
@@ -713,7 +713,7 @@ function ratio2dtemplate($jobname,$currun,$refid,$one,$two,$three) {
 
 		}
 
-		$jsonstring;
+		$jsonstring="";
 		$jsonstring = $jsonstring . "[\n";
 
 		foreach ($resultarray as $key => $value) {
@@ -753,10 +753,10 @@ function ratio2dtemplate($jobname,$currun,$refid,$one,$two,$three) {
 
 ##### cumulative yield...
 
-function cumulativeyield($jobname,$currun,$refid) {
-	$checkvar = $currun . $jobname . $type;
+function cumulativeyield($jobname,$currun) {
+	$checkvar = $currun . $jobname;
 	//echo $type . "\n";
-	$checkrunning = $currun . $jobname . $type . "status";
+	$checkrunning = $currun . $jobname . "status";
 	global $memcache;
 	global $mindb_connection;
 	global $reflength;
@@ -766,7 +766,7 @@ function cumulativeyield($jobname,$currun,$refid) {
 		//$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -790,7 +790,7 @@ function cumulativeyield($jobname,$currun,$refid) {
 			$resultcomplementpass = $mindb_connection->query($sqlcomplementpass);
 			$result2dpass = $mindb_connection->query($sql2dpass);
 
-			$resultarray;
+			$resultarray=array();
 
 			if ($resulttemplate->num_rows >=1) {
 				$cumucount = 0;
@@ -841,7 +841,7 @@ function cumulativeyield($jobname,$currun,$refid) {
 					$resultarray['2d pass'][$row['bin_floor']]=$cumucount;
 				}
 			}
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 
 			foreach ($resultarray as $key => $value) {
@@ -896,7 +896,7 @@ function barcodwimm($jobname,$currun,$type) {
 		//$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -910,11 +910,11 @@ function barcodwimm($jobname,$currun,$type) {
 			$result = $mindb_connection->query($sql);
 
 			//array to store the results
-			$resultarray;
+			$resultarray=array();
 
 			//refidarray - to store individual reference elements
-			$refidarray;
-			$refiddescarray;
+			$refidarray=array();
+			$refiddescarray=array();
 
 			if ($result->num_rows >=1) {
 				//echo "We're in the loop";
@@ -941,7 +941,7 @@ function barcodwimm($jobname,$currun,$type) {
 
 			//var_dump ($resultarray);
 
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 
 			foreach ($resultarray as $key => $value) {
@@ -1010,7 +1010,7 @@ function barcodingcov($jobname,$currun,$refid) {
 		//$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -1106,7 +1106,7 @@ function barcodingpie($jobname,$currun,$refid) {
 		//$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -1171,7 +1171,7 @@ function kmerstats($jobname,$currun,$refid) {
 		//$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -1267,7 +1267,7 @@ function basicstats($jobname,$currun,$refid) {
 		//$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -1417,7 +1417,7 @@ function kmercomp($jobname,$currun,$refid) {
 		//$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -1481,7 +1481,7 @@ function kmercoveragereads($jobname,$currun,$refid) {
 		//$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -1591,10 +1591,10 @@ function basesnpcoveragepos($jobname,$currun,$refid,$position,$type,$barcodechec
       // echo $sql;
        $result=$mindb_connection->query($sql);
 
-       $resultarray;
-       $refidarray;
-       $refidescarray;
-       $basearray;
+       $resultarray=array();
+       $refidarray=array();
+       $refidescarray=array();
+       $basearray=array();
        if ($result->num_rows >=1) {
 				foreach ($result as $row) {
 					$resultarray[$type][$row['ref_id']]['A'][$row['ref_pos']]=$row['A'];
@@ -1617,7 +1617,7 @@ function basesnpcoveragepos($jobname,$currun,$refid,$position,$type,$barcodechec
 					}
 				}
 			}
-			$jsonstring;
+			$jsonstring="";
 		$jsonstring = $jsonstring . "[\n";
 		foreach ($basearray as $key=> $value) {
 			$jsonstring = $jsonstring . "{\n";
@@ -1732,10 +1732,10 @@ function basesnpcoverage($jobname,$currun,$refid,$start,$end,$type) {
 			//echo "\nRefPOS\tA\tT\tG\tC\tD\tI\n";
        		$result = $mindb_connection->query($sql_query);
 			//array to store the results
-			$resultarray;
+			$resultarray=array();
 			//refidarray - to store individual reference elements
-			$refidarray;
-			$refiddescarray;
+			$refidarray=array();
+			$refiddescarray=array();
 
 			if ($result->num_rows >=1) {
 				foreach ($result as $row) {
@@ -1757,7 +1757,7 @@ function basesnpcoverage($jobname,$currun,$refid,$start,$end,$type) {
 			}
 
 		}
-		$jsonstring;
+		$jsonstring="";
 		$jsonstring = $jsonstring . "[\n";
 		foreach ($resultarray as $key => $value) {
 			foreach ($value as $key2 => $value2){
@@ -1864,10 +1864,10 @@ function basesnpcoverage_OLD($jobname,$currun,$refid,$start,$end,$type) {
 			$resultcomplement = $mindb_connection->query($sql_complement);
 			$result2d = $mindb_connection->query($sql_2d);
 			//array to store the results
-			$resultarray;
+			$resultarray=array();
 			//refidarray - to store individual reference elements
-			$refidarray;
-			$refiddescarray;
+			$refidarray=array();
+			$refiddescarray=array();
 
 			if ($resulttemplate->num_rows >=1) {
 				foreach ($resulttemplate as $row) {
@@ -1900,7 +1900,7 @@ function basesnpcoverage_OLD($jobname,$currun,$refid,$start,$end,$type) {
 				}
 			}
 		}
-		$jsonstring;
+		$jsonstring="";
 		$jsonstring = $jsonstring . "[\n";
 		foreach ($resultarray as $key => $value) {
 			foreach ($value as $key2 => $value2){
@@ -1981,7 +1981,7 @@ function whatsinmyminion2($jobname,$currun,$type) {
 		//$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -2015,7 +2015,7 @@ function whatsinmyminion2($jobname,$currun,$type) {
 				}
 			}
 
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value) {
 				//echo $key . "\n";
@@ -2074,7 +2074,7 @@ function whatsinmyminion($jobname,$currun) {
 		//$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -2088,11 +2088,11 @@ function whatsinmyminion($jobname,$currun) {
 			$result2d = $mindb_connection->query($sql_2d);
 
 			//array to store the results
-			$resultarray;
+			$resultarray=array();
 
 			//refidarray - to store individual reference elements
-			$refidarray;
-			$refiddescarray;
+			$refidarray=array();
+			$refiddescarray=array();
 
 
 			if ($resulttemplate->num_rows >=1) {
@@ -2137,7 +2137,7 @@ function whatsinmyminion($jobname,$currun) {
 					$resultarray['2d'][$row['time']][$row['refid']]['cumucount']=$cumucount3[$row['refid']];
 				}
 			}
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value) {
 				//echo $key . "\n";
@@ -2190,7 +2190,7 @@ function basesperporemux($jobname,$currun) {
 		$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -2199,7 +2199,7 @@ function basesperporemux($jobname,$currun) {
 			$sql_template = "select sum(ifnull(length(basecalled_template.sequence),0)+ifnull(length(basecalled_complement.sequence),0)) as bases, channel, start_mux as mux from basecalled_template inner join config_general using (basename_id) left join basecalled_complement using (basename_id) where start_mux != 0  group by channel,mux;";
 
 
-			$resultarray;
+			$resultarray=array();
 
 			$template=$mindb_connection->query($sql_template);
 
@@ -2223,7 +2223,7 @@ function basesperporemux($jobname,$currun) {
 
 			//var_dump($resultarray);
 			//echo json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value){
 				$jsonstring = $jsonstring . "{\n";
@@ -2290,7 +2290,7 @@ function passfailcountperporemux($jobname,$currun){
 		$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -2342,7 +2342,7 @@ function passfailcountperporemux($jobname,$currun){
 			//var_dump($resultarray);
 			//var_dump($resultarrayproc);
 			//echo json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			$jsonstring = $jsonstring . "{\n";
 			$jsonstring = $jsonstring . "\"name\" : \"counttopass\", \n";
@@ -2388,7 +2388,7 @@ function passfailperporemux($jobname,$currun){
 		$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -2398,7 +2398,7 @@ function passfailperporemux($jobname,$currun){
 			$sql_fail = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) where file_path like \"\%fail\%\"  group by channel,start_mux;";
 			$sql_all = "SELECT count(*) as count,channel,start_mux FROM tracking_id inner join config_general using (basename_id) group by channel,start_mux;";
 
-			$resultarray;
+			$resultarray=array();
 
 			$allpass=$mindb_connection->query($sql_allpass);
 			$fail=$mindb_connection->query($sql_fail);
@@ -2449,7 +2449,7 @@ function passfailperporemux($jobname,$currun){
 			//var_dump($resultarray);
 			//var_dump($resultarrayproc);
 			//echo json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarrayproc as $key => $value){
 				$jsonstring = $jsonstring . "{\n";
@@ -2516,7 +2516,7 @@ function readsperporemux($jobname,$currun){
 		$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -2525,7 +2525,7 @@ function readsperporemux($jobname,$currun){
 			$sql_template = "select count(*) as count, channel, start_mux as mux from basecalled_template inner join config_general using (basename_id) where start_mux != 0 group by channel,mux;";
 
 
-			$resultarray;
+			$resultarray = array();
 
 			$template=$mindb_connection->query($sql_template);
 
@@ -2549,7 +2549,7 @@ function readsperporemux($jobname,$currun){
 
 			//var_dump($resultarray);
 			//echo json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value){
 				$jsonstring = $jsonstring . "{\n";
@@ -2669,9 +2669,9 @@ function average_length_over_time($jobname,$currun){
 	$checkingrunning = $memcache->get("$checkrunning");
 	if($checkingrunning === "No" || $checkingrunning === FALSE){
 		$memcache->set("$checkrunning", "YES", 0, 0);
-		$checkrow = "select name,json from jsonstore where name = '" . $jsonjobname . "' ;";
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 			$checking=$mindb_connection->query($checkrow);
-			if ($checking->num_rows ==1){
+			if (is_object($checking) && $checking->num_rows ==1){
 				//echo "We have already run this!";
 				foreach ($checking as $row){
 					$jsonstring = $row['json'];
@@ -2680,7 +2680,7 @@ function average_length_over_time($jobname,$currun){
 			$sql_template = "select (floor(start_time/60)*60 + exp_start_time) *1000 as bin_floor, ROUND(AVG(length(sequence))) as average_length from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
 			$sql_complement = "select (floor(start_time/60)*60 + exp_start_time) *1000 as bin_floor, ROUND(AVG(length(sequence))) as average_length from basecalled_complement inner join tracking_id using (basename_id) group by 1 order by 1;";
 
-			$resultarray;
+			$resultarray=array();
 
 			$template=$mindb_connection->query($sql_template);
 			$complement=$mindb_connection->query($sql_complement);
@@ -2701,7 +2701,7 @@ function average_length_over_time($jobname,$currun){
 
 			//var_dump($resultarray);
 			//echo json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value){
 				$jsonstring = $jsonstring . "{\n";
@@ -2744,7 +2744,7 @@ function readnumberlength($jobname,$currun){
 		$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -2794,7 +2794,7 @@ function readnumberlength($jobname,$currun){
 
 			//var_dump($resultarray);
 			//echo json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 				foreach ($resultarray2 as $key => $value){
 				$jsonstring = $jsonstring ."{\n";
@@ -2835,9 +2835,9 @@ function readlengthqual($jobname,$currun){
 	$checkingrunning = $memcache->get("$checkrunning");
 	if($checkingrunning === "No" || $checkingrunning === FALSE){
 		$memcache->set("$checkrunning", "YES", 0, 0);
-		$checkrow = "select name,json from jsonstore where name = '" . $jsonjobname . "' ;";
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -2848,7 +2848,7 @@ function readlengthqual($jobname,$currun){
 
 			$sql_template = "select floor(seqpos/50)*50 as bin_floor, AVG(seqbasequal) as avequal from last_align_basecalled_template_5prime group by 1 order by 1;";
 
-			$resultarray;
+			$resultarray=array();
 
 			$template=$mindb_connection->query($sql_template);
 			if ($template->num_rows >= 1){
@@ -2878,7 +2878,7 @@ function readlengthqual($jobname,$currun){
 
 			//var_dump($resultarray);
 			//echo json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value){
 				$jsonstring = $jsonstring ."{\n";
@@ -2923,7 +2923,7 @@ function readsperpore($jobname,$currun){
 		$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -2932,7 +2932,7 @@ function readsperpore($jobname,$currun){
 			$sql_template = "select count(*) as count, channel from basecalled_template inner join config_general using (basename_id) group by channel order by channel;";
 
 
-			$resultarray;
+			$resultarray=array();
 
 			$template=$mindb_connection->query($sql_template);
 
@@ -2948,7 +2948,7 @@ function readsperpore($jobname,$currun){
 
 			//var_dump($resultarray);
 			//echo json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value){
 				$jsonstring = $jsonstring . "{\n";
@@ -3003,7 +3003,7 @@ function basesperpore($jobname,$currun){
 		$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -3012,7 +3012,7 @@ function basesperpore($jobname,$currun){
 			$sql_template = "select sum(ifnull(length(basecalled_template.sequence),0)+ifnull(length(basecalled_complement.sequence),0)) as bases, channel from basecalled_template inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by channel order by channel;";
 
 
-			$resultarray;
+			$resultarray=array();
 
 			$template=$mindb_connection->query($sql_template);
 
@@ -3028,7 +3028,7 @@ function basesperpore($jobname,$currun){
 
 			//var_dump($resultarray);
 			//echo json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value){
 				$jsonstring = $jsonstring . "{\n";
@@ -3104,7 +3104,7 @@ function active_channels_over_time($jobname,$currun){
 
 $checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 			$checking=$mindb_connection->query($checkrow);
-			if ($checking->num_rows ==1){
+			if (is_object($checking) && $checking->num_rows ==1){
 				//echo "We have already run this!";
 				foreach ($checking as $row){
 					$jsonstring = $row['json'];
@@ -3113,7 +3113,7 @@ $checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 			$sql_template = "select (floor(start_time/60)*60 + exp_start_time) *1000 as bin_floor, count(*) as chan_count from basecalled_template inner join config_general using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
 			$sql_complement = "select (floor(start_time/60)*60  + exp_start_time ) * 1000 as bin_floor, count(*) as chan_count from basecalled_complement inner join config_general using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
 
-			$resultarray;
+			$resultarray=array();
 
 			$template=$mindb_connection->query($sql_template);
 			$complement=$mindb_connection->query($sql_complement);
@@ -3133,7 +3133,7 @@ $checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 
 			//var_dump($resultarray);
 			//$jsonstring = $jsonstring . json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value){
 				$jsonstring = $jsonstring . "{\n";
@@ -3177,7 +3177,7 @@ function average_time_over_time2($jobname,$currun){
 		$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -3221,7 +3221,7 @@ function average_time_over_time2($jobname,$currun){
 			//var_dump ($template);
 			//var_dump($resultarray);
 			//$jsonstring = $jsonstring . json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value){
 				$jsonstring = $jsonstring . "{\n";
@@ -3263,7 +3263,7 @@ function reads_over_time2($jobname,$currun) {
 		$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -3273,7 +3273,7 @@ function reads_over_time2($jobname,$currun) {
 
 			$sql_complement = "select (floor((basecalled_complement.start_time)/(60*5))*(60*5) + exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_complement inner join tracking_id using (basename_id) group by 1 order by 1 ;";
 
-			$resultarray;
+			$resultarray=array();
 
 			$template=$mindb_connection->query($sql_template);
 			$complement=$mindb_connection->query($sql_complement);
@@ -3291,7 +3291,7 @@ function reads_over_time2($jobname,$currun) {
 			}
 			//var_dump($resultarray);
 			//echo json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value){
 				$jsonstring = $jsonstring . "{\n";
@@ -3332,7 +3332,7 @@ function histogrambases($jobname,$currun) {
 		$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -3454,7 +3454,7 @@ function histogram($jobname,$currun) {
 		$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -3583,7 +3583,7 @@ function depthcoverage($jobname,$currun,$refid) {
 		$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 			$checking=$mindb_connection->query($checkrow);
-			if ($checking->num_rows ==1){
+			if (is_object($checking) && $checking->num_rows ==1){
 				//echo "We have already run this!";
 				foreach ($checking as $row){
 					$jsonstring = $row['json'];
@@ -3594,7 +3594,7 @@ function depthcoverage($jobname,$currun,$refid) {
 			$table_exists = $mindb_connection->query($table_check);
 
 
-			$jsonstring;
+			$jsonstring="";
 
 			if ($table_exists->num_rows >= 1){
 				$sql_template = "select count(*) as bases, AVG(count) as coverage from (SELECT count(*) as count,refid,refpos FROM last_align_basecalled_template where (cigarclass=7 or cigarclass=8) and refid = " . $refid . " group by refid,refpos) as x";
@@ -3602,7 +3602,7 @@ function depthcoverage($jobname,$currun,$refid) {
 				$sql_2d = "select count(*) as bases, AVG(count) as coverage from (SELECT count(*) as count,refid,refpos FROM last_align_basecalled_2d where (cigarclass=7 or cigarclass=8) and refid = " . $refid . " group by refid,refpos) as x";
 
 
-				$covarray;
+				$covarray=array();
 
 				$template=$mindb_connection->query($sql_template);
 				$complement=$mindb_connection->query($sql_complement);
@@ -3659,7 +3659,7 @@ function depthcoverage($jobname,$currun,$refid) {
 				$complement=$mindb_connection->query($sql_complement);
 				$read2d=$mindb_connection->query($sql_2d);
 
-				$covarray;
+				$covarray=array();
 
 				if ($template->num_rows >= 1){
 					foreach ($template as $row) {
@@ -3736,7 +3736,7 @@ function percentcoverage($jobname,$currun,$refid) {
 		$memcache->set("$checkrunning", "YES", 0, 0);
 			$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 			$checking=$mindb_connection->query($checkrow);
-			if ($checking->num_rows ==1){
+			if (is_object($checking) && $checking->num_rows ==1){
 				//echo "We have already run this!";
 				foreach ($checking as $row){
 					$jsonstring = $row['json'];
@@ -3744,12 +3744,12 @@ function percentcoverage($jobname,$currun,$refid) {
 			} else {
 				$table_check = "SHOW TABLES LIKE 'last_align_basecalled_template'";
 				$table_exists = $mindb_connection->query($table_check);
-				$jsonstring;
+				$jsonstring="";
 				if ($table_exists->num_rows >= 1){
 					$sql_template = "select count(*) as bases, AVG(count) as coverage from (SELECT count(*) as count,refid,refpos FROM last_align_basecalled_template where (cigarclass=7 or cigarclass=8) and refid = " . $refid . " group by refid,refpos) as x";
 					$sql_complement = "select count(*) as bases, AVG(count) as coverage from (SELECT count(*) as count,refid,refpos FROM last_align_basecalled_complement where (cigarclass=7 or cigarclass=8) and refid = " . $refid . " group by refid,refpos) as x";
 					$sql_2d = "select count(*) as bases, AVG(count) as coverage from (SELECT count(*) as count,refid,refpos FROM last_align_basecalled_2d where (cigarclass=7 or cigarclass=8) and refid = " . $refid . " group by refid,refpos) as x";
-					$covarray;
+					$covarray=array();
 					$template=$mindb_connection->query($sql_template);
 					$complement=$mindb_connection->query($sql_complement);
 					$read2d=$mindb_connection->query($sql_2d);
@@ -3802,7 +3802,7 @@ function percentcoverage($jobname,$currun,$refid) {
 					$complement=$mindb_connection->query($sql_complement);
 					$read2d=$mindb_connection->query($sql_2d);
 					//echo "\n" . $sql_template . "\n";
-					$covarray;
+					$covarray=array();
 
 					if ($template->num_rows >= 1){
 						foreach ($template as $row) {
@@ -3875,13 +3875,13 @@ function readnumberupload($jobname,$currun) {
 		$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
 			}
 		} else {
-
+		$resultarray=array();
 			#Check the number of cached reads - should be a memcached variable if all is going well.
 		$checkcached = $currun."cached";
 		//echo $checkcached . "\n";
@@ -3898,14 +3898,14 @@ function readnumberupload($jobname,$currun) {
 
 		$raw_count = "select count(*) as raw_count from pre_tracking_id;";
 		$raw_count_query = $mindb_connection->query($raw_count);
-		if ($raw_count_query->num_rows >= 1) {
+		if (is_object($raw_count_query) && $raw_count_query->num_rows >= 1) {
 			foreach ($raw_count_query as $row) {
 				$resultarray['Raw']['PRETemp']=$row['raw_count'];
 			}
 		}
 		$raw_count = "select count(*) as raw_count from pre_tracking_id where hairpin_found = 1;";
 		$raw_count_query = $mindb_connection->query($raw_count);
-		if ($raw_count_query->num_rows >= 1) {
+		if (is_object($raw_count_query) && $raw_count_query->num_rows >= 1) {
 			foreach ($raw_count_query as $row) {
 				$resultarray['Raw']['PREcomp']=$row['raw_count'];
 			}
@@ -3915,21 +3915,21 @@ function readnumberupload($jobname,$currun) {
 		#Check the number of raw reads aligned.
 		$raw_align_count = "SELECT count(*) as raw_align_count FROM pre_align_template;";
 		$raw_align_count_query = $mindb_connection->query($raw_align_count);
-		if ($raw_align_count_query->num_rows >= 1) {
+		if (is_object($raw_align_count_query) && $raw_align_count_query->num_rows >= 1) {
 			foreach ($raw_align_count_query as $row) {
 				$resultarray['Raw Align']['PRETemp']=$row['raw_align_count'];
 			}
 		}
 		$raw_align_count = "SELECT count(*) as raw_align_count FROM pre_align_complement;";
 		$raw_align_count_query = $mindb_connection->query($raw_align_count);
-		if ($raw_align_count_query->num_rows >= 1) {
+		if (is_object($raw_align_count_query) && $raw_align_count_query->num_rows >= 1) {
 			foreach ($raw_align_count_query as $row) {
 				$resultarray['Raw Align']['PREComp']=$row['raw_align_count'];
 			}
 		}
 		$raw_align_count = "SELECT count(*) as raw_align_count FROM pre_align_2d;";
 		$raw_align_count_query = $mindb_connection->query($raw_align_count);
-		if ($raw_align_count_query->num_rows >= 1) {
+		if (is_object($raw_align_count_query) && $raw_align_count_query->num_rows >= 1) {
 			foreach ($raw_align_count_query as $row) {
 				$resultarray['Raw Align']['PRE2d']=$row['raw_align_count'];
 			}
@@ -3937,9 +3937,9 @@ function readnumberupload($jobname,$currun) {
 
 			#The number of reads uploaded will always be the current count from tracking_id regardless of wether it is template complement or 2s
 		$current_count = "select count(*) as curr_count from tracking_id;";
-		$resultarray;
+		$resultarray=array();
 		$current_count_query = $mindb_connection->query($current_count);
-		if ($current_count_query->num_rows >=1) {
+		if (is_object($current_count_query) && $current_count_query->num_rows >=1) {
 			foreach ($current_count_query as $row) {
 				$resultarray['Uploaded']['template']=$row['curr_count'];
 				$resultarray['Uploaded']['complement']=$row['curr_count'];
@@ -4027,7 +4027,7 @@ function readnumberupload($jobname,$currun) {
 		}
 		//var_dump($resultarray);
 		//echo json_encode($resultarray);
-		$jsonstring;
+		$jsonstring="";
 		$jsonstring = $jsonstring .   "[\n";
 			foreach ($resultarray as $key => $value){
 				$jsonstring = $jsonstring .   "{\n";
@@ -4074,7 +4074,7 @@ function readnumber($jobname,$currun) {
 		$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -4085,7 +4085,7 @@ function readnumber($jobname,$currun) {
 		$sql_complement = "select count(*) as readnum, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
 		$sql_2d = "select count(*) as readnum, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
 		//echo $sql_template;
-		$resultarray;
+		$resultarray=array();
 
 		$template=$mindb_connection->query($sql_template);
 		$complement=$mindb_connection->query($sql_complement);
@@ -4108,7 +4108,7 @@ function readnumber($jobname,$currun) {
 		}
 		//var_dump($resultarray);
 		//echo json_encode($resultarray);
-		$jsonstring;
+		$jsonstring="";
 		$jsonstring = $jsonstring .   "[\n";
 			foreach ($resultarray as $key => $value){
 				foreach ($value as $key2 => $value2) {
@@ -4152,7 +4152,7 @@ function maxlen($jobname,$currun) {
 		$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -4162,7 +4162,7 @@ function maxlen($jobname,$currun) {
 			$sql_complement = "select MAX(length(sequence)) as maxlen, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
 			$sql_2d = "select MAX(length(sequence)) as maxlen, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
 
-			$resultarray;
+			$resultarray=array();
 
 			$template=$mindb_connection->query($sql_template);
 			$complement=$mindb_connection->query($sql_complement);
@@ -4187,7 +4187,7 @@ function maxlen($jobname,$currun) {
 
 			//var_dump($resultarray);
 			//echo json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value){
 				foreach ($value as $key2 => $value2) {
@@ -4232,7 +4232,7 @@ function avelen($jobname,$currun) {
 		$memcache->set("$checkrunning", "YES", 0, 0);
 		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 		$checking=$mindb_connection->query($checkrow);
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -4242,7 +4242,7 @@ function avelen($jobname,$currun) {
 			$sql_complement = "select ROUND(AVG(length(sequence))) as average_length, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
 			$sql_2d = "select ROUND(AVG(length(sequence))) as average_length, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
 
-			$resultarray;
+			$resultarray=array();
 
 			$template=$mindb_connection->query($sql_template);
 			$complement=$mindb_connection->query($sql_complement);
@@ -4267,7 +4267,7 @@ function avelen($jobname,$currun) {
 
 			//var_dump($resultarray);
 			//echo json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 			foreach ($resultarray as $key => $value){
 				foreach ($value as $key2 => $value2) {
@@ -4318,7 +4318,7 @@ function bases($jobname,$currun){
 		$checking=$mindb_connection->query($checkrow);
 
 
-		if ($checking->num_rows ==1){
+		if (is_object($checking) && $checking->num_rows ==1){
 			//echo "We have already run this!";
 			foreach ($checking as $row){
 				$jsonstring = $row['json'];
@@ -4329,7 +4329,7 @@ function bases($jobname,$currun){
 			$sql_complement = "SELECT sum(length(sequence)) as bases FROM basecalled_complement;";
 			$sql_2d = "SELECT sum(length(sequence)) as bases FROM basecalled_2d;";
 
-			$resultarray;
+			$resultarray=array();
 
 			$template=$mindb_connection->query($sql_template);
 			$complement=$mindb_connection->query($sql_complement);
@@ -4352,7 +4352,7 @@ function bases($jobname,$currun){
 			}
 			//var_dump($resultarray);
 			//echo json_encode($resultarray);
-			$jsonstring;
+			$jsonstring="";
 			$jsonstring = $jsonstring .   "[\n";
 			foreach ($resultarray as $key => $value){
 				$jsonstring = $jsonstring .   "{\n";
