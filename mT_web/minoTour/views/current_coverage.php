@@ -66,6 +66,12 @@ This series of plots shows xy scatter graphs for coverage against the reference 
 </div></h3>
 			  </div>
 			  <div class="panel-body">
+                  <?php
+                  $maxlengththreshold = 50000;
+                  $modamount = 25000;
+                  $max;
+                  $min;
+                  $constrain_plot=0; ?>
 	  			<?php include 'includes/coverageincludes_live.php';?>
 					  </div>
 			</div>
@@ -80,7 +86,8 @@ This series of plots shows xy scatter graphs for coverage against the reference 
 
 
     <!-- Core Scripts - Include with every page -->
-    <script src="js/jquery-1.10.2.js"></script>
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script src="js/ion.rangeSlider.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
 
@@ -89,8 +96,7 @@ This series of plots shows xy scatter graphs for coverage against the reference 
 			    <script type="text/javascript">
 				PNotify.prototype.options.styling = "fontawesome";
 				</script>
-    <script src="js/plugins/morris/raphael-2.1.0.min.js"></script>
-    <script src="js/plugins/morris/morris.js"></script>
+
 
 	<!-- Highcharts Addition -->
 	<script src='http://code.highcharts.com/stock/highstock.js'></script>

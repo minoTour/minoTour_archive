@@ -45,7 +45,7 @@ require_once("includes/functions.php");
 						<div class="panel panel-default">
 						  <div class="panel-heading">
 						    <h3 class="panel-title"><!-- Button trigger modal -->
-			<button class="btn btn-info" data-toggle="modal" data-target="#modal6">
+			<button class="btn btn-info" data-toggle="modal" data-target="#modal5">
 			 <i class="fa fa-info-circle"></i> Coverage Summary</h4>
 			</button>
 
@@ -60,7 +60,7 @@ require_once("includes/functions.php");
         <h4 class="modal-title" id="myModalLabel"> Coverage Summary
       </div>
       <div class="modal-body">
-This series of plots shows xy scatter graphs for coverage against the reference sequence. As well as showing coverage depth, it also reports the positions to which 5' and 3' read ends map.<br><br>
+This series of plots displays coverage depth of template, complement and 2D reads against a reference sequence. As well as showing coverage depth, it also reports the positions to which 5' and 3' read ends map. For the main coverage plots only 50kB regions are displayed to provide real time analysis. If your reference genome is larger than this, a slider will appear allowing you to navigte through the entire genome. <br><br>
 		  </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -101,8 +101,7 @@ This series of plots shows xy scatter graphs for coverage against the reference 
 			    <script type="text/javascript">
 				PNotify.prototype.options.styling = "fontawesome";
 				</script>
-    <script src="js/plugins/morris/raphael-2.1.0.min.js"></script>
-    <script src="js/plugins/morris/morris.js"></script>
+
 
 	<!-- Highcharts Addition -->
 	<script src='http://code.highcharts.com/stock/highstock.js'></script>

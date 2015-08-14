@@ -8,11 +8,7 @@
 	//echo '<br>';
 
 	if (!$mindb_connection->connect_errno) {
-		$maxlengththreshold = 10000;
-		$modamount = 2500;
-		$max;
-		$min;
-		$constrain_plot=0;
+
 
 		$table_check = "SHOW TABLES LIKE 'last_align_basecalled_template'";
 		$table_exists = $mindb_connection->query($table_check);
@@ -30,78 +26,78 @@
 		if ($template->num_rows >= 1){
 			foreach ($template as $row) {
 				$array[$row['refid']] = $row['refname'] ;
-
+				if ($row['max_length'] > $maxlengththreshold) {
+					$start = 0;
+					$end = $maxlengththreshold;
+				}else{
+					$start = -1;
+					$end = -1;
+				}
 				echo "
-			<script>
+				<script>
+
 				$(document).ready(function() {
-					var optionscoverage" . $row['refid'] . " = {
+					var options" . $row['refid'] . " = {
 						chart: {
 							renderTo: 'coverage" . $row['refid'] . "',
-							zoomType: 'x',
 							//type: 'scatter',
 							type: 'line',
+							zoomType: 'x'
 						},
 						title: {
-							text: 'Coverage Depth for ".$row['refname']."',
+						  text: 'Coverage Depth for ".$row['refname']."'
 						},
 						tooltip: {
-		            formatter: function () {
-		                var s = 'Coverage Depth at Position: <b>' + this.x + '</b>';
+					formatter: function () {
+						var s = 'Coverage Depth at Position: <b>' + this.x + '</b>';
 
-		                $.each(this.points, function () {
-		                    s += '<br/>' + this.series.name + ': ' +
-		                        this.y.toPrecision(5) ;
-		                });
+						$.each(this.points, function () {
+							s += '<br/>' + this.series.name + ': ' +
+								this.y.toPrecision(5) ;
+						});
 
-		                return s;
-		            },
-		            shared: true
-		        },
+						return s;
+					},
+					shared: true
+				},
 				xAxis: {
-                    title: {
-                        text: 'Position'
-                    },
-                    labels: {
-                        formatter: function () {
-                            return this.value + ' bp';
-                },
+					title: {
+						text: 'Position'
+					},
+					labels: {
+						formatter: function () {
+							return this.value + ' bp';
+				},
 				";
-				if ($row['max_length'] >= $maxlengththreshold) {
-					$max = round($row['max_length']/2) + $modamount;
-					$min = round($row['max_length']/2) - $modamount;
-					echo "
-				min: " . $min . ",
-				max: " . $max . ",";
-					$constrain_plot = 1;
-				}
+
 		echo "
-            }
-                },
-                yAxis: {
-                    title: {
-                        text: 'Depth',
-                    },
-                    labels: {
-                        align: 'left',
-                        x: 2,
-                        y: 5
-                    },
-                    min: 0
-                },
+			}
+				},
+				yAxis: {
+					title: {
+						text: 'Depth',
+					},
+					labels: {
+						align: 'left',
+						x: 2,
+						y: 5
+					},
+					min: 0
+				},
 
 
 						scrollbar: {
 							enabled: true,
 						},
 						navigator: {
-		            xAxis: {
-		                labels: {
-		                formatter: function () {
-		                    return this.value + ' bp';
-		                }
-		            }
-		            }
-		        },
+					xAxis: {
+						labels: {
+						formatter: function () {
+							return this.value + ' bp';
+						}
+					}
+					}
+				},
 						plotOptions: {
 							scatter: {
 								marker: {
@@ -110,15 +106,15 @@
 							}
 						},
 						rangeSelector: {
-		                    selected: 4,
-		                    inputEnabled: false,
-		                    buttonTheme: {
-		                        visibility: 'hidden'
-		                    },
-		                    labelStyle: {
-		                        visibility: 'hidden'
-		                    }
-		                },
+							selected: 4,
+							inputEnabled: false,
+							buttonTheme: {
+								visibility: 'hidden'
+							},
+							labelStyle: {
+								visibility: 'hidden'
+							}
+						},
 						credits: {
 							enabled: false,
 						},
@@ -130,19 +126,45 @@
 						},
 						series: []
 					};
-					//alert ('max is ".$max."');
-				    $.getJSON('jsonencode/coverage.php?prev=0&seqid=" . $row['refid'] . "&callback=?', function(data) {
-						//alert('success');
-				        optionscoverage" . $row['refid'] . ".series = data; // <- just assign the data to the series property.
+					$('#range".$row['refid']."').ionRangeSlider({
+						hide_min_max: true,
+						keyboard: false,
+						min: 0,
+						max: ".$row['max_length'].",
+						from: ".($maxlengththreshold/2).",
+						type: 'single',
+						step: 500,
+						grid: true,
+						onFinish: function(data){
+							$.getJSON('jsonencode/coverage.php?prev=0&start='+(Number(data.from)-".$modamount.")+'&end='+(Number(data.from)+".$modamount.")+'&seqid=" . $row['refid'] . "&callback=?', function(data) {
+								//alert('testing success');
+								options1.series = data; // <- just assign the data to the series property.
+								var chart" . $row['refid'] . " = new Highcharts.StockChart(options" . $row['refid'] . ");
+								});
+						}
 
-
-
-				        //options.series = JSON2;
-						var chart = new Highcharts.StockChart(optionscoverage" . $row['refid'] . ");
 					});
-				});
-			</script>";
+					$.getJSON('jsonencode/coverage.php?prev=0&start=".$start."&end=".$end."&seqid=" . $row['refid'] . "&callback=?', function(data) {
+						//alert('success');
+						options" . $row['refid'] . ".series = data; // <- just assign the data to the series property.
 
+
+
+						//options.series = JSON2;
+						var chart" . $row['refid'] . " = new Highcharts.StockChart(options" . $row['refid'] . ");
+						});
+				});
+
+					//]]>
+
+
+
+
+
+
+
+
+					</script>";
 echo "
 			<script>
 				$(document).ready(function() {

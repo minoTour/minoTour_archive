@@ -10,8 +10,14 @@
 	if (!$mindb_connection->connect_errno) {
 
 
-		$sql_template = "SELECT refid,refname, max(refpos) as max_length FROM last_align_basecalled_template_5prime inner join reference_seq_info using (refid) group by refid;";
-
+		$table_check = "SHOW TABLES LIKE 'last_align_basecalled_template'";
+		$table_exists = $mindb_connection->query($table_check);
+		$sql_template;
+		if ($table_exists->num_rows >= 1){
+			$sql_template = "SELECT refid,refname, max(refpos) as max_length FROM last_align_basecalled_template inner join reference_seq_info using (refid) group by refid;";
+		}else{
+			$sql_template = "SELECT ref_id as refid,refname, max(ref_pos) as max_length FROM reference_coverage_template inner join reference_seq_info where ref_id = refid group by refid;";
+		}
 		$template=$mindb_connection->query($sql_template);
 			$array;
 		if ($template->num_rows >= 1){
@@ -29,7 +35,7 @@
 				<script>
 
 				$(document).ready(function() {
-					var options1 = {
+					var options" . $row['refid'] . " = {
 				        chart: {
 				            renderTo: 'coverage" . $row['refid'] . "',
 							//type: 'scatter',
@@ -130,20 +136,20 @@
 						onFinish: function(data){
 							$.getJSON('jsonencode/coverage.php?prev=1&start='+(Number(data.from)-".$modamount.")+'&end='+(Number(data.from)+".$modamount.")+'&seqid=" . $row['refid'] . "&callback=?', function(data) {
 								//alert('testing success');
-						        options1.series = data; // <- just assign the data to the series property.
-								var chart1 = new Highcharts.StockChart(options1);
+						        options" . $row['refid'] . ".series = data; // <- just assign the data to the series property.
+								var chart" . $row['refid'] . " = new Highcharts.StockChart(options" . $row['refid'] . ");
 								});
 						}
 
 					});
 				    $.getJSON('jsonencode/coverage.php?prev=1&start=".$start."&end=".$end."&seqid=" . $row['refid'] . "&callback=?', function(data) {
 						//alert('success');
-				        options1.series = data; // <- just assign the data to the series property.
+				        options" . $row['refid'] . ".series = data; // <- just assign the data to the series property.
 
 
 
 				        //options.series = JSON2;
-						var chart1 = new Highcharts.StockChart(options1);
+						var chart" . $row['refid'] . " = new Highcharts.StockChart(options" . $row['refid'] . ");
 						});
 				});
 
