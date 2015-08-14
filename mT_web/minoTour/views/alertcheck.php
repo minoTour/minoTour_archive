@@ -70,8 +70,16 @@ if ($login->isUserLoggedIn() == true) {
 					$getcompletealerts = "SELECT * FROM " . $dbname . ".alerts where complete = 1;";
 					$getthemalerts = $mindb_connection->query($getalerts);
 					$getthemcompletealerts = $mindb_connection->query($getcompletealerts);
-					$activealerts = $activealerts + $getthemalerts->num_rows;
-					$completedalerts = $completedalerts + $getthemcompletealerts->num_rows;
+					if (is_object($getthemalerts)){
+						$activealerts = $activealerts + $getthemalerts->num_rows;
+					}else{
+						$activealerts = $activealerts;
+					}
+					if (is_object($getthemcompletealerts)){
+						$completedalerts = $completedalerts + $getthemcompletealerts->num_rows;
+					}else{
+						$completedalerts = $completedalerts;
+					}
 
 				}
 				echo "<small>$activealerts alerts running.</small><br>";
@@ -87,7 +95,7 @@ if ($login->isUserLoggedIn() == true) {
 						$getalerts = "SELECT name,reference,username,threshold,alert_index,twitterhandle,type,start,end,control FROM " . $dbname . ".alerts where complete = 0;";
 						$getthemalerts2 = $mindb_connection->query($getalerts);
 						//echo "Num rows is " . $getthemalerts2->num_rows . "\n";
-						if ($getthemalerts2->num_rows){
+						if ($getthemalerts2->num_rows >= 1){
 							foreach ($getthemalerts2 as $row){
 								$jobstodo[] = array(
 								    'job' => $row['name'],
