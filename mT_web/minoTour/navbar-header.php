@@ -5,9 +5,9 @@
          <span class="icon-bar"></span>
          <span class="icon-bar"></span>
      </button>
-     <a class="navbar-brand" href="index.php">
-							  <i class="fa fa-bolt"></i> minoTour v <?php echo $_SESSION['minotourversion'];?>
-  						     
+     <a class="navbar-brand" href="index.php" style="color:black;">
+							  <img style="max-width:30px; margin-top: -5px;" src="images/minotaurlogosmall.png" alt="minoTour_logo">inoTour v <?php echo $_SESSION['minotourversion'];?>
+
 								 </a>
  </div>
  <?php checksessionvars();
@@ -15,11 +15,11 @@
 		$_SESSION['focusrun']=$_GET["roi"];
 	}
  ?>
- 
+
 
  <!-- /.navbar-header -->
             <ul class="nav navbar-top-links navbar-right">
-                
+
                 <!-- /.dropdown -->
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -39,8 +39,4 @@
                     <!-- /.dropdown-user -->
                 </li>
                 <!-- /.dropdown -->
-            </ul>           
-		   
-			
-			
-            
+            </ul>

@@ -23,12 +23,9 @@
 </head>
 
 <body>
- 
-
-    <div class="container">
+     <div class="container">
 		<div class="row">
-		   							 <h4 class="text-center" style="color:white"><i class="fa fa-bolt"></i> minoTour - <em>real time data analysis for minION data</em> - minoTour <i class="fa fa-bolt"></i></h4>
-
+		<h4 class="text-center" style="color:white"><img style="max-width:100px;" src="images/minotaurlogo.png" alt="minoTour_logo"><br>- <em>real time data analysis for minION data</em> -</h4>
 		</div>
 <?php if (gethostname() == "minotour.nottingham.ac.uk") { ?>
 		<div class="row">
@@ -58,13 +55,13 @@
 						<h5><a href="register_new.php">Click Here To Register New account</a></h5>
                     </div>
                 </div>
-				
+
             </div>
-			
+
         </div>
-		
+
     </div>
-	
+
 	<?php
 	// show potential errors / feedback (from login object)
 	if (isset($login)) {
@@ -80,21 +77,20 @@
 	    }
 	}
 	?>
-	
-		
 
-	<div class="row">	
+
+
+	<div class="row">
 			<div class="center-block">
-			
+
 			<!-- 16:9 aspect ratio -->
 			<div class="embed-responsive embed-responsive-16by9" style="text-align:center;">
 			  <iframe class="embed-responsive-item" width="640" height="360" src="//www.youtube.com/embed/gbyvhJOrjZw" frameborder="0" allowfullscreen></iframe>
 			</div>
 
 		</div>
-		
-								 <h5 class="text-center" style="color:white"><i class="fa fa-bolt"></i> minoTour - <em>for more info on minoTour contact Matt Loose <a href="mailto:matt.loose@nottingham.ac.uk?Subject=minoTour%20information%20request" target="_top"><i style="color:white" class="fa fa-envelope-o"></i></a> <a href="http://www.twitter.com/mattloose" target="_blank"><i class="fa fa-twitter-square" style="color:white"></i></a></em> - minoTour <i style="color:white" class="fa fa-bolt"></i></h5>
-								 <h5 class="text-center" style="color:white"><i class="fa fa-bolt" style="color:white"></i> Oxford Nanopore - <em>for more info on minoIONs see Oxford Nanopore <a href="https://www.nanoporetech.com" target="_blank"><i class="fa fa-globe" style="color:white"></i></a></em> - Oxford Nanopore <i style="color:white" class="fa fa-bolt"></i></h5>				 
+        <h5 class="text-center" style="color:white"><img style="max-width:100px;" src="images/minotaurlogo.png" alt="minoTour_logo"> - <em>for more info on minoTour contact Matt Loose <a href="mailto:matt.loose@nottingham.ac.uk?Subject=minoTour%20information%20request" target="_top"><i style="color:white" class="fa fa-envelope-o"></i></a> <a href="http://www.twitter.com/mattloose" target="_blank"><i class="fa fa-twitter-square" style="color:white"></i></a></em> - <img style="max-width:100px;" src="images/minotaurlogo.png" alt="minoTour_logo"></h5>
+		<h5 class="text-center" style="color:white"><i class="fa fa-bolt" style="color:white"></i> Oxford Nanopore - <em>for more info on minoIONs see Oxford Nanopore <a href="https://www.nanoporetech.com" target="_blank"><i class="fa fa-globe" style="color:white"></i></a></em> - Oxford Nanopore <i style="color:white" class="fa fa-bolt"></i></h5>
 	</div>
     <!-- Core Scripts - Include with every page -->
     <script src="js/jquery-1.10.2.js"></script>
