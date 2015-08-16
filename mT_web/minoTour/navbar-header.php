@@ -5,7 +5,7 @@
          <span class="icon-bar"></span>
          <span class="icon-bar"></span>
      </button>
-     <a class="navbar-brand" href="index.php" style="color:black;">
+     <a class="navbar-brand" href="index.php" class="pull-left" style="color:black;">
 							  <img style="max-width:30px; margin-top: -5px;" src="images/minotaurlogosmall.png" alt="minoTour_logo">inoTour v <?php echo $_SESSION['minotourversion'];?>
 
 								 </a>

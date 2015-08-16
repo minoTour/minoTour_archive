@@ -89,7 +89,7 @@
 			</div>
 
 		</div>
-        <h5 class="text-center" style="color:white"><img style="max-width:100px;" src="images/minotaurlogo.png" alt="minoTour_logo"> - <em>for more info on minoTour contact Matt Loose <a href="mailto:matt.loose@nottingham.ac.uk?Subject=minoTour%20information%20request" target="_top"><i style="color:white" class="fa fa-envelope-o"></i></a> <a href="http://www.twitter.com/mattloose" target="_blank"><i class="fa fa-twitter-square" style="color:white"></i></a></em> - <img style="max-width:100px;" src="images/minotaurlogo.png" alt="minoTour_logo"></h5>
+        <h5 class="text-center" style="color:white">- <em>for more info on minoTour contact Matt Loose <a href="mailto:matt.loose@nottingham.ac.uk?Subject=minoTour%20information%20request" target="_top"><i style="color:white" class="fa fa-envelope-o"></i></a> <a href="http://www.twitter.com/mattloose" target="_blank"><i class="fa fa-twitter-square" style="color:white"></i></a></em> -</h5>
 		<h5 class="text-center" style="color:white"><i class="fa fa-bolt" style="color:white"></i> Oxford Nanopore - <em>for more info on minoIONs see Oxford Nanopore <a href="https://www.nanoporetech.com" target="_blank"><i class="fa fa-globe" style="color:white"></i></a></em> - Oxford Nanopore <i style="color:white" class="fa fa-bolt"></i></h5>
 	</div>
     <!-- Core Scripts - Include with every page -->
