@@ -52,6 +52,7 @@ else
 	echo "OK - we'll exit now then."
 	exit
 fi
+git pull
 sudo apt-get update
 sudo apt-get install lamp-server^
 sudo apt-get install memcached php5-memcache
