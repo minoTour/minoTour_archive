@@ -38,7 +38,7 @@ if ($login->isUserLoggedIn() == true) {
 	//echo '<br>';
 
 	$jobtype = $_GET['job'];
-	
+
 	switch ($jobtype) {
     case "stopminion":
     	$command = "insert into interaction (instruction,target,complete) VALUES ('stop','all','0');";
@@ -49,9 +49,10 @@ if ($login->isUserLoggedIn() == true) {
 	</div>";
         break;
     case "startminion":
-	    $command = "insert into interaction (instruction,target,complete) VALUES ('start','all','0');";
+        $scripttype = $_GET['script'];
+	    $command = "insert into interaction (instruction,target,complete,param1) VALUES ('start','all','0','". $scripttype . "');";
     	$sqlcommand = $mindb_connection->query($command);
-       echo "<div class='alert alert-warning alert-dismissible' role='alert'>
+       echo "<div class='alert alert-warning alert-dismissble' role='alert'>
 	  <button type='button' class='close' data-dismiss='alert'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button>
 	  <strong>Success!</strong> A start instruction has been sent to the minION device.
 	</div>";
@@ -94,13 +95,13 @@ if ($login->isUserLoggedIn() == true) {
 	  <strong>ERROR!</strong> No job has been specified and some kind of error has occurred - sorry about this!
 	</div>";
 }
-	
-			
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
 }
 
 function getx($value){

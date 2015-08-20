@@ -5,18 +5,18 @@ if ($login->isUserLoggedIn() == true) {
     // the user is logged in. you can do whatever you want here.
     // for demonstration purposes, we simply show the "you are logged in" view.
     //include("views/index_old.php");*/
-    
+
 	$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,DB_NAME);
 	$mindb_connection2 = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['active_run_name']);
 	// Connection creation
 	$memcache = new Memcache;
 	#$cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT) or die ("Memcached Failure");
 	$cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT);
-    
+
     $checkalertrunning = $memcache->get("alertcheckrunning");
 
 	if (!$db_connection->connect_errno) {
-		
+
 			//echo "<script src=\"js/jquery-1.10.2.js\"></script>
 			//    <script src=\"js/bootstrap.min.js\"></script>
 			  //  <script src=\"js/plugins/metisMenu/jquery.metisMenu.js\"></script>";
@@ -33,7 +33,7 @@ if ($login->isUserLoggedIn() == true) {
   				<table class='table table-condensed' >
  					 <tr>
     <th>Category</td>
-    <th>Info</td> 
+    <th>Info</td>
   </tr>
   <tr>
     <td>minKNOW computer name</td>
@@ -145,16 +145,32 @@ if ($login->isUserLoggedIn() == true) {
     echo "</td>
   </tr>
 				</table>
+
+                <em>Available scripts are:</em><br>
+                ";
+                $availablescripts = "SELECT * FROM messages where message = 'runscript' order by message_index;";
+            			#echo $currentbias . "<br>";
+            			$availablescriptsare = $mindb_connection2->query($availablescripts);
+            			if ($availablescriptsare->num_rows > 0) {
+            				foreach ($availablescriptsare as $row) {
+            					echo "-->" . $row['param1'] . "<br>";
+            				}
+            			}else {
+            					echo "Not Available.";
+            			}
+
+                echo "
+
 				</div>
 				</div>
 			</div>";
 
-		
 
-			
+
+
 		}
 
-		
+
 }
 
 

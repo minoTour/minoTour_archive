@@ -12,7 +12,7 @@ require_once("includes/functions.php");
     <div id="wrapper">
 
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
-           
+
 			<?php include 'navbar-header.php' ?>
             <!-- /.navbar-top-links -->
 			<?php include 'navbar-top-links.php'; ?>
@@ -21,13 +21,13 @@ require_once("includes/functions.php");
 
         <div id="page-wrapper">
 						<?php include 'includes/run_check.php';?>
-						
+
             <div class="row">
                 <div class="col-lg-12">
                     <h1 class="page-header">Live Control - run: <?php echo cleanname($_SESSION['active_run_name']);; ?></h1>
                 </div>
-                
-				
+
+
 <!-- Modal -->
 <div class="modal fade" id="pincheck" tabindex="-1"  data-keyboard="false" data-backdrop="static" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -42,9 +42,9 @@ require_once("includes/functions.php");
        <br>
        <div class="form-group">
     		<label for="inputPassword3" class="control-label">Enter Pin</label>
-    		
+
     		  <input type="password" class="form-control" id="pincheckfield" placeholder="pin">
-    		
+
       	</div>
       	<div class="modal-footer">
         <button type="button" id="pinback" class="btn btn-default">Cancel</button>
@@ -54,8 +54,8 @@ require_once("includes/functions.php");
   </div>
 </div>
                 <?php
-	
-		
+
+
 	//Check if INTERACTION Table already exists:
 		$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['active_run_name']);
 		$query = "SHOW TABLES LIKE 'interaction';";
@@ -63,7 +63,7 @@ require_once("includes/functions.php");
 		$result = $sql->num_rows;
 		//echo $query . "\n";
 		//echo $result . "\n";
-		
+
 		if ($result >= 1){
 			//echo "Table exists";
 			//$insertresult = "INSERT INTO jsonstore (name,json) VALUES ('". $jsonjobname . "','".$jsonstring . "');";
@@ -83,7 +83,7 @@ require_once("includes/functions.php");
 CHARACTER SET utf8;";
 			$create_tbl = $mindb_connection->query($create_table);
 		}
-			
+
 			//Check if messages Table already exists:
 		$query = "SHOW TABLES LIKE 'messages';";
 		$sql = $mindb_connection->query($query);
@@ -106,9 +106,9 @@ CHARACTER SET utf8;";
 			#echo $create_table2;
 			$create_tbl2 = $mindb_connection->query($create_table2);
 			#echo $create_tbl2;
-				
+
 		}
-		
+
 		if ($_SESSION['currentbarcode'] >= 1){
 			//Check if BARCODE_CONTROL table already exists
 			$query = "SHOW TABLES LIKE 'barcode_control';";
@@ -116,7 +116,7 @@ CHARACTER SET utf8;";
 			$result = $sql->num_rows;
 			//echo $query . "\n";
 			//echo $result . "\n";
-			
+
 			if ($result >= 1){
 				//echo "Table exists";
 				//$insertresult = "INSERT INTO jsonstore (name,json) VALUES ('". $jsonjobname . "','".$jsonstring . "');";
@@ -139,12 +139,12 @@ CHARACTER SET utf8;";
 					$sqlinsertexecute = $mindb_connection->query($sqlinsert);
 			}
 
-						
-			
-				
+
+
+
 		}
 		}
- 
+
 ?>
 
                 <!-- /.col-lg-12 -->
@@ -152,14 +152,14 @@ CHARACTER SET utf8;";
             </div>
             <p>Remote control of your minION device is available via these pages. To ensure security a matching pin number must be entered to access this page and on the minUP script controlling the minION device. If minUP is not running on the same machine as the minION device control of your sequencer is not possible via minoTour.</p>
             <div class="row">
-            
+                <div id="cumulativeyield" style="width:100%; height:300px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Cumulative Reads</div>
                 <div class="col-md-6">
             		<div id="minknowinfo"></div>
             	</div>
             	<div class="col-md-6">
             		<div class="panel panel-warning">
   						<div class="panel-heading">
-					    <h3 class="panel-title">minKNOW Control</h3>
+					    <h3 class="panel-title">minKNOW Control options</h3>
 						  </div>
 					  <div class="panel-body">
 						    <h5>To test if you have a connection to minKNOW:</h5>
@@ -173,13 +173,13 @@ CHARACTER SET utf8;";
 		<button id='biasvoltagedec' type='button' class='btn btn-info btn-sm'><i class='fa fa-arrow-circle-down'></i> Dec Bias Voltage</button>
 		<br>
         <h5>Remote Start/Stop</h5>
-        
+
 				<!-- Indicates a dangerous or potentially negative action -->
 				<!-- Button trigger modal -->
 				<button id='stopminion' class='btn btn-danger btn-sm' data-toggle='modal' data-target='#stopminionmodal'>
 				  <i class='fa fa-stop'></i> Stop minION
 				</button>
- 
+
 				<!-- Modal -->
 				<div class='modal fade' id='stopminionmodal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
 					<div class='modal-dialog'>
@@ -191,7 +191,7 @@ CHARACTER SET utf8;";
 							<div class='modal-body'>
 								<div id='stopminioninfo'>
 									<p>This will attempt to stop your minION sequencer remotely. It should be possible to restart sequencing remotely but software crashes on the minION controlling device may cause problems. You should only stop your minION device remotely if you are certain you wish to do so and <strong> at your own risk</strong>.</p>
-									
+
 									<p>If you are sure you wish to do this, click 'Stop minION' below. Otherwise close this window.</p>
 								</div>
 								<div id='stopworking'>
@@ -206,14 +206,14 @@ CHARACTER SET utf8;";
 						</div><!-- /.modal-dialog -->
 					</div><!-- /.modal -->
         		</div>
-        		
-        
+
+
 				<!-- Indicates a dangerous or potentially negative action -->
 				<!-- Button trigger modal -->
 				<button id='startminion' class='btn btn-success btn-sm' data-toggle='modal' data-target='#startminionmodal'>
 				  <i class='fa fa-play'></i> Start minION
 				</button>
- 
+
 				<!-- Modal -->
 				<div class='modal fade' id='startminionmodal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
 					<div class='modal-dialog'>
@@ -225,8 +225,31 @@ CHARACTER SET utf8;";
 							<div class='modal-body'>
 								<div id='startminioninfo'>
 									<p>This will attempt to restart your minION sequencer remotely.</p>
-									
-									<p>If you are sure you wish to do this, click 'Start minION' below. Otherwise close this window.</p>
+
+									<p>If you are sure you wish to do this select an available run script and click 'Start minION' below. Otherwise close this window.</p>
+                                    <?php
+                                    $availablescripts = "SELECT * FROM messages where message = 'runscript' order by message_index;";
+
+                                	$availablescriptsare = $mindb_connection->query($availablescripts);
+                                	if ($availablescriptsare->num_rows > 0) {
+                                		foreach ($availablescriptsare as $row) {
+                                			echo "
+                                            <div class='radio'>
+                                                <label>
+                                                    <input type='radio' name='scriptRadios' id='" . $row['param1'] . "' value='" . $row['param1'] . "' >
+                                                    " . $row['param1'] . ".py
+                                                </label>
+                                            </div>
+                                            ";
+
+                                		}
+                                	}else {
+                                		echo "Not Available.";
+                                	}
+                                    ?>
+
+
+
 								</div>
 								<div id='startworking'>
 									<p class='text-center'>We're working to restart your minION device. Please be patient and don't navigate away from this page.</p>
@@ -243,9 +266,9 @@ CHARACTER SET utf8;";
 					  </div>
 					</div>
             	</div>
-            	
+
             </div>
-			 	<div id="messages"></div>				
+			 	<div id="messages"></div>
         <div class="row">
         	<div class="col-md-6">
         		<div class="panel panel-default">
@@ -287,15 +310,15 @@ CHARACTER SET utf8;";
 										<?php }?>
 									</select>
 								</div>
-								<div class="input-group">	
+								<div class="input-group">
 									<label for="refcoveragedepth">Coverage Depth:</label>
 									<input type="text" class="form-control" value=0 id="refcoveragedepth"></input>
 								</div>
-								<div class="input-group">	
+								<div class="input-group">
 									<label for="refcoveragedepthstart">Optional Start:</label>
 									<input type="text" class="form-control" value=0 id="refcoveragedepthstart"></input>
 								</div>
-								<div class="input-group">	
+								<div class="input-group">
 									<label for="refcoveragedepthend">Optional End:</label>
 									<input type="text" class="form-control" value=0 id="refcoveragedepthend"></input>
 								</div>
@@ -308,15 +331,15 @@ CHARACTER SET utf8;";
 									</span>
 								</div>
 								</form>
-								
+
 								</div>
 							</div>
-						</div>	
+						</div>
 					</div>
         		</div>
         	</div>
 
-		
+
 
         	<div class="col-md-6">
         		<div class="panel panel-warning">
@@ -348,7 +371,7 @@ CHARACTER SET utf8;";
 						<div class="panel-body">
 							<div class="row">
 							<div class = "col-lg-12">
-							<?php 
+							<?php
 							$queryarray;
 							$querycheck = "SELECT * from alerts;";
 							$querycheckresult = $mindb_connection->query($querycheck);
@@ -361,7 +384,7 @@ CHARACTER SET utf8;";
 								$queryarray[$row['name']][$row['alert_index']]['start']=$row['start'];
 								$queryarray[$row['name']][$row['alert_index']]['end']=$row['end'];
 								$queryarray[$row['name']][$row['alert_index']]['alert_index']=$row['alert_index'];
-								
+
 							}
 							if ($_SESSION['currentbarcode'] >= 1) {
 								if (isset($queryarray["barcodecoverage"])){
@@ -378,24 +401,24 @@ CHARACTER SET utf8;";
 										echo "<tr>";
 										echo "<td>";
 										echo $entry['reference'];
-										echo "</td>";	
+										echo "</td>";
 										echo "<td>";
 										echo $entry['threshold'];
-										echo "</td>";	
+										echo "</td>";
 										echo "<td>";
 										echo $entry['control'];
-										echo "</td>";	
+										echo "</td>";
 										echo "<td>";
 										echo $entry['complete'];
-										echo "</td>";	
+										echo "</td>";
 										//echo "<td>";
 										//echo "Remove";
-										//echo "</td>";	
-									
+										//echo "</td>";
+
 									}
 									echo "</table>";
 									echo "<button id='removethresholds' type='button' class='btn btn-danger'>Remove Thresholds</button><br><br>";
-	
+
 								}else{
 									echo "<em>No Individual Barcode Thresholds Set.</em><br><br>";
 								}
@@ -413,21 +436,21 @@ CHARACTER SET utf8;";
 										echo "<td>";
 										//echo $entry['reference'];
 										echo "All Barcodes";
-										echo "</td>";	
+										echo "</td>";
 										echo "<td>";
 										echo $entry['threshold'];
-										echo "</td>";	
+										echo "</td>";
 										echo "<td>";
 										echo $entry['control'];
-										echo "</td>";	
+										echo "</td>";
 										echo "<td>";
 										echo $entry['complete'];
-										echo "</td>";								
+										echo "</td>";
 									}
 									echo "</table>";
 									echo "<button id='removeglobthreshold' type='button' class='btn btn-danger'>Remove Global Threshold</button><br><br>";
 								}else{
-									echo "<em>No Global Barcode Theshold Set.</em><br><br>";	
+									echo "<em>No Global Barcode Theshold Set.</em><br><br>";
 								}
 							}
 							if (isset($queryarray["referencecoverage"])){
@@ -446,7 +469,7 @@ CHARACTER SET utf8;";
 									echo "<tr>";
 									echo "<td>";
 									echo $entry['reference'];
-									echo "</td>";	
+									echo "</td>";
 									echo "<td>";
 									echo $entry['threshold'];
 									echo "</td>";
@@ -455,25 +478,25 @@ CHARACTER SET utf8;";
 									echo "</td>";
 									echo "<td>";
 									echo $entry['end'];
-									echo "</td>";	
+									echo "</td>";
 									echo "<td>";
 									echo $entry['control'];
-									echo "</td>";	
+									echo "</td>";
 									echo "<td>";
 									echo $entry['complete'];
-									echo "</td>";	
+									echo "</td>";
 									echo "<td>";
 									echo "<button id='removeref";
 									echo $entry['alert_index'];
 									echo "' type='button' value='" . $entry['alert_index'] . "' class='btn btn-danger'>Remove</button><br><br>";
-									echo "</td>";	
-								
+									echo "</td>";
+
 								}
-								echo "</table>";	
+								echo "</table>";
 							}else{
-								echo "<em>No Reference Coverage Thesholds Set.</em><br><br>";	
+								echo "<em>No Reference Coverage Thesholds Set.</em><br><br>";
 							}
-							//var_dump ($queryarray);						
+							//var_dump ($queryarray);
 							?>
         			</div>
         			</div></div></div>
@@ -483,25 +506,25 @@ CHARACTER SET utf8;";
         	</div>
        </div>
 
-		
+
 		<?php if ($_SESSION['currentbarcode'] >= 1) {?>
 		<?php //We want to get the current values for the barcodes if they exists ?>
-		<?php 
+		<?php
 			$barcodearray;
 			$barcodecheck = "SELECT * FROM alerts where name='barcodecoverage';";
 			$barcodecheckresult = $mindb_connection->query($barcodecheck);
 			foreach ($barcodecheckresult as $row) {
-				//echo $row['name'] . "\t" . $row['reference'] . "\t" . $row['threshold'] . "<br>";	
+				//echo $row['name'] . "\t" . $row['reference'] . "\t" . $row['threshold'] . "<br>";
 				$barcodearray[$row['reference']]=$row['threshold'];
 			}
 			$genbarcodecheck = "SELECT * FROM alerts where name = 'genbarcodecoverage';";
 			$genbarcodecheckresult = $mindb_connection->query($genbarcodecheck);
 			foreach ($genbarcodecheckresult as $row) {
-				//echo $row['name'] . "\t" . $row['reference'] . "\t" . $row['threshold'] . "<br>";	
+				//echo $row['name'] . "\t" . $row['reference'] . "\t" . $row['threshold'] . "<br>";
 				$barcodearray['genbarcodecoverage']=$row['threshold'];
 			}
-			
-			
+
+
 			?>
 		<div class="row">
 			<div class="col-md-6">
@@ -561,14 +584,14 @@ CHARACTER SET utf8;";
 											</div>
 												<div class="col-lg-12">
 												<form class="form-inline">
-												<?php $barcodes = ["BC01","BC02","BC03","BC04","BC05","BC06","BC07","BC08","BC09","BC10","BC11","BC12"];?>			
+												<?php $barcodes = ["BC01","BC02","BC03","BC04","BC05","BC06","BC07","BC08","BC09","BC10","BC11","BC12"];?>
 												<?php foreach ($barcodes as $barcode) {?>
 													<div class="form-group">
 													<label for="barcode_coverage_<?php echo $barcode; ?>"><?php echo $barcode; ?></label>
 													<input type="text" class="form-control" value=<?php if ($barcodearray[$barcode]>0){echo $barcodearray[$barcode];}else{echo "0";}?>  id="barcodecov<?php echo $barcode; ?>"></input>
 													</div>
 													<?php } ?>
-													<br><br>	
+													<br><br>
 														<div class="form-group">
 														<label for="barcode_coverage_stop">Auto finish run</label>
 														<input type="checkbox" id="barcode_coverage_stop"></input>
@@ -586,22 +609,22 @@ CHARACTER SET utf8;";
 								<?php }; ?>
 								<!--NEW BLOCK-->
 							</div>
-												
-					
-					
-					
+
+
+
+
         </div>
-        
-        
+
+
         <!-- /#page-wrapper -->
 		<!-- Checking for table existence -->
-		
+
     </div>
-    
-    
+
+
     <!-- /#wrapper -->
-	
-	
+
+
     <!-- Core Scripts - Include with every page -->
     <script src="js/jquery-1.10.2.js"></script>
     <script src="js/bootstrap.min.js"></script>
@@ -615,16 +638,16 @@ CHARACTER SET utf8;";
 			    <script type="text/javascript">
 				PNotify.prototype.options.styling = "fontawesome";
 				</script>
-    
-	
+
+
 	<!-- Highcharts Addition -->
 	<script src="js/highcharts.js"></script>
 	<script type="text/javascript" src="js/themes/grid-light.js"></script>
 	<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
-	
-			     
-									
+
+
+
     <!-- SB Admin Scripts - Include with every page -->
     <script src="js/sb-admin.js"></script>
 
@@ -659,9 +682,10 @@ CHARACTER SET utf8;";
 	        	$('#startminioninfo').hide();
        		    $('#startworking').show();
        		    $('#startnow').addClass('disabled');
+                var script = $("input[type='radio'][name='scriptRadios']:checked").val();
 	            e.preventDefault(); // preventing default click action
 	            $.ajax({
-	                url: 'jsonencode/interaction.php?prev=0&job=startminion',
+	                url: 'jsonencode/interaction.php?prev=0&job=startminion&script='+script,
 	                success: function(data){
 						//alert ('success');
 	                    $('#startminionmodal').modal('hide')
@@ -675,8 +699,8 @@ CHARACTER SET utf8;";
 	            })
 				//alert ("button clicked");
 	        })
-	    })	  
-	     
+	    })
+
 	</script>
 	<script>
 	$(function(){
@@ -743,7 +767,7 @@ CHARACTER SET utf8;";
             $( "#minknowinfo").load("minknowinfo.php").fadeIn("slow");
             //eval(document.getElementById("infodiv").innerHTML);
             }, 1000); // refresh every 1000 milliseconds
-    
+
 	</script>
      <script>
         $( "#infodiv" ).load( "alertcheck.php" ).fadeIn("slow");
@@ -753,19 +777,19 @@ CHARACTER SET utf8;";
             //eval(document.getElementById("infodiv").innerHTML);
             }, 10000); // refresh every 5000 milliseconds
     </script>
-    
+
     <script>
     	$(function(){
             $('#barcode_coverage_button').on('click', function(e){
                 e.preventDefault(); // preventing default click action
                 var checkval = $("#barcode_coverage_stop:checked").val();
                 //alert (checkval);
-            	<?php $barcodes = ["BC01","BC02","BC03","BC04","BC05","BC06","BC07","BC08","BC09","BC10","BC11","BC12"];?>			
+            	<?php $barcodes = ["BC01","BC02","BC03","BC04","BC05","BC06","BC07","BC08","BC09","BC10","BC11","BC12"];?>
 				<?php foreach ($barcodes as $barcode) {?>
 				var idVal = $("#barcodecov<?php echo $barcode; ?>").val();
                 //alert('were getting there ' + idClicked + ' is ' + idVal);
         		//alert ($("input:radio[name='coveragenoticeradio']:checked").val());
-        		//var type = $("input:radio[name='coveragenoticeradio']:checked").val(); 
+        		//var type = $("input:radio[name='coveragenoticeradio']:checked").val();
                 if (checkval == 'on'){
 					var monkey = 'jsonencode/set_alerts.php?twitterhandle=<?php echo $_SESSION['twittername'];?>&type=2D&rununtil=1&reference=<?php echo $barcode; ?>&task=barcodecoverage&threshold='+idVal;
 					//alert ('yes');
@@ -775,7 +799,7 @@ CHARACTER SET utf8;";
                 //alert (monkey);
                 $.ajax({
                     url: monkey,
-                   // alert ('url'),                    
+                   // alert ('url'),
                     success: function(data){
                         //alert ('success');
                         $('#resetmodal').modal('hide')
@@ -786,13 +810,13 @@ CHARACTER SET utf8;";
                     },
                 })
 				<?php };?>
-				
-            })
-    	})                
 
-				
+            })
+    	})
+
+
     </script>
-    
+
     <script>
     	$(function(){
     		$('#reference_coverage_button').on('click', function(e) {
@@ -812,7 +836,7 @@ CHARACTER SET utf8;";
     			}
     			$.ajax({
                     url: monkey,
-                   // alert ('url'),                    
+                   // alert ('url'),
                     success: function(data){
                         //alert ('success');
                         $('#resetmodal').modal('hide')
@@ -822,7 +846,7 @@ CHARACTER SET utf8;";
                         alert('ajax failed');
                     },
                 })
-    		})	
+    		})
     	})
     </script>
 <script>
@@ -833,7 +857,7 @@ CHARACTER SET utf8;";
     			var monkey = 'jsonencode/set_alerts.php?task=barcodecoveragedelete&type=2D';
     			$.ajax({
                     url: monkey,
-                   // alert ('url'),                    
+                   // alert ('url'),
                     success: function(data){
                         //alert ('success');
                         $('#resetmodal').modal('hide')
@@ -844,7 +868,7 @@ CHARACTER SET utf8;";
                         alert('ajax failed');
                     },
                 })
-    		})	
+    		})
     	})
     </script>
 <script>
@@ -855,7 +879,7 @@ CHARACTER SET utf8;";
     			var monkey = 'jsonencode/set_alerts.php?task=genbarcodecoveragedelete&type=2D';
     			$.ajax({
                     url: monkey,
-                   // alert ('url'),                    
+                   // alert ('url'),
                     success: function(data){
                         //alert ('success');
                         $('#resetmodal').modal('hide')
@@ -866,7 +890,7 @@ CHARACTER SET utf8;";
                         alert('ajax failed');
                     },
                 })
-    		})	
+    		})
     	})
     </script>
 <script>
@@ -878,7 +902,7 @@ CHARACTER SET utf8;";
     			var monkey = 'jsonencode/set_alerts.php?task=referencecoveragedelete&type=2D&reference='+this.id;
     			$.ajax({
                     url: monkey,
-                  // alert ('url'),                    
+                  // alert ('url'),
                     success: function(data){
                         //alert ('success');
                         $('#resetmodal').modal('hide')
@@ -889,10 +913,10 @@ CHARACTER SET utf8;";
                         alert('ajax failed');
                     },
                 })
-    		})	
+    		})
     	})
    </script>
-    <!--<?php $barcodes = ["BC01","BC02","BC03","BC04","BC05","BC06","BC07","BC08","BC09","BC10","BC11","BC12"];?>			
+    <!--<?php $barcodes = ["BC01","BC02","BC03","BC04","BC05","BC06","BC07","BC08","BC09","BC10","BC11","BC12"];?>
 				<?php foreach ($barcodes as $barcode) {?>
 				<script>
 
@@ -903,12 +927,12 @@ CHARACTER SET utf8;";
                 var idVal = $("#barcodecov<?php echo $barcode; ?>").val();
                 //alert('were getting there ' + idClicked + ' is ' + idVal);
         		//alert ($("input:radio[name='coveragenoticeradio']:checked").val());
-        		//var type = $("input:radio[name='coveragenoticeradio']:checked").val(); 
+        		//var type = $("input:radio[name='coveragenoticeradio']:checked").val();
                  var monkey = 'jsonencode/set_alerts.php?twitterhandle=<?php echo $_SESSION['twittername'];?>&type=2D&reference=<?php echo $barcode; ?>&task=barcodecoverage&threshold='+idVal;
                 //alert (monkey);
                 $.ajax({
                     url: monkey,
-                   // alert ('url'),                    
+                   // alert ('url'),
                     success: function(data){
                         //alert ('success');
                         $('#resetmodal').modal('hide')
@@ -922,10 +946,10 @@ CHARACTER SET utf8;";
             })
         })
     </script>
-				
-				
+
+
 				<?php };?>-->
-    
+
     <script>
 
             $(function(){
@@ -936,7 +960,7 @@ CHARACTER SET utf8;";
                 var checkval = $("#genbarcode_coverage_stop:checked").val();
                 //alert('were getting there ' + idClicked + ' is ' + idVal);
         		//alert ($("#genbarcode_coverage_stop:checked").val());
-        		//var type = $("input:radio[name='coveragenoticeradio']:checked").val(); 
+        		//var type = $("input:radio[name='coveragenoticeradio']:checked").val();
                 if (checkval == 1){
                 	var monkey = 'jsonencode/set_alerts.php?twitterhandle=<?php echo $_SESSION['twittername'];?>&type=2D&task=genbarcodecoverage&rununtil=1&threshold='+idVal;
                 }else{
@@ -945,7 +969,7 @@ CHARACTER SET utf8;";
                 //alert (monkey);
                 $.ajax({
                     url: monkey,
-                   // alert ('url'),                    
+                   // alert ('url'),
                     success: function(data){
                         //alert ('success');
                         $('#resetmodal').modal('hide')
@@ -982,14 +1006,113 @@ CHARACTER SET utf8;";
 					}
 				}, error: function() {
 					alert('ajax failed');
-				},	
+				},
 			}
 			)
 		})
 	})
 	</script>
-   
-    
+    <script>
+    		$(document).ready(function() {
+    		    var options = {
+    		        chart: {
+    		            renderTo: 'cumulativeyield',
+    					zoomType: 'x',
+    		            type: 'spline',
+    		        },
+    		        title: {
+    		          text: 'Cumulative Reads'
+    		        },
+    		        resetZoomButton: {
+                    position: {
+                        // align: 'right', // by default
+                        // verticalAlign: 'top', // by default
+                        x: -10,
+                        y: 10
+                    },
+                    relativeTo: 'chart'
+                },
+    		        plotOptions: {
+    		        	spline: {
+    					                animation: false,
+    									marker: {
+    							            enabled: false
+    							        }
+
+    				},
+
+
+
+            },
+    				xAxis: {
+    					type: 'datetime',
+    			            dateTimeLabelFormats: { // don't display the dummy year
+                   				month: '%e. %b',
+               				    year: '%b'
+    				            },
+    				            title: {
+    				                text: 'Time/Date'
+    				            }
+    				        },
+    						yAxis: [{
+    				                labels: {
+                				        align: 'right',
+                	    			    x: -3
+                	   				},
+
+                	    			title: {
+                	        			text: 'Cumulative Reads'
+    				                },
+    				                height: '100%',
+    				                lineWidth: 1,
+    				                min: 0
+    				            }],
+    								credits: {
+    								    enabled: false
+    								  },
+    		        legend: {
+    		        	title: {
+                    text: 'Read Type <span style="font-size: 9px; color: #666; font-weight: normal">(Click to hide)</span>',
+                    style: {
+                        fontStyle: 'italic'
+                    }
+                },
+
+    		            layout: 'horizontal',
+    		            align: 'center',
+    		            //verticalAlign: 'middle',
+    		            borderWidth: 0
+    		        },
+    		        series: []
+    		    };
+    			function loadchirpcy() {
+
+    					if(1 == 1) {
+       										   $.getJSON('jsonencode/cumulativeyield.php?prev=0&callback=?', function(data) {
+
+                                            options.series = data; // <- just assign the data to the series property.
+
+                                                    setTimeout(loadchirpcy,<?php echo $_SESSION['pagerefresh'] ;?>);
+
+                                            //options.series = JSON2;
+                                                    var chart = new Highcharts.Chart(options);
+                                                    });} else {
+       setTimeout(loadchirpcy,<?php echo $_SESSION['pagerefresh'] ;?>);
+    }
+
+                                            }
+
+
+    				        loadchirpcy();
+
+    			});
+
+    				//]]>
+
+    </script>
+
+
+
 <?php include "includes/reporting.php";?>
 </body>
 
