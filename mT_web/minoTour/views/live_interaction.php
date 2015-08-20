@@ -172,6 +172,43 @@ CHARACTER SET utf8;";
 		<button id='biasvoltageinc' type='button' class='btn btn-info btn-sm'><i class='fa fa-arrow-circle-up'></i> Inc Bias Voltage</button>
 		<button id='biasvoltagedec' type='button' class='btn btn-info btn-sm'><i class='fa fa-arrow-circle-down'></i> Dec Bias Voltage</button>
 		<br>
+        <h5>Rename Your Run:</h5>
+		<!--<button id='renamerun' type='button' class='btn btn-info btn-sm'><i class='fa fa-magic'></i> Rename Run</button>-->
+        <!-- Indicates a dangerous or potentially negative action -->
+        <!-- Button trigger modal -->
+        <button id='renamerun' class='btn btn-info btn-sm' data-toggle='modal' data-target='#renamemodal'>
+          <i class='fa fa-magic'></i> Rename Run
+        </button>
+
+        <!-- Modal -->
+        <div class='modal fade' id='renamemodal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
+            <div class='modal-dialog'>
+                <div class='modal-content'>
+                    <div class='modal-header'>
+                        <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+                        <h4 class='modal-title' id='myModalLabel'>Rename Your Run</h4>
+                    </div>
+                    <div class='modal-body'>
+                        <div id='renameinfo'>
+                            <p>You can rename a run if you wish to do so. Note there is no need to do this unless you wish to change the smaple ID for some reason.</p>
+                            <input type="text" id="newname" class="form-control" placeholder="New Run Name">
+                            <p>If you are sure you wish to do this enter your new name above and click 'Rename Run' below. Otherwise close this window.</p>
+                            <p> We dont recommend doing this when a run is in progress!</p>
+                        </div>
+                        <div id='renameworking'>
+                            <p class='text-center'>We're working to rename your run. Please be patient and don't navigate away from this page.</p>
+                            <p class='text-center'><img src='images/loader.gif' alt='loader'></p>
+                        </div>
+                        <div class='modal-footer'>
+                            <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
+                            <button id='renamenow' type='button' class='btn btn-danger'>Rename Run</button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+        </div>
+
+        <br>
         <h5>Remote Start/Stop</h5>
 
 				<!-- Indicates a dangerous or potentially negative action -->
@@ -669,6 +706,9 @@ CHARACTER SET utf8;";
 						$("#messages").html(data);
 						$('#stopminion').addClass('disabled');
 						$('#startminion').removeClass('disabled');
+                        $('#stopminioninfo').show();
+               		    $('#stopworking').hide();
+                        $('#startnow').removeClass('disabled');
 	                }, error: function(){
 	                    alert('ajax failed');
 	                },
@@ -693,6 +733,9 @@ CHARACTER SET utf8;";
 						$("#messages").html(data);
 						$('#startminion').addClass('disabled');
 						$('#stopminion').removeClass('disabled');
+                        $('#stopnow').removeClass('disabled');
+                        $('#startminioninfo').show();
+               		    $('#startworking').hide();
 	                }, error: function(){
 	                    alert('ajax failed');
 	                },
@@ -700,6 +743,33 @@ CHARACTER SET utf8;";
 				//alert ("button clicked");
 	        })
 	    })
+
+	</script>
+    <script>
+    $(function(){
+        $('#renameworking').hide();
+        $('#renamenow').on('click', function(e){
+            $('#reaneminfo').hide();
+            $('#renameworking').show();
+            var script = $("#newname").val();
+            e.preventDefault(); // preventing default click action
+            $.ajax({
+                url: 'jsonencode/interaction.php?prev=0&job=renamerun&name='+script,
+                success: function(data){
+                    //alert ('success');
+                    $('#renamemodal').modal('hide')
+                    //alert(data);
+                    $("#messages").html(data);
+                    $('#reaneminfo').show();
+                    $('#renameworking').hide();
+
+                }, error: function(){
+                    alert('ajax failed');
+                },
+            })
+            //alert ("button clicked");
+        })
+    })
 
 	</script>
 	<script>

@@ -57,6 +57,15 @@ if ($login->isUserLoggedIn() == true) {
 	  <strong>Success!</strong> A start instruction has been sent to the minION device.
 	</div>";
         break;
+        case "renamerun":
+            $runname = $_GET['name'];
+    	    $command = "insert into interaction (instruction,target,complete,param1) VALUES ('setsamplename','all','0','". $runname . "');";
+        	$sqlcommand = $mindb_connection->query($command);
+           echo "<div class='alert alert-warning alert-dismissble' role='alert'>
+    	  <button type='button' class='close' data-dismiss='alert'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button>
+    	  <strong>Success!</strong> A rename instruction has been sent to the minION device.
+    	</div>";
+            break;
     case "testminion":
     	$command = "insert into interaction (instruction,target,complete) VALUES ('test','all','0');";
     	$sqlcommand = $mindb_connection->query($command);
