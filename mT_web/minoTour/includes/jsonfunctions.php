@@ -66,13 +66,17 @@ function boxplotlength($jobname,$currun) {
 			$sqltempquartiles = "select (select floor(count(*)/4) from basecalled_template) as first_q, (select floor(count(*)/2) from basecalled_template) as mid_pos, (select floor(count(*)/4*3) from basecalled_template) as third_q from basecalled_template order by length(sequence) limit 1;";
 			$sqlcompquartiles = "select (select floor(count(*)/4) from basecalled_complement) as first_q, (select floor(count(*)/2) from basecalled_complement) as mid_pos, (select floor(count(*)/4*3) from basecalled_complement) as third_q from basecalled_complement order by length(sequence) limit 1;";
 			$sql2dquartiles = "select (select floor(count(*)/4) from basecalled_2d) as first_q, (select floor(count(*)/2) from basecalled_2d) as mid_pos, (select floor(count(*)/4*3) from basecalled_2d) as third_q from basecalled_2d order by length(sequence) limit 1;";
+			$pretempquartiles = "select (select floor(count(*)/4) from pre_config_general) as first_q, (select floor(count(*)/2) from pre_config_general) as mid_pos, (select floor(count(*)/4*3) from pre_config_general) as third_q from pre_config_general order by hairpin_event_index limit 1;";
+			$precompquartiles = "select (select floor(count(*)/4) from pre_config_general where hairpin_found = 1) as first_q, (select floor(count(*)/2) from pre_config_general where hairpin_found = 1) as mid_pos, (select floor(count(*)/4*3) from pre_config_general where hairpin_found = 1) as third_q from pre_config_general where hairpin_found = 1 order by (total_events-hairpin_event_index) limit 1;";
+
 			//echo $sql2dquartiles . "\n";
 			$resulttempquartiles = $mindb_connection->query($sqltempquartiles);
 			$resultcompquartiles = $mindb_connection->query($sqlcompquartiles);
 			$result2dquartiles = $mindb_connection->query($sql2dquartiles);
+			$resultpretempquartiles = $mindb_connection->query($pretempquartiles);
+			$resultprecompquartiles = $mindb_connection->query($precompquartiles);
 
-
-			$variablearray;
+			$variablearray=array();
 			if ($resulttempquartiles->num_rows ==1) {
 				#$cumucount = 0;
 				foreach ($resulttempquartiles as $row) {
@@ -101,17 +105,34 @@ function boxplotlength($jobname,$currun) {
 					$variablearray['2d']['third_q']=$row['third_q'];
 				}
 			}
+			if ($resultpretempquartiles->num_rows == 1){
+				foreach ($resultpretempquartiles as $row){
+					$variablearray['Raw Template']['first_q']=$row['first_q'];
+					$variablearray['Raw Template']['mid_pos']=$row['mid_pos'];
+					$variablearray['Raw Template']['third_q']=$row['third_q'];
+				}
+			}
+
+			if ($resultprecompquartiles->num_rows == 1){
+				foreach ($resultprecompquartiles as $row){
+					$variablearray['Raw Complement']['first_q']=$row['first_q'];
+					$variablearray['Raw Complement']['mid_pos']=$row['mid_pos'];
+					$variablearray['Raw Complement']['third_q']=$row['third_q'];
+				}
+			}
 
 			$sqltemp = "select min(length(sequence)) as min,(select length(sequence) from basecalled_template order by length(sequence) limit " .$variablearray['template']['first_q'] . ",1) as firstq, (select length(sequence) from basecalled_template order by length(sequence) limit ".$variablearray['template']['mid_pos'].",1) as median, (select length(sequence) from basecalled_template order by length(sequence) limit ".$variablearray['template']['third_q'].",1) as lastq, max(length(sequence)) as max from basecalled_template;";
 			$sqlcomp = "select min(length(sequence)) as min,(select length(sequence) from basecalled_complement order by length(sequence) limit " .$variablearray['complement']['first_q'] . ",1) as firstq, (select length(sequence) from basecalled_complement order by length(sequence) limit ".$variablearray['complement']['mid_pos'].",1) as median, (select length(sequence) from basecalled_complement order by length(sequence) limit ".$variablearray['complement']['third_q'].",1) as lastq, max(length(sequence)) as max from basecalled_complement;";
 			$sql2d = "select min(length(sequence)) as min,(select length(sequence) from basecalled_2d order by length(sequence) limit " .$variablearray['2d']['first_q'] . ",1) as firstq, (select length(sequence) from basecalled_2d order by length(sequence) limit ".$variablearray['2d']['mid_pos'].",1) as median, (select length(sequence) from basecalled_2d order by length(sequence) limit ".$variablearray['2d']['third_q'].",1) as lastq, max(length(sequence)) as max from basecalled_2d;";
-
+			$pretemp = "select min(hairpin_event_index) as min,(select hairpin_event_index from pre_config_general order by hairpin_event_index limit " .$variablearray['Raw Template']['first_q'] . ",1) as firstq, (select hairpin_event_index from pre_config_general order by hairpin_event_index limit ".$variablearray['Raw Template']['mid_pos'].",1) as median, (select hairpin_event_index from pre_config_general order by hairpin_event_index limit ".$variablearray['Raw Template']['third_q'].",1) as lastq, max(hairpin_event_index) as max from pre_config_general;";
+			$precomp = "select min((total_events-hairpin_event_index)) as min,(select (total_events-hairpin_event_index) from pre_config_general where hairpin_found = 1 order by (total_events-hairpin_event_index) limit " .$variablearray['Raw Complement']['first_q'] . ",1) as firstq, (select (total_events-hairpin_event_index) from pre_config_general where hairpin_found = 1 order by (total_events-hairpin_event_index) limit ".$variablearray['Raw Complement']['mid_pos'].",1) as median, (select (total_events-hairpin_event_index) from pre_config_general where hairpin_found = 1 order by (total_events-hairpin_event_index) limit ".$variablearray['Raw Complement']['third_q'].",1) as lastq, max((total_events-hairpin_event_index)) as max from pre_config_general where hairpin_found = 1;";
 			//echo $sqlcomp . "\n";
 
 			$resultsqltemp = $mindb_connection->query($sqltemp);
 			$resultsqlcomp = $mindb_connection->query($sqlcomp);
 			$resultsql2d = $mindb_connection->query($sql2d);
-
+			$resultpretemp = $mindb_connection->query($pretemp);
+			$resultprecomp = $mindb_connection->query($precomp);
 
 			$resultarray=array();
 
@@ -151,8 +172,30 @@ function boxplotlength($jobname,$currun) {
 					$resultarray['2d']['max']=$row['max'];
 				}
 			}
+			if ($resultpretemp->num_rows >=1) {
+				#$cumucount = 0;
 
+				foreach ($resultpretemp as $row) {
+					#$cumucount++;
+					$resultarray['Raw Template']['min']=$row['min'];
+					$resultarray['Raw Template']['firstq']=$row['firstq'];
+					$resultarray['Raw Template']['median']=$row['median'];
+					$resultarray['Raw Template']['lastq']=$row['lastq'];
+					$resultarray['Raw Template']['max']=$row['max'];
+				}
+			}
+			if ($resultprecomp->num_rows >=1) {
+				#$cumucount = 0;
 
+				foreach ($resultprecomp as $row) {
+					#$cumucount++;
+					$resultarray['Raw Complement']['min']=$row['min'];
+					$resultarray['Raw Complement']['firstq']=$row['firstq'];
+					$resultarray['Raw Complement']['median']=$row['median'];
+					$resultarray['Raw Complement']['lastq']=$row['lastq'];
+					$resultarray['Raw Complement']['max']=$row['max'];
+				}
+			}
 
 
 
@@ -230,6 +273,14 @@ function mappabletime($jobname,$currun) {
 			$sqlcompmapping ="select (floor((basecalled_template.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as alignedreads from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id) inner join last_align_basecalled_complement_5prime using (basename_id) group by 1 order by 1;";
 			$sqlcomptotal ="select (floor((basecalled_template.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as allreads from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
 
+			$pretempmapping="select (floor((pre_config_general.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as alignedreads from pre_config_general inner join pre_align_template using (basename_id) inner join pre_tracking_id using (basename_id) group by 1 order by 1;";
+			$pretemptotal="select (floor((pre_config_general.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id) group by 1 order by 1;";
+
+			$precompmapping="select (floor((pre_config_general.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as alignedreads from pre_config_general inner join pre_align_complement using (basename_id) inner join pre_tracking_id using (basename_id) group by 1 order by 1;";
+			$precomptotal="select (floor((pre_config_general.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id) group by 1 order by 1;";
+
+			$pre2dmapping="select (floor((pre_config_general.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as alignedreads from pre_config_general inner join pre_align_2d using (basename_id) inner join pre_tracking_id using (basename_id) group by 1 order by 1;";
+			$pre2dtotal="select (floor((pre_config_general.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id) group by 1 order by 1;";
 
 			$resultsql2dmap = $mindb_connection->query($sql2dmapping);
 			$resultsql2dtotal = $mindb_connection->query($sql2dtotal);
@@ -240,6 +291,14 @@ function mappabletime($jobname,$currun) {
 			$resultsqlcompmap = $mindb_connection->query($sqlcompmapping);
 			$resultsqlcomptotal = $mindb_connection->query($sqlcomptotal);
 
+			$resultpre2dmap = $mindb_connection->query($pre2dmapping);
+			$resultpre2dtotal = $mindb_connection->query($pre2dtotal);
+
+			$resultpretempmap = $mindb_connection->query($pretempmapping);
+			$resultpretemptotal = $mindb_connection->query($pretemptotal);
+
+			$resultprecompmap = $mindb_connection->query($precompmapping);
+			$resultprecomptotal = $mindb_connection->query($precomptotal);
 
 			#$resulttemplate = $mindb_connection->query($sqltemplate);
 			#$resultcomplement = $mindb_connection->query($sqlcomplement);
@@ -300,12 +359,76 @@ function mappabletime($jobname,$currun) {
 
 				}
 			}
+
+
+
+			if ($resultpre2dtotal->num_rows >=1) {
+				#$cumucount = 0;
+
+				foreach ($resultpre2dtotal as $row) {
+					#$cumucount++;
+					$resultarray['Raw 2d'][$row['bin_floor']]['allreads']=$row['count'];
+
+				}
+			}
+			if ($resultpre2dmap->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultpre2dmap as $row) {
+					#$cumucount++;
+					$resultarray['Raw 2d'][$row['bin_floor']]['alignedreads']=$row['alignedreads'];
+
+				}
+			}
+
+			if ($resultpretemptotal->num_rows >=1) {
+				#$cumucount = 0;
+
+				foreach ($resultpretemptotal as $row) {
+					#$cumucount++;
+					$resultarray['Raw Template'][$row['bin_floor']]['allreads']=$row['count'];
+
+				}
+			}
+			if ($resultpretempmap->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultpretempmap as $row) {
+					#$cumucount++;
+					$resultarray['Raw Template'][$row['bin_floor']]['alignedreads']=$row['alignedreads'];
+
+				}
+			}
+
+
+			if ($resultprecomptotal->num_rows >=1) {
+				#$cumucount = 0;
+
+				foreach ($resultprecomptotal as $row) {
+					#$cumucount++;
+					$resultarray['Raw Complement'][$row['bin_floor']]['allreads']=$row['count'];
+
+				}
+			}
+			if ($resultprecompmap->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultprecompmap as $row) {
+					#$cumucount++;
+					$resultarray['Raw Complement'][$row['bin_floor']]['alignedreads']=$row['alignedreads'];
+
+				}
+			}
+
+
+
+
+
+
 		$jsonstring="";
 		$jsonstring = $jsonstring . "[\n";
 
 		foreach ($resultarray as $key => $value) {
 				$jsonstring = $jsonstring . "{\n";
 				$jsonstring = $jsonstring . "\"name\": \"" . $key .  "\",\n";
+				//echo $key . "\n";
 
 				//if ($key == "template") {
 					//$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
@@ -316,6 +439,7 @@ function mappabletime($jobname,$currun) {
 				//}
 				$jsonstring = $jsonstring . "\"data\":[";
 				foreach ($value as $key2 => $value2) {
+					//echo $value2['alignedreads'] . "\t" . $value2['allreads'] . "\n";
 					$jsonstring = $jsonstring . "[  $key2 , " .$value2['alignedreads']/$value2['allreads']." ],";
 				}
 
@@ -363,10 +487,11 @@ function sequencingrate($jobname,$currun) {
 			//do something interesting here...
 			$sqltemplate = "select (floor((basecalled_template.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor, sum(basecalled_template.duration) as time,  sum(length(sequence))/60/5/count(*) as effective_rate, count(*) as channels, sum(length(sequence))/sum(basecalled_template.duration) as rate from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
 			$sqlcomplement = "select (floor((basecalled_complement.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor, sum(basecalled_complement.duration) as time,  sum(length(sequence))/60/5/count(*) as effective_rate, count(*) as channels, sum(length(sequence))/sum(basecalled_complement.duration) as rate from basecalled_complement inner join tracking_id using (basename_id) group by 1 order by 1;";
-
+			$prebasecalledevents="select (floor((pre_config_general.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor, sum(pre_config_general.total_events) as total_events,  sum(pre_config_general.total_events)/60/5/count(*) as effective_rate, sum(pre_config_general.total_events)/sum(pre_config_general.total_events/pre_config_general.sample_rate)/100 as rate from pre_config_general inner join pre_tracking_id using (basename_id) group by 1 order by 1;";
 
 			$resulttemplate = $mindb_connection->query($sqltemplate);
 			$resultcomplement = $mindb_connection->query($sqlcomplement);
+			$resultprebasecalledevents = $mindb_connection->query($prebasecalledevents);
 
 			$resultarray=array();
 
@@ -387,7 +512,12 @@ function sequencingrate($jobname,$currun) {
 				}
 			}
 
-
+			if ($resultprebasecalledevents->num_rows >= 1){
+				foreach($resultprebasecalledevents as $row){
+					$resultarray['Raw Event Rate'][$row['bin_floor']]=$row['rate'];
+					$resultarray['Raw Effective Rate'][$row['bin_floor']]=$row['effective_rate'];
+				}
+			}
 
 		$jsonstring="";
 		$jsonstring = $jsonstring . "[\n";
@@ -449,11 +579,13 @@ function lengthtimewindow($jobname,$currun) {
 			$sqltemplate = "select (floor((basecalled_template.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor,   sum(length(sequence))/count(*) as meanlength from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
 			$sqlcomplement = "select (floor((basecalled_complement.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor,   sum(length(sequence))/count(*) as meanlength from basecalled_complement inner join tracking_id using (basename_id) group by 1 order by 1;";
 			$sql2d = "select (floor((basecalled_template.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor,   sum(length(basecalled_2d.sequence))/count(*) as meanlength from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
-
-
+			$pretemplate = "select (floor((pre_config_general.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor,   sum(hairpin_event_index)/count(*) as meanlength from pre_config_general inner join pre_tracking_id using (basename_id) group by 1 order by 1;";
+			$precomplement = "select (floor((pre_config_general.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor,   sum(total_events-hairpin_event_index)/count(*) as meanlength from pre_config_general inner join pre_tracking_id using (basename_id) group by 1 order by 1;";
 			$resulttemplate = $mindb_connection->query($sqltemplate);
 			$resultcomplement = $mindb_connection->query($sqlcomplement);
 			$result2d = $mindb_connection->query($sql2d);
+			$resultpretemp = $mindb_connection->query($pretemplate);
+			$resultprecomp = $mindb_connection->query($precomplement);
 
 			$resultarray=array();
 
@@ -482,6 +614,23 @@ function lengthtimewindow($jobname,$currun) {
 				}
 			}
 
+			if ($resultpretemp->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultpretemp as $row) {
+					#$cumucount++;
+					$resultarray['Raw Template length'][$row['bin_floor']]=$row['meanlength'];
+					#$resultarray['complement effective rate'][$row['bin_floor']]=$row['effective_rate'];
+				}
+			}
+
+			if ($resultprecomp->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultprecomp as $row) {
+					#$cumucount++;
+					$resultarray['Raw Complement length'][$row['bin_floor']]=$row['meanlength'];
+					#$resultarray['complement effective rate'][$row['bin_floor']]=$row['effective_rate'];
+				}
+			}
 
 
 		$jsonstring="";
@@ -684,9 +833,15 @@ function ratio2dtemplate($jobname,$currun) {
 			$sqlcomplement = "select (floor((basecalled_template.start_time)/60/15)*15*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id)  group by 1 order by 1;";
 			$sql2d = "select (floor((basecalled_template.start_time)/60/15)*15*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id)  group by 1 order by 1;";
 
+			$pretemplate = "select (floor((pre_config_general.start_time)/60/15)*15*60+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id)  group by 1 order by 1;";
+
+			$precomplement = "select (floor((pre_config_general.start_time)/60/15)*15*60+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found = 1 group by 1 order by 1;";
+
 			$resulttemplate = $mindb_connection->query($sqltemplate);
 			$resultcomplement = $mindb_connection->query($sqlcomplement);
 			$result2d = $mindb_connection->query($sql2d);
+			$resultpretemplate = $mindb_connection->query($pretemplate);
+			$resultprecomplement = $mindb_connection->query($precomplement);
 
 			$resultarray=array();
 
@@ -711,7 +866,20 @@ function ratio2dtemplate($jobname,$currun) {
 					$resultarray['2d'][$row['bin_floor']]=$row['count'];
 				}
 			}
-
+			if ($resultpretemplate->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultpretemplate as $row) {
+					#$cumucount++;
+					$resultarray['Raw Template'][$row['bin_floor']]=$row['count'];
+				}
+			}
+			if ($resultprecomplement->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultprecomplement as $row) {
+					#$cumucount++;
+					$resultarray['Raw Complement'][$row['bin_floor']]=$row['count'];
+				}
+			}
 		}
 
 		$jsonstring="";
@@ -780,6 +948,9 @@ function cumulativeyield($jobname,$currun) {
 			$sqlcomplementpass = "select (floor((basecalled_template.start_time)/60/15)*15*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id) where file_path like '%pass%'  group by 1 order by 1;";
 			$sql2d = "select (floor((basecalled_template.start_time)/60/15)*15*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id)  group by 1 order by 1;";
 			$sql2dpass = "select (floor((basecalled_template.start_time)/60/15)*15*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) where file_path like '%pass%' group by 1 order by 1;";
+			$pretemplate = "select (floor((pre_config_general.start_time)/60/15)*15*60+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id)  group by 1 order by 1;";
+			$precomplement = "select (floor((pre_config_general.start_time)/60/15)*15*60+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found = 1 group by 1 order by 1;";
+
 			#$sqltemplate = "SELECT (start_time+exp_start_time)*1000 as time FROM basecalled_template inner join tracking_id using (basename_id) order by start_time;";
 			#$sqlcomplement = "SELECT (start_time+exp_start_time)*1000 as time FROM basecalled_complement inner join tracking_id using (basename_id) order by start_time;";
 			#$sql2d = "SELECT (start_time+exp_start_time)*1000 as time FROM basecalled_2d inner join tracking_id using (basename_id) inner join basecalled_complement using (basename_id) order by start_time;";
@@ -790,6 +961,8 @@ function cumulativeyield($jobname,$currun) {
 			$resulttemplatepass = $mindb_connection->query($sqltemplatepass);
 			$resultcomplementpass = $mindb_connection->query($sqlcomplementpass);
 			$result2dpass = $mindb_connection->query($sql2dpass);
+			$resultpretemp = $mindb_connection->query($pretemplate);
+			$resultprecomp = $mindb_connection->query($precomplement);
 
 			$resultarray=array();
 
@@ -842,6 +1015,21 @@ function cumulativeyield($jobname,$currun) {
 					$resultarray['2d pass'][$row['bin_floor']]=$cumucount;
 				}
 			}
+			if ($resultpretemp->num_rows >=1) {
+				$cumucount = 0;
+				foreach ($resultpretemp as $row) {
+					$cumucount=$cumucount+$row['count'];
+					$resultarray['Raw Template'][$row['bin_floor']]=$cumucount;
+				}
+			}
+			if ($resultprecomp->num_rows >=1) {
+				$cumucount = 0;
+				foreach ($resultprecomp as $row) {
+					$cumucount=$cumucount+$row['count'];
+					$resultarray['Raw Complement'][$row['bin_floor']]=$cumucount;
+				}
+			}
+
 			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
 
@@ -3601,13 +3789,18 @@ function depthcoverage($jobname,$currun,$refid) {
 				$sql_template = "select count(*) as bases, AVG(count) as coverage from (SELECT count(*) as count,refid,refpos FROM last_align_basecalled_template where (cigarclass=7 or cigarclass=8) and refid = " . $refid . " group by refid,refpos) as x";
 				$sql_complement = "select count(*) as bases, AVG(count) as coverage from (SELECT count(*) as count,refid,refpos FROM last_align_basecalled_complement where (cigarclass=7 or cigarclass=8) and refid = " . $refid . " group by refid,refpos) as x";
 				$sql_2d = "select count(*) as bases, AVG(count) as coverage from (SELECT count(*) as count,refid,refpos FROM last_align_basecalled_2d where (cigarclass=7 or cigarclass=8) and refid = " . $refid . " group by refid,refpos) as x";
-
+				$pre_template = "SELECT avg(count) as depth,ref_id,ref_pos FROM reference_pre_coverage_template where ref_id = " . $refid . " group by ref_id;";
+				$pre_complement = "SELECT avg(count) as depth,ref_id,ref_pos FROM reference_pre_coverage_complement where ref_id = " . $refid . " group by ref_id;";
+				$pre_2d = "SELECT avg(count) as depth,ref_id,ref_pos FROM reference_pre_coverage_2d where ref_id = " . $refid . " group by ref_id;";
 
 				$covarray=array();
 
 				$template=$mindb_connection->query($sql_template);
 				$complement=$mindb_connection->query($sql_complement);
 				$read2d=$mindb_connection->query($sql_2d);
+				$pretemplate=$mindb_connection->query($pre_template);
+				$precomplement=$mindb_connection->query($pre_complement);
+				$preread2d=$mindb_connection->query($pre_2d);
 				if ($template->num_rows >= 1){
 					foreach ($template as $row) {
 						$perccov=($row['bases']/$reflength)*100;
@@ -3631,7 +3824,24 @@ function depthcoverage($jobname,$currun,$refid) {
 
 					}
 				}
-
+				if ($pretemplate->num_rows >= 1){
+					foreach ($pretemplate as $row){
+						$percov=$row['depth'];
+						$covarray['Raw Template'][$row['ref_id']]['percov']=$percov;
+					}
+				}
+				if ($precomplement->num_rows >= 1){
+					foreach ($precomplement as $row){
+						$percov=$row['depth'];
+						$covarray['Raw Complement'][$row['ref_id']]['percov']=$percov;
+					}
+				}
+				if ($preread2d->num_rows >= 1){
+					foreach ($preread2d as $row){
+						$percov=$row['depth'];
+						$covarray['Raw 2D'][$row['ref_id']]['percov']=$percov;
+					}
+				}
 				$jsonstring = $jsonstring . "[\n";
 				foreach ($covarray as $type => $typeval){
 					$jsonstring = $jsonstring .  "{\n";
@@ -3655,10 +3865,16 @@ function depthcoverage($jobname,$currun,$refid) {
 				$sql_template = "SELECT avg(A+T+G+C) as depth,ref_id,ref_pos FROM reference_coverage_template where ref_id = " . $refid . " group by ref_id;";
 				$sql_complement = "SELECT avg(A+T+G+C) as depth,ref_id,ref_pos FROM reference_coverage_complement where ref_id = " . $refid . " group by ref_id;";
 				$sql_2d = "SELECT avg(A+T+G+C) as depth,ref_id,ref_pos FROM reference_coverage_2d where ref_id = " . $refid . " group by ref_id;";
+				$pre_template = "SELECT avg(count) as depth,ref_id,ref_pos FROM reference_pre_coverage_template where ref_id = " . $refid . " group by ref_id;";
+				$pre_complement = "SELECT avg(count) as depth,ref_id,ref_pos FROM reference_pre_coverage_complement where ref_id = " . $refid . " group by ref_id;";
+				$pre_2d = "SELECT avg(count) as depth,ref_id,ref_pos FROM reference_pre_coverage_2d where ref_id = " . $refid . " group by ref_id;";
 
 				$template=$mindb_connection->query($sql_template);
 				$complement=$mindb_connection->query($sql_complement);
 				$read2d=$mindb_connection->query($sql_2d);
+				$pretemplate=$mindb_connection->query($pre_template);
+				$precomplement=$mindb_connection->query($pre_complement);
+				$preread2d=$mindb_connection->query($pre_2d);
 
 				$covarray=array();
 
@@ -3680,6 +3896,26 @@ function depthcoverage($jobname,$currun,$refid) {
 						$covarray['2d'][$row['ref_id']]['percov']=$perccov;
 					}
 				}
+
+				if ($pretemplate->num_rows >= 1){
+					foreach ($pretemplate as $row){
+						$percov=$row['depth'];
+						$covarray['Raw Template'][$row['ref_id']]['percov']=$percov;
+					}
+				}
+				if ($precomplement->num_rows >= 1){
+					foreach ($precomplement as $row){
+						$percov=$row['depth'];
+						$covarray['Raw Complement'][$row['ref_id']]['percov']=$percov;
+					}
+				}
+				if ($preread2d->num_rows >= 1){
+					foreach ($preread2d as $row){
+						$percov=$row['depth'];
+						$covarray['Raw 2D'][$row['ref_id']]['percov']=$percov;
+					}
+				}
+
 				$jsonstring = $jsonstring . "[\n";
 				foreach ($covarray as $type => $typeval){
 					foreach ($typeval as $refid => $value){
@@ -3799,30 +4035,61 @@ function percentcoverage($jobname,$currun,$refid) {
 					$sql_template = "SELECT (sum(A+T+G+C)/reflen) as coverage,ref_id,refname FROM reference_coverage_template inner join reference_seq_info where refid=ref_id and refid = " . $refid . " group by ref_id;";
 					$sql_complement = "SELECT (sum(A+T+G+C)/reflen) as coverage,ref_id,refname FROM reference_coverage_complement inner join reference_seq_info where refid=ref_id and refid = " . $refid . "  group by ref_id;";
 					$sql_2d = "SELECT (sum(A+T+G+C)/reflen) as coverage,ref_id,refname FROM reference_coverage_2d inner join reference_seq_info where refid=ref_id and refid = " . $refid . " group by ref_id;";
+
+					$pre_template="SELECT (sum(reference_pre_coverage_template.count))/reflen as coverage,ref_id,refname FROM reference_pre_coverage_template inner join reference_seq_info where refid=ref_id and refid = " . $refid . " group by ref_id;";
+					$pre_complement="SELECT (sum(reference_pre_coverage_complement.count))/reflen as coverage,ref_id,refname FROM reference_pre_coverage_complement inner join reference_seq_info where refid=ref_id and refid = " . $refid . " group by ref_id;";
+
+					$pre_2d="SELECT (sum(reference_pre_coverage_2d.count))/reflen as coverage,ref_id,refname FROM reference_pre_coverage_2d inner join reference_seq_info where refid=ref_id and refid = " . $refid . " group by ref_id;";
+
+
 					$template=$mindb_connection->query($sql_template);
 					$complement=$mindb_connection->query($sql_complement);
 					$read2d=$mindb_connection->query($sql_2d);
+					$pretemplate=$mindb_connection->query($pre_template);
+					$precomplement=$mindb_connection->query($pre_complement);
+					$preread2d=$mindb_connection->query($pre_2d);
 					//echo "\n" . $sql_template . "\n";
 					$covarray=array();
 
 					if ($template->num_rows >= 1){
 						foreach ($template as $row) {
-							$perccov=$row['coverage']*100;
+							$perccov=$row['coverage'];
 							$covarray['template'][$row['refname']]['percov']=$perccov;
 						}
 					}
 					if ($complement->num_rows >= 1){
 						foreach ($complement as $row) {
-							$perccov=$row['coverage']*100;
+							$perccov=$row['coverage'];
 							$covarray['complement'][$row['refname']]['percov']=$perccov;
 						}
 					}
 					if ($read2d->num_rows >= 1){
 						foreach ($read2d as $row) {
-							$perccov=$row['coverage']*100;
+							$perccov=$row['coverage'];
 							$covarray['2d'][$row['refname']]['percov']=$perccov;
 						}
 					}
+
+
+					if ($pretemplate->num_rows >= 1){
+						foreach ($pretemplate as $row) {
+							$perccov=$row['coverage'];
+							$covarray['Raw Template'][$row['refname']]['percov']=$perccov;
+						}
+					}
+					if ($precomplement->num_rows >= 1){
+						foreach ($precomplement as $row) {
+							$perccov=$row['coverage'];
+							$covarray['Raw Complement'][$row['refname']]['percov']=$perccov;
+						}
+					}
+					if ($preread2d->num_rows >= 1){
+						foreach ($preread2d as $row) {
+							$perccov=$row['coverage'];
+							$covarray['Raw 2d'][$row['refname']]['percov']=$perccov;
+						}
+					}
+
 					$jsonstring = $jsonstring . "[\n";
 					foreach ($covarray as $type => $typeval){
 						foreach ($typeval as $refid => $value){
@@ -3938,7 +4205,7 @@ function readnumberupload($jobname,$currun) {
 
 			#The number of reads uploaded will always be the current count from tracking_id regardless of wether it is template complement or 2s
 		$current_count = "select count(*) as curr_count from tracking_id;";
-		$resultarray=array();
+		//$resultarray=array();
 		$current_count_query = $mindb_connection->query($current_count);
 		if (is_object($current_count_query) && $current_count_query->num_rows >=1) {
 			foreach ($current_count_query as $row) {
@@ -3978,7 +4245,6 @@ function readnumberupload($jobname,$currun) {
 
 		#The number of reads which have aligned to the reference:
 		$sql_template = "select count(*) as aligned from (select count(*) from last_align_basecalled_template_5prime group by basename_id) as t;";
-
 		$sql_complement = "select count(*) as aligned from (select count(*) from last_align_basecalled_complement_5prime group by basename_id) as t;";
 		$sql_2d = "select count(*) as aligned from (select count(*) from last_align_basecalled_2d_5prime group by basename_id) as t;";
 
@@ -4086,11 +4352,19 @@ function readnumber($jobname,$currun) {
 		$sql_complement = "select count(*) as readnum, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
 		$sql_2d = "select count(*) as readnum, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
 		//echo $sql_template;
+
+		$pre_template = "SELECT count(*) as readnum , exp_script_purpose FROM pre_tracking_id;";
+		$pre_complement = "SELECT count(*) as readnum , exp_script_purpose FROM pre_tracking_id where hairpin_found = 1;";
+
+
 		$resultarray=array();
 
 		$template=$mindb_connection->query($sql_template);
 		$complement=$mindb_connection->query($sql_complement);
 		$read2d=$mindb_connection->query($sql_2d);
+
+		$pretemplate=$mindb_connection->query($pre_template);
+		$precomplement=$mindb_connection->query($pre_complement);
 
 		if ($template->num_rows >= 1){
 			foreach ($template as $row) {
@@ -4105,6 +4379,17 @@ function readnumber($jobname,$currun) {
 		if ($read2d->num_rows >= 1){
 			foreach ($read2d as $row) {
 				$resultarray[$row['exp_script_purpose']]['2d']=$row['readnum'];
+			}
+		}
+
+		if ($pretemplate->num_rows >= 1){
+			foreach ($pretemplate as $row) {
+				$resultarray[$row['exp_script_purpose']]['Raw Template']=$row['readnum'];
+			}
+		}
+		if ($precomplement->num_rows >= 1){
+			foreach ($precomplement as $row) {
+				$resultarray[$row['exp_script_purpose']]['Raw Complement']=$row['readnum'];
 			}
 		}
 		//var_dump($resultarray);
@@ -4162,12 +4447,16 @@ function maxlen($jobname,$currun) {
 			$sql_template = "select MAX(length(sequence)) as maxlen, exp_script_purpose from basecalled_template inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
 			$sql_complement = "select MAX(length(sequence)) as maxlen, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
 			$sql_2d = "select MAX(length(sequence)) as maxlen, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
-
+			$pre_template = "SELECT MAX(hairpin_event_index) as maxlen, exp_script_purpose FROM pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found = 1;"; #note: this will not catch template only reads (i.e those with no hairpin). It is therefore less than ideal.
+			$pre_complement = "SELECT MAX(total_events-hairpin_event_index) as maxlen, exp_script_purpose FROM pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found = 1;";
 			$resultarray=array();
 
 			$template=$mindb_connection->query($sql_template);
 			$complement=$mindb_connection->query($sql_complement);
 			$read2d=$mindb_connection->query($sql_2d);
+
+			$pretemplate=$mindb_connection->query($pre_template);
+			$precomplement=$mindb_connection->query($pre_complement);
 
 			if ($template->num_rows >= 1){
 				foreach ($template as $row) {
@@ -4184,8 +4473,16 @@ function maxlen($jobname,$currun) {
 					$resultarray[$row['exp_script_purpose']]['2d']=$row['maxlen'];
 				}
 			}
-
-
+			if ($pretemplate->num_rows >= 1) {
+				foreach ($pretemplate as $row) {
+					$resultarray[$row['exp_script_purpose']]['Raw Template']=$row['maxlen'];
+				}
+			}
+			if ($precomplement->num_rows >= 1) {
+				foreach ($precomplement as $row) {
+					$resultarray[$row['exp_script_purpose']]['Raw Complement']=$row['maxlen'];
+				}
+			}
 			//var_dump($resultarray);
 			//echo json_encode($resultarray);
 			$jsonstring="";
@@ -4242,12 +4539,15 @@ function avelen($jobname,$currun) {
 			$sql_template = "select ROUND(AVG(length(sequence))) as average_length, exp_script_purpose from basecalled_template inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
 			$sql_complement = "select ROUND(AVG(length(sequence))) as average_length, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
 			$sql_2d = "select ROUND(AVG(length(sequence))) as average_length, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
-
+			$pre_template = "SELECT (hairpin_event_index) as average_length, exp_script_purpose FROM pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found =1;";
+			$pre_complement = "SELECT (total_events-hairpin_event_index) as average_length, exp_script_purpose FROM pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found = 1;";
 			$resultarray=array();
 
 			$template=$mindb_connection->query($sql_template);
 			$complement=$mindb_connection->query($sql_complement);
 			$read2d=$mindb_connection->query($sql_2d);
+			$pretemplate=$mindb_connection->query($pre_template);
+			$precomplement=$mindb_connection->query($pre_complement);
 
 			if ($template->num_rows >= 1){
 				foreach ($template as $row) {
@@ -4264,8 +4564,16 @@ function avelen($jobname,$currun) {
 					$resultarray[$row['exp_script_purpose']]['2d']=$row['average_length'];
 				}
 			}
-
-
+			if ($pretemplate->num_rows >=1){
+				foreach ($pretemplate as $row) {
+					$resultarray[$row['exp_script_purpose']]['Raw Template']=$row['average_length'];
+				}
+			}
+			if ($precomplement->num_rows >=1){
+				foreach ($precomplement as $row) {
+					$resultarray[$row['exp_script_purpose']]['Raw Complement']=$row['average_length'];
+				}
+			}
 			//var_dump($resultarray);
 			//echo json_encode($resultarray);
 			$jsonstring="";
@@ -4329,12 +4637,17 @@ function bases($jobname,$currun){
 			$sql_template = "SELECT sum(length(sequence)) as bases FROM basecalled_template;";
 			$sql_complement = "SELECT sum(length(sequence)) as bases FROM basecalled_complement;";
 			$sql_2d = "SELECT sum(length(sequence)) as bases FROM basecalled_2d;";
+			$pre_template="SELECT sum(hairpin_event_index) as events FROM pre_config_general where pre_config_general.hairpin_found = 1;";
+			$pre_complement = "SELECT sum(total_events-hairpin_event_index) as events FROM pre_config_general where pre_config_general.hairpin_found = 1;";
+
 
 			$resultarray=array();
 
 			$template=$mindb_connection->query($sql_template);
 			$complement=$mindb_connection->query($sql_complement);
 			$read2d=$mindb_connection->query($sql_2d);
+			$pretemplate = $mindb_connection->query($pre_template);
+			$precomplement = $mindb_connection->query($pre_complement);
 
 			if ($template->num_rows >= 1){
 				foreach ($template as $row) {
@@ -4349,6 +4662,16 @@ function bases($jobname,$currun){
 			if ($read2d->num_rows >= 1){
 				foreach ($read2d as $row) {
 					$resultarray['2d']=$row['bases'];
+				}
+			}
+			if ($pretemplate->num_rows >= 1){
+				foreach ($pretemplate as $row){
+					$resultarray['Raw Template']=$row['events'];
+				}
+			}
+			if ($precomplement->num_rows >= 1){
+				foreach ($precomplement as $row){
+					$resultarray['Raw Complement']=$row['events'];
 				}
 			}
 			//var_dump($resultarray);

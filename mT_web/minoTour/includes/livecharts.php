@@ -19,7 +19,7 @@
 				},
 
 				xAxis: {
-					categories: ['Template', 'Complement', '2D'],
+					categories: ['Template', 'Complement', '2D', 'Raw Template', 'Raw Complement'],
 					title: {
 						text: 'Read Type'
 					}
