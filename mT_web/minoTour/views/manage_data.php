@@ -129,7 +129,7 @@ require_once("includes/functions.php");
 								      </div>
 								      <div class='modal-body'>
 								       <div id='deleteinfo'>
-								        <p>This action will completely delete this database. </p>
+								        <p>This action will completely delete this database. You don't need to do this as you can reupload data using the -d option. However this facility is provided at users request.</p>
 										<p><strong>The only way to undo this operation is to reupload data to the database.</strong></p>
 										<p>If you are sure you wish to do this, click delete below. Otherwise close this window.</p>
 								      </div>
