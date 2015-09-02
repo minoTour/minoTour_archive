@@ -13,7 +13,7 @@ require_once("includes/functions.php");
     <div id="wrapper">
 
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
-            
+
             <!-- /.navbar-header -->
 			<?php include 'navbar-header.php' ?>
             <!-- /.navbar-top-links -->
@@ -32,15 +32,15 @@ require_once("includes/functions.php");
             <div class="row">
                 <div class="col-lg-12">
 				<h4>Database Management</h4>
-				
+
 				<br>
 			 	<div id="messages"></div>
 				<br>
 				For speed purposes, the data analyses for each run are stored to a database table after the run is complete. This maximises speed for the website. These stored files are generated on the first viewing of a comlpleted run. These tables can be reset here.<br>
 				It is also possible to delete all non essential data from the database to save space. Essentially this archives a run such that it can no longer be reprocessed without re-uploading the data to the website again. You should only archive data from the database if you understand what you are doing.<br>
-				
+
 				<br><br>
-				<?php 
+				<?php
 				$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['focusrun']);
 				if (!$mindb_connection->connect_errno) {
 					$sqlcheck = "select * from jsonstore where name = 'do_not_delete' and json = '1';";
@@ -60,7 +60,7 @@ require_once("includes/functions.php");
 				<button id = 'optobutton' class='btn btn-warning' data-toggle='modal' data-target='#resetmodal'>
 				  <i class='fa fa-exclamation-triangle'></i> Reset Database Optimisations
 				</button>
- 
+
 				<!-- Modal -->
 				<div class='modal fade' id='resetmodal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
 				  <div class='modal-dialog'>
@@ -86,7 +86,7 @@ require_once("includes/functions.php");
 								<button id='archivebutton' class='btn btn-danger' data-toggle='modal' data-target='#deletemodal'>
 								  <i class='fa fa-exclamation-triangle'></i> Archive Database
 								</button>
- 
+
 								<!-- Modal -->
 								<div class='modal fade' id='deletemodal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
 								  <div class='modal-dialog'>
@@ -112,18 +112,52 @@ require_once("includes/functions.php");
 								    </div><!-- /.modal-content -->
 								  </div><!-- /.modal-dialog -->
 								</div><!-- /.modal -->
-				
+                                </div>
+                                <br><br>
+                                <!-- Indicates a dangerous or potentially negative action -->
+                                <!-- Button trigger modal -->
+                                <button id='deletebutton' class='btn btn-danger' data-toggle='modal' data-target='#realdeletemodal'>
+                                  <i class='fa fa-exclamation-triangle'></i> Delete Database
+                                </button>
+                                <!-- Modal -->
+								<div class='modal fade' id='realdeletemodal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
+								  <div class='modal-dialog'>
+								    <div class='modal-content'>
+								      <div class='modal-header'>
+								        <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+								        <h4 class='modal-title' id='myModalLabel'>Delete Database</h4>
+								      </div>
+								      <div class='modal-body'>
+								       <div id='deleteinfo'>
+								        <p>This action will completely delete this database. </p>
+										<p><strong>The only way to undo this operation is to reupload data to the database.</strong></p>
+										<p>If you are sure you wish to do this, click delete below. Otherwise close this window.</p>
+								      </div>
+								      <div id='deleteworking'>
+								      <p class='text-center'>We're working to archive your database. Please be patient and don't navigate away from this page.</p>
+								      <p class='text-center'><img src='images/loader.gif' alt='loader'></p>
+								      </div>
+								      <div class='modal-footer'>
+								        <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
+								        <button id='deleteopt' type='button' class='btn btn-warning'>Delete</button>
+								      </div>
+								    </div><!-- /.modal-content -->
+								  </div><!-- /.modal-dialog -->
+								</div><!-- /.modal -->
+                                </div>
+
+
 				";
-					}		
+					}
 				}
-			
+
 				?>
-				
-				
-				
-				
-				
-			
+
+
+
+
+
+
                  </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -132,8 +166,8 @@ require_once("includes/functions.php");
 
     </div>
     <!-- /#wrapper -->
-	
-	
+
+
     <!-- Core Scripts - Include with every page -->
     <script src="js/jquery-1.10.2.js"></script>
     <script src="js/bootstrap.min.js"></script>
@@ -146,16 +180,16 @@ require_once("includes/functions.php");
 				</script>
     <script src="js/plugins/morris/raphael-2.1.0.min.js"></script>
     <script src="js/plugins/morris/morris.js"></script>
-	
+
 	<!-- Highcharts Addition -->
 	<script src="js/highcharts.js"></script>
 	<script type="text/javascript" src="js/themes/grid-light.js"></script>
 	<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
-	
-	
+
+
 	<script>
-	    
+
 	    $(function(){
 	        $('#resetopt').on('click', function(e){
 	        		            e.preventDefault(); // preventing default click action
@@ -196,10 +230,36 @@ require_once("includes/functions.php");
 				//alert ("button clicked");
 	        })
 	    })
-	   
+        $(function(){
+	    	$('#deleteworking').hide();
+	        $('#deleteopt').on('click', function(e){
+	        	$('#deleteinfo').hide();
+       		    $('#deleteworking').show();
+       		    $('#deleteopt').addClass('disabled');
+	            e.preventDefault(); // preventing default click action
+	            $.ajax({
+	                url: 'jsonencode/delete.php?prev=1',
+	                success: function(data){
+						//alert ('success');
+	                    $('#realdeletemodal').modal('hide')
+						//alert(data);
+						$("#messages").html(data);
+						$('#optobutton').addClass('disabled');
+						$('#deletebutton').addClass('disabled');
+                        var delay = 3000; //Your delay in milliseconds
+                        URL="index.php";
+                        setTimeout(function(){ window.location = URL; }, delay);
+	                }, error: function(){
+	                    alert('ajax failed');
+	                },
+	            })
+				//alert ("button clicked");
+	        })
+	    })
+
 	</script>
-	
-	
+
+
     <!-- SB Admin Scripts - Include with every page -->
     <script src="js/sb-admin.js"></script>
 
