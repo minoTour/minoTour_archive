@@ -587,7 +587,7 @@ function checksessionvars(){
 						foreach ($refnamedetails as $row){
 							$refnames[$row['refid']] = $row['refname'];
 						}
-					}	
+					}
 					$_SESSION['activerefnames'] = $refnames;
 
 					//Check for the existence of an XML table in the active run database:
@@ -676,10 +676,10 @@ function checksessionvars(){
 					$db_connection2 = new mysqli(DB_HOST, DB_USER, DB_PASS, $_SESSION['focusrun']);
 					$xmlcheck = "select * from XML;";
 					$xmlresult = $db_connection2->query($xmlcheck);
-					if ($xmlresult->num_rows >= 1) {
+					if (!empty ($xmlresult) && ($xmlresult->num_rows >= 1)) {
 						$_SESSION['focusXML'] = $xmlresult->num_rows;
 					}else{
-						$_SESSION['focusXML'] = $xmlresult->num_rows;
+						$_SESSION['focusXML'] = 0; //$xmlresult->num_rows
 					}
 
 					//Check for the existence of squiggle data in the active run database:

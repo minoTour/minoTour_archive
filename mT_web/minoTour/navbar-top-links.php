@@ -98,7 +98,7 @@
 	                            <li>
 	                                <a href="previous_runs.php" id="SR"><i class="fa fa-database fa-fw"></i> Change Run</a>
 	                            </li>
-	                            <?php if ($_SESSION['focusbarcode'] >= 1) {?>
+	                            <?php if (isset($_SESSION['focusbarcode']) && $_SESSION['focusbarcode'] >= 1) {?>
 								<li>
                                     <a href="previous_barcodes.php"><i class="fa fa-barcode"></i> Barcodes</a>
                                 </li>
@@ -107,13 +107,13 @@
 								<li>
                                     <a href="previous_summary.php"><i class="fa fa-bar-chart-o fa-fw"></i> Data Summary</a>
                                 </li>
-                                <?php if ($_SESSION['previousbarcode'] >= 1) {?>
+                                <?php if (isset($_SESSION['previousbarcode']) && $_SESSION['previousbarcode'] >= 1) {?>
 								<li>
                                     <a href="prev_barcode.php"><i class="fa fa-barcode"></i> Barcodes</a>
                                 </li>
 
 								<?php }; ?>
-                                <?php if ($_SESSION['focusreference'] != "NOREFERENCE") {?>
+                                <?php if (isset($_SESSION['focusreference']) && $_SESSION['focusreference'] != "NOREFERENCE") {?>
                                 <li>
                                 	<a href="previous_variants.php"><i class="fa fa-code-fork"></i> Nucleotide Variants</a>
                                 	</li>
@@ -128,7 +128,7 @@
                                 <li>
                                     <a href="previous_export.php"><i class="fa fa-file-text-o fa-fw"></i> Export Reads/Alignments</a>
                                 </li>
-                                <?php if ($_SESSION['focusXML'] >= 1) {?>
+                                <?php if (isset($_SESSION['focusXML']) && $_SESSION['focusXML'] >= 1) {?>
 								<li>
 									<a href="previous_XML.php"<i class="fa fa-info-circle"></i> ENA Submission Details</a>
 								</li>
