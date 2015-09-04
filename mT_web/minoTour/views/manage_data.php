@@ -134,7 +134,7 @@ require_once("includes/functions.php");
 										<p>If you are sure you wish to do this, click delete below. Otherwise close this window.</p>
 								      </div>
 								      <div id='deleteworking'>
-								      <p class='text-center'>We're working to archive your database. Please be patient and don't navigate away from this page.</p>
+								      <p class='text-center'>We're working to delete your database. Please be patient and don't navigate away from this page.</p>
 								      <p class='text-center'><img src='images/loader.gif' alt='loader'></p>
 								      </div>
 								      <div class='modal-footer'>
