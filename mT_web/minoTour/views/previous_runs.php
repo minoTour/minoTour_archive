@@ -118,7 +118,7 @@ require_once("includes/functions.php");
 		    } );
 			$('#example tbody').on('click', 'tr', function () {
 			        var name = $('td', this).eq(0).text();
-			        //alert( name );
+
 					$.post( "views/read_details.php?prev=1", { readname: name })
 					  .done(function( data ) {
 					    $("#read_details").html(data);
@@ -136,9 +136,12 @@ require_once("includes/functions.php");
 					    var targetrun = $.trim(tableData[4]);
 					    var cleanedtarget = targetrun.replace(/ /g, "_");
 					    //alert (cleanedtarget);
+                        checklen = cleanedtarget.length;
 
 						var url = "previous_summary.php?roi=" + cleanedtarget;
-						window.location.href = url;
+                        if (checklen > 0){
+                            window.location.href = url;
+                        }
 					});
 
 		} );

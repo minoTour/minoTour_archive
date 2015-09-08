@@ -452,6 +452,11 @@ function cleanname($nametoclean){
 	return($nametoreturn);
 }
 
+function cleanfastaname($nametoclean){
+	$pieces = explode("/", $nametoclean);
+	return (end($pieces));
+}
+
 function restorename($nametoclean){
 	$pieces = explode(" ", $nametoclean);
 	array_shift($pieces);

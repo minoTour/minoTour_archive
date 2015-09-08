@@ -212,7 +212,9 @@ if ($login->isUserLoggedIn() == true) {
 				$row[] = ($aRow[ $aColumns[$i] ]=='0') ? '-' : $aRow[ $aColumns[$i] ];
 			} elseif ($aColumns[$i] == 'runname') {
 				$row[] = cleanname($aRow[$aColumns[$i]]);
-			}	elseif ( $aColumns[$i] != ' ' ) {
+			} elseif ($aColumns[$i] == 'reference') {
+                $row[] = cleanfastaname($aRow[$aColumns[$i]]);
+            }	elseif ( $aColumns[$i] != ' ' ) {
 				// General output
 				$row[] = $aRow[ $aColumns[$i] ];
 			}
