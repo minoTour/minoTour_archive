@@ -453,7 +453,8 @@ function cleanname($nametoclean){
 }
 
 function cleanfastaname($nametoclean){
-	$pieces = explode("/", $nametoclean);
+	#$pieces = explode("/", $nametoclean);
+	$pieces = preg_split('/[\/ ]/', $nametoclean, null, PREG_SPLIT_NO_EMPTY);
 	return (end($pieces));
 }
 
