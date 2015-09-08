@@ -274,7 +274,7 @@ CHARACTER SET utf8;";
                                             <div class='radio'>
                                                 <label>
                                                     <input type='radio' name='scriptRadios' id='" . $row['param1'] . "' value='" . $row['param1'] . "' >
-                                                    " . $row['param1'] . ".py
+                                                    " . cleanname($row['param1']) . ".py
                                                 </label>
                                             </div>
                                             ";
