@@ -454,7 +454,7 @@ CHARACTER SET utf8;";
 
 									}
 									echo "</table>";
-									echo "<button id='removethresholds' type='button' class='btn btn-danger'>Remove Thresholds</button><br><br>";
+									echo "<button id='removethresholds' type='button' class='btn btn-danger btn-xs'>Remove Thresholds</button><br><br>";
 
 								}else{
 									echo "<em>No Individual Barcode Thresholds Set.</em><br><br>";
@@ -485,7 +485,7 @@ CHARACTER SET utf8;";
 										echo "</td>";
 									}
 									echo "</table>";
-									echo "<button id='removeglobthreshold' type='button' class='btn btn-danger'>Remove Global Threshold</button><br><br>";
+									echo "<button id='removeglobthreshold' type='button' class='btn btn-danger btn-xs'>Remove Global Threshold</button><br><br>";
 								}else{
 									echo "<em>No Global Barcode Theshold Set.</em><br><br>";
 								}
@@ -525,7 +525,7 @@ CHARACTER SET utf8;";
 									echo "<td>";
 									echo "<button id='removeref";
 									echo $entry['alert_index'];
-									echo "' type='button' value='" . $entry['alert_index'] . "' class='btn btn-danger'>Remove</button><br><br>";
+									echo "' type='button' value='" . $entry['alert_index'] . "' class='btn btn-danger btn-xs'>Remove</button><br><br>";
 									echo "</td>";
 
 								}
