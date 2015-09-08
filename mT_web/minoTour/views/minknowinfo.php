@@ -153,7 +153,7 @@ if ($login->isUserLoggedIn() == true) {
             			$availablescriptsare = $mindb_connection2->query($availablescripts);
             			if ($availablescriptsare->num_rows > 0) {
             				foreach ($availablescriptsare as $row) {
-            					echo "-->" . $row['param1'] . "<br>";
+            					echo "->" . cleanname($row['param1']) . "<br>";
             				}
             			}else {
             					echo "Not Available.";
