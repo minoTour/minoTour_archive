@@ -436,7 +436,7 @@ CHARACTER SET utf8;";
 									echo "</tr>";
 									foreach ($queryarray["barcodecoverage"] as $entry) {
 										echo "<tr>";
-										echo "<td>";
+										echo "<td style='word-wrap: break-word'>";
 										echo $entry['reference'];
 										echo "</td>";
 										echo "<td>";
