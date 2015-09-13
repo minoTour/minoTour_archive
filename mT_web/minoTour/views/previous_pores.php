@@ -75,6 +75,7 @@ require_once("includes/functions.php");
 			  </div>
 			  <div class="panel-body">
 					<div id="activechannels" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x" ></i> Calculating Active Channels Over Time</div>
+                    <div id="occupancyrate" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x" ></i> Calculating Pore Occupancy Over Time</div>
 					<div id="poreproduction" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pore Read Productivity</div>
 					<div id="baseproduction" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pore Base Productivity</div>
 					<div id="traceproduction" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pore Trace Productivity</div>
@@ -179,6 +180,94 @@ require_once("includes/functions.php");
 			//]]>
 
 			</script>
+
+
+            <script>
+		$(document).ready(function() {
+		    var options = {
+		        chart: {
+		            renderTo: 'occupancyrate',
+					zoomType: 'x'
+		            //type: 'line'
+		        },
+		        title: {
+		          text: 'Occupancy Rate'
+		        },
+				xAxis: {
+					type: 'datetime',
+			            dateTimeLabelFormats: { // don't display the dummy year
+               				month: '%e. %b',
+           				    year: '%b',
+				            },
+				            title: {
+				                text: 'Time/Date'
+				            }
+				        },
+						yAxis: [{ // Primary yAxis
+            labels: {
+                format: '{value} %',
+                style: {
+                    color: Highcharts.getOptions().colors[0]
+                }
+            },
+            min: 0,
+            max: 100,
+            title: {
+                text: 'Occupancy %',
+                style: {
+                    color: Highcharts.getOptions().colors[0]
+                }
+            }
+        }, { // Secondary yAxis
+            title: {
+                text: 'Channels',
+                style: {
+                    color: Highcharts.getOptions().colors[1]
+                }
+            },
+            labels: {
+                format: '{value}',
+                style: {
+                    color: Highcharts.getOptions().colors[1]
+                }
+            },
+
+            min: 0,
+            opposite: true
+        }],
+								credits: {
+								    enabled: false
+								  },
+		        legend: {
+		            title: {
+                text: 'Read Type <span style="font-size: 9px; color: #666; font-weight: normal">(Click to hide)</span>',
+                style: {
+                    fontStyle: 'italic'
+                }
+            },
+			            layout: 'horizontal',
+                                        align: 'center',
+                                        verticalAlign: 'bottom',
+			            borderWidth: 0
+		        },
+		        series: []
+		    };
+
+		    $.getJSON('jsonencode/occupancyrate.php?prev=1&callback=?', function(data) {
+				//alert("success");
+		        options.series = data; // <- just assign the data to the series property.
+
+
+
+		        //options.series = JSON2;
+				var chart = new Highcharts.Chart(options);
+				});
+		});
+
+			//]]>
+
+			</script>
+
 
 			<script>
 			$(document).ready(function() {

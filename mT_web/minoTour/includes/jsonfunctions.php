@@ -462,6 +462,86 @@ function mappabletime($jobname,$currun) {
 }
 
 
+###Calculates an approximation of the occupancy time for the channels sequencing in any given 15 minute window
+
+
+function occupancyrate($jobname,$currun) {
+	$checkvar = $currun . $jobname;
+	//echo $type . "\n";
+	$checkrunning = $currun . $jobname . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;
+	//$jsonstring = $memcache->get("$checkvar");
+	$checkingrunning = $memcache->get("$checkrunning");
+	if($checkingrunning === "No" || $checkingrunning === FALSE){
+		//$memcache->set("$checkrunning", "YES", 0, 0);
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if (is_object($checking) && $checking->num_rows ==1){
+			//echo "We have already run this!";
+			foreach ($checking as $row){
+				$jsonstring = $row['json'];
+			}
+		} else {
+			//do something interesting here...
+			//Query to get pore occupancy over 15 minutes -> select (floor((basecalled_template.start_time)/60/15)*60*15+exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist, sum(basecalled_template.duration+basecalled_complement.duration)/count(distinct config_general.channel)/9 as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) inner join basecalled_complement using (basename_id) group by 1 order by 1
+			$occupancyquery = "select (floor((basecalled_template.start_time)/60/15)*60*15+exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist, LEAST(sum(basecalled_template.duration+basecalled_complement.duration)/count(distinct config_general.channel)/9,100) as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) inner join basecalled_complement using (basename_id) group by 1 order by 1;";
+
+			$resultoccupancy = $mindb_connection->query($occupancyquery);
+
+			$resultarray=array();
+
+			if ($resultoccupancy->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultoccupancy as $row) {
+					#$cumucount++;
+					$resultarray['Occupancy'][$row['bin_floor']]=$row['occupancy'];
+					$resultarray['Channel Count'][$row['bin_floor']]=$row['chandist'];
+				}
+			}
+
+		$jsonstring="";
+		$jsonstring = $jsonstring . "[\n";
+		$counter = 0;
+		foreach ($resultarray as $key => $value) {
+				$jsonstring = $jsonstring . "{\n";
+				$jsonstring = $jsonstring . "\"name\": \"" . $key .  "\",\n";
+
+				$jsonstring = $jsonstring . "\"yAxis\": " . $counter .  ",\n";
+				$counter = $counter + 1;
+
+				//if ($key == "template") {
+					//$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+				//}else if ($key == "complement") {
+				//	$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+				//}else if ($key == "2d") {
+				//	$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+				//}
+				$jsonstring = $jsonstring . "\"data\":[";
+				foreach ($value as $key2 => $value2) {
+					$jsonstring = $jsonstring . "[  $key2 , $value2 ],";
+				}
+
+			$jsonstring = $jsonstring . "]\n";
+		$jsonstring = $jsonstring . "},\n";
+			}
+		$jsonstring = $jsonstring . "]\n";
+	}
+		if ($_GET["prev"] == 1){
+			include 'savejson.php';
+		}
+		$memcache->set("$checkvar", $jsonstring);
+	}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}
+	// cache for 2 minute as we want yield to update semi-regularly...
+	$memcache->delete("$checkrunning");
+   	return $jsonstring;
+
+}
+
+
 ###Calculates an approximation of the speed of sequencing by caluclating the number of bases sequenced in a 5 minute window per channel - this is a measure of speed through the pore.
 
 
@@ -485,8 +565,9 @@ function sequencingrate($jobname,$currun) {
 			}
 		} else {
 			//do something interesting here...
-			$sqltemplate = "select (floor((basecalled_template.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor,sum(basecalled_template.duration) as time,sum(length(basecalled_template.sequence)+length(basecalled_complement.sequence))/60/5/count(*) as effective_rate, count(*) as channels, sum(length(basecalled_template.sequence))/sum(basecalled_template.duration) as rate from basecalled_template inner join tracking_id using (basename_id) inner join basecalled_complement using (basename_id) group by 1 order by 1;";
-			$sqlcomplement = "select (floor((basecalled_complement.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor, sum(basecalled_complement.duration) as time,  sum(length(basecalled_complement.sequence)+length(basecalled_template.sequence))/60/5/count(*) as effective_rate, count(*) as channels, sum(length(basecalled_complement.sequence))/sum(basecalled_complement.duration) as rate from basecalled_complement inner join tracking_id using (basename_id) inner join basecalled_template using (basename_id) group by 1 order by 1;";
+			//Query to get pore occupancy over 15 minutes -> select (floor((basecalled_template.start_time)/60/15)*60*15+exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist, sum(basecalled_template.duration+basecalled_complement.duration)/count(distinct config_general.channel)/9 as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) inner join basecalled_complement using (basename_id) group by 1 order by 1
+			$sqltemplate = "select (floor((basecalled_template.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor,sum(basecalled_template.duration) as time,sum(length(basecalled_template.sequence)+length(basecalled_complement.sequence))/60/5/count(distinct config_general.channel) as effective_rate, count(distinct config_general.channel) as chandist, sum(length(basecalled_template.sequence))/sum(basecalled_template.duration) as rate from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) inner join basecalled_complement using (basename_id) group by 1 order by 1;";
+			$sqlcomplement = "select (floor((basecalled_complement.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor, sum(basecalled_complement.duration) as time,  sum(length(basecalled_complement.sequence)+length(basecalled_template.sequence))/60/5/count(distinct config_general.channel) as effective_rate, count(distinct config_general.channel) as channels, sum(length(basecalled_complement.sequence))/sum(basecalled_complement.duration) as rate from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id)  inner join basecalled_complement using (basename_id) group by 1 order by 1;";
 			$prebasecalledevents="select (floor((pre_config_general.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor, sum(pre_config_general.total_events) as total_events,  sum(pre_config_general.total_events)/60/5/count(*) as effective_rate, sum(pre_config_general.total_events)/sum(pre_config_general.total_events/pre_config_general.sample_rate)/100 as rate from pre_config_general inner join pre_tracking_id using (basename_id) group by 1 order by 1;";
 
 			$resulttemplate = $mindb_connection->query($sqltemplate);
