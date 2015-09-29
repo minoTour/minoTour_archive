@@ -1139,7 +1139,7 @@ function cumulativeyield($jobname,$currun) {
 		}
 		$jsonstring = $jsonstring . "]\n";
 		if ($_GET["prev"] == 1){
-			include 'savejson.php';
+			//include 'savejson.php';
 		}
 		$memcache->set("$checkvar", $jsonstring);
 	}else{
