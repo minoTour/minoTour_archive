@@ -62,7 +62,8 @@ if ($login->isUserLoggedIn() == true) {
 				echo "<body>The latest version of minUP for Windows can be downloaded below. This compressed folder includes a compiled version of the last aligner which in turn requires CYGWIN to be installed on your system (available from <a href='http://www.cygwin.com/' target='_blank'>www.cygwin.com</a>).<br><br> This version also allows you to use BWA and additinal alignment options will be introduced in the near future.<br><br> It also provides remote control facilities for your minION. This is EXPERIMENTAL now and more information will be provided soon. <br><br> You should pay close attention to the enclosed readme file to ensure that you correctly configure the path to run minUP on Windows.</body><br><br>";
 				echo "<body>This version of minUP can utilise a configuration file to bypass entering some of the standard parameters on the command line. You can download a copy of this configuration specific for your account below. This file only works with the Windows version of minUP.</body><br><br>";
 				echo "<a href='minup/minUPW.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP 0.5 for Windows</a><br><br>";
-
+                echo "<h3><u>Experimental</u></h3>";
+                echo "<a href='minup/minupwindowsconfig2.php?user_name=" . $_SESSION['user_name'] . "' target='_blank'><i class='fa fa-file-code-o'></i> minUP Custom Package</a><br><br>";
 				echo "<body>For backwards compatability we provide a previous version of minUP as well.</body><br><br>";
 				echo "<a href='minup/minup.v0.42W.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP 42 for Windows</a><br><br>";
 

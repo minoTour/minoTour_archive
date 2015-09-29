@@ -62,10 +62,10 @@ function boxplotlength($jobname,$currun) {
 			}
 		} else {
 			//do something interesting here...
-
-			$sqltempquartiles = "select (select floor(count(*)/4) from basecalled_template) as first_q, (select floor(count(*)/2) from basecalled_template) as mid_pos, (select floor(count(*)/4*3) from basecalled_template) as third_q from basecalled_template order by length(sequence) limit 1;";
-			$sqlcompquartiles = "select (select floor(count(*)/4) from basecalled_complement) as first_q, (select floor(count(*)/2) from basecalled_complement) as mid_pos, (select floor(count(*)/4*3) from basecalled_complement) as third_q from basecalled_complement order by length(sequence) limit 1;";
-			$sql2dquartiles = "select (select floor(count(*)/4) from basecalled_2d) as first_q, (select floor(count(*)/2) from basecalled_2d) as mid_pos, (select floor(count(*)/4*3) from basecalled_2d) as third_q from basecalled_2d order by length(sequence) limit 1;";
+            //These queries use one filesort - further optimisation possible
+			$sqltempquartiles = "select (select floor(count(*)/4) from basecalled_template) as first_q, (select floor(count(*)/2) from basecalled_template) as mid_pos, (select floor(count(*)/4*3) from basecalled_template) as third_q from basecalled_template order by seqlen limit 1;";
+			$sqlcompquartiles = "select (select floor(count(*)/4) from basecalled_complement) as first_q, (select floor(count(*)/2) from basecalled_complement) as mid_pos, (select floor(count(*)/4*3) from basecalled_complement) as third_q from basecalled_complement order by seqlen limit 1;";
+			$sql2dquartiles = "select (select floor(count(*)/4) from basecalled_2d) as first_q, (select floor(count(*)/2) from basecalled_2d) as mid_pos, (select floor(count(*)/4*3) from basecalled_2d) as third_q from basecalled_2d order by seqlen limit 1;";
 			$pretempquartiles = "select (select floor(count(*)/4) from pre_config_general) as first_q, (select floor(count(*)/2) from pre_config_general) as mid_pos, (select floor(count(*)/4*3) from pre_config_general) as third_q from pre_config_general order by hairpin_event_index limit 1;";
 			$precompquartiles = "select (select floor(count(*)/4) from pre_config_general where hairpin_found = 1) as first_q, (select floor(count(*)/2) from pre_config_general where hairpin_found = 1) as mid_pos, (select floor(count(*)/4*3) from pre_config_general where hairpin_found = 1) as third_q from pre_config_general where hairpin_found = 1 order by (total_events-hairpin_event_index) limit 1;";
 
@@ -121,9 +121,9 @@ function boxplotlength($jobname,$currun) {
 				}
 			}
 
-			$sqltemp = "select min(length(sequence)) as min,(select length(sequence) from basecalled_template order by length(sequence) limit " .$variablearray['template']['first_q'] . ",1) as firstq, (select length(sequence) from basecalled_template order by length(sequence) limit ".$variablearray['template']['mid_pos'].",1) as median, (select length(sequence) from basecalled_template order by length(sequence) limit ".$variablearray['template']['third_q'].",1) as lastq, max(length(sequence)) as max from basecalled_template;";
-			$sqlcomp = "select min(length(sequence)) as min,(select length(sequence) from basecalled_complement order by length(sequence) limit " .$variablearray['complement']['first_q'] . ",1) as firstq, (select length(sequence) from basecalled_complement order by length(sequence) limit ".$variablearray['complement']['mid_pos'].",1) as median, (select length(sequence) from basecalled_complement order by length(sequence) limit ".$variablearray['complement']['third_q'].",1) as lastq, max(length(sequence)) as max from basecalled_complement;";
-			$sql2d = "select min(length(sequence)) as min,(select length(sequence) from basecalled_2d order by length(sequence) limit " .$variablearray['2d']['first_q'] . ",1) as firstq, (select length(sequence) from basecalled_2d order by length(sequence) limit ".$variablearray['2d']['mid_pos'].",1) as median, (select length(sequence) from basecalled_2d order by length(sequence) limit ".$variablearray['2d']['third_q'].",1) as lastq, max(length(sequence)) as max from basecalled_2d;";
+			$sqltemp = "select min(seqlen) as min,(select seqlen from basecalled_template order by seqlen limit " .$variablearray['template']['first_q'] . ",1) as firstq, (select seqlen from basecalled_template order by seqlen limit ".$variablearray['template']['mid_pos'].",1) as median, (select seqlen from basecalled_template order by seqlen limit ".$variablearray['template']['third_q'].",1) as lastq, max(seqlen) as max from basecalled_template;";
+			$sqlcomp = "select min(seqlen) as min,(select seqlen from basecalled_complement order by seqlen limit " .$variablearray['complement']['first_q'] . ",1) as firstq, (select seqlen from basecalled_complement order by seqlen limit ".$variablearray['complement']['mid_pos'].",1) as median, (select seqlen from basecalled_complement order by seqlen limit ".$variablearray['complement']['third_q'].",1) as lastq, max(seqlen) as max from basecalled_complement;";
+			$sql2d = "select min(seqlen) as min,(select seqlen from basecalled_2d order by seqlen limit " .$variablearray['2d']['first_q'] . ",1) as firstq, (select seqlen from basecalled_2d order by seqlen limit ".$variablearray['2d']['mid_pos'].",1) as median, (select seqlen from basecalled_2d order by seqlen limit ".$variablearray['2d']['third_q'].",1) as lastq, max(seqlen) as max from basecalled_2d;";
 			$pretemp = "select min(hairpin_event_index) as min,(select hairpin_event_index from pre_config_general order by hairpin_event_index limit " .$variablearray['Raw Template']['first_q'] . ",1) as firstq, (select hairpin_event_index from pre_config_general order by hairpin_event_index limit ".$variablearray['Raw Template']['mid_pos'].",1) as median, (select hairpin_event_index from pre_config_general order by hairpin_event_index limit ".$variablearray['Raw Template']['third_q'].",1) as lastq, max(hairpin_event_index) as max from pre_config_general;";
 			$precomp = "select min((total_events-hairpin_event_index)) as min,(select (total_events-hairpin_event_index) from pre_config_general where hairpin_found = 1 order by (total_events-hairpin_event_index) limit " .$variablearray['Raw Complement']['first_q'] . ",1) as firstq, (select (total_events-hairpin_event_index) from pre_config_general where hairpin_found = 1 order by (total_events-hairpin_event_index) limit ".$variablearray['Raw Complement']['mid_pos'].",1) as median, (select (total_events-hairpin_event_index) from pre_config_general where hairpin_found = 1 order by (total_events-hairpin_event_index) limit ".$variablearray['Raw Complement']['third_q'].",1) as lastq, max((total_events-hairpin_event_index)) as max from pre_config_general where hairpin_found = 1;";
 			//echo $sqlcomp . "\n";
@@ -262,16 +262,17 @@ function mappabletime($jobname,$currun) {
 			}
 		} else {
 			//do something interesting here...
-			#$sqltemplate = "select (floor((basecalled_template.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor, sum(basecalled_template.duration) as time,  sum(length(sequence))/60/5/count(*) as effective_rate, count(*) as channels, sum(length(sequence))/sum(basecalled_template.duration) as rate from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
-			#$sqlcomplement = "select (floor((basecalled_complement.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor, sum(basecalled_complement.duration) as time,  sum(length(sequence))/60/5/count(*) as effective_rate, count(*) as channels, sum(length(sequence))/sum(basecalled_complement.duration) as rate from basecalled_complement inner join tracking_id using (basename_id) group by 1 order by 1;";
-			$sql2dmapping ="select (floor((basecalled_template.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as alignedreads from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) inner join last_align_basecalled_2d_5prime using (basename_id) group by 1 order by 1;";
-			$sql2dtotal ="select (floor((basecalled_template.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as allreads from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
+			#$sqltemplate = "select (basecalled_template.5minwin*10*5+exp_start_time)*1000 as bin_floor, sum(basecalled_template.duration) as time,  sum(seqlen)/60/5/count(*) as effective_rate, count(*) as channels, sum(seqlen)/sum(basecalled_template.duration) as rate from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
+			#$sqlcomplement = "select (basecalled_complement.5minwin*10*5+exp_start_time)*1000 as bin_floor, sum(basecalled_complement.duration) as time,  sum(seqlen)/60/5/count(*) as effective_rate, count(*) as channels, sum(seqlen)/sum(basecalled_complement.duration) as rate from basecalled_complement inner join tracking_id using (basename_id) group by 1 order by 1;";
+            //These queries could be further optimised by placing time data into the 2D table.
+			$sql2dmapping ="select (basecalled_template.10minwin*10*60+exp_start_time)*1000 as bin_floor, count(*) as alignedreads from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) inner join last_align_basecalled_2d_5prime using (basename_id) group by 1 order by 1;";
+			$sql2dtotal ="select (basecalled_template.10minwin*10*60+exp_start_time)*1000 as bin_floor, count(*) as allreads from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
 
-			$sqltempmapping ="select (floor((basecalled_template.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as alignedreads from basecalled_template inner join tracking_id using (basename_id) inner join last_align_basecalled_template_5prime using (basename_id) group by 1 order by 1;";
-			$sqltemptotal ="select (floor((basecalled_template.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as allreads from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
+			$sqltempmapping ="select (basecalled_template.10minwin*10*60+exp_start_time)*1000 as bin_floor, count(*) as alignedreads from basecalled_template inner join tracking_id using (basename_id) inner join last_align_basecalled_template_5prime using (basename_id) group by 1 order by 1;";
+			$sqltemptotal ="select (basecalled_template.10minwin*10*60+exp_start_time)*1000 as bin_floor, count(*) as allreads from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
 
-			$sqlcompmapping ="select (floor((basecalled_template.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as alignedreads from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id) inner join last_align_basecalled_complement_5prime using (basename_id) group by 1 order by 1;";
-			$sqlcomptotal ="select (floor((basecalled_template.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as allreads from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
+			$sqlcompmapping ="select (basecalled_template.10minwin*10*60+exp_start_time)*1000 as bin_floor, count(*) as alignedreads from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id) inner join last_align_basecalled_complement_5prime using (basename_id) group by 1 order by 1;";
+			$sqlcomptotal ="select (basecalled_template.10minwin*10*60+exp_start_time)*1000 as bin_floor, count(*) as allreads from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
 
 			$pretempmapping="select (floor((pre_config_general.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as alignedreads from pre_config_general inner join pre_align_template using (basename_id) inner join pre_tracking_id using (basename_id) group by 1 order by 1;";
 			$pretemptotal="select (floor((pre_config_general.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id) group by 1 order by 1;";
@@ -486,7 +487,8 @@ function occupancyrate($jobname,$currun) {
 		} else {
 			//do something interesting here...
 			//Query to get pore occupancy over 15 minutes -> select (floor((basecalled_template.start_time)/60/15)*60*15+exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist, sum(basecalled_template.duration+basecalled_complement.duration)/count(distinct config_general.channel)/9 as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) inner join basecalled_complement using (basename_id) group by 1 order by 1
-			$occupancyquery = "select (floor((basecalled_template.start_time)/60/15)*60*15+exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist, LEAST(sum(basecalled_template.duration+basecalled_complement.duration)/count(distinct config_general.channel)/9,100) as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) inner join basecalled_complement using (basename_id) group by 1 order by 1;";
+            //Query semi optimised
+			$occupancyquery = "select (basecalled_template.15minwin*15*60+exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist, LEAST(sum(basecalled_template.duration+basecalled_complement.duration)/count(distinct config_general.channel)/9,100) as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by 1 order by 1;";
 
 			$resultoccupancy = $mindb_connection->query($occupancyquery);
 
@@ -566,8 +568,8 @@ function sequencingrate($jobname,$currun) {
 		} else {
 			//do something interesting here...
 			//Query to get pore occupancy over 15 minutes -> select (floor((basecalled_template.start_time)/60/15)*60*15+exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist, sum(basecalled_template.duration+basecalled_complement.duration)/count(distinct config_general.channel)/9 as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) inner join basecalled_complement using (basename_id) group by 1 order by 1
-			$sqltemplate = "select (floor((basecalled_template.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor,sum(basecalled_template.duration) as time,sum(length(basecalled_template.sequence)+length(basecalled_complement.sequence))/60/5/count(distinct config_general.channel) as effective_rate, count(distinct config_general.channel) as chandist, sum(length(basecalled_template.sequence))/sum(basecalled_template.duration) as rate from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) inner join basecalled_complement using (basename_id) group by 1 order by 1;";
-			$sqlcomplement = "select (floor((basecalled_complement.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor, sum(basecalled_complement.duration) as time,  sum(length(basecalled_complement.sequence)+length(basecalled_template.sequence))/60/5/count(distinct config_general.channel) as effective_rate, count(distinct config_general.channel) as channels, sum(length(basecalled_complement.sequence))/sum(basecalled_complement.duration) as rate from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id)  inner join basecalled_complement using (basename_id) group by 1 order by 1;";
+			$sqltemplate = "select (basecalled_template.5minwin*5*60+exp_start_time)*1000 as bin_floor,sum(basecalled_template.duration) as time,sum(basecalled_template.seqlen+basecalled_complement.seqlen)/60/5/count(distinct config_general.channel) as effective_rate, count(distinct config_general.channel) as chandist, sum(basecalled_template.seqlen)/sum(basecalled_template.duration) as rate from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by 1 order by 1;";
+			$sqlcomplement = "select (basecalled_complement.5minwin*5*60+exp_start_time)*1000 as bin_floor, sum(basecalled_complement.duration) as time,  sum(basecalled_complement.seqlen+basecalled_template.seqlen)/60/5/count(distinct config_general.channel) as effective_rate, count(distinct config_general.channel) as channels, sum(basecalled_complement.seqlen)/sum(basecalled_complement.duration) as rate from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id)  inner join basecalled_complement using (basename_id) group by 1 order by 1;";
 			$prebasecalledevents="select (floor((pre_config_general.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor, sum(pre_config_general.total_events) as total_events,  sum(pre_config_general.total_events)/60/5/count(*) as effective_rate, sum(pre_config_general.total_events)/sum(pre_config_general.total_events/pre_config_general.sample_rate)/100 as rate from pre_config_general inner join pre_tracking_id using (basename_id) group by 1 order by 1;";
 
 			$resulttemplate = $mindb_connection->query($sqltemplate);
@@ -657,9 +659,9 @@ function lengthtimewindow($jobname,$currun) {
 			}
 		} else {
 			//do something interesting here...
-			$sqltemplate = "select (floor((basecalled_template.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor,   sum(length(sequence))/count(*) as meanlength from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
-			$sqlcomplement = "select (floor((basecalled_complement.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor,   sum(length(sequence))/count(*) as meanlength from basecalled_complement inner join tracking_id using (basename_id) group by 1 order by 1;";
-			$sql2d = "select (floor((basecalled_template.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor,   sum(length(basecalled_2d.sequence))/count(*) as meanlength from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
+			$sqltemplate = "select (basecalled_template.5minwin*60*5+exp_start_time)*1000 as bin_floor,   sum(seqlen)/count(*) as meanlength from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
+			$sqlcomplement = "select (basecalled_complement.5minwin*60*5+exp_start_time)*1000 as bin_floor,   sum(seqlen)/count(*) as meanlength from basecalled_complement inner join tracking_id using (basename_id) group by 1 order by 1;";
+			$sql2d = "select (basecalled_template.5minwin*60*5+exp_start_time)*1000 as bin_floor,   sum(basecalled_2d.seqlen)/count(*) as meanlength from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
 			$pretemplate = "select (floor((pre_config_general.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor,   sum(hairpin_event_index)/count(*) as meanlength from pre_config_general inner join pre_tracking_id using (basename_id) group by 1 order by 1;";
 			$precomplement = "select (floor((pre_config_general.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor,   sum(total_events-hairpin_event_index)/count(*) as meanlength from pre_config_general inner join pre_tracking_id using (basename_id) group by 1 order by 1;";
 			$resulttemplate = $mindb_connection->query($sqltemplate);
@@ -775,13 +777,13 @@ function ratiopassfail($jobname,$currun) {
 		} else {
 			//do something interesting here...
 
-			$sqltotalcount = "select (floor((basecalled_template.start_time)/60/10)*10*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
-			$sqltemplate = "select (floor((basecalled_template.start_time)/60/10)*10*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) where file_path like '%pass%' group by 1 order by 1;";
-			$sqlcomplement = "select (floor((basecalled_template.start_time)/60/10)*10*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id) where file_path like '%pass%' group by 1 order by 1;";
-			$sql2d = "select (floor((basecalled_template.start_time)/60/10)*10*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) where file_path like '%pass%' group by 1 order by 1;";
-			$sqltemplate2 = "select (floor((basecalled_template.start_time)/60/10)*10*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) where file_path like '%fail%' group by 1 order by 1;";
-			$sqlcomplement2 = "select (floor((basecalled_template.start_time)/60/10)*10*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id) where file_path like '%fail%' group by 1 order by 1;";
-			$sql2d2 = "select (floor((basecalled_template.start_time)/60/10)*10*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) where file_path like '%fail%' group by 1 order by 1;";
+			$sqltotalcount = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
+			$sqltemplate = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) where pass = 1 group by 1 order by 1;";
+			$sqlcomplement = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id) where pass = 1 group by 1 order by 1;";
+			$sql2d = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) where pass = 1 group by 1 order by 1;";
+			$sqltemplate2 = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) where file_path like '%fail%' group by 1 order by 1;";
+			$sqlcomplement2 = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id) where file_path like '%fail%' group by 1 order by 1;";
+			$sql2d2 = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) where file_path like '%fail%' group by 1 order by 1;";
 
 			$resulttotal = $mindb_connection->query($sqltotalcount);
 
@@ -910,9 +912,9 @@ function ratio2dtemplate($jobname,$currun) {
 			}
 		} else {
 			//do something interesting here...
-			$sqltemplate = "select (floor((basecalled_template.start_time)/60/15)*15*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id)  group by 1 order by 1;";
-			$sqlcomplement = "select (floor((basecalled_template.start_time)/60/15)*15*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id)  group by 1 order by 1;";
-			$sql2d = "select (floor((basecalled_template.start_time)/60/15)*15*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id)  group by 1 order by 1;";
+			$sqltemplate = "select ((basecalled_template.15minwin*15*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id)  group by 1 order by 1;";
+			$sqlcomplement = "select ((basecalled_template.15minwin*15*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id)  group by 1 order by 1;";
+			$sql2d = "select ((basecalled_template.15minwin*15*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id)  group by 1 order by 1;";
 
 			$pretemplate = "select (floor((pre_config_general.start_time)/60/15)*15*60+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id)  group by 1 order by 1;";
 
@@ -1023,12 +1025,12 @@ function cumulativeyield($jobname,$currun) {
 			}
 		} else {
 			//do something interesting here...
-			$sqltemplate = "select (floor((basecalled_template.start_time)/60/5)*5*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id)  group by 1 order by 1;";
-			$sqltemplatepass = "select (floor((basecalled_template.start_time)/60/5)*5*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) where file_path like '%pass%'  group by 1 order by 1;";
-			$sqlcomplement = "select (floor((basecalled_template.start_time)/60/5)*5*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id)  group by 1 order by 1;";
-			$sqlcomplementpass = "select (floor((basecalled_template.start_time)/60/5)*5*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id) where file_path like '%pass%'  group by 1 order by 1;";
-			$sql2d = "select (floor((basecalled_template.start_time)/60/5)*5*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id)  group by 1 order by 1;";
-			$sql2dpass = "select (floor((basecalled_template.start_time)/60/5)*5*60+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) where file_path like '%pass%' group by 1 order by 1;";
+			$sqltemplate = "select ((basecalled_template.5minwin*5*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id)  group by 1 order by 1;";
+			$sqltemplatepass = "select ((basecalled_template.5minwin*5*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) where pass = 1  group by 1 order by 1;";
+			$sqlcomplement = "select ((basecalled_template.5minwin*5*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id)  group by 1 order by 1;";
+			$sqlcomplementpass = "select ((basecalled_template.5minwin*5*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id) where pass = 1  group by 1 order by 1;";
+			$sql2d = "select ((basecalled_template.5minwin*5*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id)  group by 1 order by 1;";
+			$sql2dpass = "select ((basecalled_template.5minwin*5*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) where pass = 1 group by 1 order by 1;";
 			$pretemplate = "select (floor((pre_config_general.start_time)/60/5)*5*60+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id)  group by 1 order by 1;";
 			$precomplement = "select (floor((pre_config_general.start_time)/60/5)*5*60+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found = 1 group by 1 order by 1;";
 
@@ -1545,9 +1547,9 @@ function basicstats($jobname,$currun,$refid) {
 		} else {
 			$jsonstring = $jsonstring . "[\n";
 			### We will recover an array of sequence lengths for the template, complement and 2d sequences
-			$sql_template_lengths = 'select length(sequence) as len from basecalled_template order by length(sequence);';
-			$sql_complement_lengths = 'select length(sequence) as len from basecalled_complement order by length(sequence);';
-			$sql_2d_lengths = 'select length(sequence) as len from basecalled_2d order by length(sequence);';
+			$sql_template_lengths = 'select seqlen as len from basecalled_template order by seqlen;';
+			$sql_complement_lengths = 'select seqlen as len from basecalled_complement order by seqlen;';
+			$sql_2d_lengths = 'select seqlen as len from basecalled_2d order by seqlen;';
 
 			$sql_template_lengths_result=$mindb_connection->query($sql_template_lengths);
 			$sql_complement_lengths_result=$mindb_connection->query($sql_complement_lengths);
@@ -2444,7 +2446,7 @@ function whatsinmyminion($jobname,$currun) {
 
 }
 
-###select sum(ifnull(length(basecalled_template.sequence),0)+ifnull(length(basecalled_complement.sequence),0)) as bases, channel, start_mux as mux from basecalled_template inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by channel,mux;
+###select sum(ifnull(basecalled_template.seqlen,0)+ifnull(basecalled_complement.seqlen,0)) as bases, channel, start_mux as mux from basecalled_template inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by channel,mux;
 
 ##Bases per pore - plots the number of bases sequenced on a pore by pore bases corrected for the nanopore map - this calculates the sum of template and complement bases sequenced through the pore based on the basecalled sequence.
 
@@ -2466,7 +2468,7 @@ function basesperporemux($jobname,$currun) {
 				$jsonstring = $row['json'];
 			}
 		} else {
-			$sql_template = "select sum(ifnull(length(basecalled_template.sequence),0)+ifnull(length(basecalled_complement.sequence),0)) as bases, channel, start_mux as mux from basecalled_template inner join config_general using (basename_id) left join basecalled_complement using (basename_id) where start_mux != 0  group by channel,mux;";
+			$sql_template = "select sum(ifnull(basecalled_template.seqlen,0)+ifnull(basecalled_complement.seqlen,0)) as bases, channel, start_mux as mux from basecalled_template inner join config_general using (basename_id) left join basecalled_complement using (basename_id) where start_mux != 0  group by channel,mux;";
 
 
 			$resultarray=array();
@@ -2947,8 +2949,8 @@ function average_length_over_time($jobname,$currun){
 					$jsonstring = $row['json'];
 				}
 			} else {
-			$sql_template = "select (floor(start_time/60)*60 + exp_start_time) *1000 as bin_floor, ROUND(AVG(length(sequence))) as average_length from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
-			$sql_complement = "select (floor(start_time/60)*60 + exp_start_time) *1000 as bin_floor, ROUND(AVG(length(sequence))) as average_length from basecalled_complement inner join tracking_id using (basename_id) group by 1 order by 1;";
+			$sql_template = "select (floor(start_time/60)*60 + exp_start_time) *1000 as bin_floor, ROUND(AVG(seqlen)) as average_length from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
+			$sql_complement = "select (floor(start_time/60)*60 + exp_start_time) *1000 as bin_floor, ROUND(AVG(seqlen)) as average_length from basecalled_complement inner join tracking_id using (basename_id) group by 1 order by 1;";
 
 			$resultarray=array();
 
@@ -3026,7 +3028,7 @@ function readnumberlength($jobname,$currun){
 			//$sql_template_lengths = "select seqpos, count(*) as count from last_align_basecalled_template_5prime where alignnum = 1 group by seqpos order by seqpos;";
 			$resultarray2;
 
-			$sql_template_lengths = "select length(sequence) as lenseq from last_align_basecalled_template_5prime inner join basecalled_template using (basename_id) group by basename_id order by length(sequence);";
+			$sql_template_lengths = "select seqlen as lenseq from last_align_basecalled_template_5prime inner join basecalled_template using (basename_id) group by basename_id order by seqlen;";
 
 			$template_lengths=$mindb_connection->query($sql_template_lengths);
 			$template_numbers = $template_lengths->num_rows;
@@ -3039,7 +3041,7 @@ function readnumberlength($jobname,$currun){
 
 
 			//$sql_complement_lengths = "select seqpos, count(*) as count from last_align_basecalled_complement_5prime where alignnum = 1 group by seqpos order by seqpos;";
-			$sql_complement_lengths = "select length(sequence) as lenseq from last_align_basecalled_complement_5prime inner join basecalled_complement using (basename_id) group by basename_id order by length(sequence);";
+			$sql_complement_lengths = "select seqlen as lenseq from last_align_basecalled_complement_5prime inner join basecalled_complement using (basename_id) group by basename_id order by seqlen;";
 
 			$complement_lengths=$mindb_connection->query($sql_complement_lengths);
 			$complement_numbers = $complement_lengths->num_rows;
@@ -3051,7 +3053,7 @@ function readnumberlength($jobname,$currun){
 				}
 			}
 			//$sql_2d_lengths = "select seqpos, count(*) as count from last_align_basecalled_2d_5prime where alignnum = 1 group by seqpos order by seqpos;";
-			$sql_2d_lengths = "select length(sequence) as lenseq from last_align_basecalled_2d_5prime inner join basecalled_2d using (basename_id) group by basename_id order by length(sequence);";
+			$sql_2d_lengths = "select seqlen as lenseq from last_align_basecalled_2d_5prime inner join basecalled_2d using (basename_id) group by basename_id order by seqlen;";
 
 			$read2d_lengths=$mindb_connection->query($sql_2d_lengths);
 			$read2d_numbers = $read2d_lengths->num_rows;
@@ -3279,7 +3281,7 @@ function basesperpore($jobname,$currun){
 				$jsonstring = $row['json'];
 			}
 		} else {
-			$sql_template = "select sum(ifnull(length(basecalled_template.sequence),0)+ifnull(length(basecalled_complement.sequence),0)) as bases, channel from basecalled_template inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by channel order by channel;";
+			$sql_template = "select sum(ifnull(basecalled_template.seqlen,0)+ifnull(basecalled_complement.seqlen,0)) as bases, channel from basecalled_template inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by channel order by channel;";
 
 
 			$resultarray=array();
@@ -3608,9 +3610,9 @@ function histogrambases($jobname,$currun) {
 				$jsonstring = $row['json'];
 			}
 		} else {
-			$sql_template_query = "SELECT (FLOOR(length(basecalled_template.sequence)/1000)*1000) as bucket, sum(length(basecalled_template.sequence)) as tempBASES from basecalled_template group by bucket;";
-			$sql_complement_query = "SELECT (FLOOR(length(basecalled_complement.sequence)/1000)*1000) as bucket, sum(length(basecalled_complement.sequence)) as compBASES from basecalled_complement group by bucket;";
-			$sql_2d_query = "SELECT (FLOOR(length(basecalled_2d.sequence)/1000)*1000) as bucket, sum(length(basecalled_2d.sequence)) as d2BASES from basecalled_2d group by bucket;";
+			$sql_template_query = "SELECT (FLOOR(basecalled_template.seqlen/1000)*1000) as bucket, sum(basecalled_template.seqlen) as tempBASES from basecalled_template group by bucket;";
+			$sql_complement_query = "SELECT (FLOOR(basecalled_complement.seqlen/1000)*1000) as bucket, sum(basecalled_complement.seqlen) as compBASES from basecalled_complement group by bucket;";
+			$sql_2d_query = "SELECT (FLOOR(basecalled_2d.seqlen/1000)*1000) as bucket, sum(basecalled_2d.seqlen) as d2BASES from basecalled_2d group by bucket;";
 			$sql_template_execute=$mindb_connection->query($sql_template_query);
 			$sql_complement_execute=$mindb_connection->query($sql_complement_query);
 			$sql_2d_execute=$mindb_connection->query($sql_2d_query);
@@ -3730,9 +3732,9 @@ function histogram($jobname,$currun) {
 				$jsonstring = $row['json'];
 			}
 		} else {
-			$sql_template_query = "SELECT (FLOOR(length(basecalled_template.sequence)/1000)*1000) as bucket, COUNT(basecalled_template.sequence) as tempCOUNT from basecalled_template group by bucket;";
-			$sql_complement_query = "SELECT (FLOOR(length(basecalled_complement.sequence)/1000)*1000) as bucket, COUNT(basecalled_complement.sequence) as compCOUNT from basecalled_complement group by bucket;";
-			$sql_2d_query = "SELECT (FLOOR(length(basecalled_2d.sequence)/1000)*1000) as bucket, COUNT(basecalled_2d.sequence) as d2COUNT from basecalled_2d group by bucket;";
+			$sql_template_query = "SELECT (FLOOR(basecalled_template.seqlen/1000)*1000) as bucket, COUNT(basecalled_template.sequence) as tempCOUNT from basecalled_template group by bucket;";
+			$sql_complement_query = "SELECT (FLOOR(basecalled_complement.seqlen/1000)*1000) as bucket, COUNT(basecalled_complement.sequence) as compCOUNT from basecalled_complement group by bucket;";
+			$sql_2d_query = "SELECT (FLOOR(basecalled_2d.seqlen/1000)*1000) as bucket, COUNT(basecalled_2d.sequence) as d2COUNT from basecalled_2d group by bucket;";
 
 			$sql_template_execute=$mindb_connection->query($sql_template_query);
 			$sql_complement_execute=$mindb_connection->query($sql_complement_query);
@@ -4525,9 +4527,9 @@ function maxlen($jobname,$currun) {
 				$jsonstring = $row['json'];
 			}
 		} else {
-			$sql_template = "select MAX(length(sequence)) as maxlen, exp_script_purpose from basecalled_template inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
-			$sql_complement = "select MAX(length(sequence)) as maxlen, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
-			$sql_2d = "select MAX(length(sequence)) as maxlen, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
+			$sql_template = "select MAX(seqlen) as maxlen, exp_script_purpose from basecalled_template inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
+			$sql_complement = "select MAX(seqlen) as maxlen, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
+			$sql_2d = "select MAX(seqlen) as maxlen, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
 			$pre_template = "SELECT MAX(hairpin_event_index) as maxlen, exp_script_purpose FROM pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found = 1;"; #note: this will not catch template only reads (i.e those with no hairpin). It is therefore less than ideal.
 			$pre_complement = "SELECT MAX(total_events-hairpin_event_index) as maxlen, exp_script_purpose FROM pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found = 1;";
 			$resultarray=array();
@@ -4617,9 +4619,9 @@ function avelen($jobname,$currun) {
 				$jsonstring = $row['json'];
 			}
 		} else {
-			$sql_template = "select ROUND(AVG(length(sequence))) as average_length, exp_script_purpose from basecalled_template inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
-			$sql_complement = "select ROUND(AVG(length(sequence))) as average_length, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
-			$sql_2d = "select ROUND(AVG(length(sequence))) as average_length, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
+			$sql_template = "select ROUND(AVG(seqlen)) as average_length, exp_script_purpose from basecalled_template inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
+			$sql_complement = "select ROUND(AVG(seqlen)) as average_length, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
+			$sql_2d = "select ROUND(AVG(seqlen)) as average_length, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
 			$pre_template = "SELECT (hairpin_event_index) as average_length, exp_script_purpose FROM pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found =1;";
 			$pre_complement = "SELECT (total_events-hairpin_event_index) as average_length, exp_script_purpose FROM pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found = 1;";
 			$resultarray=array();
@@ -4715,9 +4717,9 @@ function bases($jobname,$currun){
 			}
 		} else {
 
-			$sql_template = "SELECT sum(length(sequence)) as bases FROM basecalled_template;";
-			$sql_complement = "SELECT sum(length(sequence)) as bases FROM basecalled_complement;";
-			$sql_2d = "SELECT sum(length(sequence)) as bases FROM basecalled_2d;";
+			$sql_template = "SELECT sum(seqlen) as bases FROM basecalled_template;";
+			$sql_complement = "SELECT sum(seqlen) as bases FROM basecalled_complement;";
+			$sql_2d = "SELECT sum(seqlen) as bases FROM basecalled_2d;";
 			$pre_template="SELECT sum(hairpin_event_index) as events FROM pre_config_general where pre_config_general.hairpin_found = 1;";
 			$pre_complement = "SELECT sum(total_events-hairpin_event_index) as events FROM pre_config_general where pre_config_general.hairpin_found = 1;";
 

@@ -8,6 +8,7 @@ use Parallel::Loops;
 use Getopt::Long;
 use Data::Dumper;
 
+
 ## Import variables from mT_param.conf
 ## This file allows us to set global parameters for the mT_control package
 
@@ -81,8 +82,6 @@ my @jobarray = ("readnumber","maxlen","avelen","bases","histogram","histogrambas
 my @heartbeat = (".","!","\#","!");
 my $heartcount=0;
 #This is our master loop which will run endlessley checking for changes to the databases;
-
-
 
 while (42) {#If you have to ask the significance of 42 you shouldn't be reading computer code.
 	$memd->set("perl_mem_cache_connection", "We are fully operational.", $sleeptime);
