@@ -265,14 +265,15 @@ function mappabletime($jobname,$currun) {
 			#$sqltemplate = "select (basecalled_template.5minwin*10*5+exp_start_time)*1000 as bin_floor, sum(basecalled_template.duration) as time,  sum(seqlen)/60/5/count(*) as effective_rate, count(*) as channels, sum(seqlen)/sum(basecalled_template.duration) as rate from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
 			#$sqlcomplement = "select (basecalled_complement.5minwin*10*5+exp_start_time)*1000 as bin_floor, sum(basecalled_complement.duration) as time,  sum(seqlen)/60/5/count(*) as effective_rate, count(*) as channels, sum(seqlen)/sum(basecalled_complement.duration) as rate from basecalled_complement inner join tracking_id using (basename_id) group by 1 order by 1;";
             //These queries could be further optimised by placing time data into the 2D table.
-			$sql2dmapping ="select (basecalled_template.10minwin*10*60+exp_start_time)*1000 as bin_floor, count(*) as alignedreads from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) inner join last_align_basecalled_2d_5prime using (basename_id) group by 1 order by 1;";
-			$sql2dtotal ="select (basecalled_template.10minwin*10*60+exp_start_time)*1000 as bin_floor, count(*) as allreads from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
+			$sql2dmapping ="select 10minwin,exp_start_time, count(*) as alignedreads from basecalled_2d where align=1 group by 1 order by 1;";
+			$sql2dtotal ="select 10minwin,exp_start_time, count(*) as allreads from basecalled_2d group by 1 order by 1;";
 
-			$sqltempmapping ="select (basecalled_template.10minwin*10*60+exp_start_time)*1000 as bin_floor, count(*) as alignedreads from basecalled_template inner join tracking_id using (basename_id) inner join last_align_basecalled_template_5prime using (basename_id) group by 1 order by 1;";
-			$sqltemptotal ="select (basecalled_template.10minwin*10*60+exp_start_time)*1000 as bin_floor, count(*) as allreads from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
+			#$sqltempmapping ="select (basecalled_template.10minwin*10*60+exp_start_time)*1000 as bin_floor, count(*) as alignedreads from basecalled_template inner join tracking_id using (basename_id) inner join last_align_basecalled_template_5prime using (basename_id) group by 1 order by 1;";
+			$sqltempmapping = "select basecalled_template.10minwin, exp_start_time, count(*) as alignedreads from basecalled_template where align = 1 group by 1 order by 1;";
+			$sqltemptotal ="select basecalled_template.10minwin,exp_start_time, count(*) as allreads from basecalled_template group by 1 order by 1;";
 
-			$sqlcompmapping ="select (basecalled_template.10minwin*10*60+exp_start_time)*1000 as bin_floor, count(*) as alignedreads from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id) inner join last_align_basecalled_complement_5prime using (basename_id) group by 1 order by 1;";
-			$sqlcomptotal ="select (basecalled_template.10minwin*10*60+exp_start_time)*1000 as bin_floor, count(*) as allreads from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
+			$sqlcompmapping ="select 10minwin,exp_start_time, count(*) as alignedreads from basecalled_complement where align = 1 group by 1 order by 1";
+			$sqlcomptotal ="select 10minwin,exp_start_time, count(*) as allreads from basecalled_complement group by 1 order by 1;";
 
 			$pretempmapping="select (floor((pre_config_general.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as alignedreads from pre_config_general inner join pre_align_template using (basename_id) inner join pre_tracking_id using (basename_id) group by 1 order by 1;";
 			$pretemptotal="select (floor((pre_config_general.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id) group by 1 order by 1;";
@@ -311,7 +312,8 @@ function mappabletime($jobname,$currun) {
 
 				foreach ($resultsql2dtotal as $row) {
 					#$cumucount++;
-					$resultarray['2d'][$row['bin_floor']]['allreads']=$row['allreads'];
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+					$resultarray['2d'][$binfloor]['allreads']=$row['allreads'];
 
 				}
 			}
@@ -319,7 +321,8 @@ function mappabletime($jobname,$currun) {
 				#$cumucount = 0;
 				foreach ($resultsql2dmap as $row) {
 					#$cumucount++;
-					$resultarray['2d'][$row['bin_floor']]['alignedreads']=$row['alignedreads'];
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+					$resultarray['2d'][$binfloor]['alignedreads']=$row['alignedreads'];
 
 				}
 			}
@@ -329,7 +332,8 @@ function mappabletime($jobname,$currun) {
 
 				foreach ($resultsqltemptotal as $row) {
 					#$cumucount++;
-					$resultarray['Template'][$row['bin_floor']]['allreads']=$row['allreads'];
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+					$resultarray['Template'][$binfloor]['allreads']=$row['allreads'];
 
 				}
 			}
@@ -337,7 +341,8 @@ function mappabletime($jobname,$currun) {
 				#$cumucount = 0;
 				foreach ($resultsqltempmap as $row) {
 					#$cumucount++;
-					$resultarray['Template'][$row['bin_floor']]['alignedreads']=$row['alignedreads'];
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+					$resultarray['Template'][$binfloor]['alignedreads']=$row['alignedreads'];
 
 				}
 			}
@@ -348,7 +353,8 @@ function mappabletime($jobname,$currun) {
 
 				foreach ($resultsqlcomptotal as $row) {
 					#$cumucount++;
-					$resultarray['Complement'][$row['bin_floor']]['allreads']=$row['allreads'];
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+					$resultarray['Complement'][$binfloor]['allreads']=$row['allreads'];
 
 				}
 			}
@@ -356,7 +362,8 @@ function mappabletime($jobname,$currun) {
 				#$cumucount = 0;
 				foreach ($resultsqlcompmap as $row) {
 					#$cumucount++;
-					$resultarray['Complement'][$row['bin_floor']]['alignedreads']=$row['alignedreads'];
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+					$resultarray['Complement'][$binfloor]['alignedreads']=$row['alignedreads'];
 
 				}
 			}
@@ -488,7 +495,7 @@ function occupancyrate($jobname,$currun) {
 			//do something interesting here...
 			//Query to get pore occupancy over 15 minutes -> select (floor((basecalled_template.start_time)/60/15)*60*15+exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist, sum(basecalled_template.duration+basecalled_complement.duration)/count(distinct config_general.channel)/9 as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) inner join basecalled_complement using (basename_id) group by 1 order by 1
             //Query semi optimised
-			$occupancyquery = "select (basecalled_template.15minwin*15*60+exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist, LEAST(sum(basecalled_template.duration+basecalled_complement.duration)/count(distinct config_general.channel)/9,100) as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by 1 order by 1;";
+			$occupancyquery = "select (basecalled_template.15minwin*15*60+basecalled_template.exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist, LEAST(sum(basecalled_template.duration+basecalled_complement.duration)/count(distinct config_general.channel)/9,100) as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by 1 order by 1;";
 
 			$resultoccupancy = $mindb_connection->query($occupancyquery);
 
@@ -568,8 +575,8 @@ function sequencingrate($jobname,$currun) {
 		} else {
 			//do something interesting here...
 			//Query to get pore occupancy over 15 minutes -> select (floor((basecalled_template.start_time)/60/15)*60*15+exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist, sum(basecalled_template.duration+basecalled_complement.duration)/count(distinct config_general.channel)/9 as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) inner join basecalled_complement using (basename_id) group by 1 order by 1
-			$sqltemplate = "select (basecalled_template.5minwin*5*60+exp_start_time)*1000 as bin_floor,sum(basecalled_template.duration) as time,sum(basecalled_template.seqlen+basecalled_complement.seqlen)/60/5/count(distinct config_general.channel) as effective_rate, count(distinct config_general.channel) as chandist, sum(basecalled_template.seqlen)/sum(basecalled_template.duration) as rate from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by 1 order by 1;";
-			$sqlcomplement = "select (basecalled_complement.5minwin*5*60+exp_start_time)*1000 as bin_floor, sum(basecalled_complement.duration) as time,  sum(basecalled_complement.seqlen+basecalled_template.seqlen)/60/5/count(distinct config_general.channel) as effective_rate, count(distinct config_general.channel) as channels, sum(basecalled_complement.seqlen)/sum(basecalled_complement.duration) as rate from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id)  inner join basecalled_complement using (basename_id) group by 1 order by 1;";
+			$sqltemplate = "select (basecalled_template.5minwin*5*60+basecalled_template.exp_start_time)*1000 as bin_floor,sum(basecalled_template.duration) as time,sum(basecalled_template.seqlen+basecalled_complement.seqlen)/60/5/count(distinct config_general.channel) as effective_rate, count(distinct config_general.channel) as chandist, sum(basecalled_template.seqlen)/sum(basecalled_template.duration) as rate from basecalled_template inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by 1 order by 1;";
+			$sqlcomplement = "select (basecalled_complement.5minwin*5*60+basecalled_complement.exp_start_time)*1000 as bin_floor, sum(basecalled_complement.duration) as time,  sum(basecalled_complement.seqlen+basecalled_template.seqlen)/60/5/count(distinct config_general.channel) as effective_rate, count(distinct config_general.channel) as channels, sum(basecalled_complement.seqlen)/sum(basecalled_complement.duration) as rate from basecalled_template inner join config_general using (basename_id)  inner join basecalled_complement using (basename_id) group by 1 order by 1;";
 			$prebasecalledevents="select (floor((pre_config_general.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor, sum(pre_config_general.total_events) as total_events,  sum(pre_config_general.total_events)/60/5/count(*) as effective_rate, sum(pre_config_general.total_events)/sum(pre_config_general.total_events/pre_config_general.sample_rate)/100 as rate from pre_config_general inner join pre_tracking_id using (basename_id) group by 1 order by 1;";
 
 			$resulttemplate = $mindb_connection->query($sqltemplate);
@@ -659,9 +666,10 @@ function lengthtimewindow($jobname,$currun) {
 			}
 		} else {
 			//do something interesting here...
-			$sqltemplate = "select (basecalled_template.5minwin*60*5+exp_start_time)*1000 as bin_floor,   sum(seqlen)/count(*) as meanlength from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
-			$sqlcomplement = "select (basecalled_complement.5minwin*60*5+exp_start_time)*1000 as bin_floor,   sum(seqlen)/count(*) as meanlength from basecalled_complement inner join tracking_id using (basename_id) group by 1 order by 1;";
-			$sql2d = "select (basecalled_template.5minwin*60*5+exp_start_time)*1000 as bin_floor,   sum(basecalled_2d.seqlen)/count(*) as meanlength from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
+			#$sqltemplate = "select (basecalled_template.5minwin*60*5+exp_start_time)*1000 as bin_floor,   sum(seqlen)/count(*) as meanlength from basecalled_template group by 1 order by 1;";
+            $sqltemplate = "select 5minwin,exp_start_time,sum(seqlen)/count(*) as meanlength from basecalled_template group by 1 order by 1;";
+			$sqlcomplement = "select 5minwin,exp_start_time,sum(seqlen)/count(*) as meanlength from basecalled_complement group by 1 order by 1;";
+			$sql2d = "select 5minwin,exp_start_time,   sum(basecalled_2d.seqlen)/count(*) as meanlength from basecalled_2d  group by 1 order by 1;";
 			$pretemplate = "select (floor((pre_config_general.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor,   sum(hairpin_event_index)/count(*) as meanlength from pre_config_general inner join pre_tracking_id using (basename_id) group by 1 order by 1;";
 			$precomplement = "select (floor((pre_config_general.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor,   sum(total_events-hairpin_event_index)/count(*) as meanlength from pre_config_general inner join pre_tracking_id using (basename_id) group by 1 order by 1;";
 			$resulttemplate = $mindb_connection->query($sqltemplate);
@@ -676,7 +684,8 @@ function lengthtimewindow($jobname,$currun) {
 				#$cumucount = 0;
 				foreach ($resulttemplate as $row) {
 					#$cumucount++;
-					$resultarray['template length'][$row['bin_floor']]=$row['meanlength'];
+                    $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
+					$resultarray['template length'][$binfloor]=$row['meanlength'];
 					#$resultarray['template effective rate'][$row['bin_floor']]=$row['effective_rate'];
 				}
 			}
@@ -684,7 +693,8 @@ function lengthtimewindow($jobname,$currun) {
 				#$cumucount = 0;
 				foreach ($resultcomplement as $row) {
 					#$cumucount++;
-					$resultarray['complement length'][$row['bin_floor']]=$row['meanlength'];
+                    $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
+					$resultarray['complement length'][$binfloor]=$row['meanlength'];
 					#$resultarray['complement effective rate'][$row['bin_floor']]=$row['effective_rate'];
 				}
 			}
@@ -692,7 +702,8 @@ function lengthtimewindow($jobname,$currun) {
 				#$cumucount = 0;
 				foreach ($result2d as $row) {
 					#$cumucount++;
-					$resultarray['2d length'][$row['bin_floor']]=$row['meanlength'];
+                    $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
+					$resultarray['2d length'][$binfloor]=$row['meanlength'];
 					#$resultarray['complement effective rate'][$row['bin_floor']]=$row['effective_rate'];
 				}
 			}
@@ -776,14 +787,17 @@ function ratiopassfail($jobname,$currun) {
 			}
 		} else {
 			//do something interesting here...
-
-			$sqltotalcount = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
-			$sqltemplate = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) where pass = 1 group by 1 order by 1;";
-			$sqlcomplement = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id) where pass = 1 group by 1 order by 1;";
-			$sql2d = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) where pass = 1 group by 1 order by 1;";
-			$sqltemplate2 = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) where file_path like '%fail%' group by 1 order by 1;";
-			$sqlcomplement2 = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id) where file_path like '%fail%' group by 1 order by 1;";
-			$sql2d2 = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) where file_path like '%fail%' group by 1 order by 1;";
+            //echo "badger";
+			#$sqltotalcount = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
+            $sqltotalcount = "select 10minwin,exp_start_time, count(*) as count from basecalled_template group by 1 order by 1;";
+            #$sqltemplate = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) where pass = 1 group by 1 order by 1;";
+            $sqltemplate = "select 10minwin,exp_start_time, count(*) as count from basecalled_template where pass = 1 group by 1 order by 1;";
+            $sqlcomplement = "select 10minwin,exp_start_time, count(*) as count from basecalled_complement where pass = 1 group by 1 order by 1;";
+			#$sql2d = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) where pass = 1 group by 1 order by 1;";
+			$sql2d="select 10minwin,exp_start_time, count(*) as count from basecalled_2d where pass = 1 group by 1 order by 1;";
+            $sqltemplate2 = "select 10minwin,exp_start_time, count(*) as count from basecalled_template where pass = 0 group by 1 order by 1;";
+			$sqlcomplement2 = "select 10minwin,exp_start_time, count(*) as count from basecalled_complement where pass = 0 group by 1 order by 1;";
+			$sql2d2 = "select 10minwin,exp_start_time, count(*) as count from basecalled_2d where pass = 0 group by 1 order by 1;";
 
 			$resulttotal = $mindb_connection->query($sqltotalcount);
 
@@ -801,7 +815,9 @@ function ratiopassfail($jobname,$currun) {
 				#$cumucount = 0;
 				foreach ($resulttotal as $row) {
 					#$cumucount++;
-					$totalarray[$row['bin_floor']]=$row['count'];
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+					$totalarray[$binfloor]=$row['count'];
+
 				}
 			}
 
@@ -811,42 +827,50 @@ function ratiopassfail($jobname,$currun) {
 				#$cumucount = 0;
 				foreach ($resulttemplate as $row) {
 					#$cumucount++;
-					$resultarray['template pass'][$row['bin_floor']]=$row['count']/$totalarray[$row['bin_floor']]*100;
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+					$resultarray['template pass'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+                    //echo $row['count'];
 				}
 			}
 			if ($resultcomplement->num_rows >=1) {
 				#$cumucount = 0;
 				foreach ($resultcomplement as $row) {
 					#$cumucount++;
-					$resultarray['complement pass'][$row['bin_floor']]=$row['count']/$totalarray[$row['bin_floor']]*100;
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+					$resultarray['complement pass'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
 				}
 			}
 			if ($result2d->num_rows >=1) {
 				#$cumucount = 0;
 				foreach ($result2d as $row) {
 					#$cumucount++;
-					$resultarray['2d pass'][$row['bin_floor']]=$row['count']/$totalarray[$row['bin_floor']]*100;
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+					$resultarray['2d pass'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
 				}
 			}
 			if ($resulttemplate2->num_rows >=1) {
 				#$cumucount = 0;
 				foreach ($resulttemplate2 as $row) {
 					#$cumucount++;
-					$resultarray['template fail'][$row['bin_floor']]=$row['count']/$totalarray[$row['bin_floor']]*100;
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+					$resultarray['template fail'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+
 				}
 			}
 			if ($resultcomplement2->num_rows >=1) {
 				#$cumucount = 0;
 				foreach ($resultcomplement2 as $row) {
 					#$cumucount++;
-					$resultarray['complement fail'][$row['bin_floor']]=$row['count']/$totalarray[$row['bin_floor']]*100;
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+					$resultarray['complement fail'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
 				}
 			}
 			if ($result2d2->num_rows >=1) {
 				#$cumucount = 0;
 				foreach ($result2d2 as $row) {
 					#$cumucount++;
-					$resultarray['2d fail'][$row['bin_floor']]=$row['count']/$totalarray[$row['bin_floor']]*100;
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+					$resultarray['2d fail'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
 				}
 			}
 
@@ -912,9 +936,10 @@ function ratio2dtemplate($jobname,$currun) {
 			}
 		} else {
 			//do something interesting here...
-			$sqltemplate = "select ((basecalled_template.15minwin*15*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id)  group by 1 order by 1;";
-			$sqlcomplement = "select ((basecalled_template.15minwin*15*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id)  group by 1 order by 1;";
-			$sql2d = "select ((basecalled_template.15minwin*15*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id)  group by 1 order by 1;";
+			#$sqltemplate = "select ((basecalled_template.15minwin*15*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id)  group by 1 order by 1;";
+            $sqltemplate ="select 15minwin,exp_start_time, count(*) as count from basecalled_template group by 1 order by 1;";
+			$sqlcomplement = "select 15minwin,exp_start_time, count(*) as count from basecalled_complement group by 1 order by 1;";
+			$sql2d = "select 15minwin,exp_start_time, count(*) as count from basecalled_2d group by 1 order by 1;";
 
 			$pretemplate = "select (floor((pre_config_general.start_time)/60/15)*15*60+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id)  group by 1 order by 1;";
 
@@ -932,21 +957,24 @@ function ratio2dtemplate($jobname,$currun) {
 				#$cumucount = 0;
 				foreach ($resulttemplate as $row) {
 					#$cumucount++;
-					$resultarray['template'][$row['bin_floor']]=$row['count'];
+                    $binfloor = ($row['15minwin']*15*60+$row['exp_start_time'])*1000;
+					$resultarray['template'][$binfloor]=$row['count'];
 				}
 			}
 			if ($resultcomplement->num_rows >=1) {
 				#$cumucount = 0;
 				foreach ($resultcomplement as $row) {
 					#$cumucount++;
-					$resultarray['complement'][$row['bin_floor']]=$row['count'];
+                    $binfloor = ($row['15minwin']*15*60+$row['exp_start_time'])*1000;
+					$resultarray['complement'][$binfloor]=$row['count'];
 				}
 			}
 			if ($result2d->num_rows >=1) {
 				#$cumucount = 0;
 				foreach ($result2d as $row) {
 					#$cumucount++;
-					$resultarray['2d'][$row['bin_floor']]=$row['count'];
+                    $binfloor = ($row['15minwin']*15*60+$row['exp_start_time'])*1000;
+					$resultarray['2d'][$binfloor]=$row['count'];
 				}
 			}
 			if ($resultpretemplate->num_rows >=1) {
@@ -1025,12 +1053,13 @@ function cumulativeyield($jobname,$currun) {
 			}
 		} else {
 			//do something interesting here...
-			$sqltemplate = "select ((basecalled_template.5minwin*5*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id)  group by 1 order by 1;";
-			$sqltemplatepass = "select ((basecalled_template.5minwin*5*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) where pass = 1  group by 1 order by 1;";
-			$sqlcomplement = "select ((basecalled_template.5minwin*5*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id)  group by 1 order by 1;";
-			$sqlcomplementpass = "select ((basecalled_template.5minwin*5*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_complement using (basename_id) inner join tracking_id using (basename_id) where pass = 1  group by 1 order by 1;";
-			$sql2d = "select ((basecalled_template.5minwin*5*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id)  group by 1 order by 1;";
-			$sql2dpass = "select ((basecalled_template.5minwin*5*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) where pass = 1 group by 1 order by 1;";
+			#$sqltemplate = "select ((basecalled_template.5minwin*5*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id)  group by 1 order by 1;";
+            $sqltemplate = "select 5minwin,exp_start_time, count(*) as count from basecalled_template group by 1 order by 1;";
+            $sqltemplatepass = "select 5minwin,exp_start_time, count(*) as count from basecalled_template where pass = 1  group by 1 order by 1;";
+			$sqlcomplement = "select 5minwin,exp_start_time, count(*) as count from basecalled_complement group by 1 order by 1;";
+			$sqlcomplementpass = "select 5minwin,exp_start_time, count(*) as count from basecalled_complement where pass = 1  group by 1 order by 1;";
+			$sql2d = "select 5minwin,exp_start_time, count(*) as count from basecalled_2d group by 1 order by 1;";
+			$sql2dpass = "select 5minwin,exp_start_time, count(*) as count from basecalled_2d where pass = 1  group by 1 order by 1;";
 			$pretemplate = "select (floor((pre_config_general.start_time)/60/5)*5*60+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id)  group by 1 order by 1;";
 			$precomplement = "select (floor((pre_config_general.start_time)/60/5)*5*60+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found = 1 group by 1 order by 1;";
 
@@ -1056,21 +1085,24 @@ function cumulativeyield($jobname,$currun) {
 					#echo "Count is ". $row['count'] . "\n";
 					#echo "Cumu Count is ". $cumucount . "\n";
 					#$resultarray['template'][$cumucount]=$row['bin_floor'];
-					$resultarray['template'][$row['bin_floor']]=$cumucount;
+                    $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
+					$resultarray['template'][$binfloor]=$cumucount;
 				}
 			}
 			if ($resultcomplement->num_rows >=1) {
 				$cumucount = 0;
 				foreach ($resultcomplement as $row) {
 					$cumucount=$cumucount+$row['count'];
-					$resultarray['complement'][$row['bin_floor']]=$cumucount;
+                    $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
+					$resultarray['complement'][$binfloor]=$cumucount;
 				}
 			}
 			if ($result2d->num_rows >=1) {
 				$cumucount = 0;
 				foreach ($result2d as $row) {
 					$cumucount=$cumucount+$row['count'];
-					$resultarray['2d'][$row['bin_floor']]=$cumucount;
+                    $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
+					$resultarray['2d'][$binfloor]=$cumucount;
 				}
 			}
 
@@ -1081,21 +1113,24 @@ function cumulativeyield($jobname,$currun) {
 					#echo "Count is ". $row['count'] . "\n";
 					#echo "Cumu Count is ". $cumucount . "\n";
 					#$resultarray['template'][$cumucount]=$row['bin_floor'];
-					$resultarray['template pass'][$row['bin_floor']]=$cumucount;
+                    $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
+					$resultarray['template pass'][$binfloor]=$cumucount;
 				}
 			}
 			if ($resultcomplementpass->num_rows >=1) {
 				$cumucount = 0;
 				foreach ($resultcomplementpass as $row) {
 					$cumucount=$cumucount+$row['count'];
-					$resultarray['complement pass'][$row['bin_floor']]=$cumucount;
+                    $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
+					$resultarray['complement pass'][$binfloor]=$cumucount;
 				}
 			}
 			if ($result2dpass->num_rows >=1) {
 				$cumucount = 0;
 				foreach ($result2dpass as $row) {
 					$cumucount=$cumucount+$row['count'];
-					$resultarray['2d pass'][$row['bin_floor']]=$cumucount;
+                    $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
+					$resultarray['2d pass'][$binfloor]=$cumucount;
 				}
 			}
 			if ($resultpretemp->num_rows >=1) {
@@ -2949,8 +2984,8 @@ function average_length_over_time($jobname,$currun){
 					$jsonstring = $row['json'];
 				}
 			} else {
-			$sql_template = "select (floor(start_time/60)*60 + exp_start_time) *1000 as bin_floor, ROUND(AVG(seqlen)) as average_length from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
-			$sql_complement = "select (floor(start_time/60)*60 + exp_start_time) *1000 as bin_floor, ROUND(AVG(seqlen)) as average_length from basecalled_complement inner join tracking_id using (basename_id) group by 1 order by 1;";
+			$sql_template = "select 1minwin,exp_start_time, ROUND(AVG(seqlen)) as average_length from basecalled_template group by 1 order by 1;";
+			$sql_complement = "select 1minwin,exp_start_time, ROUND(AVG(seqlen)) as average_length from basecalled_complement group by 1 order by 1;";
 
 			$resultarray=array();
 
@@ -2959,13 +2994,15 @@ function average_length_over_time($jobname,$currun){
 
 			if ($template->num_rows >= 1){
 				foreach ($template as $row) {
-					$resultarray['template'][$row['bin_floor']]=$row['average_length'];
+                    $binfloor = ($row['1minwin']*60*60+$row['exp_start_time'])*1000;
+					$resultarray['template'][$binfloor]=$row['average_length'];
 				}
 			}
 
 			if ($complement->num_rows >=1) {
 				foreach ($complement as $row) {
-					$resultarray['complement'][$row['bin_floor']]=$row['average_length'];
+                    $binfloor = ($row['1minwin']*60*60+$row['exp_start_time'])*1000;
+					$resultarray['complement'][$binfloor]=$row['average_length'];
 				}
 			}
 
@@ -3382,8 +3419,8 @@ $checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 					$jsonstring = $row['json'];
 				}
 			} else {
-			$sql_template = "select (floor(start_time/60)*60 + exp_start_time) *1000 as bin_floor, count(*) as chan_count from basecalled_template inner join config_general using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
-			$sql_complement = "select (floor(start_time/60)*60  + exp_start_time ) * 1000 as bin_floor, count(*) as chan_count from basecalled_complement inner join config_general using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
+			$sql_template = "select (floor(start_time/60)*60 + basecalled_template.exp_start_time) *1000 as bin_floor, count(*) as chan_count from basecalled_template inner join config_general using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
+			$sql_complement = "select (floor(start_time/60)*60  + basecalled_complement.exp_start_time ) * 1000 as bin_floor, count(*) as chan_count from basecalled_complement inner join config_general using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
 
 			$resultarray=array();
 
@@ -3455,8 +3492,8 @@ function average_time_over_time2($jobname,$currun){
 				$jsonstring = $row['json'];
 			}
 		} else {
-			$sql_template = "select (floor(start_time/60)*60 + exp_start_time) * 1000 as bin_floor, ROUND(AVG(duration)) as average_time from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1;";
-			$sql_complement = "select (floor(start_time/60)*60 + exp_start_time) * 1000 as bin_floor, ROUND(AVG(duration)) as average_time from basecalled_complement inner join tracking_id using (basename_id) group by 1 order by 1;";
+			$sql_template = "select 1minwin,exp_start_time, ROUND(AVG(duration)) as average_time from basecalled_template group by 1 order by 1;";
+			$sql_complement = "select 1minwin,exp_start_time, ROUND(AVG(duration)) as average_time from basecalled_complement group by 1 order by 1;";
 
 			$resultarray=array();
 
@@ -3472,7 +3509,8 @@ function average_time_over_time2($jobname,$currun){
 					//		$row['bin_floor']=>$row['average_time']
 					//	)
 					//);
-					$resultarray['template'][$row['bin_floor']]=$row['average_time'];
+                    $binfloor = ($row['1minwin']*60*60+$row['exp_start_time'])*1000;
+					$resultarray['template'][$binfloor]=$row['average_time'];
 					//echo $row['average_time'] . "t\n";
 					//var_dump ($resultarray);
 				}
@@ -3485,7 +3523,8 @@ function average_time_over_time2($jobname,$currun){
 					//		$row['bin_floor']=>$row['average_time']
 					//	)
 			//	);
-					$resultarray['complement'][$row['bin_floor']]=$row['average_time'];
+                    $binfloor = ($row['1minwin']*60*60+$row['exp_start_time'])*1000;
+					$resultarray['complement'][$binfloor]=$row['average_time'];
 					//echo $row['average_time'] . "c\n";
 				}
 			}
@@ -3541,9 +3580,9 @@ function reads_over_time2($jobname,$currun) {
 				$jsonstring = $row['json'];
 			}
 		} else {
-			$sql_template = "select (floor((basecalled_template.start_time)/(60*5))*(60*5) + exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1 ;";
+			$sql_template = "select 5minwin,exp_start_time, count(*) as count from basecalled_template group by 1 order by 1 ;";
 
-			$sql_complement = "select (floor((basecalled_complement.start_time)/(60*5))*(60*5) + exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_complement inner join tracking_id using (basename_id) group by 1 order by 1 ;";
+			$sql_complement = "select 5minwin,exp_start_time, count(*) as count from basecalled_complement group by 1 order by 1 ;";
 
 			$resultarray=array();
 
@@ -3552,13 +3591,15 @@ function reads_over_time2($jobname,$currun) {
 
 			if ($template->num_rows >= 1){
 				foreach ($template as $row) {
-					$resultarray['template'][$row['bin_floor']]=$row['count'];
+                    $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
+					$resultarray['template'][$binfloor]=$row['count'];
 				}
 			}
 
 			if ($complement->num_rows >=1) {
 				foreach ($complement as $row) {
-					$resultarray['complement'][$row['bin_floor']]=$row['count'];
+                    $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
+					$resultarray['complement'][$binfloor]=$row['count'];
 				}
 			}
 			//var_dump($resultarray);
