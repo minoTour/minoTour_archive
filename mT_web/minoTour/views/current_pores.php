@@ -29,6 +29,9 @@ require_once("includes/functions.php");
             </div>
 			<ul class="nav nav-pills">
 			  <li><a href="current_summary.php">Read Summaries</a></li>
+              <?php if ($_SESSION['currentbasesum'] > 0){?>
+              <li><a href="current_basecalling.php">Basecaller Summary</a></li>
+              <?php }; ?>
 			  <li><a href="current_histogram.php">Read Histograms</a></li>
 			  <li><a href="current_rates.php">Sequencing Rates</a></li>
 			  <li class="active"><a href="current_pores.php">Pore Activity</a></li>
@@ -74,7 +77,8 @@ require_once("includes/functions.php");
 </div></h3>
 			  </div>
 			  <div class="panel-body">
-					<div id="activechannels" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x" ></i> Calculating Active Channels Over Time</div>
+					<?php if ($_SESSION['currentBASE'] > 0) {?>
+                        <div id="activechannels" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x" ></i> Calculating Active Channels Over Time</div>
 					<div id="occupancyrate" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x" ></i> Calculating Pore Occupancy Over Time</div>
                     <div id="poreproduction" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pore Read Productivity</div>
 					<div id="baseproduction" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pore Base Productivity</div>
@@ -84,7 +88,9 @@ require_once("includes/functions.php");
 					<?php } ?>
 					<?php if ($_SESSION['active_minup'] >= 0.37) {?>
 					<div id="basemuxproduction" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pore Base Productivity</div>
-					<?php } ?>		  </div>
+					<?php } ?>
+                    <?php }else { echo "Currently pore data is oncly calculated from basecalled data. This will change in the future."; }?>
+                </div>
 			</div>
 
                 <!-- /.col-lg-12 -->            </div>

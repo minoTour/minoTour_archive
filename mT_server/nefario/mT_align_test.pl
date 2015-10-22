@@ -1013,6 +1013,25 @@ unless ($checkingrunning) {
 				my @valuesd;
 				my @refid;
 				my @reference;
+                my @counterU;
+				my @valuesAU;
+				my @valuesTU;
+				my @valuesGU;
+				my @valuesCU;
+				my @valuesiU;
+				my @valuesdU;
+				my @refidU;
+				my @referenceU;
+                my @counterI;
+				my @valuesAI;
+				my @valuesTI;
+				my @valuesGI;
+				my @valuesCI;
+				my @valuesiI;
+				my @valuesdI;
+				my @refidI;
+				my @referenceI;
+
 				#print "Testing the reference sequence\n";
 				foreach my $counter (sort {$a<=>$b} keys %{$finalhash{$refid}}) {
 					push @counter, $counter;
@@ -1036,13 +1055,78 @@ unless ($checkingrunning) {
 				#print "Reference "  . scalar (@reference) . "\n";
                 #print "@counter\n";
                 #WE're going to try and pause transactions here:
+                print "We're going to sort our list to find out what is in the table already...\n";
+
+                my %testhash;
+                for (my $i=0;$i < scalar @counter; $i++){
+                    #print $i . "\n";
+                    $testhash{$refid[$i]}{$counter[$i]}{"A"}=$valuesA[$i];
+                    $testhash{$refid[$i]}{$counter[$i]}{"T"}=$valuesT[$i];
+                    $testhash{$refid[$i]}{$counter[$i]}{"G"}=$valuesG[$i];
+                    $testhash{$refid[$i]}{$counter[$i]}{"C"}=$valuesC[$i];
+                    $testhash{$refid[$i]}{$counter[$i]}{"i"}=$valuesi[$i];
+                    $testhash{$refid[$i]}{$counter[$i]}{"d"}=$valuesd[$i];
+                    $testhash{$refid[$i]}{$counter[$i]}{"reference"}=$reference[$i];
+                }
+
+                my %selecthash;
+                my $selectcheck = "select ref_id,ref_pos from ".$dbname.".reference_coverage_" .$_.";";
+                my $selectchecker = $dbh2->prepare($selectcheck);
+                $selectchecker->execute;
+                while (my $ref = $selectchecker->fetchrow_hashref) {
+                    $selecthash{$ref->{ref_id}}{$ref->{ref_pos}}=1;
+                }
+                foreach my $idref (sort {$a<=>$b} keys %testhash) {
+                    foreach my $posref (sort {$a<=>$b} keys %{$testhash{$idref}}){
+                        #print $ref->{ref_id} ."\t" . $ref->{ref_pos} . "\n";
+                        if (exists $selecthash{$idref}{$posref}){
+                            #push @positionindex,$i;
+                            #print $ref->{ref_id} ."\t" . $ref->{ref_pos} . "\n";
+                            #print "This exists\n";
+                            push @counterU, $posref;
+    					    push @valuesAU, $testhash{$idref}{$posref}{"A"};
+    					push @valuesTU, $testhash{$idref}{$posref}{"T"};
+    					push @valuesGU, $testhash{$idref}{$posref}{"G"};
+    					push @valuesCU, $testhash{$idref}{$posref}{"C"};
+    					push @valuesiU, $testhash{$idref}{$posref}{"i"};
+    					push @valuesdU, $testhash{$idref}{$posref}{"d"};
+    					push @referenceU, $testhash{$idref}{$posref}{"reference"};
+    					push @refidU ,$idref;
+
+                        } else {
+                            push @counterI, $posref;
+    					    push @valuesAI, $testhash{$idref}{$posref}{"A"};
+    					push @valuesTI, $testhash{$idref}{$posref}{"T"};
+    					push @valuesGI, $testhash{$idref}{$posref}{"G"};
+    					push @valuesCI, $testhash{$idref}{$posref}{"C"};
+    					push @valuesiI, $testhash{$idref}{$posref}{"i"};
+    					push @valuesdI, $testhash{$idref}{$posref}{"d"};
+    					push @referenceI, $testhash{$idref}{$posref}{"reference"};
+    					push @refidI ,$idref;
+
+                        }
+                    }
+                }
+                print "Number of elements to update " . @refidU . "\n\n";
+                #print "Length of positoin array " . @positionindex . "\n\n";
+                print scalar @counterI."\t".@valuesAI."\t".@valuesTI."\t".@valuesGI."\t".@valuesCI."\t".@valuesiI."\t".@valuesdI."\t".@referenceI."\t".@refidI."\n";
                 my $pausetransactions = $dbh2->prepare("start transaction;");
                 $pausetransactions->execute;
-                my $insertsth2 = $dbh2->prepare("INSERT INTO ".$dbname.".reference_coverage_" .$_." (ref_id,ref_seq, ref_pos, A,T,G,C,D,I) VALUES( ?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE A = A + VALUES(A), T = T + VALUES(T), G = G + VALUES(G),C = C + VALUES(C), D = D + VALUES(D), I = I + VALUES(I);");
-                #my $insertsth2 = $dbh2->prepare("INSERT INTO ".$dbname.".reference_coverage_" .$_." (ref_id,ref_seq, ref_pos, A,T,G,C,D,I) VALUES( ?,?,?,?,?,?,?,?,?);");
+                #Original query:
+                #my $insertsth2 = $dbh2->prepare("INSERT INTO ".$dbname.".reference_coverage_" .$_." (ref_id,ref_seq, ref_pos, A,T,G,C,D,I) VALUES( ?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE A = A + VALUES(A), T = T + VALUES(T), G = G + VALUES(G),C = C + VALUES(C), D = D + VALUES(D), I = I + VALUES(I);");
+                #New query:
+                my $insertsth2 = $dbh2->prepare("INSERT INTO ".$dbname.".reference_coverage_" .$_." (ref_id,ref_seq, ref_pos, A,T,G,C,D,I) VALUES( ?,?,?,?,?,?,?,?,?);");
+                my $insertsth3 = $dbh2->prepare("UPDATE ".$dbname.".reference_coverage_" .$_." SET A=A+?,T=T+?,G=G+?,C=C+?,D=D+?,I=I+? where ref_id = ? and ref_seq = ? and ref_pos = ?;");
 				print "Insert two prepared at " . (localtime) . "\n";
-				print "	INSERT INTO ".$dbname.".reference_coverage_" .$_." (ref_id,ref_seq, ref_pos, A,T,G,C,D,I) VALUES( ?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE A = A + VALUES(A), T = T + VALUES(T), G = G + VALUES(G),C = C + VALUES(C), D = D + VALUES(D), I = I + VALUES(I);";
-				$insertsth2->execute_array({},\@refid,\@reference,\@counter,\@valuesA,\@valuesT,\@valuesG,\@valuesC,\@valuesd,\@valuesi);
+				#print "	INSERT INTO ".$dbname.".reference_coverage_" .$_." (ref_id,ref_seq, ref_pos, A,T,G,C,D,I) VALUES( ?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE A = A + VALUES(A), T = T + VALUES(T), G = G + VALUES(G),C = C + VALUES(C), D = D + VALUES(D), I = I + VALUES(I);";
+                if (@refidI > 0){
+                    $insertsth2->execute_array({},\@refidI,\@referenceI,\@counterI,\@valuesAI,\@valuesTI,\@valuesGI,\@valuesCI,\@valuesdI,\@valuesiI);
+                }else{
+                    $insertsth2->execute_array({},\@refid,\@reference,\@counter,\@valuesA,\@valuesT,\@valuesG,\@valuesC,\@valuesd,\@valuesi);
+                }
+                if (@refidU > 0){
+                    $insertsth3->execute_array({},\@valuesA,\@valuesT,\@valuesG,\@valuesC,\@valuesd,\@valuesi,\@refid,\@reference,\@counter);
+                }
 				print "Insert two executed at ". (localtime) . "\n";
                 my $committransactions = $dbh2->prepare("commit;");
                 $committransactions->execute;

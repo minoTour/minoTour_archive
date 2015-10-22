@@ -13,13 +13,23 @@
 
 		$sql_template_pre= "SELECT ref_id from reference_pre_coverage_template group by ref_id;";
 		$templatepre=$mindb_connection->query($sql_template_pre);
-
+        //var_dump($templatepre);
 
 		$sql_template = "SELECT refid, max(refpos) as max_length FROM last_align_basecalled_template_5prime group by refid;";
 
 		$template=$mindb_connection->query($sql_template);
+        //var_dump($template);
 
+        if (is_object($templatepre) && $templatepre->num_rows >= 1){
+            echo "Analysing raw data - 2D reads are those for which template and complement sequiggles align appropriately to the reference sequence.<br>";
+            foreach ($templatepre as $row) {
+                echo "<div id='precoverage" . $row['ref_id'] . "'  style='width:100%; height:400px;'><i class='fa fa-cog fa-spin fa-3x'></i> Calculating Pre Coverage Plots for " . $row['ref_id'] . "</div>";
+            }
+        } else {
+            echo "No raw data found to analyse.<br>";
+        }
 		$array=array();
+
 		if ($template->num_rows >= 1){
 			foreach ($template as $row) {
 				$array[] = $row['refid'];
@@ -36,15 +46,17 @@
 				}
 				echo "<div id='coverage" . $row['refid'] . "'  style='width:100%; height:400px;'><i class='fa fa-cog fa-spin fa-3x'></i> Calculating Coverage Plots for " . $row['refid'] . "</div>";
 
-				if (is_object($templatepre) && $templatepre->num_rows >= 1){
+				/*if (is_object($templatepre) && $templatepre->num_rows >= 1){
 					echo "<div id='precoverage" . $row['refid'] . "'  style='width:100%; height:400px;'><i class='fa fa-cog fa-spin fa-3x'></i> Calculating Pre Coverage Plots for " . $row['refid'] . "</div>";
 				}else{
 				 //echo "No raw reads uploaded.";
-				}
+             }*/
 
 
 			}
-		}
+		} else {
+            echo "No basecalled data found to analyse.";
+        }
 
 		foreach ($array as $value){
 			echo "<div id='5primecoverage". $value . "'  style='width:100%; height:400px;'><i class='fa fa-cog fa-spin fa-3x'></i> Calculating 5' Mapped Coverage " . $value . "</div>

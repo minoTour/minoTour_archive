@@ -29,6 +29,9 @@ require_once("includes/functions.php");
             </div>
 			<ul class="nav nav-pills">
 			  <li class="active"><a href="current_summary.php">Read Summaries</a></li>
+              <?php if ($_SESSION['currentbasesum'] > 0){?>
+              <li><a href="current_basecalling.php">Basecaller Summary</a></li>
+              <?php }; ?>
 			  <li><a href="current_histogram.php">Read Histograms</a></li>
 			  <li><a href="current_rates.php">Sequencing Rates</a></li>
 			  <li><a href="current_pores.php">Pore Activity</a></li>

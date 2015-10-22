@@ -68,7 +68,7 @@ require_once("includes/functions.php");
 </div></h3>
 			  </div>
 			  <div class="panel-body">
-
+                  <?php if ($_SESSION['focusBASE'] > 0) {?>
 					<?php if ($_SESSION['focusreference'] != "NOREFERENCE") {?>
 
 
@@ -151,6 +151,7 @@ require_once("includes/functions.php");
 				<?php }else { ?>
 												<div><p class="text-center"><small>This dataset has not been aligned to a reference sequence and so no SNPs can be called.</small></p></div>
 				<?php }; ?>
+                <?php } else { echo "Bases cannot be shown from the raw data alone. You must upload basecalled data to see these features.";};?>
 
 
 			  </div>

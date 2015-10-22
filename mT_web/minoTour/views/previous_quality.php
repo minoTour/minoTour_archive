@@ -73,12 +73,14 @@ require_once("includes/functions.php");
 
 						  <div class="panel-body">
 				  			<?php if ($_SESSION['focusreference'] != "NOREFERENCE") {?>
-				  			<div id="avgquallength"  style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Quality Scores for Aligned Reads</div>
+				  			<!--<div id="avgquallength"  style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Quality Scores for Aligned Reads</div>-->
 				  			<div id="numberoverlength"  style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Number of Aligned Reads By Length</div>
 				  			<?php }else { ?>
 															<div><p class="text-center"><small>This dataset has not been aligned to a reference sequence.</small></p></div>
 							<?php }; ?>
+                            <?php if ($_SESSION['focusBASE'] > 0) {?>
 				  		  	<div id="allqualities"  style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Quality Scores for 100 Random Reads</div>
+                            <?php };?>
 				</div>
 
 						</div>

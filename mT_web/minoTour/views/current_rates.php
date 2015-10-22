@@ -29,6 +29,9 @@ require_once("includes/functions.php");
             </div>
             <ul class="nav nav-pills">
 			  <li><a href="current_summary.php">Read Summaries</a></li>
+              <?php if ($_SESSION['currentbasesum'] > 0){?>
+              <li><a href="current_basecalling.php">Basecaller Summary</a></li>
+              <?php }; ?>
 			  <li><a href="current_histogram.php">Read Histograms</a></li>
 			  <li class="active"><a href="current_rates.php">Sequencing Rates</a></li>
 			  <li><a href="current_pores.php">Pore Activity</a></li>
@@ -73,11 +76,13 @@ require_once("includes/functions.php");
 					<div id="cumulativeyield" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Cumulative Reads</div>
 			  		<div id="sequencingrate" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Sequencing Rates.</div>
                     <div id="ratio2dtemplate" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Ratio 2D to Template.</div>
-					<div id="ratiopassfail" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pass Fail Reads.</div>
+                    <?php if ($_SESSION['currentBASE'] > 0) {?>
+                    <div id="ratiopassfail" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pass Fail Reads.</div>
 					<div id="readrate" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Read Rate</div>
 					<div id="averagelength" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Read Length Over Time</div>
 					<div id="averagetime" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Time To Complete Reads</div>
-			  </div>
+                    <?php }; ?>
+              </div>
 			</div>
 
                 <!-- /.col-lg-12 -->

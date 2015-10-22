@@ -122,7 +122,7 @@ require_once("includes/functions.php");
 					                chart: {
 					                    renderTo: 'container',
 					                    type: 'column',
-                                        zoomType: 'x', 
+                                        zoomType: 'x',
 					                },
 									plotOptions: {
 									            column: {
@@ -182,9 +182,20 @@ require_once("includes/functions.php");
 					            };
 								    $.getJSON("jsonencode/histograms.php?prev=1&db=<?php echo $_SESSION['focusrun'];?>&callback=?", function(json) {
 					                options.xAxis.categories = json[0]['data'];
+                                    <?php if ($_SESSION['focusBASE'] > 0 && $_SESSION['focusPRE'] > 0) {?>
 					                options.series[0] = json[1];
 					                options.series[1] = json[2];
 					                options.series[2] = json[3];
+                                    options.series[3] = json[4];
+                                    options.series[4] = json[5];
+                                    <?php }else if ($_SESSION['focusBASE'] == 0 && $_SESSION['focusPRE'] > 0) {?>
+                                    options.series[0] = json[4];
+    					            options.series[1] = json[5];
+                                    <?php }else if ($_SESSION['focusBASE'] > 0 && $_SESSION['focusPRE'] == 0) {?>
+                                    options.series[0] = json[1];
+    					            options.series[1] = json[2];
+                                    options.series[2] = json[3];
+                                    <?php  }; ?>
 
 								        //options.series = JSON2;
 								                var chart = new Highcharts.Chart(options);
@@ -261,9 +272,20 @@ require_once("includes/functions.php");
 					            };
 								    $.getJSON("jsonencode/histogrambases.php?prev=1&db=<?php echo $_SESSION['focusrun'];?>&callback=?", function(json) {
 					                options.xAxis.categories = json[0]['data'];
+                                    <?php if ($_SESSION['focusBASE'] > 0 && $_SESSION['focusPRE'] > 0) {?>
 					                options.series[0] = json[1];
 					                options.series[1] = json[2];
 					                options.series[2] = json[3];
+                                    options.series[3] = json[4];
+                                    options.series[4] = json[5];
+                                    <?php }else if ($_SESSION['focusBASE'] == 0 && $_SESSION['focusPRE'] > 0) {?>
+                                    options.series[0] = json[4];
+    					            options.series[1] = json[5];
+                                    <?php }else if ($_SESSION['focusBASE'] > 0 && $_SESSION['focusPRE'] == 0) {?>
+                                    options.series[0] = json[1];
+    					            options.series[1] = json[2];
+                                    options.series[2] = json[3];
+                                    <?php  }; ?>
 
 								        //options.series = JSON2;
 								                var chart = new Highcharts.Chart(options);

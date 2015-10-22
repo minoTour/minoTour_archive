@@ -1,7 +1,7 @@
 <?php
 
 //Setting general system wide parameters for various features
-$_SESSION['minotourversion']=0.5;
+$_SESSION['minotourversion']=0.6;
 $_SESSION['pagerefresh']=5000;
 
 
@@ -553,7 +553,7 @@ function checksessionvars(){
 				}
 			}
 
-			$sql = "select users.user_name,runname, activeflag,reference,reflength from users inner join userrun using (user_id) inner join minIONruns where userrun.runindex=minIONruns.runindex and users.user_name = '" . $user_name . "';";
+			$sql = "select users.user_name,minup_version,runname, activeflag,reference,reflength from users inner join userrun using (user_id) inner join minIONruns where userrun.runindex=minIONruns.runindex and users.user_name = '" . $user_name . "';";
 			$runs_available = $db_connection->query($sql);
 			if ($runs_available->num_rows >=1) {
 
@@ -617,6 +617,25 @@ function checksessionvars(){
 						$_SESSION['currentINT'] = 0; //$intresult->num_rows;
 					}
 
+                    //Check for the existence of raw data in the active run database:
+                    $db_connection2 = new mysqli(DB_HOST, DB_USER, DB_PASS, $_SESSION['active_run_name']);
+					$intcheck = "select * from pre_config_general limit 1;";
+					$intresult = $db_connection2->query($intcheck);
+					if (!empty ($intresult) && ($intresult->num_rows >= 1)) {
+						$_SESSION['currentPRE'] = $intresult->num_rows;
+					}else{
+						$_SESSION['currentPRE'] = 0; //$intresult->num_rows;
+					}
+
+                    //Check for the existence of basecalled data in the active run database:
+                    $db_connection2 = new mysqli(DB_HOST, DB_USER, DB_PASS, $_SESSION['active_run_name']);
+					$intcheck = "select * from config_general limit 1;";
+					$intresult = $db_connection2->query($intcheck);
+					if (!empty ($intresult) && ($intresult->num_rows >= 1)) {
+						$_SESSION['currentBASE'] = $intresult->num_rows;
+					}else{
+						$_SESSION['currentBASE'] = 0; //$intresult->num_rows;
+					}
 
 					//Check for the existence of squiggle data in the active run database:
 
@@ -635,6 +654,15 @@ function checksessionvars(){
 						$_SESSION['currentmaf'] = "SAM";
 					} else {
 						$_SESSION['currentmaf'] = "MAF";
+					}
+
+                    //Check for the existence of basecalled summary data in the active run database:
+                    $basecalledsumcheck = "select * from basecall_summary limit 1;";
+                    $basecalledsumresult = $db_connection2->query($basecalledsumcheck);
+                    if (!empty ($basecalledsumresult)  && ($basecalledsumresult->num_rows >= 1)) {
+						$_SESSION['currentbasesum'] = $basecalledsumresult->num_rows;
+					}else{
+						$_SESSION['currentbasesum'] = 0;// $barcoderesult->num_rows;
 					}
 
 
@@ -697,7 +725,25 @@ function checksessionvars(){
 					}else{
 						$_SESSION['focustelem'] =0;// $telemcheckresult->num_rows;
 					}
+                    //Check for the existence of raw data in the active run database:
 
+					$intcheck = "select * from pre_config_general limit 1;";
+					$intresult = $db_connection2->query($intcheck);
+					if (!empty ($intresult) && ($intresult->num_rows >= 1)) {
+						$_SESSION['focusPRE'] = $intresult->num_rows;
+					}else{
+						$_SESSION['focusPRE'] = 0; //$intresult->num_rows;
+					}
+
+                    //Check for the existence of basecalled data in the active run database:
+
+					$intcheck = "select * from config_general limit 1;";
+					$intresult = $db_connection2->query($intcheck);
+					if (!empty ($intresult) && ($intresult->num_rows >= 1)) {
+						$_SESSION['focusBASE'] = $intresult->num_rows;
+					}else{
+						$_SESSION['focusBASE'] = 0; //$intresult->num_rows;
+					}
 					//Check for the processing type we need to perform. SAM or MAF
 					$mafcheck = "show tables like 'align_sam%';";
 					$mafcheckresult = $db_connection2->query($mafcheck);
@@ -716,6 +762,15 @@ function checksessionvars(){
 						$_SESSION['focusbarcode'] = $barcoderesult->num_rows;
 					}else{
 						$_SESSION['focusbarcode'] = 0; // $barcoderesult->num_rows;
+					}
+
+                    //Check for the existence of basecalled summary data in the active run database:
+                    $basecalledsumcheck = "select * from basecall_summary limit 1;";
+                    $basecalledsumresult = $db_connection2->query($basecalledsumcheck);
+                    if (!empty ($basecalledsumresult)  && ($basecalledsumresult->num_rows >= 1)) {
+						$_SESSION['focusbasesum'] = $basecalledsumresult->num_rows;
+					}else{
+						$_SESSION['focusbasesum'] = 0;// $barcoderesult->num_rows;
 					}
 
 					//Check for the existence of raw data in the database
@@ -899,12 +954,58 @@ function runsummary() {
 		//echo "run summary is running - .";
 		$mindb_connection = new mysqli(DB_HOST, DB_USER, DB_PASS, $_SESSION['active_run_name']);
 		if (!$mindb_connection->connect_errno) {
-			$sql = "select device_id, exp_script_purpose,exp_start_time,run_id,version_name from tracking_id group by run_id order by exp_start_time;";
+            $presql = "select device_id, exp_script_purpose,exp_start_time,run_id,version_name from pre_tracking_id group by run_id order by exp_start_time;";
+
+            $prerunsummary=$mindb_connection->query($presql);
+			if ($prerunsummary->num_rows >= 1) {
+            	echo "<h4>Pre Basecalled Summary</h4><div class='table-responsive'>
+				<table class='table table-condensed'>
+					<thead>
+				<tr>
+						<th>Device ID</th>
+						<th>Experiment Purpose</th>
+						<th>Reads Generated</th>
+						<th>Start Time</th>
+						<th>Start Date</th>
+						<th>Run ID</th>
+						<th>Version Name</th>
+						</tr>
+					</thead>
+					<tbody>";
+					foreach ($prerunsummary as $row) {
+						$purpose = $row['exp_script_purpose'];
+						$presql2 = "select count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id) where exp_script_purpose='$purpose';";
+                        $counts = $mindb_connection->query($presql2);
+						if ($counts->num_rows == 1){
+							$result_row = $counts->fetch_object();
+							$count = $result_row->count;
+						}else{
+							$count = "0";
+						}
+						echo "<tr>";
+						echo "<td>" . $row['device_id'] . "</td>";
+						echo "<td>" . $row['exp_script_purpose'] . "</td>";
+						echo "<td>" . $count . "</td>";
+						echo "<td>" . gmdate('H:i:s', $row['exp_start_time']) . "</td>";
+						echo "<td>" . gmdate('d-m-y', $row['exp_start_time']) . "</td>";
+						echo "<td style='word-wrap: break-word;'>" . $row['run_id'] . "</td>";
+						echo "<td>" . $row['version_name'] . "</td>";
+						echo "</tr>";
+					}
+
+				echo"</tbody>
+					</table>
+					</div>
+					";
+
+			}
+
+            $sql = "select device_id, exp_script_purpose,exp_start_time,run_id,version_name from tracking_id group by run_id order by exp_start_time;";
 
 
 			$runsummary=$mindb_connection->query($sql);
 			if ($runsummary->num_rows >= 1) {
-				echo " <div class='table-responsive'>
+				echo "<h4>Basecalled Data Summary</h4><div class='table-responsive'>
 				<table class='table table-condensed'>
 					<thead>
 				<tr>
@@ -945,12 +1046,46 @@ function runsummary() {
 					";
 				}
 			}
+
 			echo "<h3>Read Data</h3>";
 			echo "<h4>Basecalled Template</h4>";
-			$sql3 = "select count(*) as readnum,exp_script_purpose,ROUND(AVG(length(sequence))) as average_length,STDDEV(length(sequence)) as standard_dev,MAX(length(sequence)) as maxlen,MIN(length(sequence)) as minlen from basecalled_template inner join tracking_id using (basename_id) group by exp_script_purpose;";
+            $sql3 = "select count(*) as readnum,exp_script_purpose,ROUND(AVG(hairpin_event_index)) as average_length,STDDEV(hairpin_event_index) as standard_dev,MAX(hairpin_event_index) as maxlen,MIN(hairpin_event_index) as minlen from pre_config_general inner join pre_tracking_id using (basename_id) group by exp_script_purpose;";
 			$template=$mindb_connection->query($sql3);
 			if ($template->num_rows >= 1) {
-				echo " <div class='table-responsive'>
+				echo "<h6>Pre Basecalled Data (events)</h6><div class='table-responsive'>
+				<table class='table table-condensed'>
+					<thead>
+				<tr>
+						<th>Experiment Purpose</th>
+						<th>Sequenced Reads</th>
+						<th>Average Length</th>
+						<th>Standard Deviation</th>
+						<th>Max Length</th>
+						<th>Min Length</th>
+						</tr>
+					</thead>
+					<tbody>";
+				foreach ($template as $row) {
+					echo "<tr>";
+					echo "<td>" . $row['exp_script_purpose'] . "</td>";
+					echo "<td>" . $row['readnum'] . "</td>";
+					echo "<td>" . $row['average_length'] . "</td>";
+					echo "<td>" . round($row['standard_dev'],2) . "</td>";
+					echo "<td>" . $row['maxlen']. "</td>";
+					echo "<td>" . $row['minlen']. "</td>";
+					echo "</tr>";
+				}
+
+				echo"</tbody>
+					</table>
+					</div>
+					";
+
+			}
+            $sql3 = "select count(*) as readnum,exp_script_purpose,ROUND(AVG(length(sequence))) as average_length,STDDEV(length(sequence)) as standard_dev,MAX(length(sequence)) as maxlen,MIN(length(sequence)) as minlen from basecalled_template inner join tracking_id using (basename_id) group by exp_script_purpose;";
+			$template=$mindb_connection->query($sql3);
+			if ($template->num_rows >= 1) {
+				echo "<h6>Basecalled Data (bases)</h6><div class='table-responsive'>
 				<table class='table table-condensed'>
 					<thead>
 				<tr>
@@ -981,10 +1116,10 @@ function runsummary() {
 
 			}
 			echo "<h4>Basecalled Complement</h4>";
-			$sql4 = "select count(*) as readnum,exp_script_purpose,ROUND(AVG(length(sequence))) as average_length,STDDEV(length(sequence)) as standard_dev,MAX(length(sequence)) as maxlen,MIN(length(sequence)) as minlen from basecalled_complement inner join tracking_id using (basename_id) group by exp_script_purpose;";
+            $sql4 = "select count(*) as readnum,exp_script_purpose,ROUND(AVG(total_events-hairpin_event_index)) as average_length,STDDEV(total_events-hairpin_event_index) as standard_dev,MAX(total_events-hairpin_event_index) as maxlen,MIN(total_events-hairpin_event_index) as minlen from pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found = 1 group by exp_script_purpose;";
 			$complement=$mindb_connection->query($sql4);
 			if ($complement->num_rows >= 1) {
-				echo " <div class='table-responsive'>
+				echo "<h6>Pre Basecalled Data (events)</h6><div class='table-responsive'>
 				<table class='table table-condensed'>
 					<thead>
 				<tr>
@@ -1014,7 +1149,40 @@ function runsummary() {
 					";
 
 			}
-			echo "<h4>Basecalled 2d</h4>";
+			$sql4 = "select count(*) as readnum,exp_script_purpose,ROUND(AVG(length(sequence))) as average_length,STDDEV(length(sequence)) as standard_dev,MAX(length(sequence)) as maxlen,MIN(length(sequence)) as minlen from basecalled_complement inner join tracking_id using (basename_id) group by exp_script_purpose;";
+			$complement=$mindb_connection->query($sql4);
+			if ($complement->num_rows >= 1) {
+				echo "<h6>Basecalled Data (bases)</h6><div class='table-responsive'>
+				<table class='table table-condensed'>
+					<thead>
+				<tr>
+						<th>Experiment Purpose</th>
+						<th>Sequenced Reads</th>
+						<th>Average Length</th>
+						<th>Standard Deviation</th>
+						<th>Max Length</th>
+						<th>Min Length</th>
+						</tr>
+					</thead>
+					<tbody>";
+				foreach ($complement as $row) {
+					echo "<tr>";
+					echo "<td>" . $row['exp_script_purpose'] . "</td>";
+					echo "<td>" . $row['readnum'] . "</td>";
+					echo "<td>" . $row['average_length'] . "</td>";
+					echo "<td>" . round($row['standard_dev'],2) . "</td>";
+					echo "<td>" . $row['maxlen']. "</td>";
+					echo "<td>" . $row['minlen']. "</td>";
+					echo "</tr>";
+				}
+
+				echo"</tbody>
+					</table>
+					</div>
+					";
+
+			}
+			echo "<h4>Basecalled 2d</h4><h6>(Only calculated for 2d basecalled data)</h6>";
 			$sql5 = "select count(*) as readnum,exp_script_purpose,ROUND(AVG(length(sequence))) as average_length,STDDEV(length(sequence)) as standard_dev,MAX(length(sequence)) as maxlen,MIN(length(sequence)) as minlen from basecalled_2d inner join tracking_id using (basename_id) group by exp_script_purpose;";
 			$twod=$mindb_connection->query($sql5);
 			if ($twod->num_rows >= 1) {

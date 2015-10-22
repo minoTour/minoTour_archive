@@ -80,7 +80,9 @@ require_once("includes/functions.php");
 				    </div><!-- /.modal-content -->
 				  </div><!-- /.modal-dialog -->
 				</div><!-- /.modal -->
-				<br><br>
+				<br><br>";
+                if ($_SESSION['user_name'] != "demo") {
+                    echo "
 				<!-- Indicates a dangerous or potentially negative action -->
 				<!-- Button trigger modal -->
 								<button id='archivebutton' class='btn btn-danger' data-toggle='modal' data-target='#deletemodal'>
@@ -149,6 +151,7 @@ require_once("includes/functions.php");
 
 				";
 					}
+                }
 				}
 
 				?>

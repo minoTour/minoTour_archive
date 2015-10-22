@@ -34,7 +34,7 @@ if ($login->isUserLoggedIn() == true) {
 <html>
 <?php include "includes/head.php";?>
 
-<body>
+<p>
 
     <div id="wrapper">
 
@@ -58,31 +58,25 @@ if ($login->isUserLoggedIn() == true) {
             </div>
 			<?php  if (checkminup($_SESSION['user_name']) > 0){
 				echo "You are authorised to upload data to this minoTour installation. All versions of the minup script are available to download from here. Please see the notes below.<br>";
-				echo "<h4><u>minUP for Windows 0.5</u></h4>";
-				echo "<body>The latest version of minUP for Windows can be downloaded below. This compressed folder includes a compiled version of the last aligner which in turn requires CYGWIN to be installed on your system (available from <a href='http://www.cygwin.com/' target='_blank'>www.cygwin.com</a>).<br><br> This version also allows you to use BWA and additinal alignment options will be introduced in the near future.<br><br> It also provides remote control facilities for your minION. This is EXPERIMENTAL now and more information will be provided soon. <br><br> You should pay close attention to the enclosed readme file to ensure that you correctly configure the path to run minUP on Windows.</body><br><br>";
-				echo "<body>This version of minUP can utilise a configuration file to bypass entering some of the standard parameters on the command line. You can download a copy of this configuration specific for your account below. This file only works with the Windows version of minUP.</body><br><br>";
-				echo "<a href='minup/minUPW.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP 0.5 for Windows</a><br><br>";
-                echo "<h3><u>Experimental</u></h3>";
+                echo "<h4><u>minUP for Windows 0.6</u></h4>";
+                echo "<p>The latest version of minUP for Windows can be downloaded below. This compressed folder includes a compiled version of the last and BWA aligners which in turn require CYGWIN to be installed on your system (available from <a href='http://www.cygwin.com/' target='_blank'>www.cygwin.com</a>).<br><br> This version also allows you to use BWA and additinal alignment options will be introduced in the near future.<br><br> A new feature for minUP version 0.6 is a GUI - a graphical user interface - to simplify data upload.<br><br> minUP 0.6 also enables remote control facilities for your minION. This is EXPERIMENTAL now and more information will be provided soon.<br>Finally, the configuration file is now packaged with this version automagically.<br><br>";
                 echo "<a href='minup/minupwindowsconfig2.php?user_name=" . $_SESSION['user_name'] . "' target='_blank'><i class='fa fa-file-code-o'></i> minUP Custom Package</a><br><br>";
-				echo "<body>For backwards compatability we provide a previous version of minUP as well.</body><br><br>";
-				echo "<a href='minup/minup.v0.42W.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP 42 for Windows</a><br><br>";
 
+                echo "This version of minUP utilises a configuration file to bypass entering some of the standard parameters on the command line or in the GUI. We now package this into your minUP download.<br><br>";
 
-				echo "<h4><u>Windows minUP Configuration File</u></h4>";
-				echo "<body>Click the icon below to download your personalised Windows minup configuration file. It should be saved in the folder containing the windows minup executable and you should ensure it is named minup_windows.config - some browsers may append .txt to the end of the file.</body><br><br>";
+                echo "<h4><u>Windows minUP Configuration File</u></h4>";
+				echo "This file is provided for backwards compatability only. Click the icon below to download your personalised Windows minup configuration file. It should be saved in the folder containing the windows minup executable and you should ensure it is named minup_windows.config - some browsers may append .txt to the end of the file.<br><br>";
 				echo "<a href='minup/minupwindowsconfig.php?user_name=" . $_SESSION['user_name'] . "' target='_blank'><i class='fa fa-file-code-o'></i> minUP Windows Config</a><br><br>";
-				echo "<body>You are free to edit this file and the parameters within it can be overridden by the parameter settings on the command line. Do not distribute this file to others as it is specific to you. Within the file is a hashed out line containing your password for uploading data to the database.</body><br><br>";
+				echo "<p>You are free to edit this file and the parameters within it can be overridden by the parameter settings on the command line. Do not distribute this file to others as it is specific to you. Within the file is a hashed out line containing your password for uploading data to the database.</p><br><br>";
 				echo "<h4><u>minUP for Linux</u></h4>";
-				echo "<body>The latest version of minUP for linux can be downloaded below. This is a python script and requires several dependencies - see the enclosed readme file for details. This includes the option to run BWA or LAST. It also provides remote control facilities for your minION. This is EXPERIMENTAL now and more information will be provided soon.</body><br><br>";
-				echo "<a href='minup/minup.v0.5.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP 0.5 for Linux</a><br><br>";
-				echo "<body>For backwards compatability we provide a previous version of minUP as well.</body><br><br>";
-				echo "<a href='minup/minup.v0.42.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP 0.42 for Linux</a><br><br>";
+				echo "<p>The latest version of minUP for linux can be downloaded below. This is a python script and requires several dependencies. This includes the option to run BWA or LAST. It also provides remote control facilities for your minION. This is EXPERIMENTAL now and more information will be provided soon. Finally, the configuration file is now packaged with this version automagically.</p>";
+				echo "<a href='minup/minupposixconfig2.php?user_name=" . $_SESSION['user_name'] . "' target='_blank'><i class='fa fa-file-code-o'></i> minUP 0.6 for Linux</a><br><br>";
 				echo "<h4><u>Linux minUP Configuration File</u></h4>";
-				echo "<body>Click the icon below to download your personalised minup configuration file. It should be saved in the same folder as your minup script and you should ensure it is called minup_posix.config - some browsers may append .txt to the end of the file.</body><br><br>";
-				echo "<a href='minup/minupposixconfig.php?user_name=" . $_SESSION['user_name'] . "' target='_blank'><i class='fa fa-file-code-o'></i> minUP Linux Config</a><br><br>";
-				echo "<body>You are free to edit this file and the parameters within it can be overridden by the parameter settings on the command line. Do not distribute this file to others as it is specific to you.</body><br><strong>The password to upload data will have been sent to you seperately - contact the system administrator if it is lost.</strong><br>";
+				echo "<p>Click the icon below to download your personalised minup configuration file. It should be saved in the same folder as your minup script and you should ensure it is called minup_posix.config - some browsers may append .txt to the end of the file.</p><br><br>";
+				echo "<a href='minup/minupposixconfig2.php?user_name=" . $_SESSION['user_name'] . "' target='_blank'><i class='fa fa-file-code-o'></i> minUP Linux Config</a><br><br>";
+				echo "<p>You are free to edit this file and the parameters within it can be overridden by the parameter settings on the command line. Do not distribute this file to others as it is specific to you.</p><br><strong>The password to upload data will have been sent to you seperately - contact the system administrator if it is lost.</strong><br>";
 				echo "<h4><u>Demo Data Set</u></h4>";
-				echo "<body>To test your installation we have created a small sample of data from the recently released Loman Lab dataset (<a href='http://dx.doi.org/10.5524/100102' target='_blank'>http://dx.doi.org/10.5524/100102'</a>). This sample set consists of just the first 100 or so reads from the run. Decompress the demo_data_set.zip folder to a location on your machine. The folder structure is important here. metrichor returns files to a folder called ‘downloads’ and minup looks for this folder in any location you point it at - so keep the folder structure. We also include a copy of the reference genome in this dataset.</body><br><br>";
+				echo "<p>To test your installation we have created a small sample of data from the recently released Loman Lab dataset (<a href='http://dx.doi.org/10.5524/100102' target='_blank'>http://dx.doi.org/10.5524/100102'</a>). This sample set consists of just the first 100 or so reads from the run. Decompress the demo_data_set.zip folder to a location on your machine. The folder structure is important here. metrichor returns files to a folder called ‘downloads’ and minup looks for this folder in any location you point it at - so keep the folder structure. We also include a copy of the reference genome in this dataset.</p><br><br>";
 				echo "<a href='minup/demo_data_set.zip' target='_blank'><i class='fa fa-file-code-o'></i> Demo Data Set</a><br><br>";
 			}else {
 				echo "We're sorry, but your user account is not configured to allow data upload at this time. If you think you should be able to do so, please contact the system administrator for this installation.<br>";
@@ -122,7 +116,7 @@ if ($login->isUserLoggedIn() == true) {
     </script>
 
 <?php include "includes/reporting.php";?>
-</body>
+</p>
 
 </html>
 <?php

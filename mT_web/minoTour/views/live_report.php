@@ -13,7 +13,7 @@ require_once("includes/functions.php");
     <div id="wrapper">
 
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
-            
+
             <!-- /.navbar-header -->
 			<?php include 'navbar-header.php' ?>
             <!-- /.navbar-top-links -->
@@ -31,17 +31,17 @@ require_once("includes/functions.php");
             </div>
             <div class="row">
                 <div class="col-lg-12">
-				<h4>Basic Run Information</h4>
-								
+				<h4>Basic Run Information  : (minUP version - <?php echo $_SESSION['active_minup'];?>)</h4>
+
 				<?php
 				date_default_timezone_set('UTC');
 				$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['active_run_name']);
 				$mindb2_connection = new mysqli(DB_HOST,DB_USER,DB_PASS);
 				if (!$mindb_connection->connect_errno) {
 					//Query to generate basic run report:
-				
+
 					$basicrunsql = "SELECT asic_id,AVG(asic_temp) as asic_temp_avg,std(asic_temp) as asic_temp_std,exp_script_purpose,exp_start_time,flow_cell_id,AVG(heatsink_temp) as heatsink_temp_avg,std(heatsink_temp) as heatsink_temp_std,run_id,version_name FROM tracking_id group by device_id,flow_cell_id,asic_id;";
-					$basicrunresults = $mindb_connection->query($basicrunsql);	
+					$basicrunresults = $mindb_connection->query($basicrunsql);
 					echo "<div class='panel panel-default'>";
 					echo "<div class='panel-heading'>";
 					echo "<h5>MinKNOW run reporting:</h5>";
@@ -90,10 +90,10 @@ require_once("includes/functions.php");
 						echo "</div>";
 						echo "</div>";
 					}
-					
-					
+
+
 					//Query to generate metrichor run information:
-				
+
 					$metrichorinfosql = "SELECT *, max(metrichor_time_stamp) as max, min(metrichor_time_stamp) as min FROM config_general group by workflow_name;";
 					$metrichorinforesults = $mindb_connection->query($metrichorinfosql);
 					echo "<div class='panel panel-default'>";
@@ -136,7 +136,7 @@ require_once("includes/functions.php");
 							echo "<td>"."</td>";
 							echo "<td>Last Called Read</td>";
 							echo "<td>" . $row['max']. "</td>";
-							echo "</tr>";							
+							echo "</tr>";
 						}
 						echo "</tbody>";
 						echo "</table>";
@@ -174,7 +174,7 @@ require_once("includes/functions.php");
 						echo "</div>";
 					}else {
 						echo "<div class='panel-body'>";
-						echo "<p>This run has not been aligned to a reference.</p>";	
+						echo "<p>This run has not been aligned to a reference.</p>";
 						echo "</div>";
 						echo "</div>";
 					}
@@ -194,7 +194,7 @@ require_once("includes/functions.php");
 							echo "<th>Flow Cell ID</th>";
 							echo "<th>Flow Cell Owner</th>";
 							echo "<th>Base Caller Algorithm</th>";
-							echo "<th>Base Caller Version</th>";							
+							echo "<th>Base Caller Version</th>";
 							echo "</tr>";
 							echo "</thead>";
 							echo "<tbody>";
@@ -236,11 +236,11 @@ require_once("includes/functions.php");
 					        </div>
 					        <p><input type="hidden" id="user" name="user" value="<?php echo $_SESSION['user_name'];?>"/></p>
    					<p><input type="hidden" id="run" name="run" value="<?php echo $_SESSION['active_run_name'];?>"/></p>
-						    <span class="input-group-btn" onclick="addComment()">     
+						    <span class="input-group-btn" onclick="addComment()">
 						            <a id="formthing" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-comment"></span> Add Comment</a>
 					        </span>
-    					
-    					
+
+
     <hr data-brackets-id="12673">
     <!--Error and success message wrapper-->
 						<div id="errAll"></div>
@@ -248,7 +248,7 @@ require_once("includes/functions.php");
 	<ul data-brackets-id="12674" id="sortable" class="list-unstyled ui-sortable">
 	<div id="commentpost"></div>
 		<?php
-				
+
 					$grucomsql = "select * from Gru.comments where runname = \"" . $_SESSION['active_run_name'] . "\" order by date desc;";
 					$grucomsqlresults = $mindb2_connection->query($grucomsql);
 					if ($grucomsqlresults->num_rows >= 1) {
@@ -264,14 +264,14 @@ require_once("includes/functions.php");
 						}
 					}
 					?>
-		
-							
-                
+
+
+
     </ul>
     </div>
 </div>
 			 	<div id="messages"></div>
-				
+
                  </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -280,8 +280,8 @@ require_once("includes/functions.php");
 
     </div>
     <!-- /#wrapper -->
-	
-	
+
+
     <!-- Core Scripts - Include with every page -->
     <script src="js/jquery-1.10.2.js"></script>
     <script src="js/bootstrap.min.js"></script>
@@ -294,13 +294,13 @@ require_once("includes/functions.php");
 				</script>
     <script src="js/plugins/morris/raphael-2.1.0.min.js"></script>
     <script src="js/plugins/morris/morris.js"></script>
-	
+
 	<!-- Highcharts Addition -->
 	<script src="js/highcharts.js"></script>
 	<script type="text/javascript" src="js/themes/grid-light.js"></script>
 	<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
-	
+
 	<script type="text/javascript">
 	jQuery(document).ready(function($){
 		$("#formthing").click(function(e){
@@ -308,24 +308,24 @@ require_once("includes/functions.php");
 		    cmessage = $("#message").val();
 		    cuser = $("#user").val();
 		    crun = $("#run").val();
-		    var currentdate = new Date(); 
-			var datetime = currentdate.getFullYear() + "/" + (currentdate.getMonth()+1)  + "/" + currentdate.getDate() + "/" +  " "  
-            + currentdate.getHours() + ":"  
-            + currentdate.getMinutes() + ":" 
+		    var currentdate = new Date();
+			var datetime = currentdate.getFullYear() + "/" + (currentdate.getMonth()+1)  + "/" + currentdate.getDate() + "/" +  " "
+            + currentdate.getHours() + ":"
+            + currentdate.getMinutes() + ":"
             + currentdate.getSeconds();
 		    ctime = datetime;
-		    
+
 			if( cname=="" || cmessage=="" ) {
 				$("#errAll").html('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>You have left a required field blank.</div>');
 			}else {
-				var data = { 
-					name: cname, 
-					user: cuser, 
-					time: ctime, 
+				var data = {
+					name: cname,
+					user: cuser,
+					time: ctime,
 					message: cmessage,
 					run: crun,
 				};
-				
+
 				$.post( "includes/ajax.php", data, function( response ) {
   					//alert(response);
   					$('#name').val("");
@@ -335,12 +335,12 @@ require_once("includes/functions.php");
 				});
 			}
 		});
-		
- 
-			
+
+
+
 	});
 	</script>
-	
+
     <!-- SB Admin Scripts - Include with every page -->
     <script src="js/sb-admin.js"></script>
 

@@ -29,6 +29,9 @@ require_once("includes/functions.php");
             </div>
 			<ul class="nav nav-pills">
 			  <li><a href="current_summary.php">Read Summaries</a></li>
+              <?php if ($_SESSION['currentbasesum'] > 0){?>
+              <li><a href="current_basecalling.php">Basecaller Summary</a></li>
+              <?php }; ?>
 			  <li><a href="current_histogram.php">Read Histograms</a></li>
 			  <li><a href="current_rates.php">Sequencing Rates</a></li>
 			  <li><a href="current_pores.php">Pore Activity</a></li>
@@ -67,7 +70,7 @@ require_once("includes/functions.php");
 </div></h3>
 			  </div>
 			  <div class="panel-body">
-
+                  <?php if ($_SESSION['currentBASE'] > 0) {?>
 					<?php if ($_SESSION['activereference'] != "NOREFERENCE") {?>
 
 
@@ -154,6 +157,7 @@ require_once("includes/functions.php");
 				<?php }else { ?>
 												<div><p class="text-center"><small>This dataset has not been aligned to a reference sequence and so no SNPs can be called.</small></p></div>
 				<?php }; ?>
+                <?php } else { echo "Bases cannot be shown from the raw data alone. You must upload basecalled data to see these features.";};?>
 
 
 			  </div>

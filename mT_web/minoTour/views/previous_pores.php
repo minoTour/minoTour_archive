@@ -74,6 +74,7 @@ require_once("includes/functions.php");
 </div></h3>
 			  </div>
 			  <div class="panel-body">
+                  <?php if ($_SESSION['focusBASE'] > 0) {?>
 					<div id="activechannels" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x" ></i> Calculating Active Channels Over Time</div>
                     <div id="occupancyrate" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x" ></i> Calculating Pore Occupancy Over Time</div>
 					<div id="poreproduction" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pore Read Productivity</div>
@@ -86,7 +87,9 @@ require_once("includes/functions.php");
 					<div id="basemuxproduction" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pore Base Productivity</div>
                     <div id="passfailperporemux" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pore Pass Fail Rates</div>
                     <div id="passfailcountperporemux" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pore Pass Fail Rates</div>
-					<?php } ?>		  </div>
+					<?php } ?>
+                <?php }else { echo "Currently pore data is oncly calculated from basecalled data. This will change in the future."; }?>
+            	  </div>
 			</div>
 
                 <!-- /.col-lg-12 -->

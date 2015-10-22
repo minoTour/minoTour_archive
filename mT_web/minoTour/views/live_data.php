@@ -204,14 +204,17 @@ require_once("includes/functions.php");
 							<div class="row">
 								<div class="col-md-12" id="cumulativeyield" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Cumulative Yield.</div>
                                 <div class="col-md-12" id="sequencingrate" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Sequencing Rates.</div>
-								<div class="col-md-12" id="ratio2dtemplate" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Ratio 2D to Template.</div>
-								<div class="col-md-12" id="ratiopassfail" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pass Fail Reads.</div>
+                                <div class="col-md-12" id="ratio2dtemplate" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Ratio 2D to Template.</div>
+                                <?php if ($_SESSION['currentBASE'] > 0) {?>
+                                <div class="col-md-12" id="ratiopassfail" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pass Fail Reads.</div>
+                                <?php };?>
 							</div>
 							</div>
 						  <div id="sequencerate">
 						  <div class="panel-body">
+                              <?php if ($_SESSION['currentBASE'] > 0) {?>
 								<div id="readrate" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Read Rate</div>
-
+                                <?php }else{echo "This run is pre aligned data only.";};?>
 						  </div>
 						</div>
 					</div>
@@ -245,10 +248,12 @@ require_once("includes/functions.php");
 						  </div>
 						  <div id="poreinfo">
 						  <div class="panel-body">
+                              <?php if ($_SESSION['currentBASE'] > 0) {?>
 								<div id="poreproduction" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pore Productivity</div>
 								<?php if ($_SESSION['active_minup'] >= 0.37) {?>
 					<div id="readmuxproduction" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mux Productivity</div>
 					<?php } ?>
+                    <?php } else {echo "These data are only displayed for basecalled datasets at this time.";};?>
 						  </div>
 						</div>
 					</div>

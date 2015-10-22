@@ -121,11 +121,11 @@ while (42) {#If you have to ask the significance of 42 you shouldn't be reading 
 
 		foreach (@jobarray){
 			#print "$_\n";
-			jobs($ref->{runname},$_,$ref->{reflength});
+			jobs($ref->{runname},$_,$ref->{reflength},$ref->{minup_version});
 		}
 		if ($ref->{reflength} > 0) {
 			foreach (@alignjobarray) {
-				jobs($ref->{runname},$_,$ref->{reflength});
+				jobs($ref->{runname},$_,$ref->{reflength},$ref->{minup_version});
 			}
 			##proc_align($ref->{runname},$dbh);
 			my $aligncommand = "perl mT_align.pl " . $ref->{runname} . " &";
@@ -161,6 +161,7 @@ sub jobs {
 	my $dbname = $_[0];
 	my $jobname = $_[1];
 	my $reflength = $_[2];
+    my $minupversion = $_[3];
 	my $checkvar = $dbname . $jobname;
 	my $checkrunning = $dbname . $jobname . "status";
 	my $checkingrunning = $memd->get($checkrunning);
@@ -171,8 +172,9 @@ sub jobs {
 		}
 
 		##At the moment waits for script to complete before calculating next - need to check if process still running and not execute new version until it has finished...
- 	    my $command = $phploc . "php mT_control_scripts.php " . "dbname=$dbname jobname=$jobname reflength=$reflength prev=0 &";
-		system($command);
+ 	    my $command = $phploc . "php mT_control_scripts.php " . "dbname=$dbname jobname=$jobname reflength=$reflength prev=0 minupversion=$minupversion &";
+        
+        system($command);
     } else {
     	if ($verbose){
 			print "already running $checkvar\n";
