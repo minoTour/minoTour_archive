@@ -15,10 +15,11 @@ require_once("../classes/Login.php");
 require_once("../includes/functions.php");
 
 if (DB_HOST == "localhost" || DB_HOST == "127.0.0.1") {
-	$SQLHOST = gethostname();
+	$SQLHOST = $_SERVER['SERVER_ADDR'];
+
 }else {
 	$SQLHOST = DB_HOST;
-}
+#   }
 $SQLPORT = DB_PORT;
 
 print "{\r\n";
