@@ -60,17 +60,18 @@ if ($login->isUserLoggedIn() == true) {
 				echo "You are authorised to upload data to this minoTour installation. All versions of the minup script are available to download from here. Please see the notes below.<br>";
                 echo "<h4><u>minUP for Windows 0.6</u></h4>";
                 echo "<p>The latest version of minUP for Windows can be downloaded below. This compressed folder includes a compiled version of the last and BWA aligners which in turn require CYGWIN to be installed on your system (available from <a href='http://www.cygwin.com/' target='_blank'>www.cygwin.com</a>).<br><br> This version also allows you to use BWA and additinal alignment options will be introduced in the near future.<br><br> A new feature for minUP version 0.6 is a GUI - a graphical user interface - to simplify data upload.<br><br> minUP 0.6 also enables remote control facilities for your minION. This is EXPERIMENTAL now and more information will be provided soon.<br>Finally, the configuration file is now packaged with this version automagically.<br><br>";
-                echo "<a href='minup/minupwindowsconfig2.php?user_name=" . $_SESSION['user_name'] . "' target='_blank'><i class='fa fa-file-code-o'></i> minUP Custom Package</a><br><br>";
+                echo "<a href='minup/minup_0.60W.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP 0.6</a><br><br>";
 
-                echo "This version of minUP utilises a configuration file to bypass entering some of the standard parameters on the command line or in the GUI. We now package this into your minUP download.<br><br>";
+                echo "This version of minUP utilises a configuration file to bypass entering some of the standard parameters on the command line or in the GUI. You can download custom versions of these files below. Copy both files into the minUP folder.<br><br>";
 
-                echo "<h4><u>Windows minUP Configuration File</u></h4>";
+                echo "<h4><u>Windows minUP Configuration Files</u></h4>";
 				echo "This file is provided for backwards compatability only. Click the icon below to download your personalised Windows minup configuration file. It should be saved in the folder containing the windows minup executable and you should ensure it is named minup_windows.config - some browsers may append .txt to the end of the file.<br><br>";
+                echo "<a href='minup/GUIconfig.php?user_name=" . $_SESSION['user_name'] . "' target='_blank'><i class='fa fa-file-code-o'></i> minUP Gui Config</a><br><br>";
 				echo "<a href='minup/minupwindowsconfig.php?user_name=" . $_SESSION['user_name'] . "' target='_blank'><i class='fa fa-file-code-o'></i> minUP Windows Config</a><br><br>";
 				echo "<p>You are free to edit this file and the parameters within it can be overridden by the parameter settings on the command line. Do not distribute this file to others as it is specific to you. Within the file is a hashed out line containing your password for uploading data to the database.</p><br><br>";
 				echo "<h4><u>minUP for Linux</u></h4>";
-				echo "<p>The latest version of minUP for linux can be downloaded below. This is a python script and requires several dependencies. This includes the option to run BWA or LAST. It also provides remote control facilities for your minION. This is EXPERIMENTAL now and more information will be provided soon. Finally, the configuration file is now packaged with this version automagically.</p>";
-				echo "<a href='minup/minupposixconfig2.php?user_name=" . $_SESSION['user_name'] . "' target='_blank'><i class='fa fa-file-code-o'></i> minUP 0.6 for Linux</a><br><br>";
+				echo "<p>The latest version of minUP for linux can be downloaded below. This is a python script and requires several dependencies. This includes the option to run BWA or LAST. It also provides remote control facilities for your minION. This is EXPERIMENTAL now and more information will be provided soon.</p>";
+				echo "<a href='minup/minup.v0.6.py' target='_blank'><i class='fa fa-file-code-o'></i> minUP 0.6 for Linux</a><br><br>";
 				echo "<h4><u>Linux minUP Configuration File</u></h4>";
 				echo "<p>Click the icon below to download your personalised minup configuration file. It should be saved in the same folder as your minup script and you should ensure it is called minup_posix.config - some browsers may append .txt to the end of the file.</p><br><br>";
 				echo "<a href='minup/minupposixconfig2.php?user_name=" . $_SESSION['user_name'] . "' target='_blank'><i class='fa fa-file-code-o'></i> minUP Linux Config</a><br><br>";
