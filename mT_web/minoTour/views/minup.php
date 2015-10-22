@@ -60,7 +60,7 @@ if ($login->isUserLoggedIn() == true) {
 				echo "You are authorised to upload data to this minoTour installation. All versions of the minup script are available to download from here. Please see the notes below.<br>";
                 echo "<h4><u>minUP for Windows 0.6</u></h4>";
                 echo "<p>The latest version of minUP for Windows can be downloaded below. This compressed folder includes a compiled version of the last and BWA aligners which in turn require CYGWIN to be installed on your system (available from <a href='http://www.cygwin.com/' target='_blank'>www.cygwin.com</a>).<br><br> This version also allows you to use BWA and additinal alignment options will be introduced in the near future.<br><br> A new feature for minUP version 0.6 is a GUI - a graphical user interface - to simplify data upload.<br><br> minUP 0.6 also enables remote control facilities for your minION. This is EXPERIMENTAL now and more information will be provided soon.<br>Finally, the configuration file is now packaged with this version automagically.<br><br>";
-                echo "<a href='minup/minup_0.60W.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP 0.6</a><br><br>";
+                echo "<a href='minup/minUP_0.60W.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP 0.6</a><br><br>";
 
                 echo "This version of minUP utilises a configuration file to bypass entering some of the standard parameters on the command line or in the GUI. You can download custom versions of these files below. Copy both files into the minUP folder.<br><br>";
 
