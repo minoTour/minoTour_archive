@@ -19,7 +19,7 @@ if (DB_HOST == "localhost" || DB_HOST == "127.0.0.1") {
 
 }else {
 	$SQLHOST = DB_HOST;
-#   }
+  }
 $SQLPORT = DB_PORT;
 
 print "{\r\n";
