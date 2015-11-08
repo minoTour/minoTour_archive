@@ -88,7 +88,7 @@ unless ($checkingrunning) {
 
     ####We have to check if the last_align_maf_basecalled table exists. If it doesn't then we don't want to run this again.
 
-    my $check_mode = "SELECT table_name FROM information_schema.tables WHERE table_schema = '" . $dbname . "' AND (table_name = 'last_align_maf_basecalled_template' or table_name = 'pre_align_template' or table_name = 'align_sam_basecalled_template');";
+    my $check_mode = "SELECT table_name FROM information_schema.tables WHERE table_schema = '" . $dbname . "' AND (table_name = 'last_align_maf_basecalled_template' or table_name = 'align_sam_basecalled_template');";
     my $sth3 = $dbh2->prepare($check_mode);
     $sth3->execute;
     #print $check_mode . "\n";
@@ -96,9 +96,9 @@ unless ($checkingrunning) {
     #print "We don't have a table\n";
     }else{
         my $tabletype;
-    #    print "We do have a table\n";
+        #print "We do have a table\n";
         while (my @results = $sth3->fetchrow()) {
-    #        print $results[0] . "\n";
+            #print $results[0] . "\n";
             $tabletype = $results[0];
         }
     #}

@@ -27,27 +27,26 @@ require_once("includes/functions.php");
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
-			<ul class="nav nav-pills">
+            <ul class="nav nav-pills">
 			  <li><a href="previous_summary.php">Read Summaries</a></li>
               <?php if ($_SESSION['focusbasesum'] > 0){?>
-              <li><a href="previous_basecalling.php">Basecaller Summary</a></li>
+              <li class="active"><a href="previous_basecalling.php">Basecaller Summary</a></li>
               <?php }; ?>
-			  <li><a href="previous_histogram.php">Read Histograms</a></li>
-			  <li class="active"><a href="previous_rates.php">Sequencing Rates</a></li>
+              <li><a href="previous_histogram.php">Read Histograms</a></li>
+			  <li><a href="previous_rates.php">Sequencing Rates</a></li>
 			  <li><a href="previous_pores.php">Pore Activity</a></li>
   			  <li><a href="previous_quality.php">Read Quality</a></li>
   			   <?php if ($_SESSION['focusreference'] != "NOREFERENCE") {?>
   			  <li><a href="previous_coverage.php">Coverage Detail</a></li>
   			  <?php }; ?>
   			  <li><a href="previous_bases.php">Base Coverage</a></li>
-  			  <!--<li class="active"><a href="previous_development.php">W.I.M.M (Dev)</a></li>-->
+  			  <!--<li><a href="current_development.php">W.I.M.M (Dev)</a></li>-->
 			</ul>
-
-			<div class="panel panel-default">
+						<div class="panel panel-default">
 			  <div class="panel-heading">
 			    <h3 class="panel-title"><!-- Button trigger modal -->
 <button class="btn btn-info" data-toggle="modal" data-target="#modal2">
- <i class="fa fa-info-circle"></i> Sequencing Rate Information</h4>
+ <i class="fa fa-info-circle"></i> Basecalling Summary Information</h4>
 </button>
 
 <!-- Modal -->
@@ -59,12 +58,7 @@ require_once("includes/functions.php");
         <h4 class="modal-title" id="myModalLabel"> Sequencing Rate Information
       </div>
       <div class="modal-body">
-        Rate of Basecalling<br>
-		This plot show the number of reads generated in one minute intervals over the course of the sequencing run.<br><br>
-		Average Read Length Over Time<br>
-		This plot shows the average length of read generated each minute over the course of the sequncing run.<br><br>
-		Average Time To Process Reads Over Time<br>
-		This plot shows how long a singel read takes to pass through the pore over the course of the sequencing run (1 minute bins).<br><br>
+        A number of plots will be available on this page summarising the basecalling analysis as reported by metrichor.
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -73,16 +67,15 @@ require_once("includes/functions.php");
   </div>
 </div></h3>
 			  </div>
-              <div class="panel-body">
-					<div id="cumulativeyield" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Cumulative Reads</div>
-			  		<div id="sequencingrate" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Sequencing Rates.</div>
-                    <div id="ratio2dtemplate" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Ratio 2D to Template.</div>
-                    <?php if ($_SESSION['focusBASE'] > 0) {?>
-                    <div id="ratiopassfail" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Pass Fail Reads.</div>
-					<div id="readrate" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Read Rate</div>
-					<div id="averagelength" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Read Length Over Time</div>
-					<div id="averagetime" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Time To Complete Reads</div>
-                    <?php }; ?>
+			  <div class="panel-body">
+                    <div id="meanshifttime" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mean Shifts for reads Over Time</div>
+                    <div id="meanscaletime" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mean Scales for reads Over Time</div>
+					<div id="meanqualtime" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mean Read Qualities Over Time</div>
+			  		<div id="meanabasicheight" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating The Mean Abasic Height Over Time.</div>
+                    <div id="meancurrentplots" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mean Currents Over Time.</div>
+					<div id="meanskips" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mean Skips Over Time.</div>
+					<div id="meanstays" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mean Stays Over Time</div>
+
 			  </div>
 			</div>
 
@@ -115,16 +108,157 @@ require_once("includes/functions.php");
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
     <script src="http://highslide-software.github.io/export-csv/export-csv.js"></script>
 
+    <script>
+
+$(document).ready(function() {
+    var options = {
+                    chart: {
+                        renderTo: 'meanshifttime',
+                        zoomType: 'x',
+                        type: 'spline'
+                        //type: 'line'
+                    },
+                    plotOptions: {
+                                spline: {
+                                    animation: false,
+                                    marker: {
+                                        enabled: false,
+                                    }
+
+                                }
+                            },
+                    title: {
+                      text: 'Mean Shifts in Template/Complement Model Correction Over Time'
+                    },
+                    xAxis: {
+                    type: 'datetime',
+                        dateTimeLabelFormats: { // don't display the dummy year
+                            month: '%e. %b',
+                            year: '%b',
+                            },
+                            title: {
+                                text: 'Time/Date'
+                            }
+                        },
+                            yAxis: {
+                                        title: {
+                                            text: 'Shifts'
+                                        },
+                                        //min: 0
+                                    },
+                                    credits: {
+                                        enabled: false
+                                      },
+                    legend: {
+                    title: {
+                text: 'Read Type <span style="font-size: 9px; color: #666; font-weight: normal">(Click to hide)</span>',
+                style: {
+                    fontStyle: 'italic'
+                }
+            },
+                        layout: 'horizontal',
+                                        align: 'center',
+                                        verticalAlign: 'bottom',
+                        borderWidth: 0
+                    },
+                    series: []
+                };
+    $.getJSON('jsonencode/meanparamtime.php?prev=1&timewin=1minwin&param=shiftT&param2=shiftC&callback=?', function(data) {
+        //alert("success");
+        options.series = data; // <- just assign the data to the series property.
+
+
+
+        //options.series = JSON2;
+        var chart = new Highcharts.Chart(options);
+        });
+});
+
+    //]]>
+
+    </script>
+
+    <script>
+
+$(document).ready(function() {
+    var options = {
+                    chart: {
+                        renderTo: 'meanscaletime',
+                        zoomType: 'x',
+                        type: 'spline'
+                        //type: 'line'
+                    },
+                    plotOptions: {
+                                spline: {
+                                    animation: false,
+                                    marker: {
+                                        enabled: false,
+                                    }
+
+                                }
+                            },
+                    title: {
+                      text: 'Mean Scales in Template and Complement Model Correction Over Time'
+                    },
+                    xAxis: {
+                    type: 'datetime',
+                        dateTimeLabelFormats: { // don't display the dummy year
+                            month: '%e. %b',
+                            year: '%b',
+                            },
+                            title: {
+                                text: 'Time/Date'
+                            }
+                        },
+                            yAxis: {
+                                        title: {
+                                            text: 'Scale'
+                                        },
+                                        //min: 0
+                                    },
+                                    credits: {
+                                        enabled: false
+                                      },
+                    legend: {
+                    title: {
+                text: 'Read Type <span style="font-size: 9px; color: #666; font-weight: normal">(Click to hide)</span>',
+                style: {
+                    fontStyle: 'italic'
+                }
+            },
+                        layout: 'horizontal',
+                                        align: 'center',
+                                        verticalAlign: 'bottom',
+                        borderWidth: 0
+                    },
+                    series: []
+                };
+    $.getJSON('jsonencode/meanparamtime.php?prev=1&timewin=1minwin&param=scaleT&param2=scaleC&callback=?', function(data) {
+        //alert("success");
+        options.series = data; // <- just assign the data to the series property.
+
+
+
+        //options.series = JSON2;
+        var chart = new Highcharts.Chart(options);
+        });
+});
+
+    //]]>
+
+    </script>
+
+
 	<script>
 		$(document).ready(function() {
 		    var options = {
                 chart: {
-		            renderTo: 'cumulativeyield',
+		            renderTo: 'meanqualtime',
 					zoomType: 'x',
 		            type: 'spline',
 		        },
 		        title: {
-		          text: 'Cumulative Reads'
+		          text: 'Mean Quality Over Time'
 		        },
 		        resetZoomButton: {
                 position: {
@@ -154,7 +288,7 @@ require_once("includes/functions.php");
            				    year: '%b'
 				            },
 				            title: {
-				                text: 'Time (S)'
+				                text: 'Time/Date'
 				            }
 				        },
 						yAxis: [{
@@ -164,7 +298,7 @@ require_once("includes/functions.php");
             	   				},
 
             	    			title: {
-            	        			text: 'Cumulative Reads'
+            	        			text: 'Median Quality Score'
 				                },
 				                height: '100%',
 				                lineWidth: 1,
@@ -189,7 +323,7 @@ require_once("includes/functions.php");
 		        series: []
 		    };
 
-		    $.getJSON('jsonencode/cumulativeyield.php?prev=1&callback=?', function(data) {
+		    $.getJSON('jsonencode/meanqualtime.php?prev=1&callback=?', function(data) {
 				//alert("success");
 		        options.series = data; // <- just assign the data to the series property.
 
@@ -208,12 +342,12 @@ require_once("includes/functions.php");
             		$(document).ready(function() {
             		    var options = {
             		        chart: {
-            		            renderTo: 'sequencingrate',
+            		            renderTo: 'meanabasicheight',
             					zoomType: 'x',
             		            type: 'spline',
             		        },
             		        title: {
-            		          text: 'Sequencing Rate'
+            		          text: 'Mean Abasic/Hairpin Heights'
             		        },
             		        resetZoomButton: {
                             position: {
@@ -255,11 +389,11 @@ require_once("includes/functions.php");
                         	   				},
 
                         	    			title: {
-                        	        			text: 'Bases/Second'
+                        	        			text: 'Current Shift'
             				                },
             				                height: '100%',
             				                lineWidth: 1,
-            				                min: 0
+            				                //min: 0
             				            },
             								credits: {
             								    enabled: false
@@ -280,7 +414,7 @@ require_once("includes/functions.php");
             		        series: []
             		    };
 
-               			$.getJSON('jsonencode/sequencingrate.php?prev=1&callback=?', function(data) {
+               			$.getJSON('jsonencode/meanparamtime.php?prev=1&timewin=1minwin&param=abasic_peak&param2=hairpin_peak&callback=?', function(data) {
 
                         options.series = data; // <- just assign the data to the series property.
 
@@ -301,7 +435,7 @@ require_once("includes/functions.php");
 			$(document).ready(function() {
 			    var options = {
 			        chart: {
-			            renderTo: 'ratiopassfail',
+			            renderTo: 'meancurrentplots',
 						//zoomType: 'x'
 			            type: 'spline'
 			        },
@@ -315,7 +449,7 @@ require_once("includes/functions.php");
 					            }
 					        },
 			        title: {
-			          text: '2d, Complement and Template Pass/Fail Counts in 15 minute windows'
+			          text: 'Median Current Level for Template and Complement Reads Over Time'
 			        },
 					xAxis: {
 						type: 'datetime',
@@ -329,7 +463,7 @@ require_once("includes/functions.php");
 					        },
 							yAxis: {
 							            title: {
-							                text: 'Reads'
+							                text: 'Current'
 							            },
 							            min: 0
 							        },
@@ -345,7 +479,7 @@ require_once("includes/functions.php");
 			        series: []
 			    };
 
-			    $.getJSON('jsonencode/ratiopassfail.php?prev=1&callback=?', function(data) {
+			    $.getJSON('jsonencode/meanparamtime.php?prev=1&timewin=1minwin&param=median_level_temp&param2=median_level_comp&callback=?', function(data) {
 				//alert("success");
 		        options.series = data; // <- just assign the data to the series property.
 
@@ -370,7 +504,7 @@ require_once("includes/functions.php");
 			$(document).ready(function() {
 			    var options = {
 			        chart: {
-			            renderTo: 'ratio2dtemplate',
+			            renderTo: 'meanskips',
 						//zoomType: 'x'
 			            type: 'spline'
 			        },
@@ -384,7 +518,7 @@ require_once("includes/functions.php");
 					            }
 					        },
 			        title: {
-			          text: '2d, Complement and Template reads in 15 minute windows'
+			          text: 'Mean Skips in Template and Complement Reads'
 			        },
 					xAxis: {
 						type: 'datetime',
@@ -398,7 +532,7 @@ require_once("includes/functions.php");
 					        },
 							yAxis: {
 							            title: {
-							                text: 'Reads'
+							                text: 'Skips'
 							            },
 							            min: 0
 							        },
@@ -413,7 +547,7 @@ require_once("includes/functions.php");
 			        },
 			        series: []
 			    };
-			    $.getJSON('jsonencode/ratio2dtemplate.php?prev=1&callback=?', function(data) {
+			    $.getJSON('jsonencode/meanparamtime.php?prev=1&timewin=1minwin&param=num_skipsT&param2=num_skipsC&callback=?', function(data) {
 				//alert("success");
 		        options.series = data; // <- just assign the data to the series property.
 
@@ -437,18 +571,22 @@ require_once("includes/functions.php");
 $(document).ready(function() {
     var options = {
 			        chart: {
-			            renderTo: 'readrate',
-						zoomType: 'x'
+			            renderTo: 'meanstays',
+						zoomType: 'x',
+                        type: 'spline'
 			            //type: 'line'
 			        },
-					plotOptions: {
-					            line: {
-					                animation: false
+                    plotOptions: {
+					            spline: {
+					                animation: false,
+                                    marker: {
+                                        enabled: false,
+                                    }
 
 					            }
 					        },
 			        title: {
-			          text: 'Rate Of BaseCalling'
+			          text: 'Mean Stays in Template and Complement Reads'
 			        },
 					xAxis: {
 					type: 'datetime',
@@ -462,7 +600,7 @@ $(document).ready(function() {
 				        },
 							yAxis: {
 							            title: {
-							                text: 'Reads/Minute'
+							                text: 'Stays'
 							            },
 							            min: 0
 							        },
@@ -483,7 +621,7 @@ $(document).ready(function() {
 			        },
 			        series: []
 			    };
-    $.getJSON('jsonencode/reads_over_time2.php?prev=1&callback=?', function(data) {
+    $.getJSON('jsonencode/meanparamtime.php?prev=1&timewin=1minwin&param=num_staysT&param2=num_staysC&callback=?', function(data) {
 		//alert("success");
         options.series = data; // <- just assign the data to the series property.
 
@@ -498,129 +636,6 @@ $(document).ready(function() {
 
 	</script>
 
-	<script>
-
-	$(document).ready(function() {
-	    var options = {
-	        chart: {
-	            renderTo: 'averagelength',
-				zoomType: 'x'
-	            //type: 'line'
-	        },
-	        title: {
-	          text: 'Average Read Length Over Time'
-	        },
-			xAxis: {
-				type: 'datetime',
-			            dateTimeLabelFormats: { // don't display the dummy year
-               				month: '%e. %b',
-           				    year: '%b',
-				            },
-			            title: {
-			                text: 'Time/Date'
-			            }
-			        },
-					yAxis: {
-					            title: {
-					                text: 'Average Read Length'
-					            },
-					            min: 0
-					        },
-
-							credits: {
-							    enabled: false
-							  },
-	        legend: {
-	            title: {
-                text: 'Read Type <span style="font-size: 9px; color: #666; font-weight: normal">(Click to hide)</span>',
-                style: {
-                    fontStyle: 'italic'
-                }
-            },
-			            layout: 'horizontal',
-                                        align: 'center',
-                                        verticalAlign: 'bottom',
-			            borderWidth: 0
-	        },
-	        series: []
-	    };
-
-	    $.getJSON('jsonencode/average_length_over_time.php?prev=1&callback=?', function(data) {
-			//alert("success");
-	        options.series = data; // <- just assign the data to the series property.
-
-
-
-	        //options.series = JSON2;
-			var chart = new Highcharts.Chart(options);
-			});
-	});
-
-		//]]>
-
-		</script>
-
-		<script>
-
-	$(document).ready(function() {
-	    var options = {
-	        chart: {
-	            renderTo: 'averagetime',
-				zoomType: 'x'
-	            //type: 'line'
-	        },
-	        title: {
-	          text: 'Average Time to process Reads Over Time'
-	        },
-			xAxis: {
-				type: 'datetime',
-			            dateTimeLabelFormats: { // don't display the dummy year
-               				month: '%e. %b',
-           				    year: '%b',
-				            },
-			            title: {
-			                text: 'Time/Date'
-			            }
-			        },
-					yAxis: {
-					            title: {
-					                text: 'Average Time To Process Read (s)'
-					            },
-					            min: 0
-					        },
-							credits: {
-							    enabled: false
-							  },
-	        legend: {
-	            title: {
-                text: 'Read Type <span style="font-size: 9px; color: #666; font-weight: normal">(Click to hide)</span>',
-                style: {
-                    fontStyle: 'italic'
-                }
-            },
-			            layout: 'horizontal',
-                                        align: 'center',
-                                        verticalAlign: 'bottom',
-			            borderWidth: 0
-
-	        },
-	        series: []
-	    };
-
-	    $.getJSON('jsonencode/average_time_over_time2.php?prev=1&callback=?', function(data) {
-			//alert("success");
-	        options.series = data; // <- just assign the data to the series property.
-
-
-
-	        //options.series = JSON2;
-			var chart = new Highcharts.Chart(options);
-			});
-	});
-
-		//]]>
-
-		</script>
 
     <!-- SB Admin Scripts - Include with every page -->
     <script src="js/sb-admin.js"></script>
