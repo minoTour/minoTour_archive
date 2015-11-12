@@ -1,6 +1,6 @@
 <?php
 
-$db = $_GET["db"]; 
+$db = $_GET["db"];
 
 
 $jobtype = $_GET["job"];
@@ -36,7 +36,7 @@ $login = new Login();
 if ($login->isUserLoggedIn() == true) {
     // the user is logged in. you can do whatever you want here.
     // for demonstration purposes, we simply show the "you are logged in" view.
-    //include("views/index_old.php");*/    
+    //include("views/index_old.php");*/
 	if($_GET["prev"] == 1){
 		$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['focusrun']);
 	}else{
@@ -50,24 +50,24 @@ if ($login->isUserLoggedIn() == true) {
 		$jobtype = strtolower($jobtype);
 		$querytable = "basecalled_" . $jobtype;
 		$lasttable = "last_align_maf_" . $querytable;
-		
+
 		$sql2= "select refname,reflen from reference_seq_info;";
-		
+
 		$headerresult=$mindb_connection->query($sql2);
 		if ($headerresult->num_rows >= 1) {
 			foreach ($headerresult as $row) {
 				echo "@SQ\t";
 				echo "SN:" . $row{refname} . "\t";
-				echo "LN:" . $row{reflen} . "\n";	
-			}	
+				echo "LN:" . $row{reflen} . "\n";
+			}
 			echo "@PG\tID:bwa\n";
 		}
-		
+
 		//$sql = "SELECT * FROM $lasttable inner join config_general using (basename_id) inner join reference_seq_info using (refid) order by r_start limit 2;";
 		$sql = "SELECT * FROM align_sam_basecalled_$jobtype inner join basecalled_$jobtype using (basename_id) order by rname, pos;";
-		
+
 		//echo $sql . "\n";
-		
+
 		$queryresult=$mindb_connection->query($sql);
 		if ($queryresult->num_rows >= 1) {
 			foreach ($queryresult as $row) {
@@ -86,15 +86,16 @@ if ($login->isUserLoggedIn() == true) {
 				#foreach ($qualarray as $value){
 				#	echo chr(ord($value)-31);
 				#}
-				echo substr($row{qual},1,-1);
+				//echo substr($row{qual},1,-1);
+                echo "*";
 				echo "\t";
 				echo $row{n_m} . "\t";
 				echo $row{m_d} . "\t";
 				echo $row{a_s} . "\t";
 				echo $row{x_s} . "\n";
-			}	
+			}
 		}else{
-			echo "Blank results";	
+			echo "Blank results";
 		}
 	}
 } else {
