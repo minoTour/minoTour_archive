@@ -1,5 +1,5 @@
 <?php //Generate text file on the fly
- 
+
 header('Content-type: text/plain');
 header('Content-Disposition: attachment; filename="minup_posix.config"');
 
@@ -17,11 +17,11 @@ require_once("../classes/Login.php");
 require_once("../includes/functions.php");
 
 if (DB_HOST == "localhost" || DB_HOST == "127.0.0.1") {
-	$SQLHOST = gethostname();
+	$SQLHOST = $_SERVER['SERVER_ADDR'];
 }else {
 	$SQLHOST = DB_HOST;
 }
-
+$SQLPORT = DB_PORT;
 
 
 print "# --> This file is unique for your access to the minoTour installation you downloaded it from.\n";
@@ -32,7 +32,7 @@ print "[Defaults]\n";
 print "mysql-host=" . $SQLHOST . "\n";
 print "mysql-username=". $_GET['user_name'] . "\n";
 print "#mysql-password=\n";
-print "mysql-port=3306\n";
+print "mysql-port=" . $SQLPORT . "\n";
 print "#align-ref-fasta=\n";
 print "#watch-dir=\n";
 print "aligning-threads=3\n";

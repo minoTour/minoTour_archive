@@ -88,7 +88,8 @@ unless ($checkingrunning) {
 
     ####We have to check if the last_align_maf_basecalled table exists. If it doesn't then we don't want to run this again.
 
-    my $check_mode = "SELECT table_name FROM information_schema.tables WHERE table_schema = '" . $dbname . "' AND (table_name = 'last_align_maf_basecalled_template' or table_name = 'align_sam_basecalled_template');";
+    my $check_mode = "SELECT table_name FROM information_schema.tables WHERE table_schema = '" . $dbname . "' AND (table_name = 'last_align_maf_basecalled_template' or table_name = 'pre_align_template' or table_name = 'align_sam_basecalled_template');";
+
     my $sth3 = $dbh2->prepare($check_mode);
     $sth3->execute;
     #print $check_mode . "\n";
@@ -96,9 +97,11 @@ unless ($checkingrunning) {
     #print "We don't have a table\n";
     }else{
         my $tabletype;
-        #print "We do have a table\n";
+
+    #    print "We do have a table\n";
         while (my @results = $sth3->fetchrow()) {
-            #print $results[0] . "\n";
+    #        print $results[0] . "\n";
+
             $tabletype = $results[0];
         }
     #}
@@ -201,7 +204,9 @@ unless ($checkingrunning) {
                 my $barbasenamehash;
                 if ($tabletype eq "last_align_maf_basecalled_template") {
                     #print "parsing barcodes \n";
-                    my $barquery = "SELECT * FROM " . $dbname . ".last_align_maf_basecalled_".$_." left join " . $dbname . ".barcode_assignment using (basename_id) where basename_id not in (select basename_id from " . $dbname . ".read_tracking_barcode_".$_.") and alignnum = 1 order by ID limit 10;";
+
+                    my $barquery = "SELECT * FROM " . $dbname . ".last_align_maf_basecalled_".$_." left join " . $dbname . ".barcode_assignment using (basename_id) where basename_id not in (select basename_id from " . $dbname . ".read_tracking_barcode_".$_.") and alignnum = 1 order by ID limit 100;";
+
 
                     my $barquerygo = $dbh2->prepare($barquery);
                     $barquerygo->execute;
@@ -271,8 +276,10 @@ unless ($checkingrunning) {
                         #$memd->set($checkreads,$ref->{ID});
                     }
                 }elsif ($tabletype eq "align_sam_basecalled_template"){
-                    my $barquery = "SELECT * FROM " . $dbname . ".align_sam_basecalled_".$_." inner join " . $dbname . ".reference_seq_info left join " . $dbname . ".barcode_assignment using (basename_id) where rname = refname and flag != ('2048' or '2064') and basename_id not in (select basename_id from " . $dbname . ".read_tracking_barcode_".$_.") order by ID limit 10;";
-                    #$query = "SELECT * FROM " . $dbname . ".align_sam_basecalled_".$_." inner join " . $dbname . ".reference_seq_info where refname=rname and basename_id not in (select basename_id from " . $dbname . ".read_tracking_".$_.") order by ID limit 100;";
+
+                    my $barquery = "SELECT * FROM " . $dbname . ".align_sam_basecalled_".$_." inner join " . $dbname . ".reference_seq_info left join " . $dbname . ".barcode_assignment using (basename_id) where rname = refname and flag != ('2048' or '2064') and basename_id not in (select basename_id from " . $dbname . ".read_tracking_barcode_".$_.") order by ID limit 100;";
+                    #$query = "SELECT * FROM " . $dbname . ".align_sam_basecalled_".$_." inner join " . $dbname . ".reference_seq_info where refname=rname and basename_id not in (select basename_id from " . $dbname . ".read_tracking_".$_.") order by ID limit 1000;";
+
                     #print $barquery . "\n";
                     my $barquerygo = $dbh2->prepare($barquery);
                     $barquerygo->execute;
@@ -622,7 +629,9 @@ unless ($checkingrunning) {
 
 
                 my $query;
-                $query = "SELECT * FROM " . $dbname . ".pre_align_".$_." where basename_id not in (select basename_id from ".$dbname.".read_tracking_pre_".$_.") order by ID limit 10;";
+
+                $query = "SELECT * FROM " . $dbname . ".pre_align_".$_." where basename_id not in (select basename_id from ".$dbname.".read_tracking_pre_".$_.") order by ID limit 100;";
+
                 my $sth = $dbh2->prepare($query);
                 $sth->execute;
                 while (my $ref = $sth->fetchrow_hashref) {
@@ -671,7 +680,9 @@ unless ($checkingrunning) {
 
                 my $query;
                 ## Note that we need to deal with multiply aligned sequences still - could do using the alignnum=1 but it doesn't really work...
-                $query = "SELECT * FROM " . $dbname . ".last_align_maf_basecalled_".$_." where basename_id not in (select basename_id from " . $dbname . ".read_tracking_".$_.") and alignnum = 1 order by ID limit 10;";
+
+                $query = "SELECT * FROM " . $dbname . ".last_align_maf_basecalled_".$_." where basename_id not in (select basename_id from " . $dbname . ".read_tracking_".$_.") and alignnum = 1 order by ID limit 100;";
+
                 #print "$query to run at ".(localtime)."\n";
                 my $sth = $dbh2->prepare($query);
                 #print "$query prepared at ".(localtime)."\n";
@@ -742,7 +753,9 @@ unless ($checkingrunning) {
                 #print "We have found sam data to process.\n";
                 my $query;
                 ## Note that we need to deal with multiply aligned sequences still - could do using the alignnum=1 but it doesn't really work...
-                $query = "SELECT * FROM " . $dbname . ".align_sam_basecalled_".$_." inner join " . $dbname . ".reference_seq_info where refname=rname and flag != ('2048' or '2064') and basename_id not in (select basename_id from " . $dbname . ".read_tracking_".$_.") order by ID limit 10;";
+
+                $query = "SELECT * FROM " . $dbname . ".align_sam_basecalled_".$_." inner join " . $dbname . ".reference_seq_info where refname=rname and flag != ('2048' or '2064') and basename_id not in (select basename_id from " . $dbname . ".read_tracking_".$_.") order by ID limit 100;";
+
                 #print "$query to run at ".(localtime)."\n";
                 my $sth = $dbh2->prepare($query);
                 #print "$query prepared at ".(localtime)."\n";

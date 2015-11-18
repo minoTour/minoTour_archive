@@ -18,9 +18,7 @@ require_once("../classes/Login.php");
 
 // load the functions
 require_once("../includes/functions.php");
-//load the json functions
 
-require_once("../includes/jsonfunctions.php");
 
 set_time_limit(0);
 ignore_user_abort(1);
@@ -32,12 +30,28 @@ $login = new Login();
 
 // ... ask if we are logged in here:
 if ($login->isUserLoggedIn() == true) {
+    //load the json functions
+    if ($_GET["prev"] == 1){
+        if ($_SESSION['focus_minup']*100>=52) {
+            require_once("../includes/jsonfunctions_new.php");
+        }else{
+            require_once("../includes/jsonfunctions_orig.php");
+        }
+    }else{
+        if ($_SESSION['active_minup']*100>=52) {
+            require_once("../includes/jsonfunctions_new.php");
+        }else{
+            require_once("../includes/jsonfunctions_orig.php");
+        }
+    }
+
+    //require_once("../includes/jsonfunctions.php");
     //As user is logged in, we can now look at the memcache to retrieve data from here and so reduce the load on the mySQL server
 	// Connection creation
 	$memcache = new Memcache;
 	#$cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT) or die ("Memcached Failure");
 	$cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT);
-	
+
     // the user is logged in. you can do whatever you want here.
     // for demonstration purposes, we simply show the "you are logged in" view.
     //include("views/index_old.php");*/
@@ -55,12 +69,12 @@ if ($login->isUserLoggedIn() == true) {
 	if (!$mindb_connection->connect_errno) {
 		//Check if entry already exists in jsonstore table:
 		$jsonjobname="kmerstats";
-		
+
 		$jsonstring=$jsonjobname($jsonjobname,$currun);
-			
+
 		$callback = $_GET['callback'];
 		echo $callback.'('.$jsonstring.');';
-	
+
 	}
 } else {
 	echo "ERROR";

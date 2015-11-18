@@ -1,11 +1,9 @@
 <?php //Generate text file on the fly
- 
+
 header('Content-type: text/plain');
 header('Content-Disposition: attachment; filename="minup_windows.config"');
 
-?>
 
-<?php
 
 // include the configs / constants for the database connection
 require_once("../config/db.php");
@@ -17,12 +15,11 @@ require_once("../classes/Login.php");
 require_once("../includes/functions.php");
 
 if (DB_HOST == "localhost" || DB_HOST == "127.0.0.1") {
-	$SQLHOST = gethostname();
+	$SQLHOST = $_SERVER['SERVER_ADDR'];
 }else {
 	$SQLHOST = DB_HOST;
 }
-
-
+$SQLPORT = DB_PORT;
 
 print "# --> This file is unique for your access to the minoTour installation you downloaded it from.\r\n";
 print "# --> Do not share this with other users. You can uncomment (remove the hash) from any of the lines below to enable the parameters to be loaded from the config file.\r\n";
@@ -32,7 +29,7 @@ print "[Defaults]\r\n";
 print "mysql-host=" . $SQLHOST . "\r\n";
 print "mysql-username=". $_GET['user_name'] . "\r\n";
 print "#mysql-password=\r\n";
-print "mysql-port=3306\r\n";
+print "mysql-port=" . $SQLPORT . "\r\n";
 print "#align-ref-fasta=\r\n";
 print "#watch-dir=\r\n";
 //print "aligning-threads=3\r\n";

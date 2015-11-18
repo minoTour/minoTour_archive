@@ -29,6 +29,9 @@ require_once("includes/functions.php");
             </div>
 			<ul class="nav nav-pills">
 			  <li><a href="current_summary.php">Read Summaries</a></li>
+              <?php if ($_SESSION['currentbasesum'] > 0){?>
+              <li><a href="current_basecalling.php">Basecaller Summary</a></li>
+              <?php }; ?>
 			  <li class="active"><a href="current_histogram.php">Read Histograms</a></li>
 			  <li><a href="current_rates.php">Sequencing Rates</a></li>
 			  <li><a href="current_pores.php">Pore Activity</a></li>
@@ -145,7 +148,7 @@ require_once("includes/functions.php");
 									            },
 									        },
 					                title: {
-					                    text: 'Histogram of Read Lengths'
+					                    text: 'Histogram of Read Lengths (Bases/Events)'
 					                },
 									credits: {
 									    enabled: false
@@ -184,9 +187,21 @@ require_once("includes/functions.php");
 					            };
 								    $.getJSON("jsonencode/histograms.php?prev=0&callback=?", function(json) {
 					                options.xAxis.categories = json[0]['data'];
+                                    <?php if ($_SESSION['currentBASE'] > 0 && $_SESSION['currentPRE'] > 0) {?>
 					                options.series[0] = json[1];
 					                options.series[1] = json[2];
 					                options.series[2] = json[3];
+                                    options.series[3] = json[4];
+                                    options.series[4] = json[5];
+                                    <?php }else if ($_SESSION['currentBASE'] == 0 && $_SESSION['currentPRE'] > 0) {?>
+                                    options.series[0] = json[4];
+    					            options.series[1] = json[5];
+                                    <?php }else if ($_SESSION['currentBASE'] > 0 && $_SESSION['currentPRE'] == 0) {?>
+                                    options.series[0] = json[1];
+    					            options.series[1] = json[2];
+                                    options.series[2] = json[3];
+                                    <?php  }; ?>
+
 
 								        //options.series = JSON2;
 								                var chart = new Highcharts.Chart(options);
@@ -203,7 +218,7 @@ require_once("includes/functions.php");
 					                chart: {
 					                    renderTo: 'container2',
 					                    type: 'column',
-                                        zoomType: 'x', 
+                                        zoomType: 'x',
 					                },
 									plotOptions: {
 									            column: {
@@ -225,7 +240,7 @@ require_once("includes/functions.php");
 									            },
 									        },
 					                title: {
-					                    text: 'Bases sequenced by Read Length'
+					                    text: 'Bases/Events sequenced by Read Length'
 					                },
 									credits: {
 									    enabled: false
@@ -264,10 +279,20 @@ require_once("includes/functions.php");
 					            };
 								    $.getJSON("jsonencode/histogrambases.php?prev=0&callback=?", function(json) {
 					                options.xAxis.categories = json[0]['data'];
+                                    <?php if ($_SESSION['currentBASE'] > 0 && $_SESSION['currentPRE'] > 0) {?>
 					                options.series[0] = json[1];
 					                options.series[1] = json[2];
 					                options.series[2] = json[3];
-
+                                    options.series[3] = json[4];
+                                    options.series[4] = json[5];
+                                    <?php }else if ($_SESSION['currentBASE'] == 0 && $_SESSION['currentPRE'] > 0) {?>
+                                    options.series[0] = json[4];
+    					            options.series[1] = json[5];
+                                    <?php }else if ($_SESSION['currentBASE'] > 0 && $_SESSION['currentPRE'] == 0) {?>
+                                    options.series[0] = json[1];
+    					            options.series[1] = json[2];
+                                    options.series[2] = json[3];
+                                    <?php  }; ?>
 								        //options.series = JSON2;
 								                var chart = new Highcharts.Chart(options);
 								                });

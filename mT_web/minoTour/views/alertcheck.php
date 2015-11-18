@@ -153,7 +153,7 @@ if ($login->isUserLoggedIn() == true) {
 									curl_close($curl);
 								}
 								$resetalert="update " . $index['database'] .".alerts set complete = 1 where alert_index = " . $index['jobid'] . ";";
-								//echo $resetalert;
+								echo $resetalert;
 								$resetalerts=$mindb_connection->query($resetalert);
 							}
 						}

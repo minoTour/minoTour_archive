@@ -9,7 +9,10 @@ require_once("includes/functions.php");
 <?php include "includes/head.php";?>
 
 <body>
-
+    <?php $memcache = new Memcache;
+    #$cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT) or die ("Memcached Failure");
+    $cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT);
+    ?>
     <div id="wrapper">
 
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
@@ -36,13 +39,64 @@ require_once("includes/functions.php");
 			 	<div id="messages"></div>
 				<br>
                 <p> In the future a number of basic tasks will be able to be completed here.</p>
-                <p> Currently you can use this page to switch a run from active to inactive. You shouldn't normally need to do this as minUP will automatically switch a run to inactive when it is complete. This catches the odd use case when this process fails for some reason  <i class="fa fa-smile-o"></i>.</p>
 
+                <p> Currently you can use this page to switch a run from active to inactive. You shouldn't normally need to do this as minUP will automatically switch a run to inactive when it is complete. This catches the odd use case when this process fails for some reason  <i class="fa fa-smile-o"></i>.</p>
+                <button id='resetcache' class='btn btn-warning' data-toggle='modal' data-target='#resetcachemodal'>
+				    <i class='fa fa-exclamation-triangle'></i> Reset Cache
+				</button>
                 <!-- Button trigger modal -->
 				<button id='archivebutton' class='btn btn-warning' data-toggle='modal' data-target='#deletemodal'>
 				    <i class='fa fa-exclamation-triangle'></i> Inactivate Run
 				</button>
+                <br><br>
+                <?php echo '<pre>';
+                //echo "Hello";
+                $list = array();
+    $allSlabs = $memcache->getExtendedStats('slabs');
+    $items = $memcache->getExtendedStats('items');
+    foreach($allSlabs as $server => $slabs) {
+        foreach($slabs AS $slabId => $slabMeta) {
+            $cdump = $memcache->getExtendedStats('cachedump',(int)$slabId);
+            foreach($cdump AS $keys => $arrVal) {
+                if (!is_array($arrVal)) continue;
+                foreach($arrVal AS $k => $v) {
+                    if (strpos($k,$_SESSION['active_run_name']) !== false) {
+                        echo $k .'<br>';
+                    }
+                }
+            }
+        }
+    }
+   echo '</pre>';
 
+
+
+   ?>
+   <!-- Modal -->
+   <div class='modal fade' id='resetcachemodal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
+       <div class='modal-dialog'>
+           <div class='modal-content'>
+               <div class='modal-header'>
+                   <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+                   <h4 class='modal-title' id='myModalLabel'>Reset Cache</h4>
+               </div>
+                   <div class='modal-body'>
+                       <div id='resetcache'>
+                           <p>This action will reset the data cache. If you have started reuploading a run and the data looks wrong - try hitting this button!</p>
+                       </div>
+                       <div id='resetcacheworking'>
+                           <p class='text-center'>We're working to reset the cache. Please be patient and don't navigate away from this page.</p>
+                           <p class='text-center'><img src='images/loader.gif' alt='loader'></p>
+                       </div>
+                       <div class='modal-footer'>
+                           <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
+                           <button id='resetcacheopt' type='button' class='btn btn-warning'>Reset Cache</button>
+                       </div>
+                   </div><!-- /.modal-content -->
+               </div><!-- /.modal-dialog -->
+           </div><!-- /.modal -->
+       </div>
+   </div>
 				<!-- Modal -->
 				<div class='modal fade' id='deletemodal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
 				    <div class='modal-dialog'>
@@ -68,7 +122,6 @@ require_once("includes/functions.php");
 							    </div><!-- /.modal-content -->
 							</div><!-- /.modal-dialog -->
 						</div><!-- /.modal -->
-
 
 
                 <!-- /.col-lg-12 -->
@@ -118,6 +171,32 @@ require_once("includes/functions.php");
 	        })
 	    })
 	    $(function(){
+	    	$('#resetcacheworking').hide();
+	        $('#resetcacheopt').on('click', function(e){
+	        	$('#resetcache').hide();
+       		    $('#resetcacheworking').show();
+       		    $('#resetcacheopt').addClass('disabled');
+	            e.preventDefault(); // preventing default click action
+	            $.ajax({
+	                url: 'jsonencode/resetcache.php',
+	                success: function(data){
+						//alert ('success');
+	                    $('#resetcachemodal').modal('hide')
+						//alert(data);
+						$("#messages").html(data);
+						//$('#optobutton').addClass('disabled');
+						//$('#archivebutton').addClass('disabled');
+                        var delay = 3000; //Your delay in milliseconds
+                        URL="index.php";
+                        setTimeout(function(){ window.location = URL; }, delay);
+	                }, error: function(){
+	                    alert('ajax failed');
+	                },
+	            })
+				//alert ("button clicked");
+	        })
+	    })
+        $(function(){
 	    	$('#archiveworking').hide();
 	        $('#inactivateopt').on('click', function(e){
 	        	$('#archiveinfo').hide();

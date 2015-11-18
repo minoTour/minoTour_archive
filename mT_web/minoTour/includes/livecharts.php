@@ -509,7 +509,8 @@
 							            title: {
 							                text: '% of total template reads'
 							            },
-							            min: 0
+							            min: 0,
+                                        max: 100
 							        },
 									credits: {
 									    enabled: false
