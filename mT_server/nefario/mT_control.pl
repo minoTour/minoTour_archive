@@ -85,6 +85,8 @@ my $heartcount=0;
 
 while (42) {#If you have to ask the significance of 42 you shouldn't be reading computer code.
 	$memd->set("perl_mem_cache_connection", "We are fully operational.", $sleeptime);
+    #print $memd;
+    #print $memd->get("perl_mem_cache_connection");
 	#Build in a sleep time to stop the processor going mental on an empty while loop... This number should be set fairly long on the production verion...
  	sleep ($sleeptime);
  	if (!$verbose) {
@@ -173,7 +175,7 @@ sub jobs {
 
 		##At the moment waits for script to complete before calculating next - need to check if process still running and not execute new version until it has finished...
  	    my $command = $phploc . "php mT_control_scripts.php " . "dbname=$dbname jobname=$jobname reflength=$reflength prev=0 minupversion=$minupversion &";
-        
+
         system($command);
     } else {
     	if ($verbose){

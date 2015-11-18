@@ -67,7 +67,7 @@ my $development;
 
 #Set up a connection to memcache to upload data and process stuff
 #my $memd = Cache::Memcached->new(servers => [$memcache]);
-my $memd = new Cache::Memcached::Fast({servers => [{ address=>'$memcache', weight=>2.5 }, '$memcache'] } ); # MS
+my $memd = new Cache::Memcached::Fast({servers => [{ address=>"$memcache", weight=>2.5 }, "$memcache"] } ); # MS
 my $checkvar = $dbname . "alignmax";
 my $checkrunning = $dbname . "alignmax" . "status";
 my $checkingrunning = $memd->get($checkrunning);

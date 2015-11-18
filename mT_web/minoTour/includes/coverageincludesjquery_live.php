@@ -161,6 +161,9 @@
 					$start = -1;
 					$end = -1;
 				}
+
+
+
 				echo "
 				<script>
 
@@ -272,15 +275,18 @@
 						}
 
 					});
+                    function loadchirp" . $row['refid'] . "() {
 					$.getJSON('jsonencode/coverage.php?prev=0&start=".$start."&end=".$end."&seqid=" . $row['refid'] . "&callback=?', function(data) {
 						//alert('success');
 						options" . $row['refid'] . ".series = data; // <- just assign the data to the series property.
 
-
+                        setTimeout(loadchirp" . $row['refid'] . ",". $_SESSION['pagerefresh'] .");
 
 						//options.series = JSON2;
 						var chart" . $row['refid'] . " = new Highcharts.StockChart(options" . $row['refid'] . ");
 						});
+                    }
+                    loadchirp" . $row['refid'] . "();
 				});
 
 					//]]>
