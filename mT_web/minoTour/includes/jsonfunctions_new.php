@@ -130,7 +130,7 @@ function meanparamtime($jobname,$currun,$param,$param2,$timewin) {
     		$jsonstring = $jsonstring . "]\n";
         }
         if ($_GET["prev"] == 1){
-			include 'savejson.php';
+			//include 'savejson.php';
 		}
 		$memcache->set("$checkvar", "$jsonstring",MEMCACHE_COMPRESSED,5);
 

@@ -71,9 +71,9 @@ require_once("includes/functions.php");
                     <div id="meanshifttime" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mean Shifts for reads Over Time</div>
                     <div id="meanscaletime" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mean Scales for reads Over Time</div>
 					<div id="meanqualtime" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mean Read Qualities Over Time</div>
-			  		<div id="meanabasicheight" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating The Mean Abasic Height Over Time.</div>
-                    <div id="meancurrentplots" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mean Currents Over Time.</div>
-					<div id="meanskips" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mean Skips Over Time.</div>
+			  		<div id="meanabasicheight" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating The Mean Abasic Height Over Time.</div>
+                    <div id="meancurrentplots" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mean Currents Over Time.</div>
+					<div id="meanskips" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mean Skips Over Time.</div>
 					<div id="meanstays" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mean Stays Over Time</div>
 
 			  </div>
