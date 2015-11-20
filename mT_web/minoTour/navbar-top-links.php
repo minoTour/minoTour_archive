@@ -177,6 +177,9 @@
                         </li>
                         <?php };?>
                         <li>
+                        	<a href="tutorials.php"><i class="fa fa-question-circle fa-fw"></i>Tutorials</span></a>
+                        <li>
+                        <li>
                         	<a href="minup.php"><i class="fa fa-cloud-upload fa-fw"></i>minUp Scripts</span></a>
                         <li>
                             <a href="exlinks.php"><i class="fa fa-files-o fa-fw"></i>External Links</span></a>
