@@ -153,7 +153,7 @@ if ($login->isUserLoggedIn() == true) {
 									curl_close($curl);
 								}
 								$resetalert="update " . $index['database'] .".alerts set complete = 1 where alert_index = " . $index['jobid'] . ";";
-								echo $resetalert;
+								//echo $resetalert;
 								$resetalerts=$mindb_connection->query($resetalert);
 							}
 						}
@@ -334,7 +334,90 @@ if ($login->isUserLoggedIn() == true) {
 						$resetalerts=$mindb_connection->query($resetalert);
 					}
 				}
-				if ($index['job'] == "basenotification"){
+                if ($index['job'] == "referencecoverage"){
+                    $sql_template;
+                    if ($index['start']==0 && $index['end']==0) {
+                        $sql_template = "SELECT avg(A+T+G+C) as coverage, refname FROM " . $index['database'] . ".reference_coverage_" . $index['type'] . " inner join " . $index['database'] . ".reference_seq_info where ref_id = refid group by ref_id;";
+                    }else{
+                        $sql_template = "SELECT avg(A+T+G+C) as coverage, refname FROM " . $index['database'] . ".reference_coverage_" . $index['type'] . " inner join " . $index['database'] . ".reference_seq_info where ref_id = refid  and ref_pos >= ".$index['start']." and ref_pos <= ".$index['end']." group by ref_id;";
+                    }
+                    $mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$index['database']);
+                    $template=$mindb_connection->query($sql_template);
+                    if ($template->num_rows >= 1){
+                        foreach ($template as $row) {
+                            if ($row['coverage']>=$index['threshold']) {
+                                if ($index['control'] > 0) {
+        							$command = "insert into interaction (instruction,target,complete) VALUES ('stop','all','0');";
+        					    	$sqlcommand = $mindb_connection->query($command);
+
+                                    if ($webnotify == 1){
+                                        echo"<script type=\"text/javascript\" id=\"runscript\">
+                                            new PNotify({
+                                                title: 'Coverage Alert!',
+                                                text: 'Coverage exceeding ".$index['threshold']."X has been achieved for run ".cleanname($index['database'])." on the " . $index['type'] . " strand of ".$row['refname']." and your run has been stopped.',
+                                                type: 'error',
+                                                hide: false
+                                                });";
+                                                echo "</script>";
+                                            }
+
+                                    if (isset($_SESSION['twittername'])) {
+                                                //echo "alert ('tryingtotweet');";
+                                        $message = "RUN STOPPED: Coverage >=".$index['threshold']."X on " . $index['type'] . " for ".$row['refname'];
+                                        $postData = "twitteruser=" . ($_SESSION['twittername']) . "&run=". (urlencode(cleanname($index['database']))) ."&message=" . (urlencode($message));
+                                    //echo "alert ('".$postData."');";
+                                    // Get cURL resource
+                                        $curl = curl_init();
+                                    // Set some options - we are passing in a useragent too here
+                                        curl_setopt_array($curl, array(
+                                        CURLOPT_RETURNTRANSFER => 1,
+                                        CURLOPT_URL => $twiturl . 'tweet.php?' .$postData ,
+                                        CURLOPT_USERAGENT => 'Codular Sample cURL Request'
+                                        ));
+                                        // Send the request & save response to $resp
+                                        $resp = curl_exec($curl);
+                                        // Close request to clear up some resources
+                                        curl_close($curl);
+                                    }
+                                }else{
+                                    if ($webnotify == 1){
+                                        echo"<script type=\"text/javascript\" id=\"runscript\">
+                                            new PNotify({
+                                                title: 'Coverage Alert!',
+                                                text: 'Coverage exceeding ".$index['threshold']."X has been achieved for run ".cleanname($index['database'])." on the " . $index['type'] . " strand of ".$row['refname'].".',
+                                                type: 'success',
+                                                hide: false
+                                                });";
+                                                echo "</script>";
+                                            }
+
+                                    if (isset($_SESSION['twittername'])) {
+                                                //echo "alert ('tryingtotweet');";
+                                        $message = "Coverage >=".$index['threshold']."X on " . $index['type'] . " for ".$row['refname'];
+                                        $postData = "twitteruser=" . ($_SESSION['twittername']) . "&run=". (urlencode(cleanname($index['database']))) ."&message=" . (urlencode($message));
+                                    //echo "alert ('".$postData."');";
+                                    // Get cURL resource
+                                        $curl = curl_init();
+                                    // Set some options - we are passing in a useragent too here
+                                        curl_setopt_array($curl, array(
+                                        CURLOPT_RETURNTRANSFER => 1,
+                                        CURLOPT_URL => $twiturl . 'tweet.php?' .$postData ,
+                                        CURLOPT_USERAGENT => 'Codular Sample cURL Request'
+                                        ));
+                                        // Send the request & save response to $resp
+                                        $resp = curl_exec($curl);
+                                        // Close request to clear up some resources
+                                        curl_close($curl);
+                                    }
+                                }
+                                $resetalert="update " . $index['database'] .".alerts set complete = 1 where alert_index = " . $index['jobid'] . ";";
+                                //echo $resetalert;
+                                $resetalerts=$mindb_connection->query($resetalert);
+                            }
+                        }
+                    }
+                    }
+    				if ($index['job'] == "basenotification"){
 					$sql_template = "SELECT sum(length(sequence)) as bases FROM basecalled_" . $index['type'] . ";";
 					//$sql_template = "SELECT sum(length(sequence)) as bases FROM basecalled_template;";
 					//$sql_complement = "SELECT sum(length(sequence)) as bases FROM basecalled_complement;";

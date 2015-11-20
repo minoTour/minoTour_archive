@@ -406,6 +406,7 @@ CHARACTER SET utf8;";
 		        			</div>
 								<div id="coverage">
 						<div class="panel-body">
+
 							<div class="row">
 							<div class = "col-lg-12">
 							<?php
@@ -426,6 +427,7 @@ CHARACTER SET utf8;";
 							if ($_SESSION['currentbarcode'] >= 1) {
 								if (isset($queryarray["barcodecoverage"])){
 									echo "<Strong>Individual Barcode Thesholds Set.</strong><br><br>";
+                                    echo "<div class='table-responsive'>";
 									echo "<table class='table table-condensed'>";
 									echo "<tr>";
 									echo "<th>Reference</th>";
@@ -454,6 +456,7 @@ CHARACTER SET utf8;";
 
 									}
 									echo "</table>";
+                                    echo "</div>";
 									echo "<button id='removethresholds' type='button' class='btn btn-danger btn-xs'>Remove Thresholds</button><br><br>";
 
 								}else{
@@ -461,6 +464,7 @@ CHARACTER SET utf8;";
 								}
 								if (isset($queryarray["genbarcodecoverage"])){
 									echo "<Strong>Global Barcode Theshold Set.</strong><br><br>";
+                                    echo "<div class='table-responsive'>";
 									echo "<table class='table table-condensed'>";
 									echo "<tr>";
 									echo "<th>Reference</th>";
@@ -485,6 +489,7 @@ CHARACTER SET utf8;";
 										echo "</td>";
 									}
 									echo "</table>";
+                                    echo "</div>";
 									echo "<button id='removeglobthreshold' type='button' class='btn btn-danger btn-xs'>Remove Global Threshold</button><br><br>";
 								}else{
 									echo "<em>No Global Barcode Theshold Set.</em><br><br>";
@@ -492,15 +497,16 @@ CHARACTER SET utf8;";
 							}
 							if (isset($queryarray["referencecoverage"])){
 								echo "<Strong>Reference Coverage Thesholds Set.</strong><br><br>";
-								echo "<table class='table table-condensed'>";
+                                echo "<div class='table-responsive'>";
+								echo "<table class='table table-responsive'>";
 								echo "<tr>";
-								echo "<th>Reference</th>";
-								echo "<th>Threshold</th>";
+								echo "<th>Ref</th>";
+								echo "<th>Limit</th>";
 								echo "<th>Start</th>";
-								echo "<th>Stop</th>";
-								echo "<th>Control</th>";
-								echo "<th>Complete</th>";
-								echo "<th>Remove</th>";
+								echo "<th>End</th>";
+								echo "<th>Cont.</th>";
+								echo "<th>Done</th>";
+								echo "<th>Del</th>";
 								echo "</tr>";
 								foreach ($queryarray["referencecoverage"] as $entry) {
 									echo "<tr>";
@@ -530,11 +536,13 @@ CHARACTER SET utf8;";
 
 								}
 								echo "</table>";
+                                echo "</div>";
 							}else{
 								echo "<em>No Reference Coverage Thesholds Set.</em><br><br>";
 							}
 							//var_dump ($queryarray);
 							?>
+
         			</div>
         			</div></div></div>
 

@@ -6,7 +6,7 @@ foreach ($lines as $line_num => $line) {
 	$line = str_replace("\n", '', $line);
     $fragments = explode("=", $line);
     if ($fragments[0] == "directory") {
-		$directory = $fragments[1];	
+		$directory = $fragments[1];
     }
 }
 require_once($directory . "includes/functions.php");
@@ -27,7 +27,7 @@ require_once($directory ."config/db.php");
 				$thang = implode('/',$parts);
 				$dir = $_SERVER['SERVER_NAME'];
 				//echo $dir. $thang . "<br>";
-				
+
 				$twiturl = "http://" . $dir . $thang . "/twitmino/";
 
 			}else {
@@ -39,7 +39,7 @@ require_once($directory ."config/db.php");
 	$memcache = new Memcache;
 	#$cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT) or die ("Memcached Failure");
 	$cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT);
-    
+
     $checkalertrunning = $memcache->get("alertcheckrunning");
     if ($checkalertrunning > 0) {
     	#echo "Not going to tweet now!\n";
@@ -64,19 +64,19 @@ require_once($directory ."config/db.php");
 		curl_close($curl);
     	$memcache->set('alertcheckrunning', '1', 0, 3600);
     }
-    
-    
+
+
 	$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,DB_NAME);
 
 	if (!$mindb_connection->connect_errno) {
-			
+
 			$getruns = "SELECT runname FROM minIONruns where activeflag = 1;";
 			$getthemruns = $mindb_connection->query($getruns);
 			foreach ($getthemruns as $row){
 				$databases[] = $row['runname'];
 				//echo $row['runname'] . "<br>";
 			}
-			
+
 			$activealerts = 0;
 			$completedalerts = 0;
 			if (isset ($databases)){
@@ -85,14 +85,14 @@ require_once($directory ."config/db.php");
 					$getcompletealerts = "SELECT * FROM " . $dbname . ".alerts where complete = 1;";
 					$getthemalerts = $mindb_connection->query($getalerts);
 					$getthemcompletealerts = $mindb_connection->query($getcompletealerts);
-					$activealerts = $activealerts + $getthemalerts->num_rows;	
+					$activealerts = $activealerts + $getthemalerts->num_rows;
 					$completedalerts = $completedalerts + $getthemcompletealerts->num_rows;
-				
+
 				}
 				//echo "<small>$activealerts alerts running.</small><br>";
 				//echo "<small>$completedalerts alerts completed.</small><br>";
 			}
-			
+
 
 			//NEED TO RESET THE POINTER FOR GETTHEMALERTS!
 			if (count($databases)>=1){
@@ -127,19 +127,19 @@ require_once($directory ."config/db.php");
 			//echo '</pre>';
 			if (isset ($jobstodo)){
 			foreach ($jobstodo as $index) {
-				
+
 				//echo $index['database'] . "\t" . $index['twitterhandle'] . "\t" . $index['type'] . "\t" . $index['job'] . "\t" . $index['threshold'] . "\t" . "\n";
-				
+
 				if ($index['job'] == "gencoverage"){
 					#$sql_template = "select avg(count) as coverage, refname from (SELECT count(*) as count,refname FROM " . $index['database'] . ".last_align_basecalled_template inner join " . $index['database'] . ".reference_seq_info using (refid) where (cigarclass=7 or cigarclass=8) group by refid,refpos) as x;";
 					$sql_template = "SELECT avg(A+T+G+C) as coverage, refname FROM " . $index['database'] . ".reference_coverage_" . $index['type'] . " inner join " . $index['database'] . ".reference_seq_info where ref_id = refid group by ref_id;";
 					//echo $sql_template . "\n";
 					$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$index['database']);
-				
+
 					$template=$mindb_connection->query($sql_template);
 					//$complement=$mindb_connection->query($sql_complement);
 					//$read2d=$mindb_connection->query($sql_2d);
-					
+
 					if ($template->num_rows >= 1){
 						foreach ($template as $row) {
 							if ($row['coverage']>=$index['threshold'] && strlen($index['twitterhandle']) > 0) {
@@ -159,22 +159,23 @@ require_once($directory ."config/db.php");
 								curl_close($curl);
 							$resetalert="update " . $index['database'] .".alerts set complete = 1 where alert_index = " . $index['jobid'] . ";";
 							$resetalerts=$mindb_connection->query($resetalert);
-							
+
 							}
 						}
 					}
-					
-				
-				
+
+
+
 				}
+                
 				if ($index['job'] == "basenotification"){
-					
+
 					$sql_template = "SELECT sum(length(sequence)) as bases FROM basecalled_" . $index['type'] . ";";
-					
+
 					$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$index['database']);
-				
+
 					$template=$mindb_connection->query($sql_template);
-					
+
 					if ($template->num_rows >= 1) {
 //						echo $index['threshold'];
 //						echo (($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']);
@@ -202,11 +203,11 @@ require_once($directory ."config/db.php");
 										$memcache->set("$checkrunning", (($row['bases']-($row['bases'] % $index['threshold']))/$index['threshold']));
 									}
 							}
-							
+
 						}
 					}
 				}
-				
+
 			}
 		}
 	}
