@@ -5,7 +5,7 @@
 
 
 ##Average Length Over Time - chart showing read lengths over time
-function average_length_over_time($jobname,$currrun){
+function average_length_over_time($jobname,$currun){
 	$checkvar = $currun . $jobname;
 	$checkrunning = $currun . $jobname . "status";
 	global $memcache;

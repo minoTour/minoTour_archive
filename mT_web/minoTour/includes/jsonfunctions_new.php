@@ -45,7 +45,7 @@ function blanktemplate($jobname,$currun,$refid) {
 ###Calculate mean plots for single stat from basecalled summary table over optional time window
 ###Calculate mean quality of reads over time
 function meanparamtime($jobname,$currun,$param,$param2,$timewin) {
-    $checkvar = $currrun.$jobname.$param.$param2;
+    $checkvar = $currun.$jobname.$param.$param2;
     $checkrunning = $currun . $jobname . $param . $param2 . "status";
     $jobname = $checkvar;
     global $memcache;
@@ -146,7 +146,7 @@ function meanparamtime($jobname,$currun,$param,$param2,$timewin) {
 
 ###Calculate mean quality of reads over time
 function meanqualtime($jobname,$currun) {
-    $checkvar = $currrun.$jobname;
+    $checkvar = $currun.$jobname;
     $checkrunning = $currun . $jobname . "status";
     global $memcache;
     global $mindb_connection;

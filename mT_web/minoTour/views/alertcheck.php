@@ -1,8 +1,8 @@
 
 <?php
-header('Cache-Control: no-cache, no-store, must-revalidate'); // HTTP 1.1.
-header('Pragma: no-cache'); // HTTP 1.0.
-header('Expires: 0'); // Proxies.
+//header('Cache-Control: no-cache, no-store, must-revalidate'); // HTTP 1.1.
+//header('Pragma: no-cache'); // HTTP 1.0.
+//header('Expires: 0'); // Proxies.
 require_once("includes/functions.php");
 if ($login->isUserLoggedIn() == true) {
     // the user is logged in. you can do whatever you want here.
@@ -19,6 +19,8 @@ if ($login->isUserLoggedIn() == true) {
     $checkalertrunning = $memcache->get("alertcheckrunning");
 
     $webnotify = 1;
+
+
 
 	if (!$mindb_connection->connect_errno) {
 

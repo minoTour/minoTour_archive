@@ -48,7 +48,7 @@ if ($login->isUserLoggedIn() == true) {
 	if (!$mindb_connection->connect_errno) {
 		
 		$jsonjobname="3primecoverage_" . $_GET['seqid'] ;
-		$checkvar = $currrun . $jsonjobname;
+		$checkvar = $currun . $jsonjobname;
 		$jsonstring = $memcache->get("$checkvar");
 		if($jsonstring === false){	
 			$checkrow = "select name,json from jsonstore where name = '" . $jsonjobname . "' ;";
