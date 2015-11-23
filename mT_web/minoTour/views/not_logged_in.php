@@ -10,11 +10,23 @@
     <link rel="icon"
       type="image/png"
       href="images/minitour.png">
+
+
     <link rel="apple-touch-icon" sizes="57x57" href="images/minitour57.png" >
     <link rel="apple-touch-icon" sizes="72x72" href="images/minitour72.png" >
     <link rel="apple-touch-icon" sizes="114x114" href="images/minitour114.png" >
     <link rel="apple-touch-icon" sizes="144x144" href="images/minitour144.png" >
-    <link rel="mask-icon" href="images/minotour.svg" color="red">
+    <?php $whitelist = array('127.0.0.1', "::1"); ?>
+    <?php if(!in_array($_SERVER['REMOTE_ADDR'], $whitelist)){?>
+        <link rel="mask-icon" href="images/minotour.svg" color="red">
+    <?php
+}else{
+    ?>
+        <link rel="mask-icon" href="images/minotour.svg" color="yellow">
+    <?php
+}
+?>
+
     <!-- Core CSS - Include with every page -->
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="font-awesome/css/font-awesome.css" rel="stylesheet">
