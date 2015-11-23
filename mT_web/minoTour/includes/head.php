@@ -19,6 +19,7 @@
     <link rel="apple-touch-icon" sizes="72x72" href="images/minitour72.png" >
     <link rel="apple-touch-icon" sizes="114x114" href="images/minitour114.png" >
     <link rel="apple-touch-icon" sizes="144x144" href="images/minitour144.png" >
+    <link rel="mask-icon" href="images/minotour.svg" color="red">
 
     <!-- Page-Level Plugin CSS - Dashboard -->
     <!--<link href="css/plugins/morris/morris-0.4.3.min.css" rel="stylesheet">-->
