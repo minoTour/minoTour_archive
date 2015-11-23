@@ -12,7 +12,13 @@
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/ion.rangeSlider.css">
     <link rel="stylesheet" href="css/ion.rangeSlider.skinModern.css">
-
+    <link rel="icon"
+      type="image/png"
+      href="images/minitour.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="images/minitour57.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="images/minitour72.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="images/minitour114.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="images/minitour144.png" />
 
     <!-- Page-Level Plugin CSS - Dashboard -->
     <!--<link href="css/plugins/morris/morris-0.4.3.min.css" rel="stylesheet">-->
