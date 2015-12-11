@@ -64,10 +64,28 @@ if ($login->isUserLoggedIn() == true) {
 			}
 			$_SESSION['activerunarray'] = $databases;
 
+            $monitoringarray=array(); //This array will hold information that we are monitoring in real time from mincontrol.
+
 			$activealerts = 0;
 			$completedalerts = 0;
 			if (isset ($databases)){
 				foreach ($databases as $dbname){
+                    //We want to check if we are looking at a run with realtime monitoring of hard drive space.
+                    $resultarray = array();
+                    $detailedmessages = "SELECT * FROM " . $dbname . ".messages where target = 'details' order by message_index desc;";
+                    $detailedmessagesres = $mindb_connection->query($detailedmessages);
+                    if ($detailedmessagesres->num_rows > 0) {
+                        foreach ($detailedmessagesres as $row) {
+                            $resultarray[$row['message']]=$row['param1'];
+                        }
+                    }else {
+                            //echo "Not Available" . "<br>";
+                    }
+                    if (strlen($resultarray['disk_usage']) > 0) {
+                        $chunks = explode(" ", $resultarray['disk_usage']);
+                        echo "<small>" . $resultarray['machine_id'] . " " . round($chunks[0]/$chunks[2]*100) . "% (". $chunks[0] . "/". $chunks[2] ." " .$chunks[3] . ") free.</small><br>";
+                        $monitoringarray[$resultarray['machine_id']]=array(intval(round($chunks[0]/$chunks[2]*100)),$dbname);
+                    }
 					$getalerts = "SELECT * FROM " . $dbname . ".alerts where complete = 0;";
 					$getcompletealerts = "SELECT * FROM " . $dbname . ".alerts where complete = 1;";
 					$getthemalerts = $mindb_connection->query($getalerts);
@@ -95,9 +113,28 @@ if ($login->isUserLoggedIn() == true) {
 					//echo $dbname . "<br>";
 					if (isset ($databases)){
 						$getalerts = "SELECT name,reference,username,threshold,alert_index,twitterhandle,type,start,end,control FROM " . $dbname . ".alerts where complete = 0;";
+                        $getdonealerts = "SELECT name,reference,username,threshold,alert_index,twitterhandle,type,start,end,control FROM " . $dbname . ".alerts where complete = 1;";
 						$getthemalerts2 = $mindb_connection->query($getalerts);
+                        $getthemdonealerts2 = $mindb_connection->query($getdonealerts);
 						//echo "Num rows is " . $getthemalerts2->num_rows . "\n";
-						if (is_object($getthemalerts2) && $getthemalerts2->num_rows >= 1){
+                        if (is_object($getthemdonealerts2) && $getthemdonealerts2->num_rows >= 1){
+							foreach ($getthemdonealerts2 as $row){
+								$jobsdone[] = array(
+								    'job' => $row['name'],
+								    'reference' => $row['reference'],
+								    'username' => $row['username'],
+								    'start' => $row['start'],
+								    'end' => $row['end'],
+								    'control' => $row['control'],
+									'threshold' => $row['threshold'],
+									'jobid' => $row['alert_index'],
+									'twitterhandle' => $row['twitterhandle'],
+									'type' =>$row['type'],
+									'database' => $dbname,
+								);
+							}
+						}
+                        if (is_object($getthemalerts2) && $getthemalerts2->num_rows >= 1){
 							foreach ($getthemalerts2 as $row){
 								$jobstodo[] = array(
 								    'job' => $row['name'],
@@ -117,8 +154,102 @@ if ($login->isUserLoggedIn() == true) {
 					}
 				}
 			}
+            //Code to check if we have alerted someone about disk space running out.
+            foreach ($monitoringarray as $computer){
+                //echo $computer . "<br>";
+                //echo gettype($value[0]) . "<br>";
+                //echo $value[1] . "<br>";
+                //var_dump($computer[0]);
+                if ($computer[0] <= 60){
+                    $sqlinsert = "insert into ".$computer[1].".alerts (name,reference,twitterhandle,type,threshold,start,end,control,complete) values ('diskalert10',null,'" . $_SESSION['twittername'] .	"',null,10,null,null,0,0);";
+    			    //echo $sqlinsert;
+    				//$sqlinsertexecute = $mindb_connection->query($sqlinsert);
+                    $insertcheck=0;
+                    if (isset ($jobsdone)){
+                        foreach ($jobsdone as $index) {
+                            //echo "bodmin<br>";
+                            //echo $index['job'] . "<br>";
+                            if ($index['job'] == "diskalert10"){
+                                $insertcheck++;
+                            }
+                        }
+                    }
+                    if (isset ($jobstodo)){
+                        foreach ($jobstodo as $index) {
+                            //echo "bodmin<br>";
+                            //echo $index['job'] . "<br>";
+                            if ($index['job'] == "diskalert10"){
+                                $insertcheck++;
+                            }
+                        }
+                    }
+                    //echo $insertcheck . "<br>";
+                    if ($insertcheck < 1){
+                        $sqlinsertexecute = $mindb_connection->query($sqlinsert);
+                    }
+
+                }
+            }
+            //var_dump($jobstodo);
 			if (isset ($jobstodo)){
 			foreach ($jobstodo as $index) {
+                if ($index['job'] == "diskalert10"){
+                    //We will send an email to the user about this as well.
+                    $to = $_SESSION['user_email'];
+                    $subject = "minoTour Disk Space Message re: " . cleanname($computer[1]);
+                    $message = "<br>Your minION run <b>".cleanname($computer[1])."</b> has consumed a lot of disk space. minoTour reports less than 10% free space left on the machine running it.";
+                    $message .= "<br>This message has been sent from an email address which is not monitored.";
+                    $message .= "<br>Good luck with your run!";
+                    $message .= "<br>Regards.";
+                    $message .= "<br>The minoTour.";
+                    $header = "From:minoTour@minotour.nottingham.ac.uk\r\n";
+                    $header .= "MIME-Version: 1.0\r\n";
+                    $header .= "Content-type: text/html\r\n";
+
+                    $retval = mail ($to,$subject,$message,$header);
+
+                    if( $retval == true )
+                        {
+                            echo "Message sent successfully...";
+                        }
+                    else
+                         {
+                            echo "Message could not be sent...";
+                         }
+
+                    if ($webnotify == 1){
+                        echo"<script type=\"text/javascript\" id=\"runscript\">
+                            new PNotify({
+                                title: 'Drive Space Alert!',
+                                text: 'Your hard drive has less than 10% free space left on the machine running ".cleanname($computer[1]).". You might want to deal with it.',
+                                type: 'error',
+                                hide: false
+                                });";
+                                echo "</script>";
+                    }
+                    if (isset($_SESSION['twittername'])) {
+
+                        $message = "Your hard drive has less than 10% free space left on the machine running ".cleanname($computer[1]).".";
+                        $postData = "twitteruser=" . ($_SESSION['twittername']) . "&run=". (urlencode(cleanname($index['database']))) ."&message=" . (urlencode($message));
+                        //echo "alert ('".$postData."');";
+                        // Get cURL resource
+                        $curl = curl_init();
+                        // Set some options - we are passing in a useragent too here
+                        curl_setopt_array($curl, array(
+                            CURLOPT_RETURNTRANSFER => 1,
+                            CURLOPT_URL => $twiturl . 'tweet.php?' .$postData ,
+                            CURLOPT_USERAGENT => 'Codular Sample cURL Request'
+                        ));
+                        // Send the request & save response to $resp
+                        $resp = curl_exec($curl);
+                        // Close request to clear up some resources
+                        curl_close($curl);
+                        //echo "alert ('tryingtotweet');";
+                    }
+                    $resetalert="update " . $index['database'] .".alerts set complete = 1 where alert_index = " . $index['jobid'] . ";";
+                    //echo $resetalert;
+                    $resetalerts=$mindb_connection->query($resetalert);
+                }
 				if ($index['job'] == "gencoverage"){
 					$sql_template = "SELECT avg(A+T+G+C) as coverage, refname FROM " . $index['database'] . ".reference_coverage_" . $index['type'] . " inner join " . $index['database'] . ".reference_seq_info where ref_id = refid group by ref_id;";
 					$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$index['database']);

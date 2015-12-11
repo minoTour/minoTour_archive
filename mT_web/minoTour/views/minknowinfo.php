@@ -48,6 +48,7 @@ if ($login->isUserLoggedIn() == true) {
 			}else {
 					echo "Not Available";
 			}
+            
     echo "</td>
   </tr>
   <tr>

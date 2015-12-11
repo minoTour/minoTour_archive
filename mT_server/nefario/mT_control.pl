@@ -69,8 +69,8 @@ my $memd = Cache::Memcached->new(servers => [$memcache]);
 
 #Set up a connection to the Gru database to monitor for active runs.
 
-my $dbh = DBI->connect('DBI:mysql:host=' . $dbhost . ';database=Gru',$dbuser,$dbpass,{ AutoCommit => 1, mysql_auto_reconnect=>1}) or die "Connection Error: $DBI::errstr\n";
-
+#my $dbh = DBI->connect('DBI:mysql:host=' . $dbhost . ';database=Gru',$dbuser,$dbpass,{ AutoCommit => 1, mysql_auto_reconnect=>1}) or die "Connection Error: $DBI::errstr\n";
+my $dbh = DBI->connect('DBI:mysql:host=' . $dbhost . ';database=Gru',$dbuser,$dbpass,{ AutoCommit => 1, mysql_auto_reconnect=>1}); 
 
 #Define an array with a list of tasks that need to be completed for each database if the reference length is greater than 0
 my @alignjobarray = ("depthcoverage","percentcoverage","readlengthqual","readnumberlength","mappabletime");

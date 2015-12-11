@@ -305,6 +305,9 @@ CHARACTER SET utf8;";
             	</div>
 
             </div>
+            <div class="col-md-12">
+                <div id="minknowinfodetail"></div>
+            </div>
 			 	<div id="messages"></div>
         <div class="row">
         	<div class="col-md-6">
@@ -843,6 +846,15 @@ CHARACTER SET utf8;";
 	    var auto_refresh = setInterval(function ()
             {
             $( "#minknowinfo").load("minknowinfo.php").fadeIn("slow");
+            //eval(document.getElementById("infodiv").innerHTML);
+            }, 1000); // refresh every 1000 milliseconds
+
+	</script>
+    <script>
+	$("#minknowinfodetail").load("minknowinfodetail.php").fadeIn("slow");
+	    var auto_refresh = setInterval(function ()
+            {
+            $( "#minknowinfodetail").load("minknowinfodetail.php").fadeIn("slow");
             //eval(document.getElementById("infodiv").innerHTML);
             }, 1000); // refresh every 1000 milliseconds
 
