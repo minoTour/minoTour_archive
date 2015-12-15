@@ -12,7 +12,7 @@ require_once("includes/functions.php");
     <div id="wrapper">
 
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
-            
+
             <!-- /.navbar-header -->
 			<?php include 'navbar-header.php' ?>
             <!-- /.navbar-top-links -->
@@ -30,8 +30,8 @@ require_once("includes/functions.php");
             </div>
             <div class="row">
                 <div class="col-lg-12">
-			
-			
+
+
 			<div class='panel-group'>
 			<div class='panel panel-default'>
 			<div class='panel-heading'>
@@ -45,7 +45,7 @@ require_once("includes/functions.php");
 		<th>Result</th>
 		<th>Fasta</th>
 		<th>Fastq</th>
-		
+
 		</tr>
 		</thead>
 		<tbody>
@@ -89,7 +89,7 @@ require_once("includes/functions.php");
 		<th>Fasta</th>
 		<th>Fastq</th>
 		<th>Alignments</th>
-		
+
 		</tr>
 		</thead>
 		<tbody>
@@ -109,7 +109,7 @@ require_once("includes/functions.php");
 					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['active_run_name']; ?>&job=complement&align=1&prev=0&type=fastq' type='button' class='btn btn-success btn-xs'>Download Fastq</a></td>
 					<td><?php if ($_SESSION['currentmaf'] == "MAF") { ?><a href='includes/fetchmaf.php?db=<?php echo $_SESSION['active_run_name']; ?>&job=complement&prev=0' type='button' class='btn btn-success btn-xs'>Download MAF</a><?php }?>
 					<?php if ($_SESSION['currentmaf'] == "SAM") { ?><a href='includes/fetchsam.php?db=<?php echo $_SESSION['active_run_name']; ?>&job=complement&prev=0' type='button' class='btn btn-success btn-xs'>Download SAM</a><?php }?></td>
-					
+
 					</tr>
 					<tr>
 					<td>2D Sequence</td>
@@ -141,24 +141,24 @@ require_once("includes/functions.php");
 		<th>Barcode</th>
 		<th>Fasta</th>
 		<th>Fastq</th>
-		
+
 		</tr>
 		</thead>
 		<?php //Barcode List
-			$barcodes = ["BC01","BC02","BC03","BC04","BC05","BC06","BC07","BC08","BC09","BC10","BC11","BC12"];
+			$barcodes = ["BC01","BC02","BC03","BC04","BC05","BC06","BC07","BC08","BC09","BC10","BC11","BC12","NBx§01","NB02","NB03","NB04","NB05","NB06","NB07","NB08","NB09","NB10","NB11","NB12"];
 			?>
 		<tbody>
-		
+
 		<?php foreach ($barcodes as $barcode) { ?>
 		<tr>
-		
+
 					<td><?php echo $barcode;?></td>
 					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['active_run_name']; ?>&job=2d&code=<?php echo $barcode;?>&align=0&prev=0&type=fasta' type='button' class='btn btn-success btn-xs'>Download Fasta</a></td>
 					<td><a href='includes/fetchreads.php?db=<?php echo $_SESSION['active_run_name']; ?>&job=2d&code=<?php echo $barcode;?>&align=1&prev=0&type=fastq' type='button' class='btn btn-success btn-xs'>Download Fastq</a></td>
 					</tr>
-					
+
 					<?php };?>
-			
+
 </tbody>
 		</table>
 		</div>
@@ -179,7 +179,7 @@ require_once("includes/functions.php");
 		</div>
 		</div>
 
-						
+
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -188,8 +188,8 @@ require_once("includes/functions.php");
 
     </div>
     <!-- /#wrapper -->
-	
-	
+
+
     <!-- Core Scripts - Include with every page -->
     <script src="js/jquery-1.10.2.js"></script>
     <script src="js/bootstrap.min.js"></script>
@@ -202,15 +202,15 @@ require_once("includes/functions.php");
 				</script>
     <script src="js/plugins/morris/raphael-2.1.0.min.js"></script>
     <script src="js/plugins/morris/morris.js"></script>
-	
+
 	<!-- Highcharts Addition -->
 	<script src="js/highcharts.js"></script>
 	<script type="text/javascript" src="js/themes/grid-light.js"></script>
 	<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
-	
-	
-	
+
+
+
     <!-- SB Admin Scripts - Include with every page -->
     <script src="js/sb-admin.js"></script>
 
