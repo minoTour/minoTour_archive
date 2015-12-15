@@ -145,7 +145,7 @@ require_once("includes/functions.php");
 		</tr>
 		</thead>
 		<?php //Barcode List
-			$barcodes = ["BC01","BC02","BC03","BC04","BC05","BC06","BC07","BC08","BC09","BC10","BC11","BC12","NBx§01","NB02","NB03","NB04","NB05","NB06","NB07","NB08","NB09","NB10","NB11","NB12"];
+			$barcodes = ["BC01","BC02","BC03","BC04","BC05","BC06","BC07","BC08","BC09","BC10","BC11","BC12","NB01","NB02","NB03","NB04","NB05","NB06","NB07","NB08","NB09","NB10","NB11","NB12"];
 			?>
 		<tbody>
 
