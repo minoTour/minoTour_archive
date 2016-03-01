@@ -305,10 +305,13 @@ CHARACTER SET utf8;";
             	</div>
 
             </div>
+            			 	<div id="messages"></div>
             <div class="col-md-12">
-                <div id="minknowinfodetail"></div>
-            </div>
-			 	<div id="messages"></div>
+                <div class='panel panel-info'>
+                <div id="minknowinfodetail">Currently Unavailable</div>
+                <div id='channelstatusheatmap' style='height:400px;'><i class='fa fa-cog fa-spin fa-3x'></i> Channel Status HeatMap</div>
+            </div></div>
+
         <div class="row">
         	<div class="col-md-6">
         		<div class="panel panel-default">
@@ -693,6 +696,8 @@ CHARACTER SET utf8;";
 	<script type="text/javascript" src="js/themes/grid-light.js"></script>
 	<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
+    <script src="http://code.highcharts.com/highcharts-more.js">
+    <script src="http://highslide-software.github.io/export-csv/export-csv.js"></script>
 
 
 
@@ -1102,6 +1107,88 @@ CHARACTER SET utf8;";
 		})
 	})
 	</script>
+    <!-- Pore Mux Data -->
+
+    <script>
+    			$(document).ready(function() {
+    			    var options = {
+    			        chart: {
+    						renderTo: 'channelstatusheatmap',
+    			            type: 'heatmap',
+    			            marginTop: 30,
+    			            marginBottom: 30
+    			        },
+
+
+    			        title: {
+    			            text: 'Channel States'
+    			        },
+
+    			        xAxis: {
+    			        	categories: [],
+    			            title: 'Columns',
+    						labels: {
+    						    enabled: false
+    						  },
+
+    			        },
+
+    			        yAxis: {
+    			        	categories: [],
+    			            title: 'Rows',
+    						labels: {
+    						    enabled: false
+    						  },
+
+    			        },
+    					credits: {
+    					    enabled: false
+    					  },
+    			        colorAxis: {
+    			            min: 0,
+    			            minColor: '#FFFFFF',
+    			            maxColor: Highcharts.getOptions().colors[0]
+    			        },
+
+    			         legend: {
+                                        enabled: false,
+                                        align: 'right',
+    						            layout: 'vertical',
+    						            margin: 0,
+    						            verticalAlign: 'middle',
+    						            y: 25,
+    						            symbolHeight: 320
+    						        },
+
+    			        series: []
+
+    			    };
+                    function loadchirpcs() {
+
+        					if(1 == 1) {
+           										   $.getJSON('jsonencode/channelstatus.php?prev=0&callback=?', function(data) {
+
+                                                options.series = data; // <- just assign the data to the series property.
+
+                                                        setTimeout(loadchirpcs,<?php echo $_SESSION['pagerefresh'] ;?>);
+
+                                                //options.series = JSON2;
+                                                        var chart = new Highcharts.Chart(options);
+                                                        });} else {
+           setTimeout(loadchirpcs,<?php echo $_SESSION['pagerefresh'] ;?>);
+        }
+
+                                                }
+
+
+        				        loadchirpcs();
+
+        			});
+
+        				//]]>
+
+        </script>
+
     <script>
     		$(document).ready(function() {
     		    var options = {

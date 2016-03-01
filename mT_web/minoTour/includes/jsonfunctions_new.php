@@ -42,6 +42,141 @@ function blanktemplate($jobname,$currun,$refid) {
 
 }
 
+##Channel Status - plotting the channel status for all reads
+function channelstatus($jobname,$currun){
+	$checkvar = $currun . $jobname;
+	$checkrunning = $currun . $jobname . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;
+	$jsonstring = $memcache->get("$checkvar");
+	$checkingrunning = $memcache->get("$checkrunning");
+	if($checkingrunning === "No" || $checkingrunning === FALSE){
+        if (strlen($jsonstring) <= 1){
+		$memcache->set("$checkrunning", "YES", 0, 0);
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if (is_object($checking) && $checking->num_rows ==1){
+			//echo "We have already run this!";
+			foreach ($checking as $row){
+				$jsonstring = $row['json'];
+			}
+		} else {
+            //Get the list of channel states from the database.
+
+            $channelstatesdesc = "SELECT * FROM messages where message = 'channel_states_conf';";
+            $resultarray = array();
+            $channelstatesres = $mindb_connection->query($channelstatesdesc);
+            if ($channelstatesres->num_rows > 0) {
+                foreach ($channelstatesres as $row) {
+                    #echo $row['message'] . "\t" . $row['param1'] . "<br>";
+                    $resultarray[$row['message']]=$row['param1'];
+                }
+            }else {
+                    #echo "Not Available" . "<br>";
+            }
+            $ll = json_decode($resultarray['channel_states_conf']);
+            $ll = cvf_convert_object_to_array($ll);
+            /*foreach ($ll as $monkey=> $cow){
+                ksort($cow);
+                echo $monkey . "\n";
+                foreach ($cow as $sheep=>$ant){
+                    echo $sheep . "\n";
+                    foreach ($ant as $mouse=>$butt){
+                        if (is_array($butt)) {
+                            foreach ($butt as $beaver=>$camel){
+                                if (is_array($camel)){
+                                    foreach ($camel as $donkey=>$rabbit){
+                                        echo $mouse . ":" . $beaver . "-" . $donkey . "\t" . $rabbit . "\n";
+                                    }
+                                }else{
+                                    echo $mouse . ":" . $beaver . "\t" . $camel . "\n";
+                                }
+                            }
+                        }else{
+                            echo $mouse . "\t" . $butt . "\n";
+                        }
+
+                    }
+                }
+            };*/
+
+            $colourarray = array();
+            foreach ($ll as $monkey=>$cow){
+                //echo "<br>" . "Channel States" . "<br><br>";
+                ksort($cow);
+                foreach ($cow as $sheep=>$ant){
+                    $colourarray[$sheep]=$ant['style']['colour'];
+                    //echo $sheep. "\t" . $ant['style']['colour'] . "\n";
+                    //echo $ant['group'] . " (" . $ant['name'] . ")" . $ant['style']['colour'] . "<br>";
+                }
+            }
+
+			$sql_template = "SELECT message as channel, param1 as count FROM messages where message between '0' and '512' order by message * 1;";
+
+
+			$resultarray=array();
+
+			$template=$mindb_connection->query($sql_template);
+
+			if ($template->num_rows >= 1){
+				foreach ($template as $row) {
+					$resultarray['Channel State'][$row['channel']]=$row['count'];
+				}
+			}
+
+
+
+
+
+			//var_dump($resultarray);
+			//echo json_encode($resultarray);
+			$jsonstring="";
+			$jsonstring = $jsonstring . "[\n";
+			foreach ($resultarray as $key => $value){
+				$jsonstring = $jsonstring . "{\n";
+				$jsonstring = $jsonstring . "\"name\" : \"$key\", \n";
+				$jsonstring = $jsonstring . "\"borderWidth\": 1,\n";
+				$jsonstring = $jsonstring . "\"data\": [";
+				for ($i = 1 ; $i <=512; $i++){
+					if (array_key_exists($i, $resultarray[$key])){
+						$jsonstring = $jsonstring . "{x:" . getx($i) . ",y:" . gety($i) . ",z:" . $resultarray[$key][$i] . ",color: '#". $colourarray[$resultarray[$key][$i]] . "'},\n";
+                        //$jsonstring = $jsonstring . "[" . getx($i) . "," . gety($i) . "," . $resultarray[$key][$i] . "],\n";
+					}else{
+						$jsonstring = $jsonstring . "{x:" . getx($i) . ",y:" . gety($i) . ",z:0,color: '#". $colourarray[0] . "'},\n";
+                        //$jsonstring = $jsonstring . "{ x:" . getx($i) . ",y:" . gety($i) . ",z:0,color: 'black'},\n";
+					}
+				}
+
+				$jsonstring = $jsonstring . "],\n\"dataLabels\": {
+                \"enabled\": true,
+                \"style\": {
+                    \"textShadow\": \"none\"
+                }
+            }	";
+				$jsonstring = $jsonstring . "},\n";
+
+			}
+			$jsonstring = $jsonstring .  "]\n";
+			if ($_GET["prev"] == 1){
+				include 'savejson.php';
+			}
+		}
+		 $memcache->set("$checkvar", "$jsonstring",MEMCACHE_COMPRESSED,5);
+
+	}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}
+}
+
+	// cache for 2 minute as we want yield to update semi-regularly...
+
+	         $memcache->delete("$checkrunning");
+    return $jsonstring;
+
+}
+
+
 ###Calculate mean plots for single stat from basecalled summary table over optional time window
 ###Calculate mean quality of reads over time
 function meanparamtime($jobname,$currun,$param,$param2,$timewin) {
@@ -1611,17 +1746,17 @@ function barcodingcov($jobname,$currun,$refid) {
 				$jsonstring = $jsonstring . "\"name\": \"". $key. "\",\n";
 				$jsonstring = $jsonstring . "\"data\":\n";
    				$jsonstring = $jsonstring . "[\n";
-				//foreach ($value as $key2=>$value2) {
+				foreach ($value as $key2=>$value2) {
 					#print $key2 . " " . $value2 . "\n";
-				//	$jsonstring = $jsonstring . "[\"" . $key2	. "\",".$value2 . "],\n";
-				//}
-				foreach ($barcodes as $barcode) {
+					$jsonstring = $jsonstring . "[\"" . $key2	. "\",".$value2 . "],\n";
+				}
+                /*foreach ($barcodes as $barcode) {
 					if ($value[$barcode] > 0){
 						$jsonstring = $jsonstring . "[\"" . $barcode . "\",".$value[$barcode] . "],\n";
 					}else{
 						$jsonstring = $jsonstring . "[\"" . $barcode . "\",0],\n";
 					}
-				}
+				}*/
 				$jsonstring = $jsonstring . "]\n";
 				$jsonstring = $jsonstring . "},\n";
 			}

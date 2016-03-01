@@ -5,6 +5,20 @@ $_SESSION['minotourversion']=0.6;
 $_SESSION['pagerefresh']=5000;
 
 
+function cvf_convert_object_to_array($data) {
+
+if (is_object($data)) {
+    $data = get_object_vars($data);
+}
+
+if (is_array($data)) {
+    return array_map(__FUNCTION__, $data);
+}
+else {
+    return $data;
+}
+}
+
 //Updated function for converting sam format data to maf for easy visualisation in a browser
 function samtomaf($qname,$flag,$rname,$mapq,$cigar,$rnext,$pnext,$tlen,$seq,$qual,$n_m,$m_d,$pos) {
 
