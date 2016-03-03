@@ -143,7 +143,7 @@ require_once("includes/functions.php");
     <script src="js/plugins/morris/morris.js"></script>
 	
 	<!-- Highcharts Addition -->
-	<script src="js/highcharts.js"></script>
+	<script src="http://code.highcharts.com/highcharts.js"></script>
 	<script type="text/javascript" src="js/themes/grid-light.js"></script>
 	<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>

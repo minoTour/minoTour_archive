@@ -115,7 +115,7 @@ require_once("includes/functions.php");
     <script src="js/plugins/morris/morris.js"></script>
 
 	<!-- Highcharts Addition -->
-	<script src="js/highcharts.js"></script>
+	<script src="http://code.highcharts.com/highcharts.js"></script>
     <!--<script src="http://code.highcharts.com/highcharts.js"</script>-->
     <script type="text/javascript" src="js/themes/grid-light.js"></script>
     <!--<script src="https://raw.githubusercontent.com/highslide-software/highcharts.com/master/js/themes/grid-light.js"></script>-->
