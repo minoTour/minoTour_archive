@@ -38,7 +38,9 @@ if ($login->isUserLoggedIn() == true) {
                     echo "<strong> This view is experimental and may not be in sync with native minKNOW. </strong><br><br>";
 
                     $chunks = explode(" ", $resultarray['disk_usage']);
-                    echo "You have " . round($chunks[0]/$chunks[2]*100) . "% (". $chunks[0] . " " .$chunks[3] . ") disk space remaining.<br>";
+                    if (strlen($chunks[0]) > 0) {
+                        echo "You have " . round($chunks[0]/$chunks[2]*100) . "% (". $chunks[0] . " " .$chunks[3] . ") disk space remaining.<br>";
+                    }
                     echo "Experiment Time: ".$resultarray['cached_exp_time_string_for_display_in_client']."<br>";
                     echo "Channels Sequencing/Total Channels: " . $resultarray['channels_with_read_event_count']."/".$resultarray['channel_count']."<br>";
                     echo "ASIC Temperature: ".$resultarray['minion_asic_temperature']."&#176;C<br>";
@@ -82,7 +84,7 @@ if ($login->isUserLoggedIn() == true) {
                         ksort($cow);
                         echo "<div class='row center-block'>";
                         foreach ($cow as $sheep=>$ant){
-                            echo "<div class='col-md-1'><div id='rectangle' style='width:20px; height:20px; background-color:#". $ant['style']['colour'] ."'></div>" . $ant['group'] . " (" . $ant['name'] . "\t" .$ant['style']['label'] . "): " . $statearray[$sheep] .  "<br></div>";
+                            echo "<div class='col-md-4'><div id='rectangle' style='width:20px; height:20px; background-color:#". $ant['style']['colour'] ."'></div><small>" . $ant['group'] . " (" . $ant['name'] . "\t" .$ant['style']['label'] . "): " . $statearray[$sheep] .  "</small></div>";
                         }
                         echo "</div>";
                     }
