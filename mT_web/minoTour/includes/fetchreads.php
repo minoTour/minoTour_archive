@@ -1,14 +1,14 @@
 <?php
 //echo "test";
 
-$db = $_GET["db"]; 
+$db = $_GET["db"];
 
 
 $jobtype = $_GET["job"];
 $id = $db . "_" . $jobtype;
 
 if (isset ($_GET["code"])){
-	$filename = $db . "_" . $_GET["code"] . "_" . $_GET["job"] . "-" . $_GET["type"];	
+	$filename = $db . "_" . $_GET["code"] . "_" . $_GET["job"] . "-" . $_GET["type"];
 }elseif (isset ($_GET["type"])) {
 	if ($_GET["type"] == "histogram") {
 		$filename = $db . "_" . $_GET["type"] . "_" . $_GET["length"] . "_" . ($_GET["length"] + 1000) . "_" . $_GET["job"] . ".fasta";
@@ -47,7 +47,7 @@ $login = new Login();
 if ($login->isUserLoggedIn() == true) {
     // the user is logged in. you can do whatever you want here.
     // for demonstration purposes, we simply show the "you are logged in" view.
-    //include("views/index_old.php");*/    
+    //include("views/index_old.php");*/
 	if($_GET["prev"] == 1){
 		$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['focusrun']);
 		$minupver = $_SESSION['focus_minup'];
@@ -61,12 +61,12 @@ if ($login->isUserLoggedIn() == true) {
 
 	if (!$mindb_connection->connect_errno) {
 		$jobtype = strtolower($jobtype);
-		
+
 		if (isset ($_GET["code"])) {
-			
+
 			$querytable = "basecalled_" . $jobtype;
 			$lasttable = "last_align_" . $querytable . "_5prime";
-			
+
 			if ($_GET["align"] == 1) {
 				$sql = "select seqid,sequence, qual from $querytable inner join barcode_assignment using (basename_id) inner join $lasttable using (basename_id) where barcode_arrangement = \"". $_GET['code'] ."\";";
 			}else {
@@ -80,10 +80,16 @@ if ($login->isUserLoggedIn() == true) {
 						echo "@" . $row['seqid'] . "\n";
 						echo $row['sequence'] . "\n";
 						echo "+\n";
-						$qualscore= substr($row['qual'], 1, -1);
+                        $qualscore = "";
+                        if (strlen($row['qual']) > strlen($row['sequence'])){
+                            $qualscore= substr($row['qual'], 1, -1);
+                        }else{
+                            $qualscore = $row['qual'];
+                        }
+
 						$qualarray = str_split($qualscore);
 						foreach ($qualarray as $value){
-							if ($minupver < 0.5){ 
+							if ($minupver < 0.5){
 								echo chr(ord($value)-31);
 							}else{
 								echo chr(ord($value));
@@ -98,9 +104,9 @@ if ($login->isUserLoggedIn() == true) {
 						echo ">" . $row['seqid'] . "\n";
 						echo $row['sequence'] . "\n";
 					}
-				}	
+				}
 			}
-			exit;	
+			exit;
 		}
 		if ($_GET["type"] =="histogram"){
 			$querytable = "basecalled_" . $jobtype;
@@ -117,7 +123,7 @@ if ($login->isUserLoggedIn() == true) {
 			}
 			exit;
 		}
-		
+
 		if ($_GET["type"] == "fastq"){
 			$querytable = "basecalled_" . $jobtype;
 			$lasttable = "last_align_" . $querytable . "_5prime";
@@ -131,20 +137,25 @@ if ($login->isUserLoggedIn() == true) {
 				//echo $sql;
 			}else {
 				$sql = "select seqid,sequence,qual from $querytable;";
-			}		
-			
+			}
+
 			//echo $sql . "\n";
-	
+
 			$queryresult=$mindb_connection->query($sql);
 			if ($queryresult->num_rows >= 1){
 				foreach ($queryresult as $row) {
 					echo "@" . $row['seqid'] . "\n";
 					echo $row['sequence'] . "\n";
 					echo "+\n";
-					$qualscore= substr($row['qual'], 1, -1);
+                    $qualscore = "";
+                    if (strlen($row['qual']) > strlen($row['sequence'])){
+                        $qualscore= substr($row['qual'], 1, -1);
+                    }else{
+                        $qualscore = $row['qual'];
+                    }
 					$qualarray = str_split($qualscore);
 					foreach ($qualarray as $value){
-						if ($minupver < 0.5){ 
+						if ($minupver < 0.5){
 								echo chr(ord($value)-31);
 							}else{
 								echo chr(ord($value));
@@ -153,9 +164,9 @@ if ($login->isUserLoggedIn() == true) {
 					print "\n";
 				}
 			}
-			
+
 		}else{
-		
+
 			$querytable = "basecalled_" . $jobtype;
 			$lasttable = "last_align_" . $querytable . "_5prime";
 			if ($_GET["align"] == 1) {
@@ -167,10 +178,10 @@ if ($login->isUserLoggedIn() == true) {
 				//echo $sql;
 			}	else {
 				$sql = "select seqid,sequence,qual from $querytable;";
-			}	
-			
+			}
+
 			//echo $sql . "\n";
-			
+
 			$queryresult=$mindb_connection->query($sql);
 			if ($queryresult->num_rows >= 1){
 				foreach ($queryresult as $row) {
@@ -181,7 +192,7 @@ if ($login->isUserLoggedIn() == true) {
 					echo "\n";
 					echo $row['sequence'] . "\n";
 				}
-			}	
+			}
 		}
 	}
 } else {
