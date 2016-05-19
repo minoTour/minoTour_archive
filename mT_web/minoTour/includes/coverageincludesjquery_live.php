@@ -107,6 +107,9 @@
                 		            }
                 		        },
                 						plotOptions: {
+                                            line: {
+                                                animation: false,
+                                            },
                 							scatter: {
                 								marker: {
                 									radius: 1,
@@ -230,6 +233,9 @@
 					}
 				},
 						plotOptions: {
+                            line: {
+                                animation: false,
+                            },
 							scatter: {
 								marker: {
 									radius: 1,
@@ -380,6 +386,9 @@
 				}
 			},
 					plotOptions: {
+                        line: {
+                            animation: false,
+                        },
 						scatter: {
 							marker: {
 								radius: 1,
@@ -494,6 +503,9 @@
 				}
 			},
 					plotOptions: {
+                        line: {
+                            animation: false,
+                        },
 						scatter: {
 							marker: {
 								radius: 1,

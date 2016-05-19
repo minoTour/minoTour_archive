@@ -58,9 +58,11 @@ if ($login->isUserLoggedIn() == true) {
             </div>
 			<?php  if (checkminup($_SESSION['user_name']) > 0){
 				echo "You are authorised to upload data to this minoTour installation. All versions of the minup script are available to download from here. Please see the notes below.<br>";
-                echo "<h4><u>minUP for Windows 0.6</u></h4>";
-                echo "<p>The latest version of minUP for Windows can be downloaded below. This compressed folder includes a compiled version of the last and BWA aligners which in turn require CYGWIN to be installed on your system (available from <a href='http://www.cygwin.com/' target='_blank'>www.cygwin.com</a>).<br><br> This version also allows you to use BWA and additinal alignment options will be introduced in the near future.<br><br> A new feature for minUP version 0.6 is a GUI - a graphical user interface - to simplify data upload.<br><br> minUP 0.6 also enables remote control facilities for your minION. This is EXPERIMENTAL now and more information will be provided soon.<br>Finally, the configuration file is now packaged with this version automagically.<br><br>";
-                echo "<a href='https://github.com/minoTour/winminUP/archive/master.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP for Windows</a><br><br>";
+                echo "<h4><u>minUP for Windows 0.65</u></h4>";
+                echo "<p>The latest version of minUP for Windows can be downloaded below. Please note that you must download either a windows 7 or a windows 10 version now. We are trying to rectify this asap. This compressed folder includes a compiled version of the last and BWA aligners which in turn require CYGWIN to be installed on your system (available from <a href='http://www.cygwin.com/' target='_blank'>www.cygwin.com</a>).<br><br> This version also allows you to use BWA and additinal alignment options will be introduced in the near future.<br><br> A new feature for minUP version 0.6 is a GUI - a graphical user interface - to simplify data upload.<br><br> minUP 0.65 also enables remote control facilities for your minION although this is somewhat experimental! <br><br>";
+
+                echo "<a href='https://github.com/minoTour/winminUP/archive/master.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP for Windows 10</a><br><br>";
+                echo "<a href='https://github.com/minoTour/winminUPwin7/archive/master.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP for Windows 7/8</a><br><br>";
 
                 echo "This version of minUP utilises a configuration file to bypass entering some of the standard parameters on the command line or in the GUI. You can download custom versions of these files below. Copy both files into the minUP folder.<br><br>";
 
