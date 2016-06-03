@@ -181,7 +181,7 @@ unless ($checkingrunning) {
                 }
 
 
-                if ($_ eq "2d" && $execute_check_barcode->rows != 0) {
+                if (($_ eq "2d" || $_ eq "complement" || $_ eq "template") && $execute_check_barcode->rows != 0) {
                     my $create3sth = $dbh2->prepare($createtable3);
                     $create3sth->execute;
                     my $create4sth = $dbh2->prepare($createtablebarcod);
@@ -198,7 +198,7 @@ unless ($checkingrunning) {
                 #print "The value of barcode check is " . $execute_check_barcode->rows . " for run $dbname at $_\n";
 
                 ####OK - attempting to parse the barcoded reads in some kind of meaningful way.
-                if ($_ eq "2d" && $execute_check_barcode->rows >= 1) {
+                if (($_ eq "2d" || $_ eq "complement" || $_ eq "template") && $execute_check_barcode->rows >= 1) {
                     my %barmafhash;
                     my $barmafhash;
                     my %barbasenamehash;

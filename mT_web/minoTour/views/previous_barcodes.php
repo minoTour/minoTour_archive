@@ -67,6 +67,44 @@ require_once("includes/functions.php");
 						</div>
 
 					</div>
+                    <div class="panel panel-default">
+                    						  <div class="panel-heading">
+                    						    <h3 class="panel-title"><!-- Button trigger modal -->
+                    			<button class="btn btn-info  btn-sm" data-toggle="modal" data-target="#modalbarcodecov">
+                    			 <i class="fa fa-info-circle"></i> Barcoding Coverage Plots
+                    			</button>
+
+                    			<!-- Modal -->
+                    			<div class="modal fade" id="modalbarcodecov" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    			  <div class="modal-dialog">
+                    			    <div class="modal-content">
+                    			      <div class="modal-header">
+                    			        <button type="button" class="close  btn-sm" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    			        <h4 class="modal-title" id="myModalLabel">Barcoding Coverage Plots</h4>
+                    			      </div>
+                    			      <div class="modal-body">
+                    			        These plots provide coverage details on a per barcode basis. They will not work well if you have more than one reference sequence and are currently experimental.<br>
+                    			      </div>
+                    			      <div class="modal-footer">
+                    			        <button type="button" class="btn btn-default  btn-sm" data-dismiss="modal">Close</button>
+                    			      </div>
+                    			    </div>
+                    			  </div>
+                    			</div>
+                    						  </div>
+                    						  <div id="barcodingcov">
+                    						  <div class="panel-body">
+                    									<div class="row">
+                    									<div class="col-md-12" id="barcodcovdet" style="height:1000px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Barcoding Coverage</div>
+
+
+
+                    								</div>
+
+                    						  </div>
+                    						</div>
+
+                    					</div>
 
 
 <!--
@@ -244,7 +282,210 @@ require_once("includes/functions.php");
 			</script>
 		<?php } ?>
 
+        <!-- Detailed Barcode Coverage Plots -->
 
+    <script>
+        $(document).ready(function() {
+            chartsetup = {
+                chart: {
+        		   	renderTo: 'barcodcovdet',
+        			//zoomType: 'x',
+        			type: 'scatter',
+        		   	//type: 'line'
+        		},
+        		title: {
+        		    text: 'Coverage Depth By Barcode',
+    	        },
+    	        xAxis: {
+    				title: {
+    					text: 'Position (bp)'
+    			    },
+    		        //min: tmin,
+        			//max: tmax,
+        		},
+        		yAxis: [
+                    {
+        		        labels: {
+                            //align: 'right',
+        	                //x: -3
+                	    },
+                	    title: {
+                	           text: 'Barcode 1'
+        			    },
+        			    height: '7%',
+        			    lineWidth: 1
+        		    },
+                    {
+        		        labels: {
+                            align: 'right',
+        	                //x: -3
+                	    },
+                	    title: {
+                	           text: 'Barcode 2'
+        			    },
+                        top: '8%',
+                        offset: 0,
+        			    height: '7%',
+        			    lineWidth: 1
+        		    },{
+        		        labels: {
+                            align: 'right',
+        	                //x: -3
+                	    },
+                	    title: {
+                	           text: 'Barcode 3'
+        			    },
+                        top: '16%',
+                        offset: 0,
+        			    height: '7%',
+        			    lineWidth: 1
+        		    },{
+        		        labels: {
+                            align: 'right',
+        	                //x: -3
+                	    },
+                	    title: {
+                	           text: 'Barcode 4'
+        			    },
+                        top: '24%',
+                        offset: 0,
+        			    height: '7%',
+        			    lineWidth: 1
+        		    },{
+        		        labels: {
+                            align: 'right',
+        	                //x: -3
+                	    },
+                	    title: {
+                	           text: 'Barcode 5'
+        			    },
+                        top: '32%',
+                        offset: 0,
+        			    height: '7%',
+        			    lineWidth: 1
+        		    },{
+        		        labels: {
+                            align: 'right',
+
+        	                //x: -3
+                	    },
+                	    title: {
+                	           text: 'Barcode 6',
+
+        			    },
+                        top: '40%',
+                        offset: 0,
+        			    height: '7%',
+        			    lineWidth: 1
+        		    },{
+        		        labels: {
+                            align: 'right',
+        	                //x: -3
+                	    },
+                	    title: {
+                	           text: 'Barcode 7'
+        			    },
+                        top: '48%',
+                        offset: 0,
+        			    height: '7%',
+        			    lineWidth: 1
+        		    },{
+        		        labels: {
+                            align: 'right',
+        	                //x: -3
+                	    },
+                	    title: {
+                	           text: 'Barcode 8'
+        			    },
+                        top: '56%',
+                        offset: 0,
+        			    height: '7%',
+        			    lineWidth: 1
+        		    },{
+        		        labels: {
+                            align: 'right',
+        	                //x: -3
+                	    },
+                	    title: {
+                	           text: 'Barcode 9'
+        			    },
+                        top: '64%',
+                        offset: 0,
+        			    height: '7%',
+        			    lineWidth: 1
+        		    },{
+        		        labels: {
+                            align: 'right',
+        	                //x: -3
+                	    },
+                	    title: {
+                	           text: 'Barcode 10'
+        			    },
+                        top: '72%',
+                        offset: 0,
+        			    height: '7%',
+        			    lineWidth: 1
+        		    },{
+        		        labels: {
+                            align: 'right',
+        	                //x: -3
+                	    },
+                	    title: {
+                	           text: 'Barcode 11'
+        			    },
+                        top: '80%',
+                        offset: 0,
+        			    height: '7%',
+        			    lineWidth: 1
+        		    },{
+        		        labels: {
+                            align: 'right',
+        	                //x: -3
+                	    },
+                	    title: {
+                	           text: 'Barcode 12'
+        			    },
+                        top: '88%',
+                        offset: 0,
+        			    height: '7%',
+        			    lineWidth: 1
+        		    },
+            	],
+        		scrollbar: {
+              	    enabled: false
+            	},
+            	navigator: {
+         	  	    enabled: true
+            	},
+        		plotOptions: {
+
+        		line: {
+        			marker: {
+        		 		enabled: false
+        		 	}
+        		},
+        		},
+        		credits: {
+        		    enabled: false
+        		},
+        		legend: {
+        		    layout: 'vertical',
+        			align: 'right',
+        			verticalAlign: 'middle',
+        			borderWidth: 0
+        		},
+        		series: []
+        		};
+                $.getJSON('jsonencode/coverage_barcodes.php?prev=1&start=-1&end=-1&seqid=1&callback=?', function(data){
+    				//alert(data);
+                    chartsetup.series = data;
+    			    var chart = new Highcharts.Chart(chartsetup);
+    			});
+                //chartsetup.series = data;
+    			//var chart = new Highcharts.Chart(chartsetup);
+        	});
+
+    </script>
 	<!-- Barcode Coverage Information -->
 
 <script>

@@ -93,6 +93,7 @@ if ($login->isUserLoggedIn() == true) {
 			        $sql_template = "SELECT ref_pos as refpos, (A+T+G+C) as count FROM reference_coverage_template where ref_id = '" . $_GET['seqid'] . "' order by ref_pos;";
 				    $sql_complement = "SELECT ref_pos as refpos, (A+T+G+C) as count FROM reference_coverage_complement where ref_id = '" . $_GET['seqid'] . "' order by ref_pos;";
 				    $sql_2d = "SELECT ref_pos as refpos, (A+T+G+C) as count FROM reference_coverage_2d where ref_id = '" . $_GET['seqid'] . "'  order by ref_pos;";
+                    //echo $sql_template;
                 }
 			}
 			//echo $sql_template;

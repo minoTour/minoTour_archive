@@ -112,7 +112,7 @@ function channelstatus($jobname,$currun){
                 }
             }
 
-			$sql_template = "SELECT message as channel, param1 as count FROM messages where message between '0' and '512' order by message * 1;";
+			$sql_template = "SELECT message as channel, param1 as count FROM messages where message between '0' and '999' order by message * 1;";
 
 
 			$resultarray=array();
@@ -1713,6 +1713,17 @@ function barcodingcov($jobname,$currun,$refid) {
 			//Fetch the coverage depth for each barcode:
 			$barcov = "select ref_id, avg(count) as avecount from (SELECT ref_id, (A+T+G+C) as count, ref_pos FROM reference_coverage_barcode_2d) as refcounts group by ref_id;";
 			$barcovquery = $mindb_connection->query($barcov);
+            //echo $barcov;
+
+            $barcovtemp = "select ref_id, avg(count) as avecount from (SELECT ref_id, (A+T+G+C) as count, ref_pos FROM reference_coverage_barcode_template) as refcounts group by ref_id;";
+			$barcovquerytemp = $mindb_connection->query($barcovtemp);
+            //echo $barcov;
+
+
+            $barcovcomp = "select ref_id, avg(count) as avecount from (SELECT ref_id, (A+T+G+C) as count, ref_pos FROM reference_coverage_barcode_complement) as refcounts group by ref_id;";
+			$barcovquerycomp = $mindb_connection->query($barcovcomp);
+            //echo $barcov;
+
 
 
 			$refinfo = "SELECT refid,refname FROM reference_seq_info;";
@@ -1731,10 +1742,27 @@ function barcodingcov($jobname,$currun,$refid) {
 			//Dump the barcode coverage info into a lookup table after splitting the barcode from the reference
 
 			$barcodlookup=[];
-			if ($barcovquery->num_rows >= 1) {
+			if ($barcovquerytemp->num_rows >= 1) {
+				foreach ($barcovquerytemp as $row) {
+					$referenceids = explode("_", $row['ref_id']);
+                    //echo $referenceids[0] . "\t" . $referenceids[1] . "\n";
+					$barcodlookup[$reflookup[$referenceids[0]]." template"][$referenceids[1]]=$row['avecount'];
+					#print $reflookup[$referenceids[0]] . " " . $referenceids[1] . " " . $row['avecount'] . "\n";
+				}
+			}
+            if ($barcovquerycomp->num_rows >= 1) {
+				foreach ($barcovquerycomp as $row) {
+					$referenceids = explode("_", $row['ref_id']);
+                    //echo $referenceids[0] . "\t" . $referenceids[1] . "\n";
+					$barcodlookup[$reflookup[$referenceids[0]]." complement"][$referenceids[1]]=$row['avecount'];
+					#print $reflookup[$referenceids[0]] . " " . $referenceids[1] . " " . $row['avecount'] . "\n";
+				}
+			}
+            if ($barcovquery->num_rows >= 1) {
 				foreach ($barcovquery as $row) {
 					$referenceids = explode("_", $row['ref_id']);
-					$barcodlookup[$reflookup[$referenceids[0]]][$referenceids[1]]=$row['avecount'];
+                    //echo $referenceids[0] . "\t" . $referenceids[1] . "\n";
+					$barcodlookup[$reflookup[$referenceids[0]]." 2D"][$referenceids[1]]=$row['avecount'];
 					#print $reflookup[$referenceids[0]] . " " . $referenceids[1] . " " . $row['avecount'] . "\n";
 				}
 			}
@@ -1747,7 +1775,7 @@ function barcodingcov($jobname,$currun,$refid) {
 				$jsonstring = $jsonstring . "\"data\":\n";
    				$jsonstring = $jsonstring . "[\n";
 				foreach ($value as $key2=>$value2) {
-					#print $key2 . " " . $value2 . "\n";
+					//echo $key2 . " " . $value2 . "\n";
 					$jsonstring = $jsonstring . "[\"" . $key2	. "\",".$value2 . "],\n";
 				}
                 /*foreach ($barcodes as $barcode) {
