@@ -3480,7 +3480,7 @@ function average_length_over_time($jobname,$currun){
 
 			if ($template->num_rows >= 1){
 				foreach ($template as $row) {
-                    $binfloor = ($row['1minwin']*60*60+$row['exp_start_time'])*1000;
+                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
                     settype($binfloor,"string");
 					$resultarray['template'][$binfloor]=$row['average_length'];
 				}
@@ -3488,7 +3488,7 @@ function average_length_over_time($jobname,$currun){
 
 			if ($complement->num_rows >=1) {
 				foreach ($complement as $row) {
-                    $binfloor = ($row['1minwin']*60*60+$row['exp_start_time'])*1000;
+                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
                     settype($binfloor,"string");
 					$resultarray['complement'][$binfloor]=$row['average_length'];
 				}
@@ -4048,7 +4048,7 @@ function average_time_over_time2($jobname,$currun){
 					//		$row['bin_floor']=>$row['average_time']
 					//	)
 					//);
-                    $binfloor = ($row['1minwin']*60*60+$row['exp_start_time'])*1000;
+                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
                     settype($binfloor,"string");
 					$resultarray['template'][$binfloor]=$row['average_time'];
 					//echo $row['average_time'] . "t\n";
@@ -4063,7 +4063,7 @@ function average_time_over_time2($jobname,$currun){
 					//		$row['bin_floor']=>$row['average_time']
 					//	)
 			//	);
-                    $binfloor = ($row['1minwin']*60*60+$row['exp_start_time'])*1000;
+                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
                     settype($binfloor,"string");
 					$resultarray['complement'][$binfloor]=$row['average_time'];
 					//echo $row['average_time'] . "c\n";
