@@ -214,6 +214,7 @@ function meanparamtime($jobname,$currun,$param,$param2,$timewin) {
 				foreach ($resultmeanparams as $row) {
 					#$cumucount++;
                     $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['All'][$param][$binfloor]=$row['param'];
                     $resultarray['All'][$param2][$binfloor]=$row['param2'];
 				}
@@ -224,6 +225,7 @@ function meanparamtime($jobname,$currun,$param,$param2,$timewin) {
 				foreach ($resultmeanparamspass as $row) {
 					#$cumucount++;
                     $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
                     $resultarray['Pass'][$param][$binfloor]=$row['param'];
                     $resultarray['Pass'][$param2][$binfloor]=$row['param2'];
 
@@ -235,6 +237,7 @@ function meanparamtime($jobname,$currun,$param,$param2,$timewin) {
 				foreach ($resultmeanparamsfail as $row) {
 					#$cumucount++;
                     $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
                     $resultarray['Fail'][$param][$binfloor]=$row['param'];
                     $resultarray['Fail'][$param2][$binfloor]=$row['param2'];
 				}
@@ -314,6 +317,7 @@ function meanqualtime($jobname,$currun) {
 				foreach ($resultmeanquals as $row) {
 					#$cumucount++;
                     $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['All']['Template'][$binfloor]=$row['template_qual'];
                     $resultarray['All']['Complement'][$binfloor]=$row['complement_qual'];
                     $resultarray['All']['2D'][$binfloor]=$row['2d_qual'];
@@ -326,6 +330,7 @@ function meanqualtime($jobname,$currun) {
 				foreach ($resultmeanqualspass as $row) {
 					#$cumucount++;
                     $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['Pass']['Template'][$binfloor]=$row['template_qual'];
                     $resultarray['Pass']['Complement'][$binfloor]=$row['complement_qual'];
                     $resultarray['Pass']['2D'][$binfloor]=$row['2d_qual'];
@@ -338,6 +343,7 @@ function meanqualtime($jobname,$currun) {
 				foreach ($resultmeanqualsfail as $row) {
 					#$cumucount++;
                     $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['Fail']['Template'][$binfloor]=$row['template_qual'];
                     $resultarray['Fail']['Complement'][$binfloor]=$row['complement_qual'];
                     $resultarray['Fail']['2D'][$binfloor]=$row['2d_qual'];
@@ -664,6 +670,7 @@ function mappabletime($jobname,$currun) {
 				foreach ($resultsql2dtotal as $row) {
 					#$cumucount++;
                     $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['2d'][$binfloor]['allreads']=$row['allreads'];
 
 				}
@@ -673,6 +680,7 @@ function mappabletime($jobname,$currun) {
 				foreach ($resultsql2dmap as $row) {
 					#$cumucount++;
                     $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['2d'][$binfloor]['alignedreads']=$row['alignedreads'];
 
 				}
@@ -684,6 +692,7 @@ function mappabletime($jobname,$currun) {
 				foreach ($resultsqltemptotal as $row) {
 					#$cumucount++;
                     $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['Template'][$binfloor]['allreads']=$row['allreads'];
 
 				}
@@ -693,6 +702,7 @@ function mappabletime($jobname,$currun) {
 				foreach ($resultsqltempmap as $row) {
 					#$cumucount++;
                     $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['Template'][$binfloor]['alignedreads']=$row['alignedreads'];
 
 				}
@@ -705,6 +715,7 @@ function mappabletime($jobname,$currun) {
 				foreach ($resultsqlcomptotal as $row) {
 					#$cumucount++;
                     $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['Complement'][$binfloor]['allreads']=$row['allreads'];
 
 				}
@@ -714,6 +725,7 @@ function mappabletime($jobname,$currun) {
 				foreach ($resultsqlcompmap as $row) {
 					#$cumucount++;
                     $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['Complement'][$binfloor]['alignedreads']=$row['alignedreads'];
 
 				}
@@ -1050,6 +1062,7 @@ function lengthtimewindow($jobname,$currun) {
 				foreach ($resulttemplate as $row) {
 					#$cumucount++;
                     $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['template length'][$binfloor]=$row['meanlength'];
 					#$resultarray['template effective rate'][$row['bin_floor']]=$row['effective_rate'];
 				}
@@ -1059,6 +1072,7 @@ function lengthtimewindow($jobname,$currun) {
 				foreach ($resultcomplement as $row) {
 					#$cumucount++;
                     $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['complement length'][$binfloor]=$row['meanlength'];
 					#$resultarray['complement effective rate'][$row['bin_floor']]=$row['effective_rate'];
 				}
@@ -1068,6 +1082,7 @@ function lengthtimewindow($jobname,$currun) {
 				foreach ($result2d as $row) {
 					#$cumucount++;
                     $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['2d length'][$binfloor]=$row['meanlength'];
 					#$resultarray['complement effective rate'][$row['bin_floor']]=$row['effective_rate'];
 				}
@@ -1184,6 +1199,7 @@ function ratiopassfail($jobname,$currun) {
 				foreach ($resulttotal as $row) {
 					#$cumucount++;
                     $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$totalarray[$binfloor]=$row['count'];
 
 				}
@@ -1196,6 +1212,7 @@ function ratiopassfail($jobname,$currun) {
 				foreach ($resulttemplate as $row) {
 					#$cumucount++;
                     $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['template pass'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
                     //echo $row['count'];
 				}
@@ -1205,6 +1222,7 @@ function ratiopassfail($jobname,$currun) {
 				foreach ($resultcomplement as $row) {
 					#$cumucount++;
                     $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['complement pass'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
 				}
 			}
@@ -1213,6 +1231,7 @@ function ratiopassfail($jobname,$currun) {
 				foreach ($result2d as $row) {
 					#$cumucount++;
                     $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['2d pass'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
 				}
 			}
@@ -1221,6 +1240,7 @@ function ratiopassfail($jobname,$currun) {
 				foreach ($resulttemplate2 as $row) {
 					#$cumucount++;
                     $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['template fail'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
 
 				}
@@ -1230,6 +1250,7 @@ function ratiopassfail($jobname,$currun) {
 				foreach ($resultcomplement2 as $row) {
 					#$cumucount++;
                     $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['complement fail'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
 				}
 			}
@@ -1238,6 +1259,7 @@ function ratiopassfail($jobname,$currun) {
 				foreach ($result2d2 as $row) {
 					#$cumucount++;
                     $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['2d fail'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
 				}
 			}
@@ -1329,6 +1351,7 @@ function ratio2dtemplate($jobname,$currun) {
 				foreach ($resulttemplate as $row) {
 					#$cumucount++;
                     $binfloor = ($row['15minwin']*15*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['template'][$binfloor]=$row['count'];
 				}
 			}
@@ -1337,6 +1360,7 @@ function ratio2dtemplate($jobname,$currun) {
 				foreach ($resultcomplement as $row) {
 					#$cumucount++;
                     $binfloor = ($row['15minwin']*15*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['complement'][$binfloor]=$row['count'];
 				}
 			}
@@ -1345,6 +1369,7 @@ function ratio2dtemplate($jobname,$currun) {
 				foreach ($result2d as $row) {
 					#$cumucount++;
                     $binfloor = ($row['15minwin']*15*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['2d'][$binfloor]=$row['count'];
 				}
 			}
@@ -1459,7 +1484,11 @@ function cumulativeyield($jobname,$currun) {
 					#echo "Count is ". $row['count'] . "\n";
 					#echo "Cumu Count is ". $cumucount . "\n";
 					#$resultarray['template'][$cumucount]=$row['bin_floor'];
-                    $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
+                    $binfloor = ($row['5minwin']*5.0*60.0+$row['exp_start_time'])*1000.0;
+                    #echo gettype($row['5minwin']) . "\n";
+                    #echo gettype($row['exp_start_time'])."\n";
+                    #echo $binfloor . "\n";
+                    settype($binfloor,"string");
 					$resultarray['template'][$binfloor]=$cumucount;
 				}
 			}
@@ -1468,6 +1497,7 @@ function cumulativeyield($jobname,$currun) {
 				foreach ($resultcomplement as $row) {
 					$cumucount=$cumucount+$row['count'];
                     $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['complement'][$binfloor]=$cumucount;
 				}
 			}
@@ -1476,6 +1506,7 @@ function cumulativeyield($jobname,$currun) {
 				foreach ($result2d as $row) {
 					$cumucount=$cumucount+$row['count'];
                     $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['2d'][$binfloor]=$cumucount;
 				}
 			}
@@ -1488,6 +1519,7 @@ function cumulativeyield($jobname,$currun) {
 					#echo "Cumu Count is ". $cumucount . "\n";
 					#$resultarray['template'][$cumucount]=$row['bin_floor'];
                     $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['template pass'][$binfloor]=$cumucount;
 				}
 			}
@@ -1496,6 +1528,7 @@ function cumulativeyield($jobname,$currun) {
 				foreach ($resultcomplementpass as $row) {
 					$cumucount=$cumucount+$row['count'];
                     $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['complement pass'][$binfloor]=$cumucount;
 				}
 			}
@@ -1504,6 +1537,7 @@ function cumulativeyield($jobname,$currun) {
 				foreach ($result2dpass as $row) {
 					$cumucount=$cumucount+$row['count'];
                     $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['2d pass'][$binfloor]=$cumucount;
 				}
 			}
@@ -1524,6 +1558,7 @@ function cumulativeyield($jobname,$currun) {
 
 			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
+            #var_dump($resultarray);
 
 			foreach ($resultarray as $key => $value) {
                 #echo "we're in";
@@ -1540,6 +1575,7 @@ function cumulativeyield($jobname,$currun) {
 				$jsonstring = $jsonstring . "\"data\":[";
 				foreach ($value as $key2 => $value2) {
 					$jsonstring = $jsonstring . "[ $key2 , $value2 ],";
+                    #echo $key2 . ":" . $value2 . "\n";
 				}
 
 				$jsonstring = $jsonstring . "]\n";
@@ -3445,6 +3481,7 @@ function average_length_over_time($jobname,$currun){
 			if ($template->num_rows >= 1){
 				foreach ($template as $row) {
                     $binfloor = ($row['1minwin']*60*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['template'][$binfloor]=$row['average_length'];
 				}
 			}
@@ -3452,6 +3489,7 @@ function average_length_over_time($jobname,$currun){
 			if ($complement->num_rows >=1) {
 				foreach ($complement as $row) {
                     $binfloor = ($row['1minwin']*60*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['complement'][$binfloor]=$row['average_length'];
 				}
 			}
@@ -4011,6 +4049,7 @@ function average_time_over_time2($jobname,$currun){
 					//	)
 					//);
                     $binfloor = ($row['1minwin']*60*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['template'][$binfloor]=$row['average_time'];
 					//echo $row['average_time'] . "t\n";
 					//var_dump ($resultarray);
@@ -4025,6 +4064,7 @@ function average_time_over_time2($jobname,$currun){
 					//	)
 			//	);
                     $binfloor = ($row['1minwin']*60*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['complement'][$binfloor]=$row['average_time'];
 					//echo $row['average_time'] . "c\n";
 				}
@@ -4096,6 +4136,7 @@ function reads_over_time2($jobname,$currun) {
 			if ($template->num_rows >= 1){
 				foreach ($template as $row) {
                     $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['template'][$binfloor]=$row['count'];
 				}
 			}
@@ -4103,6 +4144,7 @@ function reads_over_time2($jobname,$currun) {
 			if ($complement->num_rows >=1) {
 				foreach ($complement as $row) {
                     $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
 					$resultarray['complement'][$binfloor]=$row['count'];
 				}
 			}
