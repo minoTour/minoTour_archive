@@ -861,7 +861,8 @@ function occupancyrate($jobname,$currun) {
 			//do something interesting here...
 			//Query to get pore occupancy over 15 minutes -> select (floor((basecalled_template.start_time)/60/15)*60*15+exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist, sum(basecalled_template.duration+basecalled_complement.duration)/count(distinct config_general.channel)/9 as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) inner join basecalled_complement using (basename_id) group by 1 order by 1
             //Query semi optimised
-			$occupancyquery = "select (basecalled_template.15minwin*15*60+basecalled_template.exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist, LEAST(sum(basecalled_template.duration+basecalled_complement.duration)/count(distinct config_general.channel)/9,100) as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by 1 order by 1;";
+			#$occupancyquery = "select (basecalled_template.15minwin*15*60+basecalled_template.exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist, LEAST(sum(IFNULL(basecalled_template.duration,0)+IFNULL(basecalled_complement.duration,0))/count(distinct config_general.channel)/9,100) as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by 1 order by 1;";
+            $occupancyquery = "select (basecalled_template.15minwin*15*60+basecalled_template.exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist,least(sum(IFNULL(basecalled_template.duration,0)+IFNULL(basecalled_complement.duration,0))/config_general.sampling_rate*1000/(count(distinct config_general.channel)*1000*15)*100,100) as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by 1 order by 1;";
 
 			$resultoccupancy = $mindb_connection->query($occupancyquery);
 
@@ -3955,8 +3956,8 @@ $checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 					$jsonstring = $row['json'];
 				}
 			} else {
-			$sql_template = "select (floor(basecalled_template.start_time/60)*60 + basecalled_template.exp_start_time) *1000 as bin_floor, count(*) as chan_count from basecalled_template inner join config_general using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
-			$sql_complement = "select (floor(basecalled_complement.start_time/60)*60  + basecalled_complement.exp_start_time ) * 1000 as bin_floor, count(*) as chan_count from basecalled_complement inner join config_general using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
+			$sql_template = "select basecalled_template.g_1minwin, count(*) as chan_count from basecalled_template inner join config_general using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
+			$sql_complement = "select basecalled_complement.g_1minwin, count(*) as chan_count from basecalled_complement inner join config_general using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
 
 			$resultarray=array();
 
@@ -3965,13 +3966,18 @@ $checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 
 			if ($template->num_rows >= 1){
 				foreach ($template as $row) {
-					$resultarray['template'][$row['bin_floor']]=$row['chan_count'];
+                    $binfloor = ($row['g_1minwin']*1*60)*1000;
+                    settype($binfloor,"string");
+					$resultarray['template'][$binfloor]=$row['chan_count'];
 				}
 			}
 
 			if ($complement->num_rows >=1) {
 				foreach ($complement as $row) {
-					$resultarray['complement'][$row['bin_floor']]=$row['chan_count'];
+                    $binfloor = ($row['g_1minwin']*1*60)*1000;
+                    settype($binfloor,"string");
+					//$resultarray['template'][$binfloor]]=$row['chan_count'];
+					$resultarray['complement'][$binfloor]=$row['chan_count'];
 				}
 			}
 
