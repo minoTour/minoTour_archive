@@ -1454,14 +1454,14 @@ function cumulativeyield($jobname,$currun) {
 		} else {
 			//do something interesting here...
 			#$sqltemplate = "select ((basecalled_template.5minwin*5*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id)  group by 1 order by 1;";
-            $sqltemplate = "select 5minwin,exp_start_time, count(*) as count from basecalled_template group by 1 order by 1;";
-            $sqltemplatepass = "select 5minwin,exp_start_time, count(*) as count from basecalled_template where pass = 1  group by 1 order by 1;";
-			$sqlcomplement = "select 5minwin,exp_start_time, count(*) as count from basecalled_complement group by 1 order by 1;";
-			$sqlcomplementpass = "select 5minwin,exp_start_time, count(*) as count from basecalled_complement where pass = 1  group by 1 order by 1;";
-			$sql2d = "select 5minwin,exp_start_time, count(*) as count from basecalled_2d group by 1 order by 1;";
-			$sql2dpass = "select 5minwin,exp_start_time, count(*) as count from basecalled_2d where pass = 1  group by 1 order by 1;";
-			$pretemplate = "select (floor((pre_config_general.start_time)/60/5)*5*60+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id)  group by 1 order by 1;";
-			$precomplement = "select (floor((pre_config_general.start_time)/60/5)*5*60+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found = 1 group by 1 order by 1;";
+            $sqltemplate = "select 5minwin,exp_start_time, count(*) as count from basecalled_template group by 2,1 order by 2,1;";
+            $sqltemplatepass = "select 5minwin,exp_start_time, count(*) as count from basecalled_template where pass = 1  group by 2,1 order by 2,1;";
+			$sqlcomplement = "select 5minwin,exp_start_time, count(*) as count from basecalled_complement group by 2,1 order by 2,1;";
+			$sqlcomplementpass = "select 5minwin,exp_start_time, count(*) as count from basecalled_complement where pass = 1  group by 2,1 order by 2,1;";
+			$sql2d = "select 5minwin,exp_start_time, count(*) as count from basecalled_2d group by 2,1 order by 2,1;";
+			$sql2dpass = "select 5minwin,exp_start_time, count(*) as count from basecalled_2d where pass = 1  group by 2,1 order by 2,1;";
+			$pretemplate = "select (floor((pre_config_general.start_time)/60/5)*5*60+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id)  group by 2,1 order by 2,1;";
+			$precomplement = "select (floor((pre_config_general.start_time)/60/5)*5*60+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found = 1 group by 2,1 order by 2,1;";
 
 			#$sqltemplate = "SELECT (start_time+exp_start_time)*1000 as time FROM basecalled_template inner join tracking_id using (basename_id) order by start_time;";
 			#$sqlcomplement = "SELECT (start_time+exp_start_time)*1000 as time FROM basecalled_complement inner join tracking_id using (basename_id) order by start_time;";
