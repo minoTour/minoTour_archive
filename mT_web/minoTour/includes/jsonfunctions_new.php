@@ -3956,8 +3956,8 @@ $checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 					$jsonstring = $row['json'];
 				}
 			} else {
-			$sql_template = "select basecalled_template.g_1minwin, count(*) as chan_count from basecalled_template inner join config_general using (basename_id) inner join tracking_id using (basename_id) group by 2,1 order by 2,1;";
-			$sql_complement = "select basecalled_complement.g_1minwin, count(*) as chan_count from basecalled_complement inner join config_general using (basename_id) inner join tracking_id using (basename_id) group by 2,1 order by 2,1;";
+			$sql_template = "select basecalled_template.g_1minwin, count(*) as chan_count from basecalled_template inner join config_general using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
+			$sql_complement = "select basecalled_complement.g_1minwin, count(*) as chan_count from basecalled_complement inner join config_general using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
 
 			$resultarray=array();
 
