@@ -862,7 +862,7 @@ function occupancyrate($jobname,$currun) {
 			//Query to get pore occupancy over 15 minutes -> select (floor((basecalled_template.start_time)/60/15)*60*15+exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist, sum(basecalled_template.duration+basecalled_complement.duration)/count(distinct config_general.channel)/9 as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) inner join basecalled_complement using (basename_id) group by 1 order by 1
             //Query semi optimised
 			#$occupancyquery = "select (basecalled_template.15minwin*15*60+basecalled_template.exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist, LEAST(sum(IFNULL(basecalled_template.duration,0)+IFNULL(basecalled_complement.duration,0))/count(distinct config_general.channel)/9,100) as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by 1 order by 1;";
-            $occupancyquery = "select (basecalled_template.15minwin*15*60+basecalled_template.exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist,least(sum(IFNULL(basecalled_template.duration,0)+IFNULL(basecalled_complement.duration,0))/config_general.sampling_rate*1000/(count(distinct config_general.channel)*1000*15)*100,100) as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by 1 order by 1;";
+            $occupancyquery = "select (basecalled_template.15minwin*15*60+basecalled_template.exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist, sum(IFNULL(basecalled_template.duration,0)+IFNULL(basecalled_complement.duration,0))/10000 as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by 1 order by 1;";
 
 			$resultoccupancy = $mindb_connection->query($occupancyquery);
 
@@ -4993,9 +4993,9 @@ function readnumberupload($jobname,$currun) {
 
 		#The number of reads yielding suequence will be:
 
-		$sql_template = "select count(*) as readnum, exp_script_purpose from basecalled_template inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
-		$sql_complement = "select count(*) as readnum, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
-		$sql_2d = "select count(*) as readnum, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
+		$sql_template = "select count(*) as readnum, exp_script_purpose from basecalled_template inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" ;";
+		$sql_complement = "select count(*) as readnum, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" ;";
+		$sql_2d = "select count(*) as readnum, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" ;";
 		//echo $sql_template;
 
 
@@ -5127,9 +5127,9 @@ function readnumber($jobname,$currun) {
 			}
 		} else {
 
-		$sql_template = "select count(*) as readnum, exp_script_purpose from basecalled_template inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
-		$sql_complement = "select count(*) as readnum, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
-		$sql_2d = "select count(*) as readnum, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
+		$sql_template = "select count(*) as readnum, exp_script_purpose from basecalled_template inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\";";
+		$sql_complement = "select count(*) as readnum, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\";";
+		$sql_2d = "select count(*) as readnum, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\";";
 		//echo $sql_template;
 
 		$pre_template = "SELECT count(*) as readnum , exp_script_purpose FROM pre_tracking_id;";
@@ -5226,9 +5226,9 @@ function maxlen($jobname,$currun) {
 				$jsonstring = $row['json'];
 			}
 		} else {
-			$sql_template = "select MAX(seqlen) as maxlen, exp_script_purpose from basecalled_template inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
-			$sql_complement = "select MAX(seqlen) as maxlen, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
-			$sql_2d = "select MAX(seqlen) as maxlen, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
+			$sql_template = "select MAX(seqlen) as maxlen, exp_script_purpose from basecalled_template inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" ;";
+			$sql_complement = "select MAX(seqlen) as maxlen, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" ;";
+			$sql_2d = "select MAX(seqlen) as maxlen, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" ;";
 			$pre_template = "SELECT MAX(hairpin_event_index) as maxlen, exp_script_purpose FROM pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found = 1;"; #note: this will not catch template only reads (i.e those with no hairpin). It is therefore less than ideal.
 			$pre_complement = "SELECT MAX(total_events-hairpin_event_index) as maxlen, exp_script_purpose FROM pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found = 1;";
 			$resultarray=array();
@@ -5321,9 +5321,9 @@ function avelen($jobname,$currun) {
 				$jsonstring = $row['json'];
 			}
 		} else {
-			$sql_template = "select ROUND(AVG(seqlen)) as average_length, exp_script_purpose from basecalled_template inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
-			$sql_complement = "select ROUND(AVG(seqlen)) as average_length, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
-			$sql_2d = "select ROUND(AVG(seqlen)) as average_length, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
+			$sql_template = "select ROUND(AVG(seqlen)) as average_length, exp_script_purpose from basecalled_template inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" ;";
+			$sql_complement = "select ROUND(AVG(seqlen)) as average_length, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" ;";
+			$sql_2d = "select ROUND(AVG(seqlen)) as average_length, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" ;";
 			$pre_template = "SELECT (hairpin_event_index) as average_length, exp_script_purpose FROM pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found =1;";
 			$pre_complement = "SELECT (total_events-hairpin_event_index) as average_length, exp_script_purpose FROM pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found = 1;";
 			$resultarray=array();
