@@ -199,9 +199,9 @@ function meanparamtime($jobname,$currun,$param,$param2,$timewin) {
 			}
 		} else {
 
-            $sqlmeanparams = "select exp_start_time,".$timewin.",AVG(".$param.") as param,AVG(".$param2.") as param2 from basecall_summary group by ".$timewin." order by ".$timewin.";";
-            $sqlmeanparamspass = "select exp_start_time,".$timewin.",AVG(".$param.") as param,AVG(".$param2.") as param2 from basecall_summary where pass = 1 group by ".$timewin." order by ".$timewin.";;";
-            $sqlmeanparamsfail = "select exp_start_time,".$timewin.",AVG(".$param.")as param,AVG(".$param2.") as param2 from basecall_summary where pass = 0 group by ".$timewin." order by ".$timewin.";;";
+            $sqlmeanparams = "select exp_start_time,".$timewin.",AVG(".$param.") as param,AVG(".$param2.") as param2 from basecall_summary group by exp_start_time,".$timewin." order by exp_start_time,".$timewin.";";
+            $sqlmeanparamspass = "select exp_start_time,".$timewin.",AVG(".$param.") as param,AVG(".$param2.") as param2 from basecall_summary where pass = 1 group by exp_start_time,".$timewin." order by exp_start_time,".$timewin.";";
+            $sqlmeanparamsfail = "select exp_start_time,".$timewin.",AVG(".$param.")as param,AVG(".$param2.") as param2 from basecall_summary where pass = 0 group by exp_start_time,".$timewin." order by exp_start_time,".$timewin.";";
             $resultmeanparams= $mindb_connection->query($sqlmeanparams);
 			$resultmeanparamspass = $mindb_connection->query($sqlmeanparamspass);
 			$resultmeanparamsfail = $mindb_connection->query($sqlmeanparamsfail);
