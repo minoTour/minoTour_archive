@@ -14,7 +14,10 @@ error_reporting(0);
 
 parse_str(implode('&', array_slice($argv, 1)), $_GET);
 //require_once($directory . "includes/jsonfunctions.php");
-if ($_GET['minupversion']*100>=52) {
+
+if ($_GET['minupversion']*100>=65) {
+    require_once($directory . "includes/jsonfunctions2.0.php");
+}elseif ($_GET['minupversion']*100>=52) {
     require_once($directory . "includes/jsonfunctions_new.php");
 }else{
     require_once($directory . "includes/jsonfunctions_orig.php");

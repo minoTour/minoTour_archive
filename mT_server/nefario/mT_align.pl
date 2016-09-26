@@ -752,7 +752,7 @@ unless ($checkingrunning) {
                     }
 
                 }elsif ($tabletype eq "align_sam_basecalled_template"){
-                    #print "We have found sam data to process.\n";
+                    print "We have found sam data to process.\n";
                     my $query;
                     ## Note that we need to deal with multiply aligned sequences still - could do using the alignnum=1 but it doesn't really work...
 
@@ -1038,7 +1038,7 @@ unless ($checkingrunning) {
                     my @valuesd;
                     my @refid;
                     my @reference;
-                    #print "Testing the reference sequence\n";
+
                     foreach my $counter (sort {$a<=>$b} keys %{$finalhash{$refid}}) {
                         push @counter, $counter;
                         push @valuesA, $finalhash{$refid}{$counter}{'A'};
@@ -1049,16 +1049,7 @@ unless ($checkingrunning) {
                         push @valuesd, $finalhash{$refid}{$counter}{'d'};
                         push @reference, $finalhash{$refid}{$counter}{'reference'};
                         push @refid ,$refid;
-                        #print $counter . " " . $finalhash{$refid}{$counter}{'reference'} . "\n";
                     }
-                    #print "\n";
-                    #print @reference, "\n";
-                    #print "Counter " . scalar(@counter) . "\n";
-                    #print "ValueA " . scalar(@valuesA) . "\n";
-                    #print "ValueT " . scalar(@valuesT) . "\n";
-                    #print "ValueG " . scalar(@valuesG) . "\n";
-                    #print "ValueC " . scalar(@valuesC) . "\n";
-                    #print "Reference "  . scalar (@reference) . "\n";
 
                     my $pausetransactions = $dbh2->prepare("start transaction;");
                     $pausetransactions->execute;
@@ -1067,11 +1058,6 @@ unless ($checkingrunning) {
                     my $committransactions = $dbh2->prepare("commit;");
                     $committransactions->execute;
 
-                    #my $lengtharray = scalar(@refid);
-                    #for (my $x=0; $x<=($lengtharray-1); $x++) {
-                    #    print $refid[$x] . " " . $reference[$x] . " " . $counter[$x] . " " . $valuesA[$x] . " " . $valuesT[$x] . " " . $valuesG[$x] . " " . $valuesC[$x] . " " . $valuesd[$x] . " " . $valuesi[$x] . "\n";
-                    #    $insertsth2->execute($refid[$x],$reference[$x],$counter[$x],$valuesA[$x],$valuesT[$x],$valuesG[$x],$valuesC[$x],$valuesd[$x],$valuesi[$x]);
-                    #}
 
                 }
 

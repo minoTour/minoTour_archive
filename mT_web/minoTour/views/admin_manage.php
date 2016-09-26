@@ -95,87 +95,65 @@ include 'includes/head-new.php';
         <!-- Main content -->
         <section class="content"><?php include 'includes/run_check.php';?>
 
-
-                <div class="box">
+            <div class="box">
                 <div class="box-header">
-                  <h3 class="box-title">Database Administration:</h3>
-                </div><!-- /.box-header -->
+                    <h3 class="box-title">Database Administation:</h3>
+                </div>
                 <div class="box-body">
                     <div class="row">
                         <div class="col-lg-12">
-                            <h4>Database Management</h4>
-
-                            <br>
-
-                            <br>
-
-                            Runs from the associated minION computer are automatically added to administrators accounts. When a run is uploaded to the database it can also be associated with specific users. It can be useful to change these assignments later and this page allows this process.<br><br>
-
+                            <h4>Delete Databases</h4>
+                            <br><br>You can delete or archive databases from here. Please be careful - deleting a users run is irreversible.<br><br>
                             <?php if(isset ($_GET['roi'])) {?>
+                                <div class="col-lg-12">
                                 <div id="messages"></div>
-                                 <div class="row">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">Update users for <?php echo $_GET['roi'];?></h3>
+                                <div class="row">
+                           <div class="panel panel-default">
+                               <div class="panel-heading">
+                                   <h3 class="panel-title">Delete <?php echo $_GET['roi'];?></h3>
+                                </div>
+                                 <div class="panel-body">
+                                <p>The following users have access to this database.<br>
+                                <strong>Note currently checked users already have access - deselecting them will remove access.</strong></p>
+                           <?php
+                               getusers();
+                           ?>
+                               <div>
+                           <div class="col-sm-offset-2 col-sm-10"><br><br>
+                           <!--<button type="submit" class="btn btn-default">Update Users</button>-->
+                           <button id = 'optobutton' class='btn btn-danger' data-toggle='modal' data-target='#resetmodal'>
+                             <i class='fa fa-exclamation-triangle'></i> Delete Database
+                           </button>
+                           </div>
+                           </div>
+                           </div>
                                  </div>
-                                  <div class="panel-body">
-
-                                 <p>Highlight users for access to this database.<br>
-                                 <strong>Note currently highlighted users already have access - deselecting them will remove access.</strong></p>
+                           <!-- Modal -->
+                           <div class='modal fade' id='resetmodal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
+                             <div class='modal-dialog'>
+                               <div class='modal-content'>
+                                 <div class='modal-header'>
+                                   <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+                                   <h4 class='modal-title' id='myModalLabel'>Delete Database</h4>
+                                 </div>
+                                 <div class='modal-body'>
+                                   <p>This action will delete database <?php echo $_GET['roi']; ?>.</p>
+                                   <p>The following users will be affected: <div id ="names"></div></p>
+                                 </div>
+                                 <div class='modal-footer'>
+                                   <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
+                                   <button id='resetopt' type='button' class='btn btn-danger'>Delete</button>
+                                 </div>
+                               </div><!-- /.modal-content -->
+                             </div><!-- /.modal-dialog -->
+                           </div><!-- /.modal -->
+                           </div>
+                       </div>
 
                             <?php
-                                getusers();
-
-                            ?>
-
-                                <div>
-                            <div class="col-sm-offset-2 col-sm-10"><br><br>
-                            <!--<button type="submit" class="btn btn-default">Update Users</button>-->
-                            <button id = 'optobutton' class='btn btn-warning' data-toggle='modal' data-target='#resetmodal'>
-                              <i class='fa fa-exclamation-triangle'></i> Update Users
-                            </button>
-                            </div>
-                            </div>
-                            </div>
-
-
-
-
-
-                                  </div>
-
-
-
-                            <!-- Modal -->
-                            <div class='modal fade' id='resetmodal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
-                              <div class='modal-dialog'>
-                                <div class='modal-content'>
-                                  <div class='modal-header'>
-                                    <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-                                    <h4 class='modal-title' id='myModalLabel'>Update Users</h4>
-                                  </div>
-                                  <div class='modal-body'>
-                                    <p>This action will set the users for <?php echo $_GET['roi']; ?>.</p>
-                                    <p>The following users will be assigned: <div id ="names"></div></p>
-                                  </div>
-                                  <div class='modal-footer'>
-                                    <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
-                                    <button id='resetopt' type='button' class='btn btn-warning'>Update</button>
-                                  </div>
-                                </div><!-- /.modal-content -->
-                              </div><!-- /.modal-dialog -->
-                            </div><!-- /.modal -->
-                            </div>
-
-                                            </div>
-
-
-                                 <?php
                             }else { ?>
-
                             <div id = "db_assign">
-                            To change user assignments for a run first select the run:<br>
-
+                            To delete or archive a run first select the run:<br><br>
                             <div class="row">
                                  <div class="col-lg-12">
 
@@ -218,17 +196,12 @@ include 'includes/head-new.php';
                                      </table>
                                  </div>
                              </div>
-
                             </div>
-                            </div>
-                            </div>
-
-
-
-                             <?php } ?>
-                                 </div>
-
-
+                            <?php } ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section><!-- /.content -->
       </div><!-- /.content-wrapper -->
 
@@ -262,8 +235,12 @@ include 'includes/head-new.php';
                            return $(this).text();
                       }).get();
                       var url = "admin_manage.php?roi=" + $.trim(tableData[4]);
+                      //var url = $.trim(tableData[4]);
                       //alert (url);
-                      window.location.href = url;
+                      if ($.trim(tableData[4]).length > 0){
+                        window.location.href = url;
+                      }
+                      //window.location.href = url;
                   });
 
       } );
@@ -287,11 +264,8 @@ include 'includes/head-new.php';
       $(function(){
           $('#resetopt').on('click', function(e){
               e.preventDefault(); // preventing default click action
-               var str = "";
-                  $( "#checkboxes input:checked" ).each(function() {
-                    str += $( this ).attr('name') + "_";
-                  });
-              var monkey = 'jsonencode/dballoc.php?db=<?php echo $_GET['roi'];?>&names='+str;
+              
+              var monkey = 'jsonencode/deletebulk.php?db=<?php echo $_GET['roi'];?>';
               //alert (monkey);
               $.ajax({
                   url: monkey,

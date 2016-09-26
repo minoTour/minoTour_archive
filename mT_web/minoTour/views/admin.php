@@ -94,7 +94,7 @@ include 'includes/head-new.php';
 
         <!-- Main content -->
         <section class="content"><?php include 'includes/run_check.php';?>
-            
+
 
                 <div class="box">
                 <div class="box-header">
@@ -263,7 +263,9 @@ include 'includes/head-new.php';
                       }).get();
                       var url = "admin.php?roi=" + $.trim(tableData[4]);
                       //alert (url);
-                      window.location.href = url;
+                      if ($.trim(tableData[4]).length > 0){
+                          window.location.href = url;
+                      }
                   });
 
       } );
