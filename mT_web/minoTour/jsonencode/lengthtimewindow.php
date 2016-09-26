@@ -30,18 +30,24 @@ $login = new Login();
 if ($login->isUserLoggedIn() == true) {
     //load the json functions
     if ($_GET["prev"] == 1){
-        if ($_SESSION['focus_minup']*100>=52) {
+        if ($_SESSION['focus_minup']*100>=63) {
+            require_once("../includes/jsonfunctions2.0.php");
+        }elseif ($_SESSION['focus_minup']*100>=52) {
             require_once("../includes/jsonfunctions_new.php");
         }else{
             require_once("../includes/jsonfunctions_orig.php");
         }
     }else{
-        if ($_SESSION['active_minup']*100>=52) {
+        if ($_SESSION['active_minup']*100>=63) {
+            require_once("../includes/jsonfunctions2.0.php");
+        }elseif ($_SESSION['active_minup']*100>=52) {
             require_once("../includes/jsonfunctions_new.php");
         }else{
             require_once("../includes/jsonfunctions_orig.php");
         }
     }
+
+    //echo $_SESSION['active_minup']*100;
 
     //require_once("../includes/jsonfunctions.php");
 	//As user is logged in, we can now look at the memcache to retrieve data from here and so reduce the load on the mySQL server

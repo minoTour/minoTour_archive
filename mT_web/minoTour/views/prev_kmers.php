@@ -23,7 +23,7 @@ require_once("includes/jsonfunctions.php");
         </nav>
 
         <div id="page-wrapper">
-			<?php include 'includes/run_check.php';?>
+			
             <div class="row">
                 <div class="col-lg-12">
                     <h1 class="page-header">K-mer Summary: <?php echo cleanname($_SESSION['focusrun']); ?></h1>

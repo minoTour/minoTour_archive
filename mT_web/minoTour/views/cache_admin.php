@@ -22,7 +22,7 @@ require_once("includes/functions.php");
         </nav>
 
         <div id="page-wrapper">
-						<?php include 'includes/run_check.php';?>
+						
             <div class="row">
                 <div class="col-lg-12">
                     <h1 class="page-header">Database Administration:</h1>

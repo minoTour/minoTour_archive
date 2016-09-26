@@ -45,7 +45,6 @@ if ($login->isUserLoggedIn() == true) {
 			}
 
 			//$_SESSION['activerunarray']=$databases;
-
 			if ($getthemruns->num_rows == 1){
 				echo "<small>1 active run.</small><br>";
 			}else{

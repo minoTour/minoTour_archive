@@ -1,153 +1,208 @@
 <?php
+
+// checking for minimum PHP version
+if (version_compare(PHP_VERSION, '5.3.7', '<')) {
+    exit("Sorry, Simple PHP Login does not run on a PHP version smaller than 5.3.7 !");
+} else if (version_compare(PHP_VERSION, '5.5.0', '<')) {
+    // if you are using PHP 5.3 or PHP 5.4 you have to include the password_api_compatibility_library.php
+    // (this library adds the PHP 5.5 password hashing functions to older versions of PHP)
+    require_once("libraries/password_compatibility_library.php");
+}
+
+// include the configs / constants for the database connection
+require_once("config/db.php");
+
+// load the login class
+require_once("classes/Login.php");
+
 // load the functions
 require_once("includes/functions.php");
 
-//As user is logged in, we can now look at the memcache to retrieve data from here and so reduce the load on the mySQL server
-	// Connection creation
-	$memcache = new Memcache;
-	#$cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT) or die ("Memcached Failure");
-	$cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT);
 
-?>
+
+// create a login object. when this object is created, it will do all login/logout stuff automatically
+// so this single line handles the entire login process. in consequence, you can simply ...
+$login = new Login();
+
+// ... ask if we are logged in here:
+if ($login->isUserLoggedIn() == true) {
+    // the user is logged in. you can do whatever you want here.
+    // for demonstration purposes, we simply show the "you are logged in" view.
+    //include("views/index_old.php");
+	?>
+
 <!DOCTYPE html>
+<!--
+This is a starter template page. Use this page to start your new project from
+scratch. This page gets rid of all links and provides the needed markup only.
+-->
 <html>
+<!--
+Import the header.
+-->
+<?php
+include 'includes/head-new.php';
+?>
+<meta http-equiv="refresh" content="30" >
+  <!--
+  BODY TAG OPTIONS:
+  =================
+  Apply one or more of the following classes to get the
+  desired effect
+  |---------------------------------------------------------|
+  | SKINS         | skin-blue                               |
+  |               | skin-black                              |
+  |               | skin-purple                             |
+  |               | skin-yellow                             |
+  |               | skin-red                                |
+  |               | skin-green                              |
+  |---------------------------------------------------------|
+  |LAYOUT OPTIONS | fixed                                   |
+  |               | layout-boxed                            |
+  |               | layout-top-nav                          |
+  |               | sidebar-collapse                        |
+  |               | sidebar-mini                            |
+  |---------------------------------------------------------|
+  -->
+  <body class="hold-transition skin-blue sidebar-mini fixed">
+    <div class="wrapper">
 
-<?php include "includes/head.php";?>
+        <!--Import the header-->
+        <?php
+        include 'navbar-header-new.php';
+        ?>
 
-<meta http-equiv="refresh" content="10" >
+        <!--Import the left hand navigation-->
+        <?php
+        include 'navbar-top-links-new.php';
+        #include 'test.php';
+        ?>
 
-<body>
 
-    <div id="wrapper">
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
 
-        <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
+        <!-- Content Header (Page header) -->
 
-            <!-- /.navbar-header -->
-			<?php include 'navbar-header.php' ?>
-            <!-- /.navbar-top-links -->
-			<?php include 'navbar-top-links.php'; ?>
-            <!-- /.navbar-static-side -->
-        </nav>
+        <section class="content-header">
 
-        <div id="page-wrapper">
-						<?php include 'includes/run_check.php';?>
-            <div class="row">
-                <div class="col-lg-12">
-                    <h1 class="page-header">Cache Management:</h1>
-                </div>
-                <!-- /.col-lg-12 -->
-            </div>
-            <div class="row">
-                <div class="col-lg-12">
-				<h4>memcache</h4>
+          <h1>
+            Cache Management
+            <small> - admin page to check that all is functioning correctly. Auto refreshes every few seconds.</small>
+          </h1>
+          <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-edit"></i> Admin</a></li>
+            <li><a href="#"><i class="fa fa-database"></i> Cache Administration</a></li>
+            <li class="active">Here</li>
+          </ol>
+        </section>
 
-				<br>
+        <!-- Main content -->
+        <section class="content"><?php include 'includes/run_check.php';?>
 
-				<br>
+            <div class="box">
+            <div class="box-header">
+              <h3 class="box-title">memcache</h3>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+            minoTour can take advantage of memcache to speed up performace for all users. This page is used to test if memcache is running and - if so - provide you with some performance related stats.<br><br>
+            <?php
+            $memcache->set("php_mem_cache_test", "test", 0, 10);
+            $cachecheck = $memcache->get("php_mem_cache_test");
+            if ($cachecheck === false) {
+                echo "<strong>This minotour installation is not configured to use memcahce. Setting up memcache on your installation will significantly improve performance - please consult with the user manual to set this up.<br></strong>";
+            }else{
+                echo "<strong>This minotour installation is using memcache.<br></strong>";
+            }
 
-				minoTour can take advantage of memcache to speed up performace for all users. This page is used to test if memcache is running and - if so - provide you with some performance related stats.<br><br>
-				<?php
-				$memcache->set("php_mem_cache_test", "test", 0, 10);
-				$cachecheck = $memcache->get("php_mem_cache_test");
-				if ($cachecheck === false) {
-					echo "<strong>This minotour installation is not configured to use memcahce. Setting up memcache on your installation will significantly improve performance - please consult with the user manual to set this up.<br></strong>";
-				}else{
-					echo "<strong>This minotour installation is using memcache.<br></strong>";
-				}
+            $cachecheck = $memcache->get("perl_mem_cache_connection");
+            if($cachecheck === false){
+                echo "<strong>Your minotour installation is not using background perl scripts which accelerate web performance - please consult with the user manual to set these up.<br></strong>";
+            }else {
+                echo "<strong>Congratulations, you have memcache up and running and the perl script is communicating well with your web backend!</strong><br>";
+                $active_runs = $memcache->get("perl_proc_active");
+                if ($active_runs === false) {
+                    echo "You have no active runs being processed at this time.<br>";
+                }else {
+                    echo "You have $active_runs active runs at this time.<br>";
+                    for ($x=1; $x<=$active_runs; $x++) {
+                        $run_to_retrieve = "perl_active_" . $x;
+                        $runname = $memcache->get($run_to_retrieve);
+                        echo "The number is $x: $runname <br>";
+                        $jsonreads = $runname . "bases";
+                        $json_test = $memcache->get($jsonreads);
+                        echo $jsonreads . "<br>";
+                        echo "$json_test<br>";
+                    }
 
-				$cachecheck = $memcache->get("perl_mem_cache_connection");
-				if($cachecheck === false){
-					echo "<strong>Your minotour installation is not using background perl scripts which accelerate web performance - please consult with the user manual to set these up.<br></strong>";
-				}else {
-					echo "<strong>Congratulations, you have memcache up and running and the perl script is communicating well with your web backend!</strong><br>";
-					$active_runs = $memcache->get("perl_proc_active");
-					if ($active_runs === false) {
-						echo "You have no active runs being processed at this time.<br>";
-					}else {
-						echo "You have $active_runs active runs at this time.<br>";
-						for ($x=1; $x<=$active_runs; $x++) {
-							$run_to_retrieve = "perl_active_" . $x;
-							$runname = $memcache->get($run_to_retrieve);
-							echo "The number is $x: $runname <br>";
-							$jsonreads = $runname . "bases";
-							$json_test = $memcache->get($jsonreads);
-							echo $jsonreads . "<br>";
-							echo "$json_test<br>";
-						}
-
-					}
-				}
-				?>
-							                <?php
-					echo '<pre>';
-				var_dump($_SESSION);
-				echo '</pre>';
-
-                echo '<pre>';
-                //echo "Hello";
-                $list = array();
-    $allSlabs = $memcache->getExtendedStats('slabs');
-    $items = $memcache->getExtendedStats('items');
-    foreach($allSlabs as $server => $slabs) {
-        foreach($slabs AS $slabId => $slabMeta) {
-            $cdump = $memcache->getExtendedStats('cachedump',(int)$slabId);
-            foreach($cdump AS $keys => $arrVal) {
-                if (!is_array($arrVal)) continue;
-                foreach($arrVal AS $k => $v) {
-                    echo $k .'<br>';
                 }
+            }
+            ?>
+                                        <?php
+                echo '<pre>';
+            var_dump($_SESSION);
+            echo '</pre>';
+
+            echo '<pre>';
+            //echo "Hello";
+            $list = array();
+$allSlabs = $memcache->getExtendedStats('slabs');
+$items = $memcache->getExtendedStats('items');
+foreach($allSlabs as $server => $slabs) {
+    foreach($slabs AS $slabId => $slabMeta) {
+        $cdump = $memcache->getExtendedStats('cachedump',(int)$slabId);
+        foreach($cdump AS $keys => $arrVal) {
+            if (!is_array($arrVal)) continue;
+            foreach($arrVal AS $k => $v) {
+                echo $k .'<br>';
             }
         }
     }
-   echo '</pre>';
-				?>
-
-            </div>
+}
+echo '</pre>';
+            ?>
         </div>
-        <!-- /#page-wrapper -->
-
     </div>
-    <!-- /#wrapper -->
+
+        </section><!-- /.content -->
+      </div><!-- /.content-wrapper -->
+
+      <?php include 'includes/reporting-new.php'; ?>
 
 
-    <!-- Core Scripts - Include with every page -->
-    <script src="js/jquery-1.10.2.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
-
-    <!-- Page-Level Plugin Scripts - Dashboard -->
-			    <script type="text/javascript" src="js/pnotify.custom.min.js"></script>
-			    <script type="text/javascript">
-				PNotify.prototype.options.styling = "fontawesome";
-				</script>
+         <script>
 
 
-	<!-- Highcharts Addition -->
-	<script src="http://code.highcharts.com/highcharts.js"></script>
-	<script type="text/javascript" src="js/themes/grid-light.js"></script>
-	<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
-	<script src="http://code.highcharts.com/modules/exporting.js"></script>
+             $.getJSON('http://www.nottingham.ac.uk/~plzloose/minoTourhome/message.php?callback=?', function(result) {
+
+                       $.each(result, function(key,value){
+                          //checking version info.
+                          if (key == 'version'){
+                              if (value == '<?php echo $_SESSION['minotourversion'];?>'){
+                                  $('#newstarget').html("You are running the most recent version of minoTour - version "+value+".<br>");
+                              }else if (value < '<?php echo $_SESSION['minotourversion'];?>'){
+                                  $('#newstarget').html("You appear to be in the fortunate position of running a future version of the minoTour web application "+value+". If you have modified the code yourself - great. If not then there might be an issue somewhere!.<br>");
+                              }else if (value > '<?php echo $_SESSION['minotourversion'];?>'){
+                                  $('#newstarget').html("You are running an outdated version of the minoTour web application. The most recent version of minoTour is version "+value+".<br>"+"Instructions for upgrading will be posted below.<br>");
+                              }
 
 
+                          }else if (key.substring(0, 7) == 'message') {
+                              $('#newstarget').append(value + "<br>");
+                            }
+                       });
+                     });
 
+         </script>
 
-
-    <!-- SB Admin Scripts - Include with every page -->
-    <script src="js/sb-admin.js"></script>
-
-    <!-- Page-Level Demo Scripts - Dashboard - Use for reference -->
-    <script src="js/demo/dashboard-demo.js"></script>
-
-     <script>
-        $( "#infodiv" ).load( "alertcheck.php" ).fadeIn("slow");
-        var auto_refresh = setInterval(function ()
-            {
-            $( "#infodiv" ).load( "alertcheck.php" ).fadeIn("slow");
-            //eval(document.getElementById("infodiv").innerHTML);
-            }, 10000); // refresh every 5000 milliseconds
-    </script>
-
-<?php include "includes/reporting.php";?>
-</body>
-
+  </body>
 </html>
+<?php
+} else {
+
+	    // the user is not logged in. you can do whatever you want here.
+	    // for demonstration purposes, we simply show the "you are not logged in" view.
+	    include("views/not_logged_in.php");
+	}
+
+	?>

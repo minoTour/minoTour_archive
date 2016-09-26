@@ -51,7 +51,7 @@ if ($login->isUserLoggedIn() == true) {
 
         <div id="page-wrapper">
 			
-			<?php include 'includes/run_check.php';?>
+			
 			<div class="row">
                 <div class="col-lg-12">
                     <h3 class="page-header">Overview</h3>

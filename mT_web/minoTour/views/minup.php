@@ -18,6 +18,8 @@ require_once("classes/Login.php");
 // load the functions
 require_once("includes/functions.php");
 
+
+
 // create a login object. when this object is created, it will do all login/logout stuff automatically
 // so this single line handles the entire login process. in consequence, you can simply ...
 $login = new Login();
@@ -29,40 +31,82 @@ if ($login->isUserLoggedIn() == true) {
     //include("views/index_old.php");
 	?>
 
-
 <!DOCTYPE html>
+<!--
+This is a starter template page. Use this page to start your new project from
+scratch. This page gets rid of all links and provides the needed markup only.
+-->
 <html>
-<?php include "includes/head.php";?>
+<!--
+Import the header.
+-->
+<?php
+include 'includes/head-new.php';
+?>
+  <!--
+  BODY TAG OPTIONS:
+  =================
+  Apply one or more of the following classes to get the
+  desired effect
+  |---------------------------------------------------------|
+  | SKINS         | skin-blue                               |
+  |               | skin-black                              |
+  |               | skin-purple                             |
+  |               | skin-yellow                             |
+  |               | skin-red                                |
+  |               | skin-green                              |
+  |---------------------------------------------------------|
+  |LAYOUT OPTIONS | fixed                                   |
+  |               | layout-boxed                            |
+  |               | layout-top-nav                          |
+  |               | sidebar-collapse                        |
+  |               | sidebar-mini                            |
+  |---------------------------------------------------------|
+  -->
+  <body class="hold-transition skin-blue sidebar-mini fixed">
+    <div class="wrapper">
 
-<p>
+        <!--Import the header-->
+        <?php
+        include 'navbar-header-new.php';
+        ?>
 
-    <div id="wrapper">
+        <!--Import the left hand navigation-->
+        <?php
+        include 'navbar-top-links-new.php';
+        #include 'test.php';
+        ?>
 
-        <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
 
-			<?php
-			include 'navbar-header.php';
-			?>
-            <!-- /.navbar-top-links -->
-			<?php include 'navbar-top-links.php'; ?>
-            <!-- /.navbar-static-side -->
-        </nav>
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
 
-        <div id="page-wrapper">
-        						<?php include 'includes/run_check.php';?>
-            <div class="row">
-                <div class="col-lg-12">
-                    <h1 class="page-header">Obtaining minUP to upload data.</h1>
-                </div>
-                <!-- /.col-lg-12 -->
-            </div>
-			<?php  if (checkminup($_SESSION['user_name']) > 0){
+        <!-- Content Header (Page header) -->
+
+        <section class="content-header">
+
+          <h1>
+            minUP
+            <small> - uploading data to minoTour.</small>
+          </h1>
+          <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-cloud-upload"></i> minUP Scripts</a></li>
+            <li class="active">Here</li>
+          </ol>
+        </section>
+
+        <!-- Main content -->
+        <section class="content"><?php include 'includes/run_check.php';?>
+            <div class="box">
+            <div class="box-header">
+              <h3 class="box-title">Getting Hold Of minUP</h3>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+            <?php  if (checkminup($_SESSION['user_name']) > 0){
 				echo "You are authorised to upload data to this minoTour installation. All versions of the minup script are available to download from here. Please see the notes below.<br>";
-                echo "<h4><u>minUP for Windows 0.65</u></h4>";
-                echo "<p>The latest version of minUP for Windows can be downloaded below. Please note that you must download either a windows 7 or a windows 10 version now. We are trying to rectify this asap. This compressed folder includes a compiled version of the last and BWA aligners which in turn require CYGWIN to be installed on your system (available from <a href='http://www.cygwin.com/' target='_blank'>www.cygwin.com</a>).<br><br> This version also allows you to use BWA and additinal alignment options will be introduced in the near future.<br><br> A new feature for minUP version 0.6 is a GUI - a graphical user interface - to simplify data upload.<br><br> minUP 0.65 also enables remote control facilities for your minION although this is somewhat experimental! <br><br>";
-
-                echo "<a href='https://github.com/minoTour/winminUP/archive/master.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP for Windows 10</a><br><br>";
-                echo "<a href='https://github.com/minoTour/winminUPwin7/archive/master.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP for Windows 7/8</a><br><br>";
+                echo "<h4><u>minUP for Windows 0.6</u></h4>";
+                echo "<p>The latest version of minUP for Windows can be downloaded below. This compressed folder includes a compiled version of the last and BWA aligners which in turn require CYGWIN to be installed on your system (available from <a href='http://www.cygwin.com/' target='_blank'>www.cygwin.com</a>).<br><br> This version also allows you to use BWA and additinal alignment options will be introduced in the near future.<br><br> A new feature for minUP version 0.6 is a GUI - a graphical user interface - to simplify data upload.<br><br> minUP 0.6 also enables remote control facilities for your minION. This is EXPERIMENTAL now and more information will be provided soon.<br>Finally, the configuration file is now packaged with this version automagically.<br><br>";
+                echo "<a href='https://github.com/minoTour/winminUP/archive/master.zip' target='_blank'><i class='fa fa-file-code-o'></i> minUP for Windows</a><br><br>";
 
                 echo "This version of minUP utilises a configuration file to bypass entering some of the standard parameters on the command line or in the GUI. You can download custom versions of these files below. Copy both files into the minUP folder.<br><br>";
 
@@ -84,43 +128,41 @@ if ($login->isUserLoggedIn() == true) {
 			}else {
 				echo "We're sorry, but your user account is not configured to allow data upload at this time. If you think you should be able to do so, please contact the system administrator for this installation.<br>";
 			}; ?>
-
-	    </div>
-        <!-- /#page-wrapper -->
+        </div>
     </div>
-    <!-- /#wrapper -->
+        </section><!-- /.content -->
+      </div><!-- /.content-wrapper -->
 
-    <!-- Core Scripts - Include with every page -->
-    <script src="js/jquery-1.10.2.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+      <?php include 'includes/reporting-new.php'; ?>
 
-    <!-- Page-Level Plugin Scripts - Dashboard -->
-			    <script type="text/javascript" src="js/pnotify.custom.min.js"></script>
-			    <script type="text/javascript">
-				PNotify.prototype.options.styling = "fontawesome";
-				</script>
-    <script src="js/plugins/morris/raphael-2.1.0.min.js"></script>
-    <script src="js/plugins/morris/morris.js"></script>
 
-    <!-- SB Admin Scripts - Include with every page -->
-    <script src="js/sb-admin.js"></script>
 
-    <!-- Page-Level Demo Scripts - Dashboard - Use for reference -->
-    <script src="js/demo/dashboard-demo.js"></script>
+         <script>
 
-     <script>
-        $( "#infodiv" ).load( "alertcheck.php" ).fadeIn("slow");
-        var auto_refresh = setInterval(function ()
-            {
-            $( "#infodiv" ).load( "alertcheck.php" ).fadeIn("slow");
-            //eval(document.getElementById("infodiv").innerHTML);
-            }, 10000); // refresh every 5000 milliseconds
-    </script>
 
-<?php include "includes/reporting.php";?>
-</p>
+             $.getJSON('http://www.nottingham.ac.uk/~plzloose/minoTourhome/message.php?callback=?', function(result) {
 
+                       $.each(result, function(key,value){
+                          //checking version info.
+                          if (key == 'version'){
+                              if (value == '<?php echo $_SESSION['minotourversion'];?>'){
+                                  $('#newstarget').html("You are running the most recent version of minoTour - version "+value+".<br>");
+                              }else if (value < '<?php echo $_SESSION['minotourversion'];?>'){
+                                  $('#newstarget').html("You appear to be in the fortunate position of running a future version of the minoTour web application "+value+". If you have modified the code yourself - great. If not then there might be an issue somewhere!.<br>");
+                              }else if (value > '<?php echo $_SESSION['minotourversion'];?>'){
+                                  $('#newstarget').html("You are running an outdated version of the minoTour web application. The most recent version of minoTour is version "+value+".<br>"+"Instructions for upgrading will be posted below.<br>");
+                              }
+
+
+                          }else if (key.substring(0, 7) == 'message') {
+                              $('#newstarget').append(value + "<br>");
+                            }
+                       });
+                     });
+
+         </script>
+
+  </body>
 </html>
 <?php
 } else {

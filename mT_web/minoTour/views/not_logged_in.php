@@ -1,59 +1,54 @@
 <!DOCTYPE html>
 <html>
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
-    <META HTTP-EQUIV="Expires" CONTENT="-1">
-    <title>minION Data Viewer</title>
-    <link rel="icon"
-      type="image/png"
-      href="images/minitour.png">
-
-
-    <link rel="apple-touch-icon" sizes="57x57" href="images/minitour57.png" >
-    <link rel="apple-touch-icon" sizes="72x72" href="images/minitour72.png" >
-    <link rel="apple-touch-icon" sizes="114x114" href="images/minitour114.png" >
-    <link rel="apple-touch-icon" sizes="144x144" href="images/minitour144.png" >
-    <?php $whitelist = array('127.0.0.1', "::1"); ?>
-    <?php if(!in_array($_SERVER['REMOTE_ADDR'], $whitelist)){?>
-        <link rel="mask-icon" href="images/minotour.svg" color="red">
-    <?php
-}else{
-    ?>
-        <link rel="mask-icon" href="images/minotour.svg" color="yellow">
-    <?php
-}
+<!--
+Import the header.
+-->
+<?php
+include 'includes/head-new.php';
 ?>
 
-    <!-- Core CSS - Include with every page -->
-    <link href="css/bootstrap.css" rel="stylesheet">
-    <link href="font-awesome/css/font-awesome.css" rel="stylesheet">
+<body class="hold-transition skin-blue sidebar-mini layout-top-nav fixed">
+<div class="wrapper">
 
-    <!-- Page-Level Plugin CSS - Dashboard -->
-    <link href="css/plugins/morris/morris-0.4.3.min.css" rel="stylesheet">
-    <link href="css/plugins/timeline/timeline.css" rel="stylesheet">
+<header class="main-header">
+<nav class="navbar navbar-static-top">
+<a href="index.php" class="logo">
+<!-- mini logo for sidebar mini 50x50 pixels -->
+<span class="logo-mini"><b>m</b>T<small></small></span>
+<!-- logo for regular state and mobile devices -->
+<span class="logo-lg"><b>mino</b>Tour</span>
+</a>
 
-    <!-- SB Admin CSS - Include with every page -->
-    <link href="css/sb-admin.css" rel="stylesheet">
-    <link href="css/pnotify.custom.min.css" media="all" rel="stylesheet" type="text/css" />
+<div class="container-fluid">
+<div class="navbar-header">
+</div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
+</header>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
 
-</head>
+<!-- Content Header (Page header) -->
 
-<body>
-     <div class="container">
-		<div class="row">
-		<h4 class="text-center" style="color:white"><img style="max-width:100px;" src="images/minotaurlogo.png" alt="minoTour_logo"><br>- <em>real time data analysis for minION data</em> -</h4>
-		</div>
+<section class="content-header">
+<h4 class="text-center"><img style="max-width:100px;" src="images/minotaurlogo.png" alt="minoTour_logo"><br>- <em>real time data analysis for minION data</em> -</h4>
 <?php if (gethostname() == "minotour.nottingham.ac.uk") { ?>
-		<div class="row">
-		<p class="text-center" style="color:white">Welcome to minoTour - to test out this site log in as user 'demo' with password 'demouser'. Datasets published by Joshua Quick, Aaron R Quinlan and Nicholas J Loman in <a href ="http://www.gigasciencejournal.com/content/3/1/22/abstract" target="_blank">GigaScience</a> are presented under the 'Previous Runs' (initially under 'Current Sequencing Runs') option in the left hand navigation.</p>
-<p class="text-center" style="color:white">For access to minoTour or to set up your own servers please contact Matt Loose -> <a href="mailto:matt.loose@nottingham.ac.uk?Subject=minoTour%20information%20request" target="_top"><i style="color:white" class="fa fa-envelope-o"></i></a> <i class="fa fa-twitter-square" style="color:white"></i> @mattloose.</p>
-		</div>
-		<?php } ?>
-        <div class="row">
-            <div class="col-md-4 col-md-offset-4">
+<p class="text-center" >Welcome to minoTour - to test out this site log in as user 'demo' with password 'demouser'. Datasets published by Joshua Quick, Aaron R Quinlan and Nicholas J Loman in <a href ="http://www.gigasciencejournal.com/content/3/1/22/abstract" target="_blank">GigaScience</a> are presented under the 'Previous Runs' (initially under 'Current Sequencing Runs') option in the left hand navigation.</p>
+<p class="text-center">For access to minoTour or to set up your own servers please contact Matt Loose -> <a href="mailto:matt.loose@nottingham.ac.uk?Subject=minoTour%20information%20request" target="_top"><i style="color:white" class="fa fa-envelope-o"></i></a> <i class="fa fa-twitter-square" style="color:white"></i> @mattloose.</p>
+<?php } ?>
+
+
+</section>
+
+<section class="content">
+    <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+    <div class="box">
+    <div class="box-header">
+      <h3 class="box-title">Login or Register</h3>
+    </div><!-- /.box-header -->
+    <div class="box-body">
                 <div class="login-panel panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">Please Sign In</h3>
@@ -68,58 +63,103 @@
                                     <input class="form-control" id="login_input_password" placeholder="Password" name="user_password" autocomplete="off" type="password" required />
                                 </div>
                                 <!-- Change this to a button or input when using this as a form -->
-								<input type="submit"  class="btn btn-lg btn-success btn-block" name="login" value="Log in" />
+                                <input type="submit"  class="btn btn-lg btn-success btn-block" name="login" value="Log in" />
                             </fieldset>
                         </form>
-						<h5><a href="register_new.php">Click Here To Register New account</a></h5>
+                        <h5><a href="register_new.php">Click Here To Register New account</a></h5>
                     </div>
                 </div>
 
             </div>
 
+        <?php
+        // show potential errors / feedback (from login object)
+        if (isset($login)) {
+        if ($login->errors) {
+            foreach ($login->errors as $error) {
+                echo $error;
+            }
+        }
+        if ($login->messages) {
+            foreach ($login->messages as $message) {
+                echo $message;
+            }
+        }
+        }
+        ?>
         </div>
+    </div>
+</div>
+<div class="row">
+<div class="col-md-6 col-md-offset-3">
+  <div class="box box-solid">
+    <div class="box-header with-border">
+      <h3 class="box-title">minoTour Screenshots</h3>
+    </div><!-- /.box-header -->
+    <div class="box-body">
+      <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+        <ol class="carousel-indicators">
+          <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+          <li data-target="#carousel-example-generic" data-slide-to="1" class=""></li>
+          <li data-target="#carousel-example-generic" data-slide-to="2" class=""></li>
+        </ol>
+        <div class="carousel-inner">
+          <div class="item active">
+            <img src="http://placehold.it/900x500/39CCCC/ffffff&text=Capture+Love+Bootstrap" alt="First slide">
+            <div class="carousel-caption">
+              First Slide
+            </div>
+          </div>
+          <div class="item">
+            <img src="http://placehold.it/900x500/3c8dbc/ffffff&text=I+Love+Bootstrap" alt="Second slide">
+            <div class="carousel-caption">
+              Second Slide
+            </div>
+          </div>
+          <div class="item">
+            <img src="http://placehold.it/900x500/f39c12/ffffff&text=I+Love+Bootstrap" alt="Third slide">
+            <div class="carousel-caption">
+              Third Slide
+            </div>
+          </div>
+        </div>
+        <a class="left carousel-control" href="#carousel-example-generic" data-slide="prev">
+          <span class="fa fa-angle-left"></span>
+        </a>
+        <a class="right carousel-control" href="#carousel-example-generic" data-slide="next">
+          <span class="fa fa-angle-right"></span>
+        </a>
+      </div>
+    </div><!-- /.box-body -->
+  </div><!-- /.box -->
+</div><!-- /.col -->
+
+
+</div>
+<div class="row">
+<div class="col-md-6 col-md-offset-3">
+<div class="box">
+<div class="box-header">
+  <h3 class="box-title">Video Tour of minoTour</h3>
+</div><!-- /.box-header -->
+<div class="box-body">
+
+
+        <iframe src="//www.youtube.com/embed/gbyvhJOrjZw" frameborder="0" allowfullscreen></iframe>
+
 
     </div>
+    </div>
+</div>
+</div>
+</section>
 
-	<?php
-	// show potential errors / feedback (from login object)
-	if (isset($login)) {
-	    if ($login->errors) {
-	        foreach ($login->errors as $error) {
-	            echo $error;
-	        }
-	    }
-	    if ($login->messages) {
-	        foreach ($login->messages as $message) {
-	            echo $message;
-	        }
-	    }
-	}
-	?>
+</div>
 
 
 
-	<div class="row">
-			<div class="center-block">
-
-			<!-- 16:9 aspect ratio -->
-			<div class="embed-responsive embed-responsive-16by9" style="text-align:center;">
-			  <iframe class="embed-responsive-item" width="640" height="360" src="//www.youtube.com/embed/gbyvhJOrjZw" frameborder="0" allowfullscreen></iframe>
-			</div>
-
-		</div>
-        <h5 class="text-center" style="color:white">- <em>for more info on minoTour contact Matt Loose <a href="mailto:matt.loose@nottingham.ac.uk?Subject=minoTour%20information%20request" target="_top"><i style="color:white" class="fa fa-envelope-o"></i></a> <a href="http://www.twitter.com/mattloose" target="_blank"><i class="fa fa-twitter-square" style="color:white"></i></a></em> -</h5>
-		<h5 class="text-center" style="color:white"><i class="fa fa-bolt" style="color:white"></i> Oxford Nanopore - <em>for more info on minoIONs see Oxford Nanopore <a href="https://www.nanoporetech.com" target="_blank"><i class="fa fa-globe" style="color:white"></i></a></em> - Oxford Nanopore <i style="color:white" class="fa fa-bolt"></i></h5>
-	</div>
-    <!-- Core Scripts - Include with every page -->
-    <script src="js/jquery-1.10.2.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
-
-    <!-- SB Admin Scripts - Include with every page -->
-    <script src="js/sb-admin.js"></script>
-
-<?php include "includes/reporting.php";?>
+</div>
+<?php include 'includes/reporting-new.php'; ?>
 </body>
 
 </html>
