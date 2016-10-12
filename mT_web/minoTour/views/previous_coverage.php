@@ -110,7 +110,7 @@ This series of plots displays coverage depth of template, complement and 2D read
 	<script src='http://code.highcharts.com/stock/highstock.js'></script>
 	<!--<script src="http://code.highcharts.com/highcharts.js"></script>-->
 	<script type="text/javascript" src="js/themes/grid-light.js"></script>
-	<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
+	<script src="http://code.highcharts.com/modules/heatmap.js"></script>
 <script src="https://raw.githubusercontent.com/highcharts/export-csv/master/export-csv.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
 
