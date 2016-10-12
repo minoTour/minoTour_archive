@@ -136,13 +136,11 @@
                         <li>
                             <a href="exlinks.php"><i class="fa fa-files-o fa-fw"></i>External Links</span></a>
                         </li>
+                        <!--
                         <li id="versions">
                         	<a href="#"><i class="fa fa-archive fa-fw"></i> Previous Versions<span class="fa arrow"></span></a>
     						<ul class="nav nav-second-level">
-    						<!--<li>
-    							<a href="versions/0.46/index.php">Version 0.46</a>
-    							</li>-->
-		    						<li>
+    								<li>
 		    							<a href="versions/0.45/index.php">Version 0.45</a>
 		    							</li>
 		    						<li>
@@ -153,6 +151,7 @@
 		    							</li>
     						</ul>
     						</li>
+                        -->
 
                     </ul>
 					<br>

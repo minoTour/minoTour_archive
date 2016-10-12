@@ -12,15 +12,15 @@
 <aside class="control-sidebar control-sidebar-dark">
   <!-- Create the tabs -->
   <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
-    <li class="active"><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
+      <li class="active"><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-envelope"></i></a></li>
     <li><a href="#control-sidebar-twitter-tab" data-toggle="tab"><i class="fa fa-twitter"></i></a></li>
-    <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
+    <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-bug"></i></a></li>
   </ul>
   <!-- Tab panes -->
   <div class="tab-content">
     <!-- Home tab content -->
-    <div class="tab-pane active" id="control-sidebar-home-tab">
-      <h3 class="control-sidebar-heading">Recent Activity</h3>
+    <div class="tab-pane" id="control-sidebar-home-tab">
+      <h3 class="control-sidebar-heading"></h3>
       <p> These buttons will report bugs and feature requests direct to the developers. For specific problems with your local installation you should contact the host of your site.</p>
       <?php include 'includes/bugsandfeatures2.php';?>
 
@@ -35,17 +35,22 @@
     <!-- Stats tab content -->
     <div class="tab-pane" id="control-sidebar-stats-tab">Stats Tab Content</div><!-- /.tab-pane -->
     <!-- Settings tab content -->
-    <div class="tab-pane" id="control-sidebar-settings-tab">
+    <div class="tab-pane active" id="control-sidebar-settings-tab">
       <form method="post">
-        <h3 class="control-sidebar-heading">General Settings</h3>
-        <div class="form-group">
-          <label class="control-sidebar-subheading">
-            Report panel usage
-            <input type="checkbox" class="pull-right" checked>
-          </label>
-          <p>
-            Some information about this general settings option
-          </p>
+          <h3 class="control-sidebar-heading">Communication Settings</h3>
+          <div class="form-group">
+              Please configure your communication settings here.
+            <label class="control-sidebar-subheading">
+              Email
+              <input type="checkbox" class="pull-right" id="emailcheck" <?php if ($_SESSION['emailnote'] == 1){echo "checked";}?>>
+            </label>
+            <label class="control-sidebar-subheading">
+              Twitter
+              <input type="checkbox" class="pull-right" id="twittercheck" <?php if ($_SESSION['twitnote'] == 1){echo "checked";}?>>
+            </label>
+            <p>
+              Assuming you have provided your email address or twitter handle, minoTour will email you according to the preferences you set here.
+            </p>
         </div><!-- /.form-group -->
       </form>
     </div><!-- /.tab-pane -->
@@ -62,6 +67,11 @@
 <script src="plugins/jQuery/jQuery-2.1.4.min.js"></script>
 <!-- Bootstrap 3.3.5 -->
 <script src="bootstrap/js/bootstrap.min.js"></script>
+
+<script src="plugins/slimScroll/jquery.slimscroll.min.js"></script>
+<!-- FastClick -->
+<script src="plugins/fastclick/fastclick.js"></script>
+
 <!-- AdminLTE App -->
 <script src="dist/js/app.min.js"></script>
 
@@ -69,6 +79,100 @@
 <script type="text/javascript" src="js/pnotify.custom.min.js"></script>
 <script type="text/javascript">
 PNotify.prototype.options.styling = "fontawesome";
+</script>
+
+<script>
+var data = { livenumruns: 0,liverunsnames:"",prevnumruns:0,activealerts:0,completedalerts:0 };
+var vm = new Vue({
+    el: '#sumdat',
+    data: data
+    // options
+});
+
+</script>
+
+<script>
+var data2 = { basenotificationmaster:"sausage",};
+var vm2 = new Vue({
+    //alert (data2);
+    el: '#alertdat',
+    data:data2,
+    methods: {
+    removethresholds: function (event) {
+      // `this` inside methods points to the Vue instance
+      //alert('Hello !')
+      var monkey = 'jsonencode/set_alerts.php?task=barcodecoveragedelete&type=2D';
+      $.ajax({
+            url: monkey,
+           // alert ('url'),
+            success: function(data){
+                //alert ('success');
+                $('#resetmodal').modal('hide')
+                //alert(data);
+                $("#messages").html(data);
+                //location.reload();
+            }, error: function(){
+                alert('ajax failed');
+            },
+        })
+
+    },
+    removeglobthreshold: function(event){
+        var monkey = 'jsonencode/set_alerts.php?task=genbarcodecoveragedelete&type=2D';
+        $.ajax({
+              url: monkey,
+             // alert ('url'),
+              success: function(data){
+                  //alert ('success');
+                  $('#resetmodal').modal('hide')
+                  //alert(data);
+                  $("#messages").html(data);
+                  //location.reload();
+              }, error: function(){
+                  alert('ajax failed');
+              },
+          })
+    },
+    removeref: function(message,event) {
+        //alert("hello");
+        //alert(message);
+        var monkey = 'jsonencode/set_alerts.php?task=referencecoveragedelete&type=2D&reference=removeref'+message;
+        $.ajax({
+              url: monkey,
+            // alert ('url'),
+              success: function(data){
+                  //alert ('success');
+                  $('#resetmodal').modal('hide')
+                  //alert(data);
+                  $("#messages").html(data);
+                  //location.reload();
+              }, error: function(){
+                  alert('ajax failed');
+              },
+          })
+
+    },
+    removebasenote: function(message,type,event) {
+        //alert("hello");
+        //alert(message);
+        var monkey = 'jsonencode/set_alerts.php?task=basenotedelete&type='+type+'&reference=removeref'+message;
+        $.ajax({
+              url: monkey,
+            // alert ('url'),
+              success: function(data){
+                  //alert ('success');
+                  $('#resetmodal').modal('hide')
+                  //alert(data);
+                  $("#messages").html(data);
+                  //location.reload();
+              }, error: function(){
+                  alert('ajax failed');
+              },
+          })
+
+    }
+  }
+});
 </script>
 
 <script>
@@ -196,6 +300,42 @@ PNotify.prototype.options.styling = "fontawesome";
        eval(document.getElementById("APIPREV").innerHTML);
        }, 10000); // refresh every 5000 milliseconds
 </script>
+<script>
+$('#emailcheck').change(function() {
+        if ($(this).prop('checked')) {
+            $.post( "jsonencode/emailnote.php", { new: 1  })
+              .done(function() {
+                alert("You will receive all future set messages and notifications by email."); //checked
+            });
+
+        }
+        else {
+            $.post( "jsonencode/emailnote.php", { new: 0  })
+              .done(function() {
+                alert("You have turned off email notifications. Notifications already set will not be affected."); //not checked
+            });
+
+        }
+    });
+$('#twittercheck').change(function() {
+            if ($(this).prop('checked')) {
+                //alert("gonna run");
+                $.post( "jsonencode/twitternote.php", { new: 1  })
+                  .done(function() {
+                    alert("You will all future set receive messages and notifications by twitter."); //checked
+                });
+                //alert ("tried running");
+
+            }
+            else {
+                $.post( "jsonencode/twitternote.php", { new: 0  })
+                  .done(function() {
+                    alert("You have turned off twitter notifications. Notifications already set will not be affected."); //not checked
+                });
+
+            }
+        });
+</script>
 <script type="text/javascript" src="js/pnotify.custom.min.js"></script>
 <script type="text/javascript">
 PNotify.prototype.options.styling = "fontawesome";
@@ -203,7 +343,7 @@ PNotify.prototype.options.styling = "fontawesome";
 <!-- Highcharts Addition -->
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script type="text/javascript" src="js/themes/grid-light.js"></script>
-<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
+<script src="http://code.highcharts.com/modules/heatmap.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
 <script src="http://code.highcharts.com/highcharts-more.js"></script>
 <script src="https://raw.githubusercontent.com/highcharts/export-csv/master/export-csv.js"></script>

@@ -28,47 +28,41 @@
       <span class="sr-only">Toggle navigation</span>
     </a>
     <!-- Navbar Right Menu -->
+    <div id="sumdat">
     <div class="navbar-custom-menu">
       <ul class="nav navbar-nav">
         <!-- Messages: style can be found in dropdown.less-->
         <li class="dropdown messages-menu">
           <!-- Menu toggle button -->
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-            <i class="fa fa-bolt"></i>
+            <i class="fa fa-table"></i>
             <span class="label label-success">
-                <?php
-                $active_runs = $memcache->get("perl_proc_active");
-                if ($active_runs === false) {
-                    echo "0";
-                }else {
-                    echo $active_runs;
-                }
-                ?>
+                {{livenumruns}}/{{prevnumruns}}
             </span>
           </a>
           <ul class="dropdown-menu">
-            <li class="header">You have 2 live runs</li>
+            <li class="header">You have {{livenumruns}} live runs</li>
             <li>
               <!-- inner menu: contains the messages -->
               <ul class="menu">
-                <li><!-- start message -->
+                <li v-for="run in liverunsnames"><!-- start message -->
                   <a href="#">
                     <div class="pull-left">
                       <!-- User Image -->
-                      <img src="images/minitour144.png" class="img-circle" alt="User Image">
-                    </div>
+                      <!--<img src="images/minitour144.png" class="img-circle" alt="User Image">-->
+                  <!--</div>-->
                     <!-- Message title and timestamp -->
                     <h4>
-                      Support Team
-                      <small><i class="fa fa-clock-o"></i> 5 mins</small>
+                      <small>{{run}}</small>
+                      <!--<small><i class="fa fa-clock-o"></i> 5 mins</small>-->
                     </h4>
                     <!-- The message -->
-                    <p>Why not buy a new awesome theme?</p>
+                    <!--<p>Why not buy a new awesome theme?</p></div>-->
                   </a>
                 </li><!-- end message -->
               </ul><!-- /.menu -->
             </li>
-            <li class="footer"><a href="#">See All Messages</a></li>
+            <li class="footer"><a href="#">You have {{prevnumruns}} archived runs.</a></li>
           </ul>
         </li><!-- /.messages-menu -->
 
@@ -76,11 +70,11 @@
         <li class="dropdown notifications-menu">
           <!-- Menu toggle button -->
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-            <i class="fa fa-table"></i>
-            <span class="label label-warning">500</span>
+            <i class="fa fa-bolt"></i>
+            <span class="label label-danger">{{activealerts}}</span>
           </a>
           <ul class="dropdown-menu">
-            <li class="header">You have 500 archived runs</li>
+            <li class="header">You have {{activealerts}} active alerts</li>
             <li>
               <!-- Inner Menu: contains the notifications -->
               <ul class="menu">
@@ -99,10 +93,10 @@
           <!-- Menu Toggle Button -->
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <i class="fa fa-flag-o"></i>
-            <span class="label label-danger">9</span>
+            <span class="label label-warning">{{completedalerts}}</span>
           </a>
           <ul class="dropdown-menu">
-            <li class="header">You have 9 messages</li>
+            <li class="header">You have {{completedalerts}} completed alerts</li>
             <li>
               <!-- Inner menu: contains the tasks -->
               <ul class="menu">
@@ -134,14 +128,14 @@
           <!-- Menu Toggle Button -->
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <!-- The user image in the navbar-->
-            <img src="dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
+            <img src="images/minitour.png" class="user-image" alt="User Image">
             <!-- hidden-xs hides the username on small devices so only the image appears. -->
             <span class="hidden-xs"><?php echo $_SESSION['user_name'];?></span>
           </a>
           <ul class="dropdown-menu">
             <!-- The user image in the menu -->
             <li class="user-header">
-              <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+              <img src="images/minitour.png" class="img-circle" alt="User Image">
               <p>
                 <?php echo $_SESSION['user_name'];?>
                 <small>Manage your user account here.</small>
@@ -176,6 +170,7 @@
           <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
         </li>
       </ul>
+    </div>
     </div>
   </nav>
 </header>

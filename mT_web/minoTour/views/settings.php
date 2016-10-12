@@ -126,6 +126,7 @@ include 'includes/head-new.php';
 
           </div>
       </div>
+  </div>
         </section><!-- /.content -->
       </div><!-- /.content-wrapper -->
 
@@ -154,7 +155,7 @@ include 'includes/head-new.php';
           })
       </script>
 
-         
+
   </body>
 </html>
 <?php

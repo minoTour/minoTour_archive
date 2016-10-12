@@ -105,8 +105,68 @@ include 'includes/head-new.php';
                 <div class="row">
                     <div class="col-lg-12">
     				<h4>User Profile</h4>
+                    <div id="messages"></div>
+                    <div class="box">
+                    <div class="box-header">
+                      <h3 class="box-title">Change Email Address</h3>
+                    </div><!-- /.box-header -->
+                    <div class="box-body">
 
-    				No Profile Data Currently Generated
+        				<br>
+        				<div class="row">
+        				<form id="emailreset" class="col-md-4" role="form">
+        				  <div class="form-group">
+        				    <p class="help-block">To change your registered email address enter your new email address twice below.</p>
+        				    <label for="exampleInputEmail1">New Email</label>
+        				    <input type="email" class="form-control" id="NewEmail1" >
+        				  </div>
+        				  <div class="form-group">
+        				    <label for="exampleInputEmail2">New Email (Repeat)</label>
+        				    <input type="email" class="form-control" id="NewEmail2" >
+        				  </div>
+        				  <div class="form-group">
+        				    <label for="InputPassword">Confirm Password</label>
+        				    <input type="password" class="form-control" id="InputPassword" >
+        				  </div>
+        				  <button id="emailformgo" type="submit" class="btn btn-default">Submit</button>
+        				</form>
+
+
+
+                  </div>
+              </div>
+          </div>
+
+          <div class="box">
+          <div class="box-header">
+            <h3 class="box-title">Change Twitter Handle</h3>
+          </div><!-- /.box-header -->
+          <div class="box-body">
+
+              <br>
+              <div class="row">
+              <form id="twitterreset" class="col-md-4" role="form">
+                <div class="form-group">
+                  <p class="help-block">To change your registered Twitter handle enter your Twitter handle twice below (please - no @ symbol required!).</p>
+                  <label for="exampleInputEmail1">New Twitter</label>
+                  <input type="twitter" class="form-control" id="NewTwitter1" >
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputEmail2">New Twitter (Repeat)</label>
+                  <input type="twitter" class="form-control" id="NewTwitter2" >
+                </div>
+                <div class="form-group">
+                  <label for="InputPassword2">Confirm Password</label>
+                  <input type="password" class="form-control" id="InputPassword2" >
+                </div>
+                <button id="twitterformgo" type="submit" class="btn btn-default">Submit</button>
+              </form>
+
+
+
+        </div>
+    </div>
+</div>
 
 
 
@@ -127,6 +187,51 @@ include 'includes/head-new.php';
 
       <?php include 'includes/reporting-new.php'; ?>
 
+      <script>
+          $(function(){
+              $('#emailformgo').on('click', function(e){
+                  e.preventDefault(); // preventing default click action
+                  if ($( "#InputPassword" ).val().length < 8){
+                      $("#messages").append( "<div class='alert alert-danger alert-dismissible' role='alert'><button type='button' class='close' data-dismiss='alert'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button><strong>Warning!</strong> Password must be at least 8 characters long.</div>" );
+                  }else{
+                      if ($( "#NewEmail1" ).val() == $( "#NewEmail2" ).val()) {
+                          $.post( "jsonencode/email_change.php", { current: $("#InputPassword").val(), new: $( "#NewEmail2" ).val()  })
+                            .done(function( data ) {
+                              $("#messages").html(data);
+                          });
+                      }else {
+                          $("#messages").append( "<div class='alert alert-danger alert-dismissible' role='alert'><button type='button' class='close' data-dismiss='alert'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button><strong>Warning!</strong> New Email Addresses Do Not Match.</div>" );
+                      }
+                  }
+                  document.getElementById("emailreset").reset();
+
+                  //alert ("button clicked");
+              })
+          })
+      </script>
+
+      <script>
+          $(function(){
+              $('#twitterformgo').on('click', function(e){
+                  e.preventDefault(); // preventing default click action
+                  if ($( "#InputPassword2" ).val().length < 8){
+                      $("#messages").append( "<div class='alert alert-danger alert-dismissible' role='alert'><button type='button' class='close' data-dismiss='alert'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button><strong>Warning!</strong> Password must be at least 8 characters long.</div>" );
+                  }else{
+                      if ($( "#NewTwitter1" ).val() == $( "#NewTwitter2" ).val()) {
+                          $.post( "jsonencode/twitter_change.php", { current: $("#InputPassword2").val(), new: $( "#NewTwitter2" ).val()  })
+                            .done(function( data ) {
+                              $("#messages").html(data);
+                          });
+                      }else {
+                          $("#messages").append( "<div class='alert alert-danger alert-dismissible' role='alert'><button type='button' class='close' data-dismiss='alert'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button><strong>Warning!</strong> New Twitter Handles Do Not Match.</div>" );
+                      }
+                  }
+                  document.getElementById("twitterreset").reset();
+
+                  //alert ("button clicked");
+              })
+          })
+      </script>
 
 
          <script>

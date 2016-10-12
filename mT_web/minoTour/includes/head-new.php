@@ -58,5 +58,7 @@
      display: block !important;
 }
  </style>
+ <script src="js/vue.min.js"></script>
+ <script src="js/reconnecting_websocket.min.js"></script>
 </head>
 <!--This is a test to see where this text appears - this site is in development.-->

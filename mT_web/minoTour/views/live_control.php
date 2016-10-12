@@ -43,7 +43,7 @@ Import the header.
 <?php
 include 'includes/head-new.php';
 ?>
-<script src="js/vue.min.js"></script>
+
   <!--
   BODY TAG OPTIONS:
   =================
@@ -95,7 +95,9 @@ include 'includes/head-new.php';
         </section>
 
         <!-- Main content -->
-        <section class="content"><?php include 'includes/run_check.php';?>
+        <section class="content">
+
+            <?php include 'includes/run_check.php';?>
 
 
                 <div class="box">
@@ -139,7 +141,7 @@ include 'includes/head-new.php';
             <p
             <h3>It is currently <b>active</b>.</h3>
             <p>{{minion.histogram}}</p>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="panel panel-warning">
                     <div class="panel-heading">
                     <h3 class="panel-title">minKNOW Control options</h3>
@@ -160,7 +162,6 @@ include 'includes/head-new.php';
                           <button id='renamerun' class='btn btn-info btn-sm' data-toggle='modal' data-target='#{{minion.name}}renamemodal'>
                             <i class='fa fa-magic'></i> Rename Run
                           </button>
-
                           <!-- Modal -->
                           <div class='modal fade' id='{{minion.name}}renamemodal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
                               <div class='modal-dialog'>
@@ -171,14 +172,44 @@ include 'includes/head-new.php';
                                       </div>
                                       <div class='modal-body'>
                                           <div id='{{minion.name}}renameinfo'>
-                                              <p>You can rename a run if you wish to do so. Note there is no need to do this unless you wish to change the smaple ID for some reason.</p>
-                                              <input type="text" id="newname" class="form-control" placeholder="New Run Name">
+                                              <p>You can rename a run if you wish to do so. Note there is no need to do this unless you wish to change the sample ID for some reason.</p>
+                                              <input type="text" id="{{minion.name}}newname" class="form-control" placeholder="New Run Name">
                                               <p>If you are sure you wish to do this enter your new name above and click 'Rename Run' below. Otherwise close this window.</p>
                                               <p> We dont recommend doing this when a run is in progress!</p>
                                           </div>
                                           <div class='modal-footer'>
                                               <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
                                               <button v-on:click="renamenow" id='{{minion.name}}' type='button' class='btn btn-danger' data-dismiss='modal'>Rename Run</button>
+                                          </div>
+                                      </div><!-- /.modal-content -->
+                                  </div><!-- /.modal-dialog -->
+                              </div><!-- /.modal -->
+                          </div>
+                          <h5>Rename Flow Cell:</h5>
+                          <!--<button id='renamerun' type='button' class='btn btn-info btn-sm'><i class='fa fa-magic'></i> Rename Run</button>-->
+                          <!-- Indicates a dangerous or potentially negative action -->
+                          <!-- Button trigger modal -->
+                          <button id='renameflowcell' class='btn btn-info btn-sm' data-toggle='modal' data-target='#{{minion.name}}renameflowcell'>
+                            <i class='fa fa-magic'></i> Rename Flowcell
+                          </button>
+                          <!-- Modal -->
+                          <div class='modal fade' id='{{minion.name}}renameflowcell' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
+                              <div class='modal-dialog'>
+                                  <div class='modal-content'>
+                                      <div class='modal-header'>
+                                          <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+                                          <h4 class='modal-title' id='myModalLabel'>Rename Your Flowcell</h4>
+                                      </div>
+                                      <div class='modal-body'>
+                                          <div id='{{minion.name}}renameflowcellinfo'>
+                                              <p>You can rename a flowcell if you wish to do so. Note there is no need to do this unless you wish to change the Flowcell ID for some reason.</p>
+                                              <input type="text" id="{{minion.name}}newflowcellname" class="form-control" placeholder="New Flowcell ID">
+                                              <p>If you are sure you wish to do this enter your new Flowcell ID above and click 'Rename Run' below. Otherwise close this window.</p>
+                                              <p> We dont recommend doing this when a run is in progress!</p>
+                                          </div>
+                                          <div class='modal-footer'>
+                                              <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
+                                              <button v-on:click="renameflowcellnow" id='{{minion.name}}' type='button' class='btn btn-danger' data-dismiss='modal'>Rename Flowcell</button>
                                           </div>
                                       </div><!-- /.modal-content -->
                                   </div><!-- /.modal-dialog -->
@@ -267,7 +298,7 @@ include 'includes/head-new.php';
               </div>
           </div>
 
-            <div class="col-md-6">
+            <div class="col-md-4">
             <div class='panel panel-info'>
   				<div class='panel-heading'>
     				<h3 class='panel-title'>minKNOW real time data</h3>
@@ -296,6 +327,10 @@ include 'includes/head-new.php';
                         <td>{{minion.livedata.sample_id.result}}</td>
                     </tr>
                     <tr>
+                        <td>Flow Cell ID</td>
+                        <td>{{minion.livedata.flow_cell_id.result}}</td>
+                    </tr>
+                    <tr>
                         <td>Run Name</td>
                         <td>{{minion.livedata.dataset.result}}</td>
                     </tr>
@@ -305,15 +340,18 @@ include 'includes/head-new.php';
                     </tr>
                     <tr>
                         <td>Yield</td>
-                        <td>{{minion.livedata.yield_res.result}}</td>
+                        <td>{{minion.livedata.yield_res.result}} / {{minion.statistics.read_event_count}}</td>
                     </tr>
 				</table>
 				</div>
 				</div>
+
             </div>
+
+
 			</div>
 
-
+            <div class="col-lg-4" id="{{minion.name}}"><div is="diskusage" :title="minion.livedata.machine_id.result" :key="key" :datain="minion.livedata.disk_space.result"></div></div>
 
 
 
@@ -325,6 +363,9 @@ include 'includes/head-new.php';
           </div>
 
         <div class="panel-body">
+            <div class="row">
+
+            </div>
             <div v-if='minion.engine_states.status!="ready"'>
               <div class="col-md-2"><p><i>Last Update</i>: {{minion.timestamp}}</p></div>
               <div class="col-md-2"><p><i>MinKNOW version</i>: {{minion.engine_states.version_string}}</p></div>
@@ -332,9 +373,9 @@ include 'includes/head-new.php';
               <div class="col-md-2"><p><i>minION ID</i>: {{minion.engine_states.minion_id}}</p></div>
               <div class="col-md-2"><p><i>ASIC ID</i>: {{minion.engine_states.asic_id_full}}/{{minion.engine_states.asic_id}}</p></div>
               <div class="col-md-2"><p><i>minION ASIC temperature</i>: {{minion.engine_states.minion_asic_temperature}}</p></div>
-              <div class="col-md-2"><p><i>Yield</i>: {{minion.engine_states.yield}}</p></div>
+              <div class="col-md-2"><p><i>Yield</i>: {{minion.engine_states.yield}}/{{minion.statistics.read_event_count}}</p></div>
               <div class="col-md-2"><p><i>Experiment Start Time</i>: {{minion.engine_states.daq_start_time}}</p></div>
-              <div class="col-md-2"><p><i>Experiment End Time</i>: {{minion.engine_states.daq_stop_time}}</p></div>
+              <!--<div class="col-md-2"><p><i>Experiment End Time</i>: {{minion.engine_states.daq_stop_time}}</p></div>-->
               <div class="col-md-2"><p><i>Status</i>: {{minion.engine_states.status}}</p></div>
               <div class="col-md-2"><p><i>Flow Cell ID</i>: {{minion.engine_states.flow_cell_id}}</p></div>
               <div class="col-md-2"><p><i>Channels with Reads</i>: {{minion.statistics.channels_with_read_event_count}}</p></div>
@@ -342,24 +383,44 @@ include 'includes/head-new.php';
               <div class="col-md-2"><p><i>Completed Read Count</i>: {{minion.statistics.selected_completed_count}}</p></div>
               <div class="row">
                   <div class="col-lg-12">
-                      <div class="col-lg-6" id="{{minion.name}}"><div is="chartreadhist" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count_weighted_hist" :datain2="minion.statistics.read_event_count_weighted_hist_bin_width"></div>
-
-                      <div id="{{minion.name}}"><div is="chartyield" :title="minion.name" :key="key" :datain="minion.engine_states.yield" :datain2="minion.yield_history"></div>
-                  </div> </div>
-                  <div class = "col-lg-6">
-                          <div v-for="state in minion.channelstuff" class="col-md-2">{{state.style.label}}<br><p style="background-color:#{{state.style.colour}};">.</p></div>
-                          <div id="{{minion.name}}"><div is="chartheat" :title="minion.name" :key="key" :datain="minion.channel_info.channels" :datain2="minion.channelstuff"></div>
-                  </div>
+                      <div class = "col-lg-12" id="{{minion.name}}"><div is="channelstatescalc" :title="minion.name" : key="key" :counts='minion.simplesummary' :datain2="minion.channelstuff"></div></div>
+                      <div class="col-lg-6" id="{{minion.name}}"><div is="chartreadhist" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count_weighted_hist" :datain2="minion.statistics.read_event_count_weighted_hist_bin_width"></div></div>
+                      <div class="col-lg-6" id="{{minion.name}}"><div is="chartyield" :title="minion.name" :key="key" :datain="minion.engine_states.yield" :datain2="minion.yield_history"></div></div>
 
                   </div>
               </div>
               <!--  <div v-for="(key,value) in minion.engine_states">{{key}}:{{value}}</div>-->
                 </div>
-                <div v-for="channel in minion.multiplex_states"><div style="width:50px;height:10px;border:1px solid #000;float:right;">{{minion.channel_info.channel.name}}<div><span v-text="channel.name | reverse"></span></div></div></div>
 
-            </div>
+
             <div v-else>
                 <p>This minION is not currently running.</p>
+                <button id='inactivateminion' class='btn btn-danger btn-sm' data-toggle='modal' data-target='#{{minion.name}}offminionmodal'>
+                  <i class='fa fa-stop'></i> Switch Off minION
+                </button>
+
+                <!-- Modal -->
+                <div class='modal fade' id='{{minion.name}}offminionmodal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
+                    <div class='modal-dialog'>
+                        <div class='modal-content'>
+                            <div class='modal-header'>
+                                <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+                                <h4 class='modal-title' id='myModalLabel'>Stop your minION</h4>
+                            </div>
+                            <div class='modal-body'>
+                                <div id='{{minion.name}}offminioninfo'>
+                                    <p>This action will switch the minION to an inactive state. It should be possible to reactivate the minION remotely but software crashes on the minION controlling device may cause problems. You should only inactivate your minION device remotely if you are certain you wish to do so and <strong> at your own risk</strong>.</p>
+
+                                    <p>If you are sure you wish to do this, click 'Inactivate minION' below. Otherwise close this window.</p>
+                                </div>
+                                <div class='modal-footer'>
+                                    <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
+                                    <button v-on:click="inactivateminion" id='{{minion.name}}' type='button' class='btn btn-danger' data-dismiss='modal'>Switch Off minION</button>
+                                </div>
+                            </div><!-- /.modal-content -->
+                        </div><!-- /.modal-dialog -->
+                    </div><!-- /.modal -->
+                </div>
             </div>
 
     </div>
@@ -372,7 +433,7 @@ include 'includes/head-new.php';
 
             <!-- Indicates a dangerous or potentially negative action -->
             <!-- Button trigger modal -->
-            <button id='initminion' class='btn btn-danger btn-sm' data-toggle='modal' data-target='#{{minion.name}}initminionmodal'>
+            <button id='initminion' class='btn btn-warning btn-sm' data-toggle='modal' data-target='#{{minion.name}}initminionmodal'>
               <i class='fa fa-stop'></i> Initialise minION
             </button>
 
@@ -382,17 +443,17 @@ include 'includes/head-new.php';
                     <div class='modal-content'>
                         <div class='modal-header'>
                             <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-                            <h4 class='modal-title' id='myModalLabel'>Stop your minION</h4>
+                            <h4 class='modal-title' id='myModalLabel'>Start your minION</h4>
                         </div>
                         <div class='modal-body'>
                             <div id='{{minion.name}}initminioninfo'>
-                                <p>This action will switch the minION to inactive status. It should be possible to reactivate the minION remotely but software crashes on the minION controlling device may cause problems. You should only inactivate your minION device remotely if you are certain you wish to do so and <strong> at your own risk</strong>.</p>
+                                <p>This action will switch the minION to the active state.</p>
 
-                                <p>If you are sure you wish to do this, click 'Inactivate minION' below. Otherwise close this window.</p>
+                                <p>If you are sure you wish to do this, click 'Initialise minION' below. Otherwise close this window.</p>
                             </div>
                             <div class='modal-footer'>
                                 <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
-                                <button v-on:click="initminion" id='{{minion.name}}' type='button' class='btn btn-danger' data-dismiss='modal'>Initialise minION</button>
+                                <button v-on:click="initminion" id='{{minion.name}}' type='button' class='btn btn-warning' data-dismiss='modal'>Initialise minION</button>
                             </div>
                         </div><!-- /.modal-content -->
                     </div><!-- /.modal-dialog -->
@@ -429,16 +490,22 @@ include 'includes/head-new.php';
     //creating useful functions
     function tohistogram(readeventcountweightedhist,readeventcountweightedhistbinwidth) {
         var results =[];
+        var categories = [];
         //var counter = 0;
         //console.log(minionsthings.minions[minion].statistics.read_event_count_weighted_hist);
         for (var i = 0; i < readeventcountweightedhist.length; i++) {
             if (readeventcountweightedhist[i] > 0){
                 //counter+=1;
                 //console.log(readeventcountweightedhistbinwidth);
-                results.push({ "name": (i * readeventcountweightedhistbinwidth), "y": readeventcountweightedhist[i] });
+                //console.log(i);
+                //console.log(i*readeventcountweightedhistbinwidth);
+                var category = String((i) * readeventcountweightedhistbinwidth) + " - " + String((i+1) * readeventcountweightedhistbinwidth) + " bp";
+                categories.push(category);
+                results.push({ "name": category, "y": readeventcountweightedhist[i] });
             }
         }
-        return (results);
+        //console.log(results);
+        return [results,categories];
     }
 
     function gety(value){
@@ -488,12 +555,23 @@ include 'includes/head-new.php';
         return (formattedTime);
     }
 
+    function formatBytes(bytes,decimals) {
+       if(bytes == 0) return '0 Byte';
+       var k = 1000;
+       var dm = decimals + 1 || 3;
+       var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+       var i = Math.floor(Math.log(bytes) / Math.log(k));
+       return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    }
+
 
     var ws = null;
     //change example.com with your IP or your host
     function start() {
-        ws = new WebSocket("ws://localhost:8080/ws");
+        ws = new ReconnectingWebSocket("ws://oneday.local:8080/ws");
+        //alert ("<?php echo $_SESSION['user_name'];?>");
         ws.onopen = function(evt) {
+            //alert ("weve connected");
           var conn_status = document.getElementById('conn_text');
           conn_status.innerHTML = "Connection status: Connected!";
           var subscribemessage={"SUBSCRIBE":"<?php echo $_SESSION['user_name'];?>"};
@@ -530,7 +608,7 @@ include 'includes/head-new.php';
 
                   }else{
                       if (minionsthings.minions[thing].state != jsonreturn[prop].state){
-                            minionsthings.minions[thing].state = jsonreturn[prop].state;
+                          minionsthings.minions[thing].state = jsonreturn[prop].state;
                       }
                       if (minionsthings.minions[thing].scripts.length != jsonreturn[prop].scripts.length) {
                           minionsthings.minions[thing].scripts = jsonreturn[prop].scripts;
@@ -568,6 +646,7 @@ include 'includes/head-new.php';
                       if (minionsthings.minions[thing].simplesummary != jsonreturn[prop].simplesummary){
                           minionsthings.minions[thing].simplesummary = jsonreturn[prop].simplesummary;
                       }
+
                       //minionsthings.minions[thing].starttimething = formatdatetime(jsonreturn[prop].detailsdata.engine_states.daq_start_time);
                       adder ++;
                   }
@@ -585,7 +664,7 @@ include 'includes/head-new.php';
         ws.onclose = function(evt) {
           //alert ("Connection closed");
           var conn_status = document.getElementById('conn_text');
-          conn_status.innerHTML = "Connection status: Closed. This page will require refreshing to try to reconnect.";
+          conn_status.innerHTML = "Connection status: Closed. <br>This page will try to reconnect automatically. <br>You do not need to refresh.";
           minionsthings.minions=[];
           //check();
 
@@ -595,14 +674,95 @@ include 'includes/head-new.php';
     start();
 
     Vue.filter('reverse', function(value){
-        //console.log(value);
-        //for (var thing in value){
-        //    //console.log(value[thing]);
-        //    for (var channel in value[thing] ){
-        //        //console.log(channel);
-        //    }
-        //}
         return value;
+    })
+    Vue.component('channelstatescalc',{
+        template:"<div v-for='item in countdata'><div class='col-md-1'><div class='row'><font size='6' color='{{item.colour}}'>&#x25CF</font> {{item.count}} </div><div class='row'>{{item.label}}</div></div></div>",
+        props:['title','key','datain2','counts'],
+        data: function(){
+            var countsobject = {};
+            var finalobject={};
+            for (var key in this.counts){
+                countsobject[key]=this.counts[key];
+            }
+            for (var key in this.datain2){
+                for (var key2 in this.datain2[key]){
+                    if (key2=="name"){
+                        finalobject[this.datain2[key][key2]]={}
+                        if (this.datain2[key][key2] in countsobject){
+                            finalobject[this.datain2[key][key2]]["count"]=countsobject[this.datain2[key][key2]];
+                            finalobject[this.datain2[key][key2]]["colour"]=this.datain2[key]["style"]["colour"];
+                            finalobject[this.datain2[key][key2]]["label"]=this.datain2[key]["style"]["label"];
+                            finalobject[this.datain2[key][key2]]["name"]=this.datain2[key][key2];
+                        }else{
+                            finalobject[this.datain2[key][key2]]["count"]=0;
+                            finalobject[this.datain2[key][key2]]["name"]=this.datain2[key][key2];
+                            if ("style" in this.datain2[key]){
+                                finalobject[this.datain2[key][key2]]["colour"]=this.datain2[key]["style"]["colour"];
+                                finalobject[this.datain2[key][key2]]["label"]=this.datain2[key]["style"]["label"];
+                            }
+                        }
+                    }
+                }
+            }
+            return {countdata:finalobject}
+        },
+        ready:function () {
+            this.$nextTick(function() {
+                setInterval(function () {
+                    var countsobject = {};
+                    var finalobject={};
+                    for (var key in this.counts){
+                        countsobject[key]=this.counts[key];
+                    }
+                    for (var key in this.datain2){
+                        for (var key2 in this.datain2[key]){
+                            if (key2=="name"){
+                                finalobject[this.datain2[key][key2]]={}
+                                if (this.datain2[key][key2] in countsobject){
+                                    finalobject[this.datain2[key][key2]]["count"]=countsobject[this.datain2[key][key2]];
+                                    finalobject[this.datain2[key][key2]]["colour"]=this.datain2[key]["style"]["colour"];
+                                    finalobject[this.datain2[key][key2]]["label"]=this.datain2[key]["style"]["label"];
+                                    finalobject[this.datain2[key][key2]]["name"]=this.datain2[key][key2];
+                                }else{
+                                    finalobject[this.datain2[key][key2]]["count"]=0;
+                                    finalobject[this.datain2[key][key2]]["name"]=this.datain2[key][key2];
+                                    if ("style" in this.datain2[key]){
+                                        finalobject[this.datain2[key][key2]]["colour"]=this.datain2[key]["style"]["colour"];
+                                        finalobject[this.datain2[key][key2]]["label"]=this.datain2[key]["style"]["label"];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    this.countdata=finalobject;
+                }.bind(this), 5000);
+            });
+        }
+    })
+    Vue.component('diskusage',{
+        template:"<div class='panel panel-info'><div class='panel-heading'><h3 class='panel-title'>Disk Space</h3></div><div class='panel-body'><div class='table-responsive'><table class='table table-condensed' ><tr><th>Category</td><th>Info</td></tr><tr><td>minKNOW computer name</td><td>{{title}}</td></tr><tr><td>Total Drive Capacity</td><td>{{capacity}}</td></tr><tr><td>Free Drive Space</td><td>{{space}} / {{percent}}%</td></tr><tr><td>Disk Space till Shutdown</td><td>{{bytealert}}</td></tr><tr><td>Warnings?</td><td>{{recalert}}</td></tr></table></div></div></div>",
+        props:['title','key','datain'],
+        data: function(){
+            var bytes_available = formatBytes(this.datain[0].bytes_available);
+            var drive_capacity = formatBytes(this.datain[0].bytes_capacity);
+            var percentage = (this.datain[0].bytes_available/this.datain[0].bytes_capacity * 100).toFixed(2);
+            var bytes_to_alert = formatBytes(this.datain[0].bytes_when_alert_issued);
+            var recommend_alert = this.datain[0].recommend_alert;
+            return {space:bytes_available,capacity:drive_capacity,percent:percentage,bytealert:bytes_to_alert,recalert:recommend_alert}
+
+        },
+        ready:function () {
+            this.$nextTick(function() {
+                setInterval(function () {
+                    this.space = formatBytes(this.datain[0].bytes_available);
+                    this.capacity = formatBytes(this.datain[0].bytes_capacity);
+                    this.percent = (this.datain[0].bytes_available/this.datain[0].bytes_capacity * 100).toFixed(2);
+                    this.bytealert = formatBytes(this.datain[0].bytes_when_alert_issued);
+                    this.recalert = this.datain[0].recommend_alert;
+                }.bind(this), 5000);
+            });
+        }
     })
 
     Vue.component('chartreadhist', {
@@ -647,7 +807,10 @@ include 'includes/head-new.php';
             //minion=this.key;
             setInterval(function () {
                 //console.log(this.datain);
-                this.chart.series[0].setData(tohistogram(this.datain,parseInt(this.datain2)));
+                //console.log(this.datain2);
+                var returndata = tohistogram(this.datain,parseInt(this.datain2));
+                this.chart.series[0].setData(returndata[0]);
+                this.chart.xAxis[0].setCategories(returndata[1]);
                 //this.chart.series[0].setData(this.datain);
                 this.chart.redraw();
                 //console.log("chart in",this.datain);
@@ -714,9 +877,9 @@ include 'includes/head-new.php';
 
             //minion=this.key;
             setInterval(function () {
-                //console.log(this.datain);
-                var d = new Date();
-                var t = d.getTime();
+                //console.log(this.datain2);
+                //var d = new Date();
+                //var t = d.getTime();
                 //console.log(this.chart.yAxis[0].series[0].processedYData[this.chart.yAxis[0].series[0].processedYData.length-1]);
                 //if (parseInt(this.datain)<this.chart.yAxis[0].series[0].processedYData[this.chart.yAxis[0].series[0].processedYData.length-1]){
                     //console.log(this.datain2);
@@ -724,11 +887,12 @@ include 'includes/head-new.php';
                     //this.chart.series[0].data = [parseInt(this.datain2)];
                     //this.chart.series[0].addPoint([t,0]);
                 //}
-                if (parseInt(this.datain)>this.chart.yAxis[0].series[0].processedYData[this.chart.yAxis[0].series[0].processedYData.length-1]){
-                    this.chart.series[0].addPoint([t,parseInt(this.datain)]);
-                }
+                //if (parseInt(this.datain)>this.chart.yAxis[0].series[0].processedYData[this.chart.yAxis[0].series[0].processedYData.length-1]){
+                //    this.chart.series[0].addPoint([t,parseInt(this.datain2)]);
+                //}
                 //console.log(this.chart.series[0]);
-                //this.chart.redraw();
+                this.chart.series[0].setData(this.datain2);
+                this.chart.redraw();
                 //console.log(this.chart.series[0])
             //        console.log(this.datain);
                     //var x = (new Date()).getTime(), // current time
@@ -740,100 +904,6 @@ include 'includes/head-new.php';
             });
         }
     })
-
-    Vue.component('chartheat', {
-	template: '<div id="containerheat{{title}}" style="margin: 0 auto"</div>',
-    props: ['title','key','datain','datain2'],
-    data: function() {
-        return {
-        	opts: {
-		        chart: {
-        	    	renderTo: 'containerheat'+this.title,
-                    type:'heatmap',
-	        	},
-    	    	title: {
-        	    	text: 'Channel Status'
-	        	},
-                xAxis: {
-                    gridLineWidth: 0,
-                minorGridLineWidth: 0,
-                lineWidth: 0,
-                lineColor: 'transparent',
-                minorTickLength: 0,
-                tickLength: 0,
-                    labels:
-                    {
-                    enabled: false
-                    }
-
-            },
-            yAxis:{
-                gridLineWidth: 0,
-                minorGridLineWidth: 0,
-                labels:
-                {
-                enabled: false
-            },
-            title: {
-                text: null
-            }
-            },
-            plotOptions: {
-                series: {
-                    animation: false,
-                }
-            },
-            legend: {
-            enabled: false
-            },
-            credits: {
-      enabled: false
-  },
-            series: [{
-                name: 'Channel State',
-                borderWidth: 0.1,
-                data: []
-            }]
-         			}
-    	    }
-    }
-    ,
-
-
-    created: function() {
-    },
-    ready: function() {
-      this.$nextTick(function() {
-      		this.chart = new Highcharts.Chart(this.opts);
-            var results=[];
-            var colourlookup={};
-            for (var colour in this.datain2){
-                if (typeof this.datain2[colour].style !== "undefined") {
-                //console.log(this.datain2[colour].style.label);
-                //console.log(this.datain2[colour].style.colour);
-                    var label = this.datain2[colour].style.label;
-                    var hexcode = this.datain2[colour].style.colour;
-                    colourlookup[label] = hexcode;
-                }
-            }
-            //console.log(colourlookup);
-            for (var i = 1; i < 513; i++){
-                results.push({ "x": getx(i), "y": gety(i),"z":0, "color":'#'+colourlookup["zero"] });
-            }
-            this.chart.series[0].setData(results);
-            this.chart.redraw();
-            //minion=this.key;
-            setInterval(function () {
-                for (var item in this.datain){
-                    //this.chart.series[0].data[this.datain[item].name].update({ "x": getx(this.datain[item].name), "y": gety(this.datain[item].name),"z":0, "color":'#'+colourlookup[this.datain[item].state] });
-                }
-                this.chart.redraw();
-        }.bind(this), 10000);
-            });
-        }
-    })
-
-
 
     var minionsthings = new Vue({
         el: '#app',
@@ -854,9 +924,15 @@ include 'includes/head-new.php';
                 ws.send(JSON.stringify(instructionmessage));
             },
             renamenow: function(event){
-                var instructionmessage={"INSTRUCTION":{"USER":"<?php echo $_SESSION['user_name'];?>","minion":event.target.id,"JOB":"rename","NAME":$("#newname").val()}};
+                //alert(event.target.id);
+                var instructionmessage={"INSTRUCTION":{"USER":"<?php echo $_SESSION['user_name'];?>","minion":event.target.id,"JOB":"rename","NAME":$("#"+event.target.id+"newname").val()}};
                 ws.send(JSON.stringify(instructionmessage));
                 //$('#renamemodal').modal('hide');
+            },
+            renameflowcellnow: function(event){
+                var instructionmessage={"INSTRUCTION":{"USER":"<?php echo $_SESSION['user_name'];?>","minion":event.target.id,"JOB":"nameflowcell","NAME":$("#"+event.target.id+"newflowcellname").val()}};
+                ws.send(JSON.stringify(instructionmessage));
+
             },
             startminion: function(event){
                 var script = $("input[type='radio'][name='scriptRadios']:checked").val();
@@ -870,6 +946,7 @@ include 'includes/head-new.php';
                 //$('#stopminionmodal').modal('hide');
             },
             inactivateminion: function(event){
+                //alert("hello");
                 var instructionmessage={"INSTRUCTION":{"USER":"<?php echo $_SESSION['user_name'];?>","minion":event.target.id,"JOB":"shutdownminion"}};
                 ws.send(JSON.stringify(instructionmessage));
                 //$('#stopminionmodal').modal('hide');

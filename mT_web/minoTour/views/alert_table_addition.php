@@ -1,6 +1,6 @@
 <?php
-	
-		
+
+
 	//Check if JSON Table already exists:
 		$mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['active_run_name']);
 		$query = "SHOW TABLES LIKE 'alerts';";
@@ -8,7 +8,7 @@
 		$result = $sql->num_rows;
 		//echo $query . "\n";
 		//echo $result . "\n";
-		
+
 		if ($result >= 1){
 			//echo "Table exists";
 			//$insertresult = "INSERT INTO jsonstore (name,json) VALUES ('". $jsonjobname . "','".$jsonstring . "');";
@@ -21,6 +21,7 @@
   `name` MEDIUMTEXT NOT NULL,
   `reference` MEDIUMTEXT,
   `username` MEDIUMTEXT,
+  `email` MEDIUMTEXT,
   `twitterhandle` MEDIUMTEXT,
   `type` MEDIUMTEXT,
   `threshold` INT,
@@ -34,19 +35,19 @@
 CHARACTER SET utf8;";
 		//echo $create_table;
 			$create_tbl = $mindb_connection->query($create_table);
-			
-			
+
+
 			//echo "session variable is " . $_SESSION['jsonjobname'];
 			//echo $_SESSION['jsonstring'];
 			//$insertresult = "INSERT INTO jsonstore (name,json) VALUES ('". $jsonjobname . "','".$jsonstring . "');";
 			//$go = $mindb_connection->query($insertresult);
-				
-		}
-		
-		
-		
 
-	
-	
- 
+		}
+
+
+
+
+
+
+
 ?>

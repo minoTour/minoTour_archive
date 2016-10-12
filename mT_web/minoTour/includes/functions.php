@@ -890,7 +890,7 @@ function checkuserruns()
 		$db_connection = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 		if (!$db_connection->connect_errno) {
 			$user_name=$_SESSION['user_name'];
-			$sql = "select users.user_name,runname, activeflag from users inner join userrun using (user_id) inner join minIONruns where userrun.runindex=minIONruns.runindex and users.user_name = '" . $user_name . "';";
+			$sql = "select users.user_name,runname, activeflag from users inner join userrun using (user_id) inner join minIONruns where userrun.runindex=minIONruns.runindex and users.user_name = '" . $user_name . "' order by date desc;";
 
 			$runs_available = $db_connection->query($sql);
 			if ($runs_available->num_rows >=1) {
@@ -902,6 +902,7 @@ function checkuserruns()
 				}
 
 				echo "You have " . $runs_available->num_rows . " minION runs available to view.<br>\n";
+                $_SESSION['totalruns']=($runs_available->num_rows)-sizeof($runarray);
 				if (array_key_exists('1', $runarray)) {
 					echo "You have active runs available.<br>\n";
 				//foreach ($runarray as $runinfo) {
@@ -1387,7 +1388,7 @@ function runsummary() {
 			}
 
 		}
-    */    
+    */
 }
 function prevrunsummary() {
 	if (isset($_SESSION['user_login_status']) and $_SESSION['user_login_status'] == 1 and isset($_SESSION['focusrun'])) {

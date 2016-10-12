@@ -87,7 +87,25 @@ class Login
 
                 // database query, getting all the info of the selected user (allows login via email address in the
                 // username field)
-                $sql = "SELECT user_name, user_email, user_password_hash
+                $query = "SHOW COLUMNS FROM users LIKE 'twitter'";
+                $result = $this->db_connection->query($query);
+                if ($result->num_rows < 1){
+                    $addcolumnd = "ALTER TABLE users ADD twitter varchar(50);";
+                    $this->db_connection->query($addcolumnd);
+                }
+                $query = "SHOW COLUMNS FROM users like 'twitnote'";
+                $result = $this->db_connection->query($query);
+                if ($result->num_rows < 1){
+                    $addcolumnd = "ALTER TABLE users ADD twitnote int;";
+                    $this->db_connection->query($addcolumnd);
+                }
+                $query = "SHOW COLUMNS FROM users like 'emailnote'";
+                $result = $this->db_connection->query($query);
+                if ($result->num_rows < 1){
+                    $addcolumnd = "ALTER TABLE users ADD emailnote int;";
+                    $this->db_connection->query($addcolumnd);
+                }
+                $sql = "SELECT user_name, user_email, user_password_hash,twitter,twitnote,emailnote
                         FROM users
                         WHERE user_name = '" . $user_name . "' OR user_email = '" . $user_name . "';";
                 $result_of_login_check = $this->db_connection->query($sql);
@@ -105,7 +123,11 @@ class Login
                         // write user data into PHP SESSION (a file on your server)
                         $_SESSION['user_name'] = $result_row->user_name;
                         $_SESSION['user_email'] = $result_row->user_email;
+                        $_SESSION['twittername'] = $result_row->twitter;
                         $_SESSION['user_login_status'] = 1;
+                        $_SESSION['twitnote'] = $result_row->twitnote;
+                        $_SESSION['emailnote'] = $result_row->emailnote;
+
 
                     } else {
                         //$this->errors[] = "Wrong password. Try again.";

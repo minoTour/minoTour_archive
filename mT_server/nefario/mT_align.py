@@ -5,7 +5,7 @@
 # File Name: mT_align.py
 # Purpose:
 # Creation Date: 10-06-2016
-# Last Modified: Thu, Aug 25, 2016  3:12:24 PM
+# Last Modified: Thu, Oct  6, 2016  2:44:46 PM
 # Author(s): The DeepSEQ Team, University of Nottingham UK
 # Copyright 2016 The Author(s) All Rights Reserved
 # Credits:
@@ -31,7 +31,7 @@ dbname = sys.argv[1]
 
 sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
-verbose = False #True
+verbose = False # True
 def output(s):
     if verbose is True: print s
 def output2(s,s_):
@@ -102,7 +102,6 @@ def incrementHash(_hash, valsarray, refid, refid_, posn, base):
 
 
         _hash[refid_][posn][base] +=1
-        #print _hash
 
         return _hash
 
@@ -122,7 +121,7 @@ def hash2array(d, valsArray):
 
 def numRows(df):
     if type(df) is str:
-        print "DF", df
+        output2("DF", df)
         #return 1
     return df.shape[0]
 def numCols(df): return df.shape[1]
@@ -130,7 +129,7 @@ def numCols(df): return df.shape[1]
 def selectDF(qry):
     output(qry)
     df = read_sql(qry, conn)
-    output(df[:1].T)
+    output(df[:2].T)
     output("-"*80)
     return df
 
@@ -146,13 +145,19 @@ def array2frame(array, colNames, indexes):
 def insertDF(df, tname):
   output("Inserting into: %s ... " % (tname))
   if numRows(df) != 0:
-    try: df.to_sql(con=conn, name=tname, if_exists='append', flavor='mysql')
+    try:
+        df.to_sql(con=conn, name=tname, if_exists='append', flavor='mysql')
+        #print tname
+        #print df.T
+        #sys.stdout.flush()
+        print "... %d rows inserted." % (numRows(df) )
+        #df = selectDF("SELECT * FROM " + tname)
+        #print df.T
+        #print "="*80
+        #sys.stdout.flush()
     except Exception,e:
-        print df.T
-        print str(e)
-        print "BOMB"
+        print "EXCEPTION", tname, str(e)
         #sys.exit()
-  output("... %d rows inserted." % (numRows(df) ))
 
 #-------------------------------------------------------------------------------
 # Cigar Processing ...
@@ -268,10 +273,9 @@ def processDF(ref):
           #if len(ref.barcode_arrangement[i]) > 0:
           if numRows(tbl_check_barcode)>0:
               if len(ref.barcode_arrangement[i]) > 0:
-                  print "We have spotted a barcode"
-                  print ref.barcode_arrangement[i]
+                  output2("We have spotted a barcode", ref.barcode_arrangement[i])
                   refid_ = str(refid)+"_"+ref.barcode_arrangement[i]
-                  print refid_
+                  output(refid_)
               else: refid_ = str(refid)+"_UC"
           else: refid_ = refid
         except: pass
@@ -280,7 +284,8 @@ def processDF(ref):
         refstart = (ref.pos[i])-1
 
         basenameid = ref.basename_id[i]
-        if not basenameid is True: basenameid = 1
+        #print "line 283", refid, refid_, basenameid
+        #if not basenameid is True: basenameid = 1
 
         qstring=''.join(q_array)
         rstring=''.join(r_array)
@@ -290,8 +295,10 @@ def processDF(ref):
         querystring = querystring_orig
 
         output2("basenamehash.keys()", basenamehash.keys())
-        if not basenameid in basenamehash.keys():
-            basenamehash[basenameid] = 1
+
+        # MS Hack to check ...
+        #if not basenameid in basenamehash.keys():
+        #    basenamehash[basenameid] = 1
 
         output2("The ref id is ",refid )
 
@@ -323,8 +330,8 @@ def processDF(ref):
                 #output("posn", posn)
 
 
-            #output(posn, refid)
-            #output(refstring[x], querystring[x])
+            output2(posn, refid)
+            output2(refstring[x], querystring[x])
 
             # Check if the strings match ...
             inc = lambda x: incrementHash(_hash, valsarray, refid, refid_, posn, x)
@@ -359,14 +366,88 @@ def processDF(ref):
     return _hash
 
 #-------------------------------------------------------------------------------
+
+def quote(dbname, t):
+    return "'" + dbname + "'.'" + t + "'"
+
+def createCoverageTable(dbanme, t, cursor):
+
+    #t_ = quote(dbname, t)
+
+    sql = \
+        '''
+        CREATE TABLE IF NOT EXISTS ''' + t + '''
+            (
+                `ref_id` INT NOT NULL,
+                `ref_pos` INT NOT NULL,
+                `ref_seq` TINYTEXT NOT NULL,
+                `A` INT,
+                `T` INT,
+                `G` INT,
+                `C` INT,
+                `D` INT,
+                `I` INT,
+                PRIMARY KEY (`ref_id`,`ref_pos`)
+            )
+        CHARACTER SET utf8
+        '''
+    #print sql
+    cursor.execute(sql)
+
+#def dropTrigger(t1):
+#      return "DROP TRIGGER IF EXISTS " + t1 + "_trigger"
+
+def mkTriggerTable(dbname, t1, t2, cursor):
+
+    #t1_ = quote(dbname, t1)
+    #t2_ = quote(dbname, t2)
+
+    trigger_name = t1 + "_trigger"
+
+    cond = " ref_id = NEW.ref_id and ref_pos = NEW.ref_pos"
+
+    trigger = \
+       '''
+       CREATE TRIGGER ''' + trigger_name + ''' AFTER INSERT ON ''' + t1 + '''
+        FOR EACH ROW
+            BEGIN
+             IF NOT EXISTS (SELECT 1 FROM ''' + t2 + ''' WHERE ''' + cond + ''' ) THEN
+               INSERT INTO ''' + t2 + ''' (ref_id, ref_pos, ref_seq, A, T, C, G, D, I) VALUES
+                 (NEW.ref_id, NEW.ref_pos, NEW.ref_seq,  NEW.A, NEW.T, NEW.C, NEW.G, NEW.D, NEW.I);
+             ELSE
+               UPDATE ''' + t2 + ''' SET A = A + NEW.A WHERE ''' + cond + ''' ;
+               UPDATE ''' + t2 + ''' SET T = T + NEW.T WHERE ''' + cond + ''' ;
+               UPDATE ''' + t2 + ''' SET C = C + NEW.C WHERE ''' + cond + ''' ;
+               UPDATE ''' + t2 + ''' SET G = G + NEW.G WHERE ''' + cond + ''' ;
+               UPDATE ''' + t2 + ''' SET D = D + NEW.D WHERE ''' + cond + ''' ;
+               UPDATE ''' + t2 + ''' SET I = I + NEW.I WHERE ''' + cond + ''' ;
+             END if;
+            END
+        '''
+
+
+    # Test if table exists ...
+    sql = "SHOW TABLES LIKE '"+ t1 +"'"
+    df = selectDF(sql)
+    if numRows(df) == 0:
+
+        # Create table ...
+        createCoverageTable(dbname, t1, cursor)
+
+        # Add trigger ...
+        output(trigger)
+        cursor.execute(trigger)
+
+#-------------------------------------------------------------------------------
 # OK Main code starts here ....
 
 #unless ( checkingrunning)
-print "hello world"
+output("mT_align.py")
 if not checkingrunning == "1" : # try:
-    print "Checkingrunning is not TRUE..."
+    output("Checkingrunning is not TRUE...")
     output("-"*80)
     memd.set(checkrunning,"1")
+else:
 
 
 # 1. We want to check if this is a barcoded run. If it is we need to run a special barcoding mapping algorithm
@@ -392,6 +473,8 @@ if not checkingrunning == "1" : # try:
 #-------------------------------------------------------------------------------
 # Create Tables ....
 
+    output("CREATING TABLES ... ")
+
     if numRows(tbl_check_mode)==0:
       output("We don't have a table")
     else:
@@ -401,6 +484,8 @@ if not checkingrunning == "1" : # try:
             output2("tabletype ", tabletype)
 
             for readtype in readtypes :
+
+
                 # Create a new table if one doesn't already exist...
 
                 # read_tracking ...
@@ -413,21 +498,20 @@ if not checkingrunning == "1" : # try:
 
 
                 # reference_coverage_ ...
-                sql = "CREATE TABLE IF NOT EXISTS `" + \
-                  dbname + "`.`reference_coverage_" + readtype + "` (\
-                  `ref_id` INT NOT NULL,\
-                  `ref_pos` INT NOT NULL,\
-                  `ref_seq` TINYTEXT NOT NULL,\
-                  `A` INT,\
-                  `T` INT,\
-                  `G` INT,\
-                  `C` INT,\
-                  `D` INT,\
-                  `I` INT,\
-                  PRIMARY KEY (`ref_id`,`ref_pos`)\
-                )\
-                CHARACTER SET utf8"
+                t = "reference_coverage_" + readtype
+                createCoverageTable(dbname, t, cursor)
+
+                # reference_coverage_ ... tmp_ ...
+                target = "reference_coverage_" + readtype
+                tmp = target + "_tmp"
+                mkTriggerTable(dbname, tmp, target, cursor)
+
+                # Ensure tmp table is empty...
+                sql = "DELETE FROM " + tmp + " WHERE ref_id >= 0 "
+                output(sql)
                 cursor.execute(sql)
+
+
 
                 ## BARCODING TABLES ...
                 # read_tracking_barcode_ ...
@@ -438,26 +522,23 @@ if not checkingrunning == "1" : # try:
                    PRIMARY KEY (`readtrackid`) \
                      ) \
                      CHARACTER SET utf8"
-
-                # reference_coverage_barcode_ ...
-                sql_2 = "CREATE TABLE IF NOT EXISTS `" + \
-                  dbname +"`.`reference_coverage_barcode_"+readtype + "` (\
-                  `ref_id` TINYTEXT NOT NULL,\
-                  `ref_seq` TINYTEXT NOT NULL,\
-                  `ref_pos` INT NOT NULL,\
-                  `A` INT,\
-                  `T` INT,\
-                  `G` INT,\
-                  `C` INT,\
-                  `D` INT,\
-                  `I` INT,\
-                  PRIMARY KEY (`ref_id`(20),`ref_pos`)\
-                )\
-                CHARACTER SET utf8"
-
                 if readtype == "2d" and numRows(tbl_check_barcode) != 0:
                         cursor.execute(sql_1)
-                        cursor.execute(sql_2)
+
+                # reference_coverage_barcode_ ...
+                t = "reference_coverage_barcode_" + readtype
+                createCoverageTable(dbname, t, cursor)
+
+                # reference_coverage_barcode_ tmp ...
+                target = "reference_coverage_barcode_" + readtype
+                tmp = target + "_tmp"
+                mkTriggerTable(dbname, tmp, target, cursor)
+
+                # Ensure tmp table is empty...
+                sql = "DELETE FROM " + tmp + " WHERE ref_id >= 0 "
+                output(sql)
+                cursor.execute(sql)
+
 
                 # PRE ALIGN TABLES ...
                 # read_tracking_pre_ ...
@@ -478,10 +559,36 @@ if not checkingrunning == "1" : # try:
                   PRIMARY KEY (`ref_id`,`ref_pos`) \
                 ) \
                 CHARACTER SET utf8"
-                if 1: # MS TODO if numRows(tbl_check_presquiggle) != 0:
+
+                # reference_pre_coverage_ ...
+                sql_2_tmp = "CREATE TABLE IF NOT EXISTS `" + \
+                  dbname + "`.`reference_pre_coverage_" + readtype + "_tmp` ( \
+                  `ref_id` INT NOT NULL, \
+                  `ref_pos` INT NOT NULL, \
+                  `count` INT, \
+                  PRIMARY KEY (`ref_id`,`ref_pos`) \
+                ) \
+                CHARACTER SET utf8"
+
+
+                if numRows(tbl_check_presquiggle) != 0:
                     cursor.execute(sql_1)
                     cursor.execute(sql_2)
+                    cursor.execute(sql_2_tmp)
 
+
+                '''
+                target = "reference_pre_coverage_" + readtype
+                tmp = target + "_tmp"
+
+                sql = dropTrigger(tmp)
+                print sql
+                cursor.execute(sql)
+                mkTrigger(tmp, target, fs)
+                sql = "DELETE FROM "+ tmp
+                print sql
+                cursor.execute(sql)
+                '''
 
                 checkreads = dbname + "checkreads" + readtype
                 output2("replacing checkvar ",readtype)
@@ -537,15 +644,18 @@ if not checkingrunning == "1" : # try:
                         reference = premafhash[refid][posn]['reference' ]
                 '''
 
+                # TODO MS ...
+                '''
                 valsarray2=['count']
                 array = hash2array(premafhash, valsarray2)
 
                 colNames = ['ref_id', 'ref_pos', 'count']
-                indexes = colNames[0:1]
+                indexes = colNames[:2]
                 df = array2frame(array,colNames, indexes)
 
                 tname = "reference_pre_coverage_" + readtype
                 insertDF(df, tname)
+                '''
 
 #-------------------------------------------------------------------------------
 # Select the reads that need processing from the last_align_maf_basecalled_template table ....
@@ -596,17 +706,16 @@ if not checkingrunning == "1" : # try:
                                     " ORDER BY ID LIMIT 100"
 
                     output(query)
-                    print query
 
                     # MS TODO Check this .....
+                    output( "line 700")
 
                     barquerygo = selectDF(query)
                     barmafhash = processDF(barquerygo)
-                    """
+
                     tname = "read_tracking_barcode_" + readtype
                     insertDF(df, tname)
-                    """
-
+                    
                     _hash = barmafhash
 
                     # Convert hash to array ...
@@ -617,15 +726,12 @@ if not checkingrunning == "1" : # try:
                     #barmafhash = processDF(query)
                     colNames = ['ref_id','ref_pos','ref_seq'
                                 ,'A','T','G','C','i','d']
-                    indexes = colNames[0:1]
-
-
-
+                    indexes = colNames[:2]
 
                     df = array2frame(array,colNames,indexes)
-                    print df
+                    # print df
                     tname = "reference_coverage_barcode_" +readtype
-                    print tname
+                    output( tname)
                     insertDF(df, tname)
 
 #-------------------------------------------------------------------------------
@@ -648,7 +754,6 @@ if not checkingrunning == "1" : # try:
 
                 elif tabletype == "align_sam_basecalled_template":
                 # Process SAM align  ....
-                    print "We have found sam data to process"
                     output("We have found sam data to process.")
                     # Note that we need to deal with multiply aligned
                     # sequences still - could do using the alignnum=1
@@ -666,32 +771,39 @@ if not checkingrunning == "1" : # try:
                                     (" + q1 + ") order by ID limit 100"
 
                 output("="*80)
-#-------------------------------------------------------------------------------
-# Translate MAF or SAM alignments into reference coverage plot data...
+
 # Process records and insert _hash into database tables ....
 
-                try: table = selectDF(query)
-                except: table = pd.DataFrame()
+                try:
+                    table = selectDF(query)
+                except:
+                    table = pd.DataFrame()
 
                 if numCols(table)>0:
                   try:
-                    #print table
-
+                    output( "line 779")
 
                     _hash = processDF(table)
-                    #print "insert done"
+                    output( "line 788")
+
+                    #output( "insert done"
                     # Convert hash to array ...
                     valsarray=('reference','A','T','G','C','i','d')
                     array = hash2array(_hash, valsarray)
+                    output( "line 793")
 
                     # Convert array to dataframe ...
                     colNames=['ref_id','ref_pos','ref_seq'
                                 ,'A','T','G','C','i','d']
-                    indexes = colNames[0:1]
+                    indexes = colNames[:2]
                     df = array2frame(array,colNames,indexes)
 
+                    output( "line 793")
+                    #print df.T
+                    #sys.stdout.flush()
+
                     # Insert dataframe into db table ...
-                    tname = "reference_coverage_" +readtype
+                    tname = "reference_coverage_" +readtype+ "_tmp"
 
                     insertDF(df, tname)
 
@@ -702,11 +814,16 @@ if not checkingrunning == "1" : # try:
                     colNames = ['readtrackid','basename_id']
                     df.columns = colNames
 
+                    '''
                     tname = "read_tracking_" + readtype
                     insertDF(df, tname)
+                    '''
 
+                    # MS TODO
+                    '''
                     tname = "read_tracking_pre_" + readtype
                     insertDF(df, tname)
+                    '''
                   except: pass
 
     memd.delete(checkrunning)

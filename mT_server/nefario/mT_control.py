@@ -5,7 +5,7 @@
 # File Name: mT_control.py
 # Purpose:
 # Creation Date: 09-06-2016
-# Last Modified: Thu, Aug 25, 2016  2:18:35 PM
+# Last Modified: Thu, Oct  6, 2016  2:48:08 PM
 # Author(s): The DeepSEQ Team, University of Nottingham UK
 # Copyright 2016 The Author(s) All Rights Reserved
 # Credits:
@@ -130,7 +130,7 @@ except MySQLdb.Error, e:
 # Create two arrays of jobs to run thru
 
 # Define an array with a list of tasks that need to be completed for each database if the reference length is greater than 0
-alignjobarray = ["depthcoverage","percentcoverage","readlengthqual","readnumberlength"]#,"mappabletime"]
+alignjobarray = ["depthcoverage","percentcoverage","readlengthqual","readnumberlength","mappabletime"]
 
 # Define an array of jobs regardless of reflength
 jobarray = ["readnumber","maxlen","avelen","bases","histogram","histogrambases","reads_over_time2","average_time_over_time2","active_channels_over_time","readsperpore","average_length_over_time","lengthtimewindow","cumulativeyield","sequencingrate","ratiopassfail","ratio2dtemplate","readnumber2"]
@@ -142,7 +142,7 @@ heartcount=0
 # This is our master loop which will run endlessley checking for changes to the databases;
 
 #-------------------------------------------------------------------------------
-sleeptime = 1
+sleeptime = 10
 
 while 42:
 # If you have to ask the significance of 42 you shouldn't be reading computer code.
@@ -213,11 +213,10 @@ while 42:
                                 )
                         ##proc_align($ref->{runname},$dbh);
                         #aligncommand = "c:/Perl64/bin/perl win_mT_align.pl " + ref.runname[run_counter] #+ " &"
-                        #aligncommand = "c:/Python27/python.exe  mT_align.py " + ref.runname[run_counter] #+ " &"
-                        #aligncommand = "python mT_align.py " + ref.runname[run_counter] #+ " &"
-                        aligncommand = "perl mT_align.pl " + ref.runname[run_counter] #+ " &"
+                        #aligncommand = "perl mT_align.pl " + ref.runname[run_counter] #+ " &"
+                        aligncommand = "python mT_align.py " + ref.runname[run_counter] #+ " &"
                         if args.verbose is True:
-                                print aligncommand
+                            print "ALIGNCOMMAND: ", aligncommand
                         subprocess.Popen(aligncommand, shell=True)
                 if args.verbose is True:
                         print "Executed..."

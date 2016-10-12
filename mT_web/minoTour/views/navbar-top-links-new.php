@@ -12,7 +12,7 @@
     <!-- Sidebar user panel (optional) -->
     <div class="user-panel">
       <div class="pull-left image">
-        <img src="images/minitour144.png" class="img-circle" alt="User Image">
+        <img src="images/minitour.png" class="img-circle" alt="User Image">
       </div>
       <div class="pull-left info">
         <p> <?php echo $_SESSION['user_name']; ?></p>
@@ -91,16 +91,16 @@
                                 <li>
                                     <a href="live_report.php"><i class="fa fa-comments-o fa-fw"></i><span> Run Report</span></a>
                                 </li>
-                                <li>
+                                <!--<li>
                                     <a href="set_alerts.php"><i class="fa fa-exclamation-circle"></i><span> Set Alerts</span></a>
-                                </li>
+                                </li>-->
                                 <?php if ($_SESSION['currentINT'] >=1){?>
                                 <li>
                                 	<a href="live_interaction.php"><i class="fa fa-cogs"></i><span> minION control</span></a>
                                 </li>
                                 <?php }?>
                                 <li>
-                                    <a href="runadmin.php"><i class="fa fa-stop"></i><span> Run Admin</span></a>
+                                    <a href="runadmin.php"><i class="fa fa-stop"></i><span> Run Administration</span></a>
                                 </li>
 
                             </ul>
@@ -201,12 +201,13 @@
 
                             <!-- /.nav-second-level -->
                         </li>
+                        <!--
                         <li id="versions" class="treeview">
             <a href="#"><i class="fa fa-archive fa-fw"></i> <span>Previous Versions</span> <i class="fa fa-angle-left pull-right"></i></a>
             <ul class="treeview-menu">
-            <!--<li>
+            <li>
                 <a href="versions/0.46/index.php">Version 0.46</a>
-                </li>-->
+                </li>
                     <li>
                         <a href="versions/0.45/index.php">Version 0.45</a>
                         </li>
@@ -218,6 +219,7 @@
                         </li>
             </ul>
             </li>
+            -->
 
 
     </ul><!-- /.sidebar-menu -->

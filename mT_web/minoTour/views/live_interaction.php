@@ -94,7 +94,7 @@ include 'includes/head-new.php';
 
         <!-- Main content -->
         <section class="content"><?php include 'includes/run_check.php';?>
-            
+
 
                 <div class="box">
                 <div class="box-header">
@@ -227,511 +227,596 @@ include 'includes/head-new.php';
                                         <p>Remote control of your minION device is available via these pages. To ensure security a matching pin number must be entered to access this page and on the minUP script controlling the minION device. If minUP is not running on the same machine as the minION device control of your sequencer is not possible via minoTour.</p>
                                         <div class="row">
                                             <div id="cumulativeyield" style="width:100%; height:300px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Cumulative Reads</div>
-                                            <div class="col-md-6">
-                                        		<div id="minknowinfo"></div>
-                                        	</div>
-                                        	<div class="col-md-6">
-                                        		<div class="panel panel-warning">
-                              						<div class="panel-heading">
-                            					    <h3 class="panel-title">minKNOW Control options</h3>
-                            						</div>
-                            					  <div class="panel-body">
-                            						    <h5>To test if you have a connection to minKNOW:</h5>
-                            		<button id='testmessage' type='button' class='btn btn-info btn-sm'><i class='fa fa-magic'></i> Test Communication</button>
-                            		<br>
-                            		<h5>Trigger a mux switch:</h5>
-                            		<button id='muxswitch' type='button' disabled="disabled" class='btn btn-info btn-sm'><i class='fa fa-magic'></i> Get Mux Switch</button>
-                            		<br>
-                                    <h5>To increase/decrease the current bias voltage offset in minKNOW by 10 mV:</h5>
-                            		<button id='biasvoltageinc' type='button' class='btn btn-info btn-sm'><i class='fa fa-arrow-circle-up'></i> Inc Bias Voltage</button>
-                            		<button id='biasvoltagedec' type='button' class='btn btn-info btn-sm'><i class='fa fa-arrow-circle-down'></i> Dec Bias Voltage</button>
-                            		<br>
-                                    <h5>Rename Your Run:</h5>
-                            		<!--<button id='renamerun' type='button' class='btn btn-info btn-sm'><i class='fa fa-magic'></i> Rename Run</button>-->
-                                    <!-- Indicates a dangerous or potentially negative action -->
-                                    <!-- Button trigger modal -->
-                                    <button id='renamerun' class='btn btn-info btn-sm' data-toggle='modal' data-target='#renamemodal'>
-                                      <i class='fa fa-magic'></i> Rename Run
-                                    </button>
-
-                                    <!-- Modal -->
-                                    <div class='modal fade' id='renamemodal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
-                                        <div class='modal-dialog'>
-                                            <div class='modal-content'>
-                                                <div class='modal-header'>
-                                                    <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-                                                    <h4 class='modal-title' id='myModalLabel'>Rename Your Run</h4>
-                                                </div>
-                                                <div class='modal-body'>
-                                                    <div id='renameinfo'>
-                                                        <p>You can rename a run if you wish to do so. Note there is no need to do this unless you wish to change the smaple ID for some reason.</p>
-                                                        <input type="text" id="newname" class="form-control" placeholder="New Run Name">
-                                                        <p>If you are sure you wish to do this enter your new name above and click 'Rename Run' below. Otherwise close this window.</p>
-                                                        <p> We dont recommend doing this when a run is in progress!</p>
-                                                    </div>
-                                                    <div id='renameworking'>
-                                                        <p class='text-center'>We're working to rename your run. Please be patient and don't navigate away from this page.</p>
-                                                        <p class='text-center'><img src='images/loader.gif' alt='loader'></p>
-                                                    </div>
-                                                    <div class='modal-footer'>
-                                                        <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
-                                                        <button id='renamenow' type='button' class='btn btn-danger'>Rename Run</button>
-                                                    </div>
-                                                </div><!-- /.modal-content -->
-                                            </div><!-- /.modal-dialog -->
-                                        </div><!-- /.modal -->
-                                    </div>
-
-                                    <br>
-                                    <h5>Remote Start/Stop</h5>
-
-                            				<!-- Indicates a dangerous or potentially negative action -->
-                            				<!-- Button trigger modal -->
-                            				<button id='stopminion' class='btn btn-danger btn-sm' data-toggle='modal' data-target='#stopminionmodal'>
-                            				  <i class='fa fa-stop'></i> Stop minION
-                            				</button>
-
-                            				<!-- Modal -->
-                            				<div class='modal fade' id='stopminionmodal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
-                            					<div class='modal-dialog'>
-                            						<div class='modal-content'>
-                            							<div class='modal-header'>
-                            								<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-                            								<h4 class='modal-title' id='myModalLabel'>Stop your minION</h4>
-                            							</div>
-                            							<div class='modal-body'>
-                            								<div id='stopminioninfo'>
-                            									<p>This will attempt to stop your minION sequencer remotely. It should be possible to restart sequencing remotely but software crashes on the minION controlling device may cause problems. You should only stop your minION device remotely if you are certain you wish to do so and <strong> at your own risk</strong>.</p>
-
-                            									<p>If you are sure you wish to do this, click 'Stop minION' below. Otherwise close this window.</p>
-                            								</div>
-                            								<div id='stopworking'>
-                            									<p class='text-center'>We're working to stop your minION device. Please be patient and don't navigate away from this page.</p>
-                            								    <p class='text-center'><img src='images/loader.gif' alt='loader'></p>
-                            								</div>
-                            								<div class='modal-footer'>
-                            									<button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
-                            								    <button id='stopnow' type='button' class='btn btn-danger'>Stop minION</button>
-                            								</div>
-                            							</div><!-- /.modal-content -->
-                            						</div><!-- /.modal-dialog -->
-                            					</div><!-- /.modal -->
-                                    		</div>
 
 
-                            				<!-- Indicates a dangerous or potentially negative action -->
-                            				<!-- Button trigger modal -->
-                            				<button id='startminion' class='btn btn-success btn-sm' data-toggle='modal' data-target='#startminionmodal'>
-                            				  <i class='fa fa-play'></i> Start minION
-                            				</button>
-
-                            				<!-- Modal -->
-                            				<div class='modal fade' id='startminionmodal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
-                            					<div class='modal-dialog'>
-                            						<div class='modal-content'>
-                            							<div class='modal-header'>
-                            								<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-                            								<h4 class='modal-title' id='myModalLabel'>Start your minION</h4>
-                            							</div>
-                            							<div class='modal-body'>
-                            								<div id='startminioninfo'>
-                            									<p>This will attempt to restart your minION sequencer remotely.</p>
-
-                            									<p>If you are sure you wish to do this select an available run script and click 'Start minION' below. Otherwise close this window.</p>
-                                                                <?php
-                                                                $availablescripts = "SELECT * FROM messages where message = 'runscript' order by message_index;";
-
-                                                            	$availablescriptsare = $mindb_connection->query($availablescripts);
-                                                            	if ($availablescriptsare->num_rows > 0) {
-                                                            		foreach ($availablescriptsare as $row) {
-                                                            			echo "
-                                                                        <div class='radio'>
-                                                                            <label>
-                                                                                <input type='radio' name='scriptRadios' id='" . $row['param1'] . "' value='" . $row['param1'] . "' >
-                                                                                " . cleanname($row['param1']) . ".py
-                                                                            </label>
-                                                                        </div>
-                                                                        ";
-
-                                                            		}
-                                                            	}else {
-                                                            		echo "Not Available.";
-                                                            	}
-                                                                ?>
-
-
-
-                            								</div>
-                            								<div id='startworking'>
-                            									<p class='text-center'>We're working to restart your minION device. Please be patient and don't navigate away from this page.</p>
-                            								    <p class='text-center'><img src='images/loader.gif' alt='loader'></p>
-                            								</div>
-                            								<div class='modal-footer'>
-                            									<button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
-                            								    <button id='startnow' type='button' class='btn btn-success'>Start minION</button>
-                            								</div>
-                            							</div><!-- /.modal-content -->
-                            						</div><!-- /.modal-dialog -->
-                            					</div><!-- /.modal -->
-                                    		</div>
-                            					  </div>
-                            					</div>
-                                        	</div>
 
                                         </div>
-                                        <div id="messages"></div>
-                                        <div class="col-md-12">
-                                            <div class='panel panel-info'>
-                                            <div id="minknowinfodetail">Currently Unavailable</div>
-                                            <div id='channelstatusheatmap' style='height:400px;'><i class='fa fa-cog fa-spin fa-3x'></i> Channel Status HeatMap</div>
-                                        </div></div>
-
-                                    <div class="row">
-                                    	<div class="col-md-6">
-                                    		<div class="panel panel-default">
-                                    			<div class="panel-heading">
-                                    			<h3 class="panel-title">
-                                    			<button class="btn btn-info btn-sm" data-toggle="modal" data-target="#modalcoveragedepth">
-                                    			<i class="fa fa-info-circle"></i> Coverage Depth
-                                    			</button></h3>
-                                    			<!-- Modal -->
-                                    				<div class="modal fade" id="modalcoveragedepth" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                    					<div class="modal-dialog">
-                                    						<div class="modal-content">
-                                    							<div class="modal-header">
-                            									<button type="button" class="close  btn-sm" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                            									<h4 class="modal-title" id="myModalLabel">Coverage Summary</h4>
-                            			      					</div>
-                            			      						<div class="modal-body">
-                            										<p>  Here you can monitor the depth of coverage for a specific reference or region of a reference sequence. Set the desired coverage depth for the reference you wish to monitor coverage on. Optionally you can set one or more regions to monitor. The run will only be stopped when all the coverage criteria are satisfied. In all cases we monitor 2D coverage as determined by Last/BWA.<br>
-                            										<strong>Run Until Features:</strong><br>
-                            										Ticking the check box will instruct minoTour to switch off your sequencer when the set tasks are complete. If you use these features they are at <strong>your own risk</strong>.<br>
-                            										</div>
-                            											<div class="modal-footer">
-                            											<button type="button" class="btn btn-default  btn-sm" data-dismiss="modal">Close</button>													</div>
-                            										</div>
-                            									</div>
-                            								</div>
-                                    			</div>
-                                    			<div id="coverage">
-                            						<div class="panel-body">
-                            							<div class="row">
-                            								<div class = "col-lg-12">
-                            								Select the reference sequence, optional region and desired coverage depth.
-                            								<form class="form-inline">
-                            								<div class="input-group">
-                            									<label for="refselect">Choose Reference:</label>
-                            									<select class="form-control" id="refselect">
-                            										<?php foreach ($_SESSION['activerefnames'] as $reference) {?>
-                            											<option><?php echo $reference;?></option>
-                            										<?php }?>
-                            									</select>
-                            								</div>
-                            								<div class="input-group">
-                            									<label for="refcoveragedepth">Coverage Depth:</label>
-                            									<input type="text" class="form-control" value=0 id="refcoveragedepth"></input>
-                            								</div>
-                            								<div class="input-group">
-                            									<label for="refcoveragedepthstart">Optional Start:</label>
-                            									<input type="text" class="form-control" value=0 id="refcoveragedepthstart"></input>
-                            								</div>
-                            								<div class="input-group">
-                            									<label for="refcoveragedepthend">Optional End:</label>
-                            									<input type="text" class="form-control" value=0 id="refcoveragedepthend"></input>
-                            								</div>
-                            								<br>
-                            								<div class="form-group">
-                            									<label for="reference_coverage_button">Auto finish run</label>
-                            									<input type="checkbox" id="reference_coverage_stop" value="1"></input>
-                            									<span class="form-group-btn">
-                            									<button class="btn btn-default" id="reference_coverage_button" type="button">Set</button>
-                            									</span>
-                            								</div>
-                            								</form>
-
-                            								</div>
-                            							</div>
-                            						</div>
-                            					</div>
-                                    		</div>
-                                    	</div>
 
 
 
-                                    	<div class="col-md-6">
-                                    		<div class="panel panel-warning">
-                                    			<div class="panel-heading">
-                                    			<h3 class="panel-title">
-                                    			<button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalrunningqueries">
-                                    			<i class="fa fa-info-circle"></i> Queries
-                                    			</button></h3>
-                                    			<!-- Modal -->
-                                    				<div class="modal fade" id="modalrunningqueries" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                    					<div class="modal-dialog">
-                                    						<div class="modal-content">
-                                    							<div class="modal-header">
-                            									<button type="button" class="close  btn-sm" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                            									<h4 class="modal-title" id="myModalLabel">Queries Summary</h4>
-                            			      					</div>
-                            			      						<div class="modal-body">
-                            										<p> Here you can see all the current logic being processed by minoTour to decide if it should stop your run. It is possible to establish contradictory and overlapping logic. minoTour will switch off a run when all tasks in an individual category are complete. You should make sure that your run has the minimum constraints on it that are possible. You sould also delete constraints that you think are no longer valid.<br>
-                            										<strong>Run Until Features:</strong><br>
-                            										If you use these features they are at <strong>your own risk</strong>.<br>
-                            										</div>
-                            											<div class="modal-footer">
-                            											<button type="button" class="btn btn-default  btn-sm" data-dismiss="modal">Close</button>													</div>
-                            										</div>
-                            									</div>
-                            								</div>
-                            		        			</div>
-                            								<div id="coverage">
-                            						<div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="col-md-6">
+                                                    <div class="col-md-12">
+                                                		<div class="panel panel-default">
+                                                			<div class="panel-heading">
+                                                			<h3 class="panel-title">
+                                                			<button class="btn btn-info btn-sm" data-toggle="modal" data-target="#modaldiskmonitor">
+                                                			<i class="fa fa-info-circle"></i> Disk Space Monitoring
+                                                			</button></h3>
+                                                			<!-- Modal -->
+                                                				<div class="modal fade" id="modaldiskmonitor" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                					<div class="modal-dialog">
+                                                						<div class="modal-content">
+                                                							<div class="modal-header">
+                                        									<button type="button" class="close  btn-sm" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                        									<h4 class="modal-title" id="myModalLabel">Disk Space Monitoring</h4>
+                                        			      					</div>
+                                        			      						<div class="modal-body">
+                                        										<p>Here you can choose to monitor the amount of hard drive space remaining for a given run.</p>
+                                                                                <p>As standard you will recieve a warning via whichever communication method you have set if minKNOW itself believes disk space is likely to be a problem.</p>
+                                        										</div>
+                                        											<div class="modal-footer">
+                                        											<button type="button" class="btn btn-default  btn-sm" data-dismiss="modal">Close</button>													</div>
+                                        										</div>
+                                        									</div>
+                                        								</div>
+                                                			</div>
+                                                			<div id="coverage">
+                                        						<div class="panel-body">
+                                                                    <div class="row">
+                                                                        <div class="col-lg-12">
+                                                                        Choose a minimum amout of space on your hard drive to be warned about.
+                                                            			<br>
+                                                                        <h4>Warn when space is dropping.</h4>
+                                                                            <form class="form-inline">
+                                                                			<label class="radio-inline">
+                                                              					<input type="radio" name="diskspace" id="inlineRadio1" value="10" checked="checked"> Less than 10 gigs remaining.
+                                                            				</label>
+                                                            				<label class="radio-inline">
+                                                            					<input type="radio" name="diskspace" id="inlineRadio2" value="20"> Less than 20 gigs remaining.
+                                                            				</label>
+                                                            				<label class="radio-inline">
+                                                              					<input type="radio" name="diskspace" id="inlineRadio3" value="50"> Less than 50 gigs remaining.
+                                                            				</label>
+                                                            				<label class="radio-inline">
+                                                              					<input type="radio" name="diskspace" id="inlineRadio4" value="100"> Less than 100 gigs remaining.
+                                                            				</label>
+                                                                            <br><br>
+                                                                            <div class="form-group">
+                                                                                <label for="disk_space_alert">Set Alert</label>
+                                            									<span class="form-group-btn">
+                                            									<button class="btn btn-default" id="disk_space_alert" type="button">Set</button>
+                                            									</span>
+                                            								</div>
+                                                                        </form>
+                                                              		  	</div><!-- /.col-lg-6 -->
 
-                            							<div class="row">
-                            							<div class = "col-lg-12">
-                            							<?php
-                            							$queryarray;
-                            							$querycheck = "SELECT * from alerts;";
-                            							$querycheckresult = $mindb_connection->query($querycheck);
-                            							foreach ($querycheckresult as $row) {
-                            								//echo $row['name'] . "<br>";
-                            								$queryarray[$row['name']][$row['alert_index']]['reference']=$row['reference'];
-                            								$queryarray[$row['name']][$row['alert_index']]['threshold']=$row['threshold'];
-                            								$queryarray[$row['name']][$row['alert_index']]['control']=$row['control'];
-                            								$queryarray[$row['name']][$row['alert_index']]['complete']=$row['complete'];
-                            								$queryarray[$row['name']][$row['alert_index']]['start']=$row['start'];
-                            								$queryarray[$row['name']][$row['alert_index']]['end']=$row['end'];
-                            								$queryarray[$row['name']][$row['alert_index']]['alert_index']=$row['alert_index'];
+                                                            		</div>
+                                        						</div>
+                                        					</div>
+                                                		</div>
+                                                	</div>
+                                                    <div class="col-md-12">
+                                                		<div class="panel panel-default">
+                                                			<div class="panel-heading">
+                                                			<h3 class="panel-title">
+                                                			<button class="btn btn-info btn-sm" data-toggle="modal" data-target="#modalsimpleexamples">
+                                                			<i class="fa fa-info-circle"></i> Simple Examples
+                                                			</button></h3>
+                                                			<!-- Modal -->
+                                                				<div class="modal fade" id="modalsimpleexamples" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                					<div class="modal-dialog">
+                                                						<div class="modal-content">
+                                                							<div class="modal-header">
+                                        									<button type="button" class="close  btn-sm" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                        									<h4 class="modal-title" id="myModalLabel">Simple Examples</h4>
+                                        			      					</div>
+                                        			      						<div class="modal-body">
+                                        										<p>These are a number of simple alerts that can be configured to tell you about coverage depth or yield.</p>
+                                                                                <p>These alerts will not trigger the run to end at completion, but will obey email or twitter notification rules as configured in the settings menu.</p>
+                                        										</div>
+                                        											<div class="modal-footer">
+                                        											<button type="button" class="btn btn-default  btn-sm" data-dismiss="modal">Close</button>													</div>
+                                        										</div>
+                                        									</div>
+                                        								</div>
+                                                			</div>
+                                                			<div id="coverage">
+                                        						<div class="panel-body">
+                                                                    <div class="row">
+                                                                        <!--<div class="col-lg-12">
 
-                            							}
-                            							if ($_SESSION['currentbarcode'] >= 1) {
-                            								if (isset($queryarray["barcodecoverage"])){
-                            									echo "<Strong>Individual Barcode Thesholds Set.</strong><br><br>";
-                                                                echo "<div class='table-responsive'>";
-                            									echo "<table class='table table-condensed'>";
-                            									echo "<tr>";
-                            									echo "<th>Reference</th>";
-                            									echo "<th>Threshold</th>";
-                            									echo "<th>Control</th>";
-                            									echo "<th>Complete</th>";
-                            									//echo "<th>Remove</th>";
-                            									echo "</tr>";
-                            									foreach ($queryarray["barcodecoverage"] as $entry) {
-                            										echo "<tr>";
-                            										echo "<td style='word-wrap: break-word'>";
-                            										echo $entry['reference'];
-                            										echo "</td>";
-                            										echo "<td>";
-                            										echo $entry['threshold'];
-                            										echo "</td>";
-                            										echo "<td>";
-                            										echo $entry['control'];
-                            										echo "</td>";
-                            										echo "<td>";
-                            										echo $entry['complete'];
-                            										echo "</td>";
-                            										//echo "<td>";
-                            										//echo "Remove";
-                            										//echo "</td>";
+                                                                        <h4>Coverage Depth</h4>
+                                                                			<div class="input-group">
+                                                                  				<input id="foldchange" type="text" class="form-control">
+                                                                  			  	<span class="input-group-btn">
+                                                                    				<button class="btn btn-default" id="gen_coverage" type="button">Set</button>
+                                                                  			  	</span>
+                                                            				</input>
+                                                            				</div>
 
-                            									}
-                            									echo "</table>";
-                                                                echo "</div>";
-                            									echo "<button id='removethresholds' type='button' class='btn btn-danger btn-xs'>Remove Thresholds</button><br><br>";
-
-                            								}else{
-                            									echo "<em>No Individual Barcode Thresholds Set.</em><br><br>";
-                            								}
-                            								if (isset($queryarray["genbarcodecoverage"])){
-                            									echo "<Strong>Global Barcode Theshold Set.</strong><br><br>";
-                                                                echo "<div class='table-responsive'>";
-                            									echo "<table class='table table-condensed'>";
-                            									echo "<tr>";
-                            									echo "<th>Reference</th>";
-                            									echo "<th>Threshold</th>";
-                            									echo "<th>Control</th>";
-                            									echo "<th>Complete</th>";
-                            									echo "</tr>";
-                            									foreach ($queryarray["genbarcodecoverage"] as $entry) {
-                            										echo "<tr>";
-                            										echo "<td>";
-                            										//echo $entry['reference'];
-                            										echo "All Barcodes";
-                            										echo "</td>";
-                            										echo "<td>";
-                            										echo $entry['threshold'];
-                            										echo "</td>";
-                            										echo "<td>";
-                            										echo $entry['control'];
-                            										echo "</td>";
-                            										echo "<td>";
-                            										echo $entry['complete'];
-                            										echo "</td>";
-                            									}
-                            									echo "</table>";
-                                                                echo "</div>";
-                            									echo "<button id='removeglobthreshold' type='button' class='btn btn-danger btn-xs'>Remove Global Threshold</button><br><br>";
-                            								}else{
-                            									echo "<em>No Global Barcode Theshold Set.</em><br><br>";
-                            								}
-                            							}
-                            							if (isset($queryarray["referencecoverage"])){
-                            								echo "<Strong>Reference Coverage Thesholds Set.</strong><br><br>";
-                                                            echo "<div class='table-responsive'>";
-                            								echo "<table class='table table-responsive'>";
-                            								echo "<tr>";
-                            								echo "<th>Ref</th>";
-                            								echo "<th>Limit</th>";
-                            								echo "<th>Start</th>";
-                            								echo "<th>End</th>";
-                            								echo "<th>Cont.</th>";
-                            								echo "<th>Done</th>";
-                            								echo "<th>Del</th>";
-                            								echo "</tr>";
-                            								foreach ($queryarray["referencecoverage"] as $entry) {
-                            									echo "<tr>";
-                            									echo "<td>";
-                            									echo $entry['reference'];
-                            									echo "</td>";
-                            									echo "<td>";
-                            									echo $entry['threshold'];
-                            									echo "</td>";
-                            									echo "<td>";
-                            									echo $entry['start'];
-                            									echo "</td>";
-                            									echo "<td>";
-                            									echo $entry['end'];
-                            									echo "</td>";
-                            									echo "<td>";
-                            									echo $entry['control'];
-                            									echo "</td>";
-                            									echo "<td>";
-                            									echo $entry['complete'];
-                            									echo "</td>";
-                            									echo "<td>";
-                            									echo "<button id='removeref";
-                            									echo $entry['alert_index'];
-                            									echo "' type='button' value='" . $entry['alert_index'] . "' class='btn btn-danger btn-xs'>Remove</button><br><br>";
-                            									echo "</td>";
-
-                            								}
-                            								echo "</table>";
-                                                            echo "</div>";
-                            							}else{
-                            								echo "<em>No Reference Coverage Thesholds Set.</em><br><br>";
-                            							}
-                            							//var_dump ($queryarray);
-                            							?>
-
-                                    			</div>
-                                    			</div></div></div>
+                                                            				<label class="radio-inline">
+                                                              					<input type="radio" name="coveragenoticeradio" id="inlineRadio1" value="All" checked="checked"> All
+                                                            				</label>
+                                                            				<label class="radio-inline">
+                                                            					<input type="radio" name="coveragenoticeradio" id="inlineRadio2" value="Template"> Template
+                                                            				</label>
+                                                            				<label class="radio-inline">
+                                                              					<input type="radio" name="coveragenoticeradio" id="inlineRadio3" value="Complement"> Complement
+                                                            				</label>
+                                                            				<label class="radio-inline">
+                                                              					<input type="radio" name="coveragenoticeradio" id="inlineRadio4" value="2D"> 2D
+                                                            				</label>
+                                                                			  		  	</div>-->
 
 
-                                    		</div>
-                                    	</div>
-                                   </div>
+                                                            			<div class="col-lg-12">
+                                                                        As an example: set an alert for every X bases sequenced (again with reference to the template). This alert is non-persistent - it disappears.
+                                                            			<br>
+                                                                        <h4>Base Notification (strongly suggest minimum setting of 100000)</h4>
+                                                                			<div class="input-group">
+                                                                  				<input id="basenotification" type="text" class="form-control">
+                                                                  			  	<span class="input-group-btn">
+                                                                    				<button class="btn btn-default" id="base_notification" type="button">Set</button>
+                                                                  			  	</span>
+                                                                			</div><!-- /input-group -->
+                                                                			<label class="radio-inline">
+                                                              					<input type="radio" name="basenoticeradio" id="inlineRadio1" value="All" checked="checked"> All
+                                                            				</label>
+                                                            				<label class="radio-inline">
+                                                            					<input type="radio" name="basenoticeradio" id="inlineRadio2" value="Template"> Template
+                                                            				</label>
+                                                            				<label class="radio-inline">
+                                                              					<input type="radio" name="basenoticeradio" id="inlineRadio3" value="Complement"> Complement
+                                                            				</label>
+                                                            				<label class="radio-inline">
+                                                              					<input type="radio" name="basenoticeradio" id="inlineRadio4" value="2D"> 2D
+                                                            				</label>
+                                                              		  	</div><!-- /.col-lg-6 -->
+
+                                                            		</div>
+                                        						</div>
+                                        					</div>
+                                                		</div>
+                                                	</div>
+
+                                                    <div class="col-md-12">
+                                                		<div class="panel panel-default">
+                                                			<div class="panel-heading">
+                                                			<h3 class="panel-title">
+                                                			<button class="btn btn-info btn-sm" data-toggle="modal" data-target="#modalcoveragedepth">
+                                                			<i class="fa fa-info-circle"></i> Coverage Depth
+                                                			</button></h3>
+                                                			<!-- Modal -->
+                                                				<div class="modal fade" id="modalcoveragedepth" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                					<div class="modal-dialog">
+                                                						<div class="modal-content">
+                                                							<div class="modal-header">
+                                        									<button type="button" class="close  btn-sm" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                        									<h4 class="modal-title" id="myModalLabel">Coverage Summary</h4>
+                                        			      					</div>
+                                        			      						<div class="modal-body">
+                                        										<p>  Here you can monitor the depth of coverage for a specific reference or region of a reference sequence. Set the desired coverage depth for the reference you wish to monitor coverage on. Optionally you can set one or more regions to monitor. The run will only be stopped when all the coverage criteria are satisfied. In all cases we monitor 2D coverage as determined by Last/BWA.<br>
+                                        										<strong>Run Until Features:</strong><br>
+                                        										Ticking the check box will instruct minoTour to switch off your sequencer when the set tasks are complete. If you use these features they are at <strong>your own risk</strong>.<br>
+                                        										</div>
+                                        											<div class="modal-footer">
+                                        											<button type="button" class="btn btn-default  btn-sm" data-dismiss="modal">Close</button>													</div>
+                                        										</div>
+                                        									</div>
+                                        								</div>
+                                                			</div>
+                                                			<div id="coverage">
+                                        						<div class="panel-body">
+                                        							<div class="row">
+                                        								<div class = "col-lg-12">
+                                        								Select the reference sequence, optional region and desired coverage depth.
+                                        								<form class="form-inline">
+                                        								<div class="input-group">
+                                        									<label for="refselect">Choose Reference:</label>
+                                        									<select class="form-control" id="refselect">
+                                        										<?php foreach ($_SESSION['activerefnames'] as $reference) {?>
+                                        											<option><?php echo $reference;?></option>
+                                        										<?php }?>
+                                        									</select>
+                                        								</div>
+                                        								<div class="input-group">
+                                        									<label for="refcoveragedepth">Coverage Depth:</label>
+                                        									<input type="text" class="form-control" value=0 id="refcoveragedepth"></input>
+                                        								</div>
+                                        								<div class="input-group">
+                                        									<label for="refcoveragedepthstart">Optional Start:</label>
+                                        									<input type="text" class="form-control" value=0 id="refcoveragedepthstart"></input>
+                                        								</div>
+                                        								<div class="input-group">
+                                        									<label for="refcoveragedepthend">Optional End:</label>
+                                        									<input type="text" class="form-control" value=0 id="refcoveragedepthend"></input>
+                                        								</div>
+                                        								<br>
+                                        								<div class="form-group">
+                                        									<label for="reference_coverage_button">Auto finish run</label>
+                                        									<input type="checkbox" id="reference_coverage_stop" value="1"></input>
+                                        									<span class="form-group-btn">
+                                        									<button class="btn btn-default" id="reference_coverage_button" type="button">Set</button>
+                                        									</span>
+                                        								</div>
+                                        								</form>
+
+                                        								</div>
+                                        							</div>
+                                        						</div>
+                                        					</div>
+                                                		</div>
+                                                	</div>
+
+                                                    <?php if ($_SESSION['currentbarcode'] >= 1) {?>
+                                            		<?php //We want to get the current values for the barcodes if they exists ?>
+                                            		<?php
+                                            			$barcodearray;
+                                            			$barcodecheck = "SELECT * FROM alerts where name='barcodecoverage';";
+                                            			$barcodecheckresult = $mindb_connection->query($barcodecheck);
+                                            			foreach ($barcodecheckresult as $row) {
+                                            				//echo $row['name'] . "\t" . $row['reference'] . "\t" . $row['threshold'] . "<br>";
+                                            				$barcodearray[$row['reference']]=$row['threshold'];
+                                            			}
+                                            			$genbarcodecheck = "SELECT * FROM alerts where name = 'genbarcodecoverage';";
+                                            			$genbarcodecheckresult = $mindb_connection->query($genbarcodecheck);
+                                            			foreach ($genbarcodecheckresult as $row) {
+                                            				//echo $row['name'] . "\t" . $row['reference'] . "\t" . $row['threshold'] . "<br>";
+                                            				$barcodearray['genbarcodecoverage']=$row['threshold'];
+                                            			}
 
 
-                            		<?php if ($_SESSION['currentbarcode'] >= 1) {?>
-                            		<?php //We want to get the current values for the barcodes if they exists ?>
-                            		<?php
-                            			$barcodearray;
-                            			$barcodecheck = "SELECT * FROM alerts where name='barcodecoverage';";
-                            			$barcodecheckresult = $mindb_connection->query($barcodecheck);
-                            			foreach ($barcodecheckresult as $row) {
-                            				//echo $row['name'] . "\t" . $row['reference'] . "\t" . $row['threshold'] . "<br>";
-                            				$barcodearray[$row['reference']]=$row['threshold'];
-                            			}
-                            			$genbarcodecheck = "SELECT * FROM alerts where name = 'genbarcodecoverage';";
-                            			$genbarcodecheckresult = $mindb_connection->query($genbarcodecheck);
-                            			foreach ($genbarcodecheckresult as $row) {
-                            				//echo $row['name'] . "\t" . $row['reference'] . "\t" . $row['threshold'] . "<br>";
-                            				$barcodearray['genbarcodecoverage']=$row['threshold'];
-                            			}
+                                            			?>
+                                            		<div class="col-md-12">
+                                            				<div class="panel panel-default">
+                                            					<div class="panel-heading">
+                                            					<h3 class="panel-title"><!-- Button trigger modal -->
+                                            					<button class="btn btn-info  btn-sm" data-toggle="modal" data-target="#modalbarcode">
+                                            					<i class="fa fa-info-circle"></i> Barcode Interaction
+                                            					</button></h3>
+                                            					<!-- Modal -->
+                                            						<div class="modal fade" id="modalbarcode" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                            							<div class="modal-dialog">
+                                            								<div class="modal-content">
+                                            									<div class="modal-header">
+                                            									<button type="button" class="close  btn-sm" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                            									<h4 class="modal-title" id="myModalLabel">Barcoding Summary</h4>
+                                            			      					</div>
+                                            			      						<div class="modal-body">
+                                            										<p>  Here you can monitor the depth of coverage for individual barcodes against a reference sequence. This method is designed for matching to a single reference sequence at this time. We will be introducing the ability to monitor over multipe references in the future.<br>Users can either set global thresholds for all barcodes or specify coverage on a barcode by barcode basis.<br>
+                                            										<p>Note that a 0 threshold setting is ignored - i.e no threshold is set.</p>
+                                            										<strong>Run Until Features:</strong><br>
+                                            										Ticking the check box will instruct minoTour to switch off your sequencer when the set tasks are complete. For global coverage minoTour will only switch off the run if all the barcodes are at the set threshold for 2D reads. For instances where you set coverage on a barcode by barcode basis the run will be switched off once the set tasks are complete. If you are sequencing 12 barcodes but only set thresholds for three of them, the run will be switched off once the three are complete regardless of the state of the other 12. If you use these features they are at <strong>your own risk</strong>.<br>
+                                            										</div>
+                                            											<div class="modal-footer">
+                                            											<button type="button" class="btn btn-default  btn-sm" data-dismiss="modal">Close</button>													</div>
+                                            										</div>
+                                            									</div>
+                                            								</div>
+                                            							</div>
+                                            							<div id="barcoding">
+                                            								<div class="panel-body">
+                                            									<div class="row">
+                                            										<div class = "col-lg-12">
+                                            										<p>Checking these boxes may lead to your sequencer being switched off remotely in response to a depth of coverage alert. Ticking a box is <strong>at your own risk</strong>.</p>
+                                            										<strong>Set Global barcode coverage threshold.</strong><br>
+                                            										</div>
+                                            									</div>
+                                            										<div class="col-lg-12">
+                                            								        Enter Desired Coverage Depth
+                                            											<div class="input-group">
+                                            											<span class="input-group-addon">
+                                            											<input type="checkbox" id="genbarcode_coverage_stop" value="1">
+                                            											</span>
+                                            											<input id="genbarcodecov" value=<?php if ($barcodearray['genbarcodecoverage']>0){echo $barcodearray['genbarcodecoverage'];}else{echo "0";}?> type="text" class="form-control">
+                                            											<span class="input-group-btn">
+                                            											<button class="btn btn-default" id="genbarcode_coverage" type="button">Set</button>
+                                            											</span>
+                                            											</input>
+                                            											</div>
+                                            										</div>
+                                            											<div class="row">
+                                            												<div class = "col-lg-12">
+                                            												<br>
+                                            												<strong>Set coverage threshold/barcode.</strong><br>
+                                            												<br>
+                                            												</div>
+                                            											</div>
+                                            												<div class="col-lg-12">
+                                            												<form class="form-inline">
+                                            												<?php $barcodes = ["BC01","BC02","BC03","BC04","BC05","BC06","BC07","BC08","BC09","BC10","BC11","BC12"];?>
+                                            												<?php foreach ($barcodes as $barcode) {?>
+                                            													<div class="form-group">
+                                            													<label for="barcode_coverage_<?php echo $barcode; ?>"><?php echo $barcode; ?></label>
+                                            													<input type="text" class="form-control" value=<?php if ($barcodearray[$barcode]>0){echo $barcodearray[$barcode];}else{echo "0";}?>  id="barcodecov<?php echo $barcode; ?>"></input>
+                                            													</div>
+                                            													<?php } ?>
+                                            													<br><br>
+                                            														<div class="form-group">
+                                            														<label for="barcode_coverage_stop">Auto finish run</label>
+                                            														<input type="checkbox" id="barcode_coverage_stop"></input>
+                                            														<span class="form-group-btn">
+                                            														<button class="btn btn-default" id="barcode_coverage_button" type="button">Set</button>
+                                            														</span>
+                                            														</div>
+                                            													</div>
+                                            													</form>
+                                            												</div>
+                                            											</div>
+                                            									</div>
+                                            								</div>
+                                            								<?php }; ?>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="col-md-12">
+                                                		<div class="panel panel-warning">
+                                                			<div class="panel-heading">
+                                                			<h3 class="panel-title">
+                                                			<button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalrunningqueries">
+                                                			<i class="fa fa-info-circle"></i> Queries
+                                                			</button></h3>
+
+                                                			<!-- Modal -->
+                                                				<div class="modal fade" id="modalrunningqueries" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                					<div class="modal-dialog">
+                                                						<div class="modal-content">
+                                                							<div class="modal-header">
+                                        									<button type="button" class="close  btn-sm" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                        									<h4 class="modal-title" id="myModalLabel">Queries Summary</h4>
+                                        			      					</div>
+                                        			      						<div class="modal-body">
+                                        										<p> Here you can see all the current logic being processed by minoTour to decide if it should stop your run. It is possible to establish contradictory and overlapping logic. minoTour will switch off a run when all tasks in an individual category are complete. You should make sure that your run has the minimum constraints on it that are possible. You sould also delete constraints that you think are no longer valid.<br>
+                                        										<strong>Run Until Features:</strong><br>
+                                        										If you use these features they are at <strong>your own risk</strong>.<br>
+                                        										</div>
+                                        											<div class="modal-footer">
+                                        											<button type="button" class="btn btn-default  btn-sm" data-dismiss="modal">Close</button>													</div>
+                                        										</div>
+                                        									</div>
+                                        								</div>
+                                        		        			</div>
+                                        								<div id="coverage">
+                                        						<div class="panel-body">
+                                                                    <div id="messages"></div>
+
+                                        							<div class="row">
+                                        							<div class = "col-lg-12">
+
+                                                                        <div id = "alertdat">
+                                                                            <div v-for="(run,name) in basenotificationmaster.<?php echo $_SESSION['active_run_name']?>"></div>
+
+                                                                            <br><Strong>Disk Use Notices.</strong><br>
+                                                                                <div v-if="basenotificationmaster.<?php echo $_SESSION['active_run_name']?>.disknotify">
+                                                                            <div class = "row">
+                                                                                <div class = "col-lg-12">
+
+                                                                        <div class = "col-lg-3">
+                                        									Gigabyte Alert
+                                                                        </div>
+                                                                        <div class = "col-lg-3">
+                                        									Complete</strong>
+                                                                        </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div v-for="thing in basenotificationmaster.<?php echo $_SESSION['active_run_name']?>.disknotify">
+                                                                                <div class = "row">
+                                                                                    <div class = "col-lg-12">
+
+                                                                            <div class = "col-lg-3">
+                                            									{{thing.threshold}} GB
+                                                                            </div>
+
+                                                                            <div class = "col-lg-3">
+                                            									{{thing.complete}}
+                                                                            </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <button v-on:click='remdisknotice' id="remdisknotice" type='button' class='btn btn-danger btn-xs'>Remove Disk Notification</button><br><br>
+                                                                        </div>
+                                                                        <div v-else><em>No specific space monitoring set..</em><br><br></div>
 
 
-                            			?>
-                            		<div class="row">
-                            			<div class="col-md-6">
-                            				<div class="panel panel-default">
-                            					<div class="panel-heading">
-                            					<h3 class="panel-title"><!-- Button trigger modal -->
-                            					<button class="btn btn-info  btn-sm" data-toggle="modal" data-target="#modalbarcode">
-                            					<i class="fa fa-info-circle"></i> Barcode Interaction
-                            					</button></h3>
-                            					<!-- Modal -->
-                            						<div class="modal fade" id="modalbarcode" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                            							<div class="modal-dialog">
-                            								<div class="modal-content">
-                            									<div class="modal-header">
-                            									<button type="button" class="close  btn-sm" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                            									<h4 class="modal-title" id="myModalLabel">Barcoding Summary</h4>
-                            			      					</div>
-                            			      						<div class="modal-body">
-                            										<p>  Here you can monitor the depth of coverage for individual barcodes against a reference sequence. This method is designed for matching to a single reference sequence at this time. We will be introducing the ability to monitor over multipe references in the future.<br>Users can either set global thresholds for all barcodes or specify coverage on a barcode by barcode basis.<br>
-                            										<p>Note that a 0 threshold setting is ignored - i.e no threshold is set.</p>
-                            										<strong>Run Until Features:</strong><br>
-                            										Ticking the check box will instruct minoTour to switch off your sequencer when the set tasks are complete. For global coverage minoTour will only switch off the run if all the barcodes are at the set threshold for 2D reads. For instances where you set coverage on a barcode by barcode basis the run will be switched off once the set tasks are complete. If you are sequencing 12 barcodes but only set thresholds for three of them, the run will be switched off once the three are complete regardless of the state of the other 12. If you use these features they are at <strong>your own risk</strong>.<br>
-                            										</div>
-                            											<div class="modal-footer">
-                            											<button type="button" class="btn btn-default  btn-sm" data-dismiss="modal">Close</button>													</div>
-                            										</div>
-                            									</div>
-                            								</div>
-                            							</div>
-                            							<div id="barcoding">
-                            								<div class="panel-body">
-                            									<div class="row">
-                            										<div class = "col-lg-12">
-                            										<p>Checking these boxes may lead to your sequencer being switched off remotely in response to a depth of coverage alert. Ticking a box is <strong>at your own risk</strong>.</p>
-                            										<strong>Set Global barcode coverage threshold.</strong><br>
-                            										</div>
-                            									</div>
-                            										<div class="col-lg-12">
-                            								        Enter Desired Coverage Depth
-                            											<div class="input-group">
-                            											<span class="input-group-addon">
-                            											<input type="checkbox" id="genbarcode_coverage_stop" value="1">
-                            											</span>
-                            											<input id="genbarcodecov" value=<?php if ($barcodearray['genbarcodecoverage']>0){echo $barcodearray['genbarcodecoverage'];}else{echo "0";}?> type="text" class="form-control">
-                            											<span class="input-group-btn">
-                            											<button class="btn btn-default" id="genbarcode_coverage" type="button">Set</button>
-                            											</span>
-                            											</input>
-                            											</div>
-                            										</div>
-                            											<div class="row">
-                            												<div class = "col-lg-12">
-                            												<br>
-                            												<strong>Set coverage threshold/barcode.</strong><br>
-                            												<br>
-                            												</div>
-                            											</div>
-                            												<div class="col-lg-12">
-                            												<form class="form-inline">
-                            												<?php $barcodes = ["BC01","BC02","BC03","BC04","BC05","BC06","BC07","BC08","BC09","BC10","BC11","BC12"];?>
-                            												<?php foreach ($barcodes as $barcode) {?>
-                            													<div class="form-group">
-                            													<label for="barcode_coverage_<?php echo $barcode; ?>"><?php echo $barcode; ?></label>
-                            													<input type="text" class="form-control" value=<?php if ($barcodearray[$barcode]>0){echo $barcodearray[$barcode];}else{echo "0";}?>  id="barcodecov<?php echo $barcode; ?>"></input>
-                            													</div>
-                            													<?php } ?>
-                            													<br><br>
-                            														<div class="form-group">
-                            														<label for="barcode_coverage_stop">Auto finish run</label>
-                            														<input type="checkbox" id="barcode_coverage_stop"></input>
-                            														<span class="form-group-btn">
-                            														<button class="btn btn-default" id="barcode_coverage_button" type="button">Set</button>
-                            														</span>
-                            														</div>
-                            													</div>
-                            													</form>
-                            												</div>
-                            											</div>
-                            										</div>
-                            									</div>
-                            								</div>
-                            								<?php }; ?>
+                                                                            <br><Strong>Global Barcode Theshold Set.</strong><br><br>
+                                                                                <div v-if="basenotificationmaster.<?php echo $_SESSION['active_run_name']?>.genbarcodecoverage">
+                                                                            <!--<div class='table-responsive'>-->
+                                        									<div class = "row">
+                                                                                <div class = "col-lg-12">
+                                        									<div class = "col-lg-3"><strong>
+                                        									Reference
+                                                                        </div>
+                                                                        <div class = "col-lg-3">
+                                        									Threshold
+                                                                        </div>
+                                                                        <div class = "col-lg-3">
+                                        									Stop Run (1=Yes)
+                                                                        </div>
+                                                                        <div class = "col-lg-3">
+                                        									Complete</strong>
+                                                                        </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div v-for="thing in basenotificationmaster.<?php echo $_SESSION['active_run_name']?>.genbarcodecoverage">
+                                                                                <div class = "row">
+                                                                                    <div class = "col-lg-12">
+                                            									<div class = "col-lg-3">
+                                            									All Barcodes
+                                                                            </div>
+                                                                            <div class = "col-lg-3">
+                                            									{{thing.threshold}}
+                                                                            </div>
+                                                                            <div class = "col-lg-3">
+                                            									{{thing.control}}
+                                                                            </div>
+                                                                            <div class = "col-lg-3">
+                                            									{{thing.complete}}
+                                                                            </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <button v-on:click='removeglobthreshold' type='button' class='btn btn-danger btn-xs'>Remove Global Threshold</button><br><br>
+                                                                        </div>
+                                                                        <div v-else><em>No Global Barcode Theshold Set.</em><br><br></div>
+
+                                                                            <br><br><Strong>Individual Barcode Theshold Set.</strong><br><br>
+                                                                                <div v-if="basenotificationmaster.<?php echo $_SESSION['active_run_name']?>.barcodecoverage">
+                                                                            <!--<div class='table-responsive'>-->
+                                        									<div class = "row">
+                                                                                <div class = "col-lg-12">
+                                        									<div class = "col-lg-3"><strong>
+                                        									Reference
+                                                                        </div>
+                                                                        <div class = "col-lg-3">
+                                        									Threshold
+                                                                        </div>
+                                                                        <div class = "col-lg-3">
+                                        									Stop Run (1=Yes)
+                                                                        </div>
+                                                                        <div class = "col-lg-3">
+                                        									Complete</strong>
+                                                                        </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div v-for="thing in basenotificationmaster.<?php echo $_SESSION['active_run_name']?>.barcodecoverage">
+                                                                                <div class = "row">
+                                                                                    <div class = "col-lg-12">
+                                            									<div class = "col-lg-3">
+                                            									{{thing.reference}}
+                                                                            </div>
+                                                                            <div class = "col-lg-3">
+                                            									{{thing.threshold}}
+                                                                            </div>
+                                                                            <div class = "col-lg-3">
+                                            									{{thing.control}}
+                                                                            </div>
+                                                                            <div class = "col-lg-3">
+                                            									{{thing.complete}}
+                                                                            </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <button v-on:click="removethresholds" type='button' class='btn btn-danger btn-xs'>Remove Thresholds</button><br><br>
+                                                                        </div>
+                                                                        <div v-else><em>No Individual Barcode Thresholds Set.</em><br><br></div>
+
+                                                                        <br><br><Strong>Reference Coverage Thresholds Set.</strong><br><br>
+                                                                            <div v-if="basenotificationmaster.<?php echo $_SESSION['active_run_name']?>.referencecoverage">
+                                                                        <!--<div class='table-responsive'>-->
+                                                                        <div class = "row">
+                                                                            <div class = "col-lg-12">
+                                                                        <div class = "col-lg-5"><strong>
+                                                                        Reference
+                                                                    </div>
+                                                                    <div class = "col-lg-1">
+                                                                        Limit
+                                                                    </div>
+                                                                    <div class = "col-lg-1">
+                                                                        Start
+                                                                    </div>
+                                                                    <div class = "col-lg-1">
+                                                                        End
+                                                                    </div>
+                                                                    <div class = "col-lg-1">
+                                                                        Stop (1=Yes)
+                                                                    </div>
+                                                                    <div class = "col-lg-1">
+                                                                        Done
+                                                                    </div>
+                                                                    <div class = "col-lg-1">
+                                                                        Delete</strong>
+                                                                    </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div v-for="thing in basenotificationmaster.<?php echo $_SESSION['active_run_name']?>.referencecoverage">
+                                                                            <div class = "row">
+                                                                                <div class = "col-lg-12">
+                                                                            <div class = "col-lg-5">
+                                                                            {{thing.reference}}
+                                                                        </div>
+                                                                        <div class = "col-lg-1">
+                                                                            {{thing.threshold}}
+                                                                        </div>
+                                                                        <div class = "col-lg-1">
+                                                                            {{thing.start}}
+                                                                        </div>
+                                                                        <div class = "col-lg-1">
+                                                                            {{thing.end}}
+                                                                        </div>
+                                                                        <div class = "col-lg-1">
+                                                                            {{thing.control}}
+                                                                        </div>
+                                                                        <div class = "col-lg-1">
+                                                                            {{thing.complete}}</strong>
+                                                                        </div>
+                                                                        <div class = "col-lg-1">
+                                                                            <button v-on:click="removeref(thing.alert_index)" id='removeref{{thing.alert_index}}' type='button' value='{{thing.alert_index}}' class='btn btn-danger btn-xs'>Remove</button>
+
+                                                                        </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div v-else><em>No Reference Coverage Thresholds Set.</em><br><br></div>
+
+
+                                                                <br><br><Strong>Base Notifications Set.</strong><br><br>
+                                                                    <div v-if="basenotificationmaster.<?php echo $_SESSION['active_run_name']?>.basenotification">
+                                                                <!--<div class='table-responsive'>-->
+                                                                <div class = "row">
+                                                                    <div class = "col-lg-12">
+                                                                <div class = "col-lg-5"><strong>
+                                                                Type
+                                                            </div>
+                                                            <div class = "col-lg-2">
+                                                                Base Number
+                                                            </div>
+
+                                                            <div class = "col-lg-1">
+                                                                Delete</strong>
+                                                            </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div v-for="thing in basenotificationmaster.<?php echo $_SESSION['active_run_name']?>.basenotification">
+                                                                    <div class = "row">
+                                                                        <div class = "col-lg-12">
+                                                                    <div class = "col-lg-5">
+                                                                    {{thing.type}}
+                                                                </div>
+                                                                <div class = "col-lg-2">
+                                                                    {{thing.threshold}}
+                                                                </div>
+
+                                                                <div class = "col-lg-1">
+                                                                    <button v-on:click="removeref(thing.alert_index,thing.type)" id='removeref{{thing.alert_index}}' type='button' value='{{thing.alert_index}}' class='btn btn-danger btn-xs'>Remove</button>
+
+                                                                </div>
+                                                                </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                            <div v-else><em>No Base Thresholds Set.</em><br><br></div>
+                                                        </div>
+
+                                                			</div>
+                                                			</div></div></div>
+
+
+                                                		</div>
+                                                	</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+
+
+
+
+
                             								<!--NEW BLOCK-->
                             							</div>
                             </div>
@@ -948,7 +1033,26 @@ include 'includes/head-new.php';
 
 
       </script>
-
+      <script>
+        $(function(){
+            $('#disk_space_alert').on('click', function(e){
+                e.preventDefault();
+                var space = $("input:radio[name='diskspace']:checked").val();
+                var monkey = 'jsonencode/set_alerts.php?twitterhandle=<?php echo $_SESSION['twittername'];?>&type=Template&rununtil=0&reference=&start=&end=&task=disknotify&threshold='+space;
+                $.ajax({
+                      url: monkey,
+                      success: function(data){
+                          //alert ('success');
+                          $('#resetmodal').modal('hide')
+                          //alert(data);
+                          $("#messages").html(data);
+                      }, error: function(){
+                          alert('ajax failed');
+                      },
+                  })
+            })
+        })
+      </script>
       <script>
       	$(function(){
       		$('#reference_coverage_button').on('click', function(e) {
@@ -981,6 +1085,28 @@ include 'includes/head-new.php';
       		})
       	})
       </script>
+      <script>
+        $(function(){
+            //alert("hello b");
+            $('#remdisknotice').on('click', function(e) {
+                e.preventDefault();
+                //alert("click clik");
+                var monkey = 'jsonencode/set_alerts.php?task=removedisknotice&type=Template';
+                $.ajax({
+                      url: monkey,
+                     // alert ('url'),
+                      success: function(data){
+                          //alert ('success');
+                          $('#resetmodal').modal('hide');
+                          //alert(data);
+                          $("#messages").html(data);
+                      }, error: function(){
+                          alert('ajax failed');
+                      },
+                 })
+            })
+        })
+      </script>
   <script>
       	$(function(){
       		$('#removethresholds').on('click', function(e) {
@@ -992,10 +1118,10 @@ include 'includes/head-new.php';
                      // alert ('url'),
                       success: function(data){
                           //alert ('success');
-                          $('#resetmodal').modal('hide')
+                          $('#resetmodal').modal('hide');
                           //alert(data);
                           $("#messages").html(data);
-                          location.reload();
+                          //location.reload();
                       }, error: function(){
                           alert('ajax failed');
                       },
@@ -1014,16 +1140,71 @@ include 'includes/head-new.php';
                      // alert ('url'),
                       success: function(data){
                           //alert ('success');
-                          $('#resetmodal').modal('hide')
+                          $('#resetmodal').modal('hide');
                           //alert(data);
                           $("#messages").html(data);
-                          location.reload();
+                          //location.reload();
                       }, error: function(){
                           alert('ajax failed');
                       },
                   })
       		})
       	})
+      </script>
+      <script>
+
+              $(function(){
+              $('#gen_coverage').on('click', function(e){
+                  e.preventDefault(); // preventing default click action
+                  var idClicked = e.target.id;
+                  var idVal = $("#foldchange").val();
+                  //alert('were getting there ' + idClicked + ' is ' + idVal);
+          		//alert ($("input:radio[name='coveragenoticeradio']:checked").val());
+          		var type = $("input:radio[name='coveragenoticeradio']:checked").val();
+                   var monkey = 'jsonencode/set_alerts.php?twitterhandle=<?php echo $_SESSION['twittername'];?>&type='+type+'&task=gencoverage&threshold='+idVal;
+                  //alert (monkey);
+                  $.ajax({
+                      url: monkey,
+                     // alert ('url'),
+                      success: function(data){
+                          //alert ('success');
+                          $('#resetmodal').modal('hide')
+                          //alert(data);
+                          $("#messages").html(data);
+                      }, error: function(){
+                          alert('ajax failed');
+                      },
+                  })
+                  //alert ("button clicked");
+              })
+          })
+      </script>
+      <script>
+
+              $(function(){
+              $('#base_notification').on('click', function(e){
+                  e.preventDefault(); // preventing default click action
+                  var idClicked = e.target.id;
+                  var idVal = $("#basenotification").val()
+                  //alert('were getting there ' + idClicked + ' is ' + idVal);
+          		var type = $("input:radio[name='basenoticeradio']:checked").val();
+                   var monkey = 'jsonencode/set_alerts.php?twitterhandle=<?php echo $_SESSION['twittername'];?>&type='+type+'&task=basenotification&threshold='+idVal;
+                  //alert (monkey);
+                  $.ajax({
+                      url: monkey,
+                     // alert ('url'),
+                      success: function(data){
+                          //alert ('success');
+                          $('#resetmodal').modal('hide')
+                          //alert(data);
+                          $("#messages").html(data);
+                      }, error: function(){
+                          alert('ajax failed');
+                      },
+                  })
+                  //alert ("button clicked");
+              })
+          })
       </script>
   <script>
   	$(function(){
@@ -1040,7 +1221,7 @@ include 'includes/head-new.php';
                           $('#resetmodal').modal('hide')
                           //alert(data);
                           $("#messages").html(data);
-                          location.reload();
+                          //location.reload();
                       }, error: function(){
                           alert('ajax failed');
                       },
@@ -1144,87 +1325,7 @@ include 'includes/head-new.php';
   		})
   	})
   	</script>
-      <!-- Pore Mux Data -->
 
-      <script>
-      			$(document).ready(function() {
-      			    var options = {
-      			        chart: {
-      						renderTo: 'channelstatusheatmap',
-      			            type: 'heatmap',
-      			            marginTop: 30,
-      			            marginBottom: 30
-      			        },
-
-
-      			        title: {
-      			            text: 'Channel States'
-      			        },
-
-      			        xAxis: {
-      			        	categories: [],
-      			            title: 'Columns',
-      						labels: {
-      						    enabled: false
-      						  },
-
-      			        },
-
-      			        yAxis: {
-      			        	categories: [],
-      			            title: 'Rows',
-      						labels: {
-      						    enabled: false
-      						  },
-
-      			        },
-      					credits: {
-      					    enabled: false
-      					  },
-      			        colorAxis: {
-      			            min: 0,
-      			            minColor: '#FFFFFF',
-      			            maxColor: Highcharts.getOptions().colors[0]
-      			        },
-
-      			         legend: {
-                                          enabled: false,
-                                          align: 'right',
-      						            layout: 'vertical',
-      						            margin: 0,
-      						            verticalAlign: 'middle',
-      						            y: 25,
-      						            symbolHeight: 320
-      						        },
-
-      			        series: []
-
-      			    };
-                      function loadchirpcs() {
-
-          					if(1 == 1) {
-             										   $.getJSON('jsonencode/channelstatus.php?prev=0&callback=?', function(data) {
-
-                                                  options.series = data; // <- just assign the data to the series property.
-
-                                                          setTimeout(loadchirpcs,<?php echo $_SESSION['pagerefresh'] ;?>);
-
-                                                  //options.series = JSON2;
-                                                          var chart = new Highcharts.Chart(options);
-                                                          });} else {
-             setTimeout(loadchirpcs,<?php echo $_SESSION['pagerefresh'] ;?>);
-          }
-
-                                                  }
-
-
-          				        loadchirpcs();
-
-          			});
-
-          				//]]>
-
-          </script>
 
       <script>
       		$(document).ready(function() {
