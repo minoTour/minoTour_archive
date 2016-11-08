@@ -201,13 +201,19 @@ include 'includes/head-new.php';
                                     <div id="lengthtimewindow" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Read Lengths Over Time.</div>
     								<div class="row">
     								<?php if ($_SESSION['activereference'] != "NOREFERENCE") {?>
-    									<?php foreach ($_SESSION['activerefnames'] as $key => $value) {
-    										//echo $key . " " . $value . "<br>";?>
+                                        <?php if (count($_SESSION['activerefnames']) >= 3){
+                                            //echo "We need something else to handle this bad boy.";?>
+                                            <div class="col-md-6" id="percentcoverageglob" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Coverage for sequences</div>
+    										<div class="col-md-6" id="depthcoverageglob" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Depth for sequences</div>
+                                            <?php
+                                        }else {?>
+                                            <?php //var_dump($_SESSION['activerefnames']); ?>
+    									<?php foreach ($_SESSION['activerefnames'] as $key => $value) {?>
     										<div class="col-md-6" id="percentcoverage<?php echo $key;?>" style="height:200px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Coverage for <?php echo $value;?></div>
     										<div class="col-md-6" id="depthcoverage<?php echo $key;?>" style="height:200px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Depth for <?php echo $value;?></div>
                                             <?php
-                                            break;
     									}
+                                    }
     									?>
                                         <div class="col-md-12" id="mappabletime" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> 2D Reads Mapping Over Time.</div>
     								<!---<div class="col-md-6" id="percentcoverage" style="width:50%; height:200px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Coverage</div>--->

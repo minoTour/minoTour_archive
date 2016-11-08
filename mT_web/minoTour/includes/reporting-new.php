@@ -342,6 +342,8 @@ PNotify.prototype.options.styling = "fontawesome";
 </script>
 <!-- Highcharts Addition -->
 <script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/modules/solid-gauge.src.js"></script>
 <script type="text/javascript" src="js/themes/grid-light.js"></script>
 <script src="http://code.highcharts.com/modules/heatmap.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>

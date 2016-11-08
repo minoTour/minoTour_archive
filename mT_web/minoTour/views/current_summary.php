@@ -118,8 +118,8 @@ include 'includes/head-new.php';
                   <li><a href="current_pores.php">Pore Activity</a></li>
                   <li><a href="current_quality.php">Read Quality</a></li>
                   <?php if ($_SESSION['activereference'] != "NOREFERENCE") {?>
-                      <li><a href="current_bases.php">Base Coverage</a></li>
                   <li><a href="current_coverage.php">Coverage Detail</a></li>
+                  <li><a href="current_bases.php">Base Coverage</a></li>
 
                   <?php }; ?>
 
@@ -166,14 +166,21 @@ include 'includes/head-new.php';
           				<div class="row">
           					<?php if ($_SESSION['activereference'] != "NOREFERENCE") {?>
 
-          								<?php foreach ($_SESSION['activerefnames'] as $key => $value) {
-          									//echo $key . " " . $value . "<br>";?>
-          									<div class="col-md-6" id="percentcoverage<?php echo $key;?>" style="width:50%; height:200px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Coverage for <?php echo $value;?></div>
-          									<div class="col-md-6" id="depthcoverage<?php echo $key;?>" style="width:50%; height:200px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Depth for <?php echo $value;?></div><?php
-          								}
-          								?>
-                                          <div class="col-md-12" id="mappabletime" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> 2D Reads Mapping Over Time.</div>
-          							<?php }else { ?>
+                                <?php if (count($_SESSION['activerefnames']) >= 3){
+                                    //echo "We need something else to handle this bad boy.";?>
+                                    <div class="col-md-6" id="percentcoverageglob" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Coverage for sequences</div>
+                                    <div class="col-md-6" id="depthcoverageglob" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Depth for sequences</div>
+                                    <?php
+                                }else {?>
+                                    <?php var_dump($_SESSION['activerefnames']); ?>
+                                <?php foreach ($_SESSION['activerefnames'] as $key => $value) {
+                                    echo $key . " " . $value . "<br>";?>
+                                    <div class="col-md-6" id="percentcoverage<?php echo $key;?>" style="height:200px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Coverage for <?php echo $value;?></div>
+                                    <div class="col-md-6" id="depthcoverage<?php echo $key;?>" style="height:200px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Depth for <?php echo $value;?></div>
+                                    <?php
+                                }
+                            }
+                        }else { ?>
           															<div><p class="text-center"><small>This dataset has not been aligned to a reference sequence.</small></p></div>
           							<?php }; ?>
           				</div>
@@ -694,72 +701,134 @@ include 'includes/head-new.php';
                 //]]>
 
                 </script>
-                <?php if ($_SESSION['focusreference'] != "NOREFERENCE") {?>
-                <?php foreach ($_SESSION['focusrefnames'] as $key => $value) {
-                    //echo $key . " " . $value . "<br>";?>
+
+                <?php if ($_SESSION['activereference'] != "NOREFERENCE") {?>
+
+                        <?php if (count($_SESSION['activerefnames']) >= 3){?>
+                            <script>
+                                $(document).ready(function() {
+                                    var options = {
+                                        chart: {
+                                            renderTo: 'percentcoverageglob',
+                                            type: 'column',
+                                        },
+                                        plotOptions: {
+                                            column: {
+                                                animation: false,
+                                            }
+                                        },
+                                        title: {
+                                          text: 'Percentage of Reference Sequenced'
+                                        },
+                                        xAxis: {
+                                                    title: {
+                                                        text: 'Reference'
+                                                    },
+                                                    labels: {
+                                                        rotation: -45,
+                                            enabled:true,
+                                            },
+                                            categories: []
+                                                },
+                                                yAxis: {
+                                                            title: {
+                                                                text: '% Coverage'
+                                                            }
+                                                        },
+                                                        credits: {
+                                                            enabled: false
+                                                          },
+                                        legend: {
+                                            layout: 'horizontal',
+                                            align: 'center',
+                                            verticalAlign: 'bottom',
+                                            borderWidth: 0
+                                        },
+                                        series: []
+                                    };
+                                    function loadchirppercentcoverageglob() {
+                                        $.getJSON('jsonencode/percentcoverageglob.php?prev=0&callback=?', function(data) {
+                                            options.xAxis.categories = data[0]['data'];
+                                            options.series = data.slice(1,); // <- just assign the data to the series property.
+                                            //setTimeout(loadchirppercentcoverageglob,<?php //echo $_SESSION['pagerefresh'] ;?>);
+                                            var chart = new Highcharts.Chart(options);
+                                        })
+                                    };
+
+                                    loadchirppercentcoverageglob();
+
+                                });
+                            </script>
+
+                            <script>
+                                $(document).ready(function() {
+                                    var options = {
+                                        chart: {
+                                            renderTo: 'depthcoverageglob',
+                                            type: 'column'
+                                            //type: 'line'
+                                        },
+                                        plotOptions: {
+                                            column: {
+                                                animation: false,
+                                            }
+                                                },
+                                        title: {
+                                          text: 'Average Depth of Sequenced Positions'
+                                        },
+                                        xAxis: {
+                                                    title: {
+                                                        text: 'Reference'
+                                                    },
+                                                    labels: {
+                                                        rotation: -45,
+                                            enabled:true,
+                                            },
+                                                },
+                                                yAxis: {
+                                                            title: {
+                                                                text: 'Depth'
+                                                                //text: ''
+                                                            },
+                                                        },
+                                                        credits: {
+                                                            enabled: false
+                                                          },
+                                        legend: {
+                                            layout: 'horizontal',
+                                            align: 'center',
+                                            verticalAlign: 'bottom',
+                                            borderWidth: 0
+                                        },
+                                        series: []
+                                    };
+                                    function loadchirpdepthcoverageglob() {
+                                        $.getJSON('jsonencode/depthcoverageglob.php?prev=0&callback=?', function(data) {
+                                            options.xAxis.categories = data[0]['data'];
+                                            options.series = data.slice(1,); // <- just assign the data to the series property.
+                                            //setTimeout(loadchirpdepthcoverageglob,<?php //echo $_SESSION['pagerefresh'] ;?>);
+                                            var chart = new Highcharts.Chart(options);
+                                        })
+                                    };
+
+                                    loadchirpdepthcoverageglob();
+
+                                });
+                            </script>
 
 
-                    <script>
 
-                                                            $(document).ready(function() {
-                                                                var options = {
-                                                                    chart: {
-                                                                        renderTo: 'percentcoverage<?php echo $key;?>',
-                                                                        type: 'bar'
-                                                                        //type: 'line'
-                                                                    },
-                                                                    plotOptions: {
-                                                                                bar: {
-                                                                                    animation: false
-
-                                                                                }
-                                                                            },
-                                                                    title: {
-                                                                      text: 'Percentage of Reference (<?php echo $value;?>) with Read'
-                                                                    },
-                                                                    xAxis: {
-                                                                                title: {
-                                                                                    text: 'Strand'
-                                                                                }
-                                                                            },
-                                                                            yAxis: {
-                                                                                        title: {
-                                                                                            text: 'Percentage'
-                                                                                        },
-                                                                                        max: 100
-                                                                                    },
-                                                                                    credits: {
-                                                                                        enabled: false
-                                                                                      },
-                                                                    legend: {
-                                                                        layout: 'vertical',
-                                                                        align: 'right',
-                                                                        verticalAlign: 'middle',
-                                                                        borderWidth: 0
-                                                                    },
-                                                                    series: []
-                                                                };
-                                                                     $.getJSON('jsonencode/percentcoverage.php?prev=0&refid=<?php echo $key;?>&callback=?', function(data) {
-                                                                    //alert("success");
-
-                                                            options.series = data; // <- just assign the data to the series property.
+                            <?php
+                        }else{?>
+                    <?php foreach ($_SESSION['activerefnames'] as $key => $value) {
+                        //echo $key . " " . $value . "<br>";?>
 
 
-                                                                    var chart = new Highcharts.Chart(options);
-                                                                    });
-
-                                                            });
-
-
-                                                                //]]>
-
-                                                                </script>
-                                                                <script>
-
+                        <script>
                                                                 $(document).ready(function() {
                                                                     var options = {
                                                                         chart: {
-                                                                            renderTo: 'depthcoverage<?php echo $key;?>',
+                                                                            renderTo: 'percentcoverage<?php echo $key;?>',
                                                                             type: 'bar'
                                                                             //type: 'line'
                                                                         },
@@ -770,7 +839,7 @@ include 'includes/head-new.php';
                                                                                     }
                                                                                 },
                                                                         title: {
-                                                                          text: 'Average Depth of Sequenced Positions (<?php echo $value;?>)'
+                                                                          text: 'Percentage of Reference (<?php echo $value;?>) with Read'
                                                                         },
                                                                         xAxis: {
                                                                                     title: {
@@ -779,44 +848,127 @@ include 'includes/head-new.php';
                                                                                 },
                                                                                 yAxis: {
                                                                                             title: {
-                                                                                                text: 'Depth'
+                                                                                                //text: 'Percentage'
+                                                                                                text: ''
                                                                                             },
+                                                                                            max: 100
                                                                                         },
                                                                                         credits: {
                                                                                             enabled: false
                                                                                           },
                                                                         legend: {
-                                                                            layout: 'vertical',
-                                                                            align: 'right',
-                                                                            verticalAlign: 'middle',
+                                                                            layout: 'horizontal',
+                                                                            align: 'center',
+                                                                            verticalAlign: 'bottom',
                                                                             borderWidth: 0
                                                                         },
                                                                         series: []
                                                                     };
+                                                                    function loadchirp10<?php echo $key;?>() {
+                                                                        if($('#readsummarycheck').prop('checked')) {
+                                                                 $.getJSON('jsonencode/percentcoverage.php?prev=0&refid=<?php echo $key;?>&callback=?', function(data) {
+                                                                        //alert("success");
 
-                                                             $.getJSON('jsonencode/depthcoverage.php?prev=0&refid=<?php echo $key;?>&callback=?', function(data) {
+                                                                options.series = data; // <- just assign the data to the series property.
 
-                                                                    //alert("success");
-
-                                                            options.series = data; // <- just assign the data to the series property.
+                                                                        setTimeout(loadchirp10<?php echo $key;?>,<?php echo $_SESSION['pagerefresh'] ;?>);
 
 
-                                                                    var chart = new Highcharts.Chart(options);
-                                                                    });
+                                                                        var chart = new Highcharts.Chart(options);
+                                                                        });} else {
+                           setTimeout(loadchirp10<?php echo $key;?>,<?php echo $_SESSION['pagerefresh'] ;?>);
+                        }
+
+                                                                }
+
+
+                                                                            loadchirp10<?php echo $key;?>();
+
                                                                 });
+
 
                                                                     //]]>
 
                                                                     </script>
+                                                                    <script>
+
+                                                                    $(document).ready(function() {
+                                                                        var options = {
+                                                                            chart: {
+                                                                                renderTo: 'depthcoverage<?php echo $key;?>',
+                                                                                type: 'bar'
+                                                                                //type: 'line'
+                                                                            },
+                                                                            plotOptions: {
+                                                                                        bar: {
+                                                                                            animation: false
+
+                                                                                        }
+                                                                                    },
+                                                                            title: {
+                                                                              text: 'Average Depth of Sequenced Positions (<?php echo $value;?>)'
+                                                                            },
+                                                                            xAxis: {
+                                                                                        title: {
+                                                                                            text: 'Strand'
+                                                                                        }
+                                                                                    },
+                                                                                    yAxis: {
+                                                                                                title: {
+                                                                                                    //text: 'Depth'
+                                                                                                    text: ''
+                                                                                                },
+                                                                                            },
+                                                                                            credits: {
+                                                                                                enabled: false
+                                                                                              },
+                                                                            legend: {
+                                                                                layout: 'horizontal',
+                                                                                align: 'center',
+                                                                                verticalAlign: 'bottom',
+                                                                                borderWidth: 0
+                                                                            },
+                                                                            series: []
+                                                                        };
+                                                                        function loadchirp11<?php echo $key;?>() {
+                                        if($('#readsummarycheck').prop('checked')) {
+                                                                 $.getJSON('jsonencode/depthcoverage.php?prev=0&refid=<?php echo $key;?>&callback=?', function(data) {
+
+                                                                        //alert("success");
+
+                                                                options.series = data; // <- just assign the data to the series property.
+
+                                                                        setTimeout(loadchirp11<?php echo $key;?>,<?php echo $_SESSION['pagerefresh'] ;?>);
+
+
+                                                                        var chart = new Highcharts.Chart(options);
+                                                                        });} else {
+                           setTimeout(loadchirp11<?php echo $key;?>,<?php echo $_SESSION['pagerefresh'] ;?>);
+                        }
+
+                                                                }
+
+
+                                                                                loadchirp11<?php echo $key;?>();
+
+                                                                    });
+
+                                                                        //]]>
+
+                                                                        </script>
 
 
 
 
-                    <?php
-                    }
-                    ?>
-                    <?php }
-                    ?>
+                        <?php
+                        }
+                        }
+                        ?>
+                        <?php }
+                        ?>
+
+
+
 
 
 

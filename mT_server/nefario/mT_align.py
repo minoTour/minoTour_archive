@@ -5,7 +5,7 @@
 # File Name: mT_align.py
 # Purpose:
 # Creation Date: 10-06-2016
-# Last Modified: Thu, Oct  6, 2016  2:44:46 PM
+# Last Modified: Thu, Oct 13, 2016  4:18:21 PM
 # Author(s): The DeepSEQ Team, University of Nottingham UK
 # Copyright 2016 The Author(s) All Rights Reserved
 # Credits:
@@ -31,7 +31,7 @@ dbname = sys.argv[1]
 
 sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
-verbose = False # True
+verbose = False # sys.argvTrue
 def output(s):
     if verbose is True: print s
 def output2(s,s_):
@@ -146,18 +146,36 @@ def insertDF(df, tname):
   output("Inserting into: %s ... " % (tname))
   if numRows(df) != 0:
     try:
-        df.to_sql(con=conn, name=tname, if_exists='append', flavor='mysql')
         #print tname
         #print df.T
         #sys.stdout.flush()
-        print "... %d rows inserted." % (numRows(df) )
+        df.to_sql(con=conn, name=tname, if_exists='append', flavor='mysql')
+        #print "%s ... %d rows inserted." % (tname, numRows(df) )
         #df = selectDF("SELECT * FROM " + tname)
         #print df.T
         #print "="*80
         #sys.stdout.flush()
     except Exception,e:
         print "EXCEPTION", tname, str(e)
-        #sys.exit()
+        sys.exit()
+
+def insert_autoinc_DF(df, tname):
+  output("Inserting into: %s ... " % (tname))
+  sys.stdout.flush()
+  if numRows(df) != 0:
+    try:
+        #print tname
+        #print df.T
+        #sys.stdout.flush()
+        df.to_sql(con=conn, name=tname, if_exists='append', flavor='mysql', index=False)
+        #print "%s ... %d rows inserted." % (tname, numRows(df) )
+        #df = selectDF("SELECT * FROM " + tname)
+        #print df.T
+        #print "="*80
+        #sys.stdout.flush()
+    except Exception,e:
+        print "EXCEPTION", tname, str(e)
+        sys.exit()
 
 #-------------------------------------------------------------------------------
 # Cigar Processing ...
@@ -378,7 +396,7 @@ def createCoverageTable(dbanme, t, cursor):
         '''
         CREATE TABLE IF NOT EXISTS ''' + t + '''
             (
-                `ref_id` INT NOT NULL,
+                `ref_id` TEXT NOT NULL,
                 `ref_pos` INT NOT NULL,
                 `ref_seq` TINYTEXT NOT NULL,
                 `A` INT,
@@ -387,7 +405,7 @@ def createCoverageTable(dbanme, t, cursor):
                 `C` INT,
                 `D` INT,
                 `I` INT,
-                PRIMARY KEY (`ref_id`,`ref_pos`)
+                PRIMARY KEY (`ref_id`(20),`ref_pos`)
             )
         CHARACTER SET utf8
         '''
@@ -496,7 +514,6 @@ else:
                    PRIMARY KEY (`readtrackid`) ) CHARACTER SET utf8"
                 cursor.execute(sql)
 
-
                 # reference_coverage_ ...
                 t = "reference_coverage_" + readtype
                 createCoverageTable(dbname, t, cursor)
@@ -519,11 +536,9 @@ else:
                     dbname + "`.`read_tracking_barcode_" + readtype + "` ( \
                    `readtrackid` INT NOT NULL AUTO_INCREMENT, \
                    `basename_id` INT NOT NULL, \
-                   PRIMARY KEY (`readtrackid`) \
-                     ) \
-                     CHARACTER SET utf8"
-                if readtype == "2d" and numRows(tbl_check_barcode) != 0:
-                        cursor.execute(sql_1)
+                   PRIMARY KEY (`readtrackid`) ) CHARACTER SET utf8"
+                #if readtype == "2d" and numRows(tbl_check_barcode) != 0:
+                cursor.execute(sql_1)
 
                 # reference_coverage_barcode_ ...
                 t = "reference_coverage_barcode_" + readtype
@@ -546,9 +561,7 @@ else:
                     dbname + "`.`read_tracking_pre_" + readtype + "` (\
                    `readtrackid` INT NOT NULL AUTO_INCREMENT,\
                    `basename_id` INT NOT NULL,\
-                   PRIMARY KEY (`readtrackid`)\
-                     )\
-                     CHARACTER SET utf8"
+                   PRIMARY KEY (`readtrackid`)) CHARACTER SET utf8"
 
                 # reference_pre_coverage_ ...
                 sql_2 = "CREATE TABLE IF NOT EXISTS `" + \
@@ -674,7 +687,7 @@ else:
 
                 # 2D ....
                 #if readtype == "2d" and numRows(tbl_check_barcode)>0:
-                if readtype == "2d" and numRows(tbl_check_barcode)>0:
+                if numRows(tbl_check_barcode)>0:
                     if tabletype == "last_align_maf_basecalled_template":
                         output("parsing barcodes")
 
@@ -707,15 +720,16 @@ else:
 
                     output(query)
 
-                    # MS TODO Check this .....
-                    output( "line 700")
-
                     barquerygo = selectDF(query)
                     barmafhash = processDF(barquerygo)
 
+                    # MS TODO Check this .....
+                    df = barquerygo
                     tname = "read_tracking_barcode_" + readtype
-                    insertDF(df, tname)
-                    
+                    insert_autoinc_DF(df[['basename_id']], tname)
+                    tname = "read_tracking_" + readtype
+                    insert_autoinc_DF(df[['basename_id']], tname)
+
                     _hash = barmafhash
 
                     # Convert hash to array ...
@@ -730,9 +744,12 @@ else:
 
                     df = array2frame(array,colNames,indexes)
                     # print df
-                    tname = "reference_coverage_barcode_" +readtype
+                    tname = "reference_coverage_barcode_" +readtype + "_tmp"
                     output( tname)
                     insertDF(df, tname)
+
+
+
 
 #-------------------------------------------------------------------------------
 # Translate MAF or SAM alignments into a reference coverage plot data...
@@ -790,7 +807,7 @@ else:
                     # Convert hash to array ...
                     valsarray=('reference','A','T','G','C','i','d')
                     array = hash2array(_hash, valsarray)
-                    output( "line 793")
+                    output("line 793")
 
                     # Convert array to dataframe ...
                     colNames=['ref_id','ref_pos','ref_seq'
@@ -798,36 +815,31 @@ else:
                     indexes = colNames[:2]
                     df = array2frame(array,colNames,indexes)
 
-                    output( "line 793")
-                    #print df.T
-                    #sys.stdout.flush()
-
                     # Insert dataframe into db table ...
                     tname = "reference_coverage_" +readtype+ "_tmp"
-
                     insertDF(df, tname)
 
                     output("-"*80)
 
                     # Book keeping ...
-                    df = table['basename_id']
-                    colNames = ['readtrackid','basename_id']
-                    df.columns = colNames
+                    df = table[['basename_id']]
+                    sys.stdout.flush()
 
-                    '''
                     tname = "read_tracking_" + readtype
-                    insertDF(df, tname)
-                    '''
+                    insert_autoinc_DF(df, tname) # , False)
 
-                    # MS TODO
-                    '''
+
                     tname = "read_tracking_pre_" + readtype
-                    insertDF(df, tname)
-                    '''
+                    insert_autoinc_DF(df, tname)
+
+                    sys.stdout.flush()
+
                   except: pass
 
     memd.delete(checkrunning)
 
+'''
 if 0: # except:
     output("Exception so ending....")
     sys.exit()
+'''

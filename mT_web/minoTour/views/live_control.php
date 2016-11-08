@@ -99,7 +99,6 @@ include 'includes/head-new.php';
 
             <?php include 'includes/run_check.php';?>
 
-
                 <div class="box">
                 <div class="box-header">
                   <h3 class="box-title">Live Interaction</h3>
@@ -134,13 +133,96 @@ include 'includes/head-new.php';
   <!-- Tab panes-->
   <div class="tab-content">
     <div v-for="(key,minion) in minions | orderBy 'name'" role="tabpanel" class="tab-pane" id="{{minion.name}}">
-        <h3>You are interacting with minION: {{minion.name}}</h3>
+        <h5>You are interacting with minION: {{minion.name}}</h5>
 
 
         <div v-if="minion.state==1">
-            <p
-            <h3>It is currently <b>active</b>.</h3>
-            <p>{{minion.histogram}}</p>
+
+            <h5>It is currently <b>active</b>.</h5>
+
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                <h3 class="panel-title">minKNOW Details</h3>
+                </div>
+
+              <div class="panel-body">
+                  <div v-if='minion.engine_states.status!="ready"'>
+                      <div class="row">
+                          <div class="col-lg-12">
+                              <div class="col-lg-3" id="{{minion.name}}"><div is="container-temp" :title="minion.name" :key="key" :datain="minion.engine_states.minion_heatsink_temperature"></div></div>
+                              <div class="col-lg-3" id="{{minion.name}}"><div is="container-chan" :title="minion.name" :key="key" :datain="minion.statistics.channels_with_read_event_count"></div></div>
+                              <div class="col-lg-3" id="{{minion.name}}"><div is="container-strand" :title="minion.name" :key="key" :datain="minion.simplesummary"></div></div>
+                              <div class="col-lg-3" id="{{minion.name}}"><div is="container-perc" :title="minion.name" :key="key" :datain="minion.simplesummary"></div></div>
+                          </div>
+                      </div>
+                      <div class="row">
+
+                      <div class ="col-lg-12" id="{{minion.name}}"><div is="channelstatescalc" :title="minion.name" : key="key" :counts='minion.simplesummary' :datain2="minion.channelstuff"></div></div>
+                  </div>
+
+                  <hr>
+                    <div class="col-md-2"><p><i>Last Update</i>: {{minion.timestamp}}</p></div>
+                    <div class="col-md-2"><p><i>MinKNOW version</i>: {{minion.engine_states.version_string}}</p></div>
+                    <div class="col-md-2"><p><i>minION heatsink temperature</i>: {{minion.engine_states.minion_heatsink_temperature}}</p></div>
+                    <div class="col-md-2"><p><i>minION ID</i>: {{minion.engine_states.minion_id}}</p></div>
+                    <div class="col-md-2"><p><i>ASIC ID</i>: {{minion.engine_states.asic_id_full}}/{{minion.engine_states.asic_id}}</p></div>
+                    <div class="col-md-2"><p><i>minION ASIC temperature</i>: {{minion.engine_states.minion_asic_temperature}}</p></div>
+                    <div class="col-md-2"><p><i>Yield</i>: {{minion.engine_states.yield}}/{{minion.statistics.read_event_count}}</p></div>
+                    <div class="col-md-2"><p><i>Experiment Start Time</i>: {{minion.engine_states.daq_start_time}}</p></div>
+                    <!--<div class="col-md-2"><p><i>Experiment End Time</i>: {{minion.engine_states.daq_stop_time}}</p></div>-->
+                    <div class="col-md-2"><p><i>Status</i>: {{minion.engine_states.status}}</p></div>
+                    <div class="col-md-2"><p><i>Flow Cell ID</i>: {{minion.engine_states.flow_cell_id}}</p></div>
+                    <div class="col-md-2"><p><i>Channels with Reads</i>: {{minion.statistics.channels_with_read_event_count}}</p></div>
+                    <div class="col-md-2"><p><i>Read Event Count</i>: {{minion.statistics.read_event_count}}</p></div>
+                    <div class="col-md-2"><p><i>Completed Read Count</i>: {{minion.statistics.selected_completed_count}}</p></div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="col-lg-6" id="{{minion.name}}"><div is="chartreadhist" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count_weighted_hist" :datain2="minion.statistics.read_event_count_weighted_hist_bin_width"></div></div>
+                            <div class="col-lg-6" id="{{minion.name}}"><div is="chartyield" :title="minion.name" :key="key" :datain="minion.engine_states.yield" :datain2="minion.yield_history"></div></div>
+                            <div class="col-lg-6" id="{{minion.name}}"><div is="porehistory" :title="minion.name" :key="key" :datain2="minion.pore_history"></div></div>
+                            <div class="col-lg-6" id="{{minion.name}}"><div is="perchistory" :title="minion.name" :key="key" :datain2="minion.pore_history"></div></div>
+                            <div class="col-lg-6" id="{{minion.name}}"><div is="temphistory" :title="minion.name" :key="key" :datain2="minion.temp_history"></div></div>
+                            <div class="col-lg-6" id="{{minion.name}}"><div is="volthistory" :title="minion.name" :key="key" :datain2="minion.temp_history"></div></div>
+
+                        </div>
+                    </div>
+                    <!--  <div v-for="(key,value) in minion.engine_states">{{key}}:{{value}}</div>-->
+                      </div>
+
+
+                  <div v-else>
+                      <p>This minION is not currently running.</p>
+                      <button id='inactivateminion' class='btn btn-danger btn-sm' data-toggle='modal' data-target='#{{minion.name}}offminionmodal'>
+                        <i class='fa fa-stop'></i> Switch Off minION
+                      </button>
+
+                      <!-- Modal -->
+                      <div class='modal fade' id='{{minion.name}}offminionmodal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
+                          <div class='modal-dialog'>
+                              <div class='modal-content'>
+                                  <div class='modal-header'>
+                                      <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+                                      <h4 class='modal-title' id='myModalLabel'>Stop your minION</h4>
+                                  </div>
+                                  <div class='modal-body'>
+                                      <div id='{{minion.name}}offminioninfo'>
+                                          <p>This action will switch the minION to an inactive state. It should be possible to reactivate the minION remotely but software crashes on the minION controlling device may cause problems. You should only inactivate your minION device remotely if you are certain you wish to do so and <strong> at your own risk</strong>.</p>
+
+                                          <p>If you are sure you wish to do this, click 'Inactivate minION' below. Otherwise close this window.</p>
+                                      </div>
+                                      <div class='modal-footer'>
+                                          <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
+                                          <button v-on:click="inactivateminion" id='{{minion.name}}' type='button' class='btn btn-danger' data-dismiss='modal'>Switch Off minION</button>
+                                      </div>
+                                  </div><!-- /.modal-content -->
+                              </div><!-- /.modal-dialog -->
+                          </div><!-- /.modal -->
+                      </div>
+                  </div>
+
+          </div>
+          </div>
+
             <div class="col-md-4">
                 <div class="panel panel-warning">
                     <div class="panel-heading">
@@ -357,74 +439,7 @@ include 'includes/head-new.php';
 
       <div class = "col-md-12">
           <br>
-      <div class="panel panel-info">
-          <div class="panel-heading">
-          <h3 class="panel-title">minKNOW Details</h3>
-          </div>
 
-        <div class="panel-body">
-            <div class="row">
-
-            </div>
-            <div v-if='minion.engine_states.status!="ready"'>
-              <div class="col-md-2"><p><i>Last Update</i>: {{minion.timestamp}}</p></div>
-              <div class="col-md-2"><p><i>MinKNOW version</i>: {{minion.engine_states.version_string}}</p></div>
-              <div class="col-md-2"><p><i>minION heatsink temperature</i>: {{minion.engine_states.minion_heatsink_temperature}}</p></div>
-              <div class="col-md-2"><p><i>minION ID</i>: {{minion.engine_states.minion_id}}</p></div>
-              <div class="col-md-2"><p><i>ASIC ID</i>: {{minion.engine_states.asic_id_full}}/{{minion.engine_states.asic_id}}</p></div>
-              <div class="col-md-2"><p><i>minION ASIC temperature</i>: {{minion.engine_states.minion_asic_temperature}}</p></div>
-              <div class="col-md-2"><p><i>Yield</i>: {{minion.engine_states.yield}}/{{minion.statistics.read_event_count}}</p></div>
-              <div class="col-md-2"><p><i>Experiment Start Time</i>: {{minion.engine_states.daq_start_time}}</p></div>
-              <!--<div class="col-md-2"><p><i>Experiment End Time</i>: {{minion.engine_states.daq_stop_time}}</p></div>-->
-              <div class="col-md-2"><p><i>Status</i>: {{minion.engine_states.status}}</p></div>
-              <div class="col-md-2"><p><i>Flow Cell ID</i>: {{minion.engine_states.flow_cell_id}}</p></div>
-              <div class="col-md-2"><p><i>Channels with Reads</i>: {{minion.statistics.channels_with_read_event_count}}</p></div>
-              <div class="col-md-2"><p><i>Read Event Count</i>: {{minion.statistics.read_event_count}}</p></div>
-              <div class="col-md-2"><p><i>Completed Read Count</i>: {{minion.statistics.selected_completed_count}}</p></div>
-              <div class="row">
-                  <div class="col-lg-12">
-                      <div class = "col-lg-12" id="{{minion.name}}"><div is="channelstatescalc" :title="minion.name" : key="key" :counts='minion.simplesummary' :datain2="minion.channelstuff"></div></div>
-                      <div class="col-lg-6" id="{{minion.name}}"><div is="chartreadhist" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count_weighted_hist" :datain2="minion.statistics.read_event_count_weighted_hist_bin_width"></div></div>
-                      <div class="col-lg-6" id="{{minion.name}}"><div is="chartyield" :title="minion.name" :key="key" :datain="minion.engine_states.yield" :datain2="minion.yield_history"></div></div>
-
-                  </div>
-              </div>
-              <!--  <div v-for="(key,value) in minion.engine_states">{{key}}:{{value}}</div>-->
-                </div>
-
-
-            <div v-else>
-                <p>This minION is not currently running.</p>
-                <button id='inactivateminion' class='btn btn-danger btn-sm' data-toggle='modal' data-target='#{{minion.name}}offminionmodal'>
-                  <i class='fa fa-stop'></i> Switch Off minION
-                </button>
-
-                <!-- Modal -->
-                <div class='modal fade' id='{{minion.name}}offminionmodal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
-                    <div class='modal-dialog'>
-                        <div class='modal-content'>
-                            <div class='modal-header'>
-                                <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-                                <h4 class='modal-title' id='myModalLabel'>Stop your minION</h4>
-                            </div>
-                            <div class='modal-body'>
-                                <div id='{{minion.name}}offminioninfo'>
-                                    <p>This action will switch the minION to an inactive state. It should be possible to reactivate the minION remotely but software crashes on the minION controlling device may cause problems. You should only inactivate your minION device remotely if you are certain you wish to do so and <strong> at your own risk</strong>.</p>
-
-                                    <p>If you are sure you wish to do this, click 'Inactivate minION' below. Otherwise close this window.</p>
-                                </div>
-                                <div class='modal-footer'>
-                                    <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
-                                    <button v-on:click="inactivateminion" id='{{minion.name}}' type='button' class='btn btn-danger' data-dismiss='modal'>Switch Off minION</button>
-                                </div>
-                            </div><!-- /.modal-content -->
-                        </div><!-- /.modal-dialog -->
-                    </div><!-- /.modal -->
-                </div>
-            </div>
-
-    </div>
-    </div>
 </div>
         </div>
 
@@ -471,6 +486,7 @@ include 'includes/head-new.php';
 <button data-toggle="collapse" data-target="#demo">Debugging Info</button>
 <div id="demo" class="collapse">
 <label id="server_message"></label><br />
+<label id="merged_message"></label><br />
 </div>
 
                             								<!--NEW BLOCK-->
@@ -483,6 +499,10 @@ include 'includes/head-new.php';
       <?php include 'includes/reporting-new.php'; ?>
       <script src="js/plugins/dataTables/jquery.dataTables.js" type="text/javascript" charset="utf-8"></script>
       <script src="js/plugins/dataTables/dataTables.bootstrap.js" type="text/javascript" charset="utf-8"></script>
+      <script src="https://code.highcharts.com/highcharts-more.js"></script>
+      <script src="https://code.highcharts.com/modules/solid-gauge.src.js"></script>
+      <script src="js/json-patch.min.js"></script>
+
 
 
       <script>
@@ -566,9 +586,13 @@ include 'includes/head-new.php';
 
 
     var ws = null;
+
     //change example.com with your IP or your host
     function start() {
+        var jsonholder= {};
         ws = new ReconnectingWebSocket("ws://oneday.local:8080/ws");
+
+
         //alert ("<?php echo $_SESSION['user_name'];?>");
         ws.onopen = function(evt) {
             //alert ("weve connected");
@@ -583,7 +607,56 @@ include 'includes/head-new.php';
           newMessage.textContent = "Server: " + evt.data;
           var message_status = document.getElementById('server_message');
           message_status.innerHTML = evt.data;
+          //console.log(evt.data);
           var jsonreturn = JSON.parse(evt.data);
+          //console.log("input");
+          //console.log(jsonreturn);
+          jsonpatch.apply(jsonholder,jsonreturn);
+          //console.log("output");
+          //console.log(jsonholder);
+          jsonreturn=jsonholder;
+          //console.log(JsonPatchError);
+          //console.log("message recieved");
+          //console.log(typeof(jsonreturn),"jsonreturn",jsonreturn);
+          //console.log(typeof(jsonholder));
+          //console.log(jsonreturn.length);
+          //jsonpatch.apply(jsonholder,jsonreturn);
+          //console.log("merged message");
+          //console.log(jsonholder);
+          //var myobj = { firstName:"Albert", contactDetails: { phoneNumbers: [ ] } };
+          //var myobj2 = { firstName:"Funky", contactDetails: { phoneNumbers: [number:"1234-567"] } };
+          //console.log(myobj);
+          //console.log(myobj2);
+        //    var patches = [
+        //       {op:"replace", path:"/firstName", value:"Joachim" },
+        //       {op:"add", path:"/lastName", value:"Wester" },
+        //       {op:"add", path:"/contactDetails/phoneNumbers/0", value:{ number:"555-123" }  }
+        //       ];
+        //    jsonpatch.apply( myobj, patches );
+        //    console.log(myobj);
+        //  console.log("orig");
+        //  console.log(jsonreturn);
+        //  $.extend( true, jsonholder, JSON.parse(evt.data) );
+        //  console.log("bo");
+        //  console.log(jsonholder);
+          //console.log(jsonholder.length);
+          //if (jsonholder.length < 1){
+            //   jsonholder = $.extend(true,{},jsonreturn);
+          //}else{
+              //var finalObj = jsonholder.concat(jsonreturn);
+        //      jsonholder = $.merge(jsonholder, jsonreturn);
+          //}
+          //jsonreturn = jsonholder;
+          //jsonholder = $.merge(jsonholder, jsonreturn);
+          //console.log(jsonholder);
+          //jsonreturn = $.extend( true, {}, jsonholder );
+          //console.log(jsonreturn)
+          //jsonreturn=jsonholder;
+          //jsonreturn=JSON_delta.patch(jsonholder,jsonreturn);
+          //console.log(jsonreturn);
+          //jsonholder=jsonreturn;
+          //var message_merge = document.getElementById('merged_message');
+          //message_merge.innerHTML=jsonholder;
           var minion_select = document.getElementById('minions');
           var miniondict;
           for (var thing in minionsthings.minions) {
@@ -640,6 +713,12 @@ include 'includes/head-new.php';
                       if (minionsthings.minions[thing].yield_history != jsonreturn[prop].yield_history){
                           minionsthings.minions[thing].yield_history = jsonreturn[prop].yield_history;
                       }
+                      if (minionsthings.minions[thing].temp_history != jsonreturn[prop].temp_history){
+                          minionsthings.minions[thing].temp_history = jsonreturn[prop].temp_history;
+                      }
+                      if (minionsthings.minions[thing].pore_history != jsonreturn[prop].pore_history){
+                          minionsthings.minions[thing].pore_history = jsonreturn[prop].pore_history;
+                      }
                       if (minionsthings.minions[thing].simplechanstats != jsonreturn[prop].simplechanstats){
                           minionsthings.minions[thing].simplechanstats = jsonreturn[prop].simplechanstats;
                       }
@@ -652,7 +731,7 @@ include 'includes/head-new.php';
                   }
               }
               if (adder == 0){
-                  minionsthings.minions.push({ name: prop ,simplechanstats: jsonreturn[prop].simplesummary,simplesummary: jsonreturn[prop].simplesummary,channel_info: jsonreturn[prop].detailsdata.channel_info, yield_history: jsonreturn[prop].yield_history, timestamp: jsonreturn[prop].detailsdata.timestamp, channelstuff: jsonreturn[prop].channelstuff,statistics: jsonreturn[prop].detailsdata.statistics,multiplex_states: jsonreturn[prop].detailsdata.multiplex_states, engine_states: jsonreturn[prop].detailsdata.engine_states, state: jsonreturn[prop].state ,scripts: jsonreturn[prop].scripts , livedata: jsonreturn[prop].livedata, comms: jsonreturn[prop].comms});
+                  minionsthings.minions.push({ name: prop ,simplechanstats: jsonreturn[prop].simplesummary,simplesummary: jsonreturn[prop].simplesummary,channel_info: jsonreturn[prop].detailsdata.channel_info, yield_history: jsonreturn[prop].yield_history, temp_history: jsonreturn[prop].temp_history, pore_history: jsonreturn[prop].pore_history, timestamp: jsonreturn[prop].detailsdata.timestamp, channelstuff: jsonreturn[prop].channelstuff,statistics: jsonreturn[prop].detailsdata.statistics,multiplex_states: jsonreturn[prop].detailsdata.multiplex_states, engine_states: jsonreturn[prop].detailsdata.engine_states, state: jsonreturn[prop].state ,scripts: jsonreturn[prop].scripts , livedata: jsonreturn[prop].livedata, comms: jsonreturn[prop].comms});
               }
 
 
@@ -670,6 +749,9 @@ include 'includes/head-new.php';
 
         };
     }
+    function round(value, decimals) {
+        return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+    }
 
     start();
 
@@ -677,7 +759,7 @@ include 'includes/head-new.php';
         return value;
     })
     Vue.component('channelstatescalc',{
-        template:"<div v-for='item in countdata'><div class='col-md-1'><div class='row'><font size='6' color='{{item.colour}}'>&#x25CF</font> {{item.count}} </div><div class='row'>{{item.label}}</div></div></div>",
+        template:"<hr><div v-for='item in countdata'><div class='col-md-1'><div class='row'><font size='6' color='{{item.colour}}'>&#x25CF</font> {{item.count}} </div><div class='row'>{{item.label}}</div></div></div></div>",
         props:['title','key','datain2','counts'],
         data: function(){
             var countsobject = {};
@@ -774,6 +856,7 @@ include 'includes/head-new.php';
 		        chart: {
         	    	renderTo: 'container'+this.title,
                     type:'column',
+                    zoomType: 'xy'
 	        	},
     	    	title: {
         	    	text: 'Read length Histograms'
@@ -824,6 +907,518 @@ include 'includes/head-new.php';
             });
         }
     })
+
+    Vue.component('container-temp', {
+        template: '<div id="container-temp{{title}}" style="height: 140px; margin: 0 auto"</div>',
+        props: ['title','key','datain'],
+        data: function() {
+            return {
+
+                opts: {
+                    chart: {
+                        renderTo: 'container-temp'+this.title,
+                        type: 'solidgauge'
+                    },
+
+                    title: "Temperature",
+
+                    pane: {
+                        center: ['50%', '85%'],
+                        size: '140%',
+                        startAngle: -90,
+                        endAngle: 90,
+                        background: {
+                            backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+                            innerRadius: '60%',
+                            outerRadius: '100%',
+                            shape: 'arc'
+                        }
+                    },
+
+                    tooltip: {
+                        enabled: false
+                    },
+
+                    // the value axis
+                    yAxis: {
+                        stops: [
+                            [0.3, '#0000FF'], // blue
+                            [0.37, '#DDDF0D'], // green
+                            [0.43, '#DF5353'], // red
+                        ],
+                        lineWidth: 0,
+                        minorTickInterval: null,
+                        tickPixelInterval: 400,
+                        tickWidth: 0,
+                        title: {
+                            y: -70
+                        },
+                        labels: {
+                            y: 16
+                        },
+                        min: 0,
+                        max: 70,
+                        title: {
+                            text: null
+                        }
+                    },
+
+                    plotOptions: {
+                        solidgauge: {
+                            dataLabels: {
+                                y: -30,
+                                borderWidth: 0,
+                                useHTML: true
+                            }
+                        }
+                    },
+
+
+       credits: {
+           enabled: false
+       },
+
+       series: [{
+           name: 'Temp °C',
+           data: [0],
+           dataLabels: {
+               format: '<div style="text-align:center"><span style="font-size:15px;color:' +
+               ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
+               '<span style="font-size:12px;color:silver"> °C</span></div>'
+           },
+           tooltip: {
+               valueSuffix: ' °C'
+           }
+       }],
+
+                    plotOptions: {
+                        solidgauge: {
+                            dataLabels: {
+                                y: 30,
+                                borderWidth: 0,
+                                useHTML: true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        ,
+        ready: function() {
+            //alert(this.datain);
+
+          this.$nextTick(function() {
+          		this.chart = new Highcharts.Chart(this.opts);
+                //this.chart.series[0].setData(this.datain);
+                if (this.chart) {
+                    //point = this.chart.series[0].points[0];
+                    this.chart.series[0].points[0].update(this.datain);
+                    //point.update(this.datain);
+                    //alert("camel");
+                }
+
+                setInterval(function () {
+                //    this.chart.series[0].setData(this.datain);
+                //    this.chart.redraw();
+                if (this.chart) {
+                    point = this.chart.series[0].points[0];
+
+                    point.update(round(parseFloat(this.datain),2));
+                    //this.chart.redraw();
+
+
+                }
+            }.bind(this), 5000);
+                });
+            }
+        }),
+
+        Vue.component('container-chan', {
+            template: '<div id="container-chan{{title}}" style="height: 140px; margin: 0 auto"</div>',
+            props: ['title','key','datain'],
+            data: function() {
+                return {
+                    opts: {
+                        chart: {
+                            renderTo: 'container-chan'+this.title,
+                            type: 'solidgauge'
+                        },
+
+                        title: null,
+
+                        pane: {
+                            center: ['50%', '85%'],
+                            size: '140%',
+                            startAngle: -90,
+                            endAngle: 90,
+                            background: {
+                                backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+                                innerRadius: '60%',
+                                outerRadius: '100%',
+                                shape: 'arc'
+                            }
+                        },
+
+                        tooltip: {
+                            enabled: false
+                        },
+
+                        // the value axis
+                        yAxis: {
+                            stops: [
+
+
+                                [0.5, '#DF5353'], // red
+                                [0.75, '#DDDF0D'], // yellow
+                                [0.9, '#55BF3B'], // green
+                            ],
+                            lineWidth: 0,
+                            minorTickInterval: null,
+                            tickPixelInterval: 400,
+                            tickWidth: 0,
+                            title: {
+                                y: -70
+                            },
+                            labels: {
+                                y: 16
+                            },
+                            min: 0,
+                            max: 512,
+                            title: {
+                                text: null
+                            }
+                        },
+
+                        plotOptions: {
+                            solidgauge: {
+                                dataLabels: {
+                                    y: -30,
+                                    borderWidth: 0,
+                                    useHTML: true
+                                }
+                            }
+                        },
+
+
+           credits: {
+               enabled: false
+           },
+
+           series: [{
+               name: 'Used Channels',
+               data: [0],
+               dataLabels: {
+                   format: '<div style="text-align:center"><span style="font-size:15px;color:' +
+                   ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
+                   '<span style="font-size:12px;color:silver"> Used Channels</span></div>'
+               },
+               tooltip: {
+                   valueSuffix: ' Channel Count'
+               }
+           }],
+
+                        plotOptions: {
+                            solidgauge: {
+                                dataLabels: {
+                                    y: 30,
+                                    borderWidth: 0,
+                                    useHTML: true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            ,
+            ready: function() {
+                //alert(this.datain);
+
+              this.$nextTick(function() {
+              		this.chart = new Highcharts.Chart(this.opts);
+                    //this.chart.series[0].setData(this.datain);
+                    if (this.chart) {
+                        //point = this.chart.series[0].points[0];
+                        this.chart.series[0].points[0].update(this.datain);
+                        //point.update(this.datain);
+                        //alert("camel");
+                    }
+
+                    setInterval(function () {
+                    //    this.chart.series[0].setData(this.datain);
+                    //    this.chart.redraw();
+                    if (this.chart) {
+                        point = this.chart.series[0].points[0];
+
+                        point.update(parseFloat(this.datain));
+                        //this.chart.redraw();
+
+
+                    }
+                }.bind(this), 5000);
+                    });
+                }
+            }),
+
+            Vue.component('container-strand', {
+                template: '<div id="container-strand{{title}}" style="height: 140px; margin: 0 auto"</div>',
+                props: ['title','key','datain'],
+                data: function() {
+                    return {
+                        opts: {
+                            chart: {
+                                renderTo: 'container-strand'+this.title,
+                                type: 'solidgauge'
+                            },
+
+                            title: null,
+
+                            pane: {
+                                center: ['50%', '85%'],
+                                size: '140%',
+                                startAngle: -90,
+                                endAngle: 90,
+                                background: {
+                                    backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+                                    innerRadius: '60%',
+                                    outerRadius: '100%',
+                                    shape: 'arc'
+                                }
+                            },
+
+                            tooltip: {
+                                enabled: false
+                            },
+
+                            // the value axis
+                            yAxis: {
+                                stops: [
+
+
+                                    [0.5, '#DF5353'], // red
+                                    [0.75, '#DDDF0D'], // yellow
+                                    [0.9, '#55BF3B'], // green
+                                ],
+                                lineWidth: 0,
+                                minorTickInterval: null,
+                                tickPixelInterval: 400,
+                                tickWidth: 0,
+                                title: {
+                                    y: -70
+                                },
+                                labels: {
+                                    y: 16
+                                },
+                                min: 0,
+                                max: 512,
+                                title: {
+                                    text: null
+                                }
+                            },
+
+                            plotOptions: {
+                                solidgauge: {
+                                    dataLabels: {
+                                        y: -30,
+                                        borderWidth: 0,
+                                        useHTML: true
+                                    }
+                                }
+                            },
+
+
+               credits: {
+                   enabled: false
+               },
+
+               series: [{
+                   name: 'In Strand',
+                   data: [0],
+                   dataLabels: {
+                       format: '<div style="text-align:center"><span style="font-size:15px;color:' +
+                       ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
+                       '<span style="font-size:12px;color:silver"> In Strand</span></div>'
+                   },
+                   tooltip: {
+                       valueSuffix: ' In Strand'
+                   }
+               }],
+
+                            plotOptions: {
+                                solidgauge: {
+                                    dataLabels: {
+                                        y: 30,
+                                        borderWidth: 0,
+                                        useHTML: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                ,
+                ready: function() {
+                    //alert(this.datain);
+
+                  this.$nextTick(function() {
+                  		this.chart = new Highcharts.Chart(this.opts);
+                        //this.chart.series[0].setData(this.datain);
+                        if (this.chart) {
+                            //point = this.chart.series[0].points[0];
+                            this.chart.series[0].points[0].update(this.datain);
+                            //point.update(this.datain);
+                            //alert("camel");
+                        }
+
+                        setInterval(function () {
+                        //    this.chart.series[0].setData(this.datain);
+                        //    this.chart.redraw();
+                        if (this.chart) {
+                            point = this.chart.series[0].points[0];
+                            //console.log(this.datain);
+
+                            point.update(parseFloat(this.datain["strand"]));
+                            //this.chart.redraw();
+
+
+                        }
+                    }.bind(this), 5000);
+                        });
+                    }
+                }),
+
+                Vue.component('container-perc', {
+                    template: '<div id="container-perc{{title}}" style="height: 140px; margin: 0 auto"</div>',
+                    props: ['title','key','datain'],
+                    data: function() {
+                        return {
+                            opts: {
+                                chart: {
+                                    renderTo: 'container-perc'+this.title,
+                                    type: 'solidgauge'
+                                },
+
+                                title: null,
+
+                                pane: {
+                                    center: ['50%', '85%'],
+                                    size: '140%',
+                                    startAngle: -90,
+                                    endAngle: 90,
+                                    background: {
+                                        backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+                                        innerRadius: '60%',
+                                        outerRadius: '100%',
+                                        shape: 'arc'
+                                    }
+                                },
+
+                                tooltip: {
+                                    enabled: false
+                                },
+
+                                // the value axis
+                                yAxis: {
+                                    stops: [
+
+
+                                        [0.5, '#DF5353'], // red
+                                        [0.75, '#DDDF0D'], // yellow
+                                        [0.9, '#55BF3B'], // green
+                                    ],
+                                    lineWidth: 0,
+                                    minorTickInterval: null,
+                                    tickPixelInterval: 400,
+                                    tickWidth: 0,
+                                    title: {
+                                        y: -70
+                                    },
+                                    labels: {
+                                        y: 16
+                                    },
+                                    min: 0,
+                                    max: 100,
+                                    title: {
+                                        text: null
+                                    }
+                                },
+
+                                plotOptions: {
+                                    solidgauge: {
+                                        dataLabels: {
+                                            y: -30,
+                                            borderWidth: 0,
+                                            useHTML: true
+                                        }
+                                    }
+                                },
+
+
+                   credits: {
+                       enabled: false
+                   },
+
+                   series: [{
+                       name: '% Occupancy',
+                       data: [0],
+                       dataLabels: {
+                           format: '<div style="text-align:center"><span style="font-size:15px;color:' +
+                           ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
+                           '<span style="font-size:12px;color:silver"> % Occupancy</span></div>'
+                       },
+                       tooltip: {
+                           valueSuffix: ' % Occupancy'
+                       }
+                   }],
+
+                                plotOptions: {
+                                    solidgauge: {
+                                        dataLabels: {
+                                            y: 30,
+                                            borderWidth: 0,
+                                            useHTML: true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    ,
+                    ready: function() {
+                        //alert(this.datain);
+
+                      this.$nextTick(function() {
+                            this.chart = new Highcharts.Chart(this.opts);
+                            //this.chart.series[0].setData(this.datain);
+                            if (this.chart) {
+                                //point = this.chart.series[0].points[0];
+                                this.chart.series[0].points[0].update(this.datain);
+                                //point.update(this.datain);
+                                //alert("camel");
+                            }
+
+                            setInterval(function () {
+                            //    this.chart.series[0].setData(this.datain);
+                            //    this.chart.redraw();
+                            if (this.chart) {
+                                point = this.chart.series[0].points[0];
+                                console.log(this.datain);
+                                var single = 0;
+                                if (parseFloat(this.datain["good_single"]) > 0) {
+                                    single = parseFloat(this.datain["good_single"]);
+                                }
+                                round()
+                                point.update(round(((parseFloat(this.datain["strand"])/(parseFloat(this.datain["strand"])+single))*100),2));
+                                //this.chart.redraw();
+
+
+                            }
+                        }.bind(this), 5000);
+                            });
+                        }
+                    }),
+
     Vue.component('chartyield', {
 	template: '<div id="containeryield{{title}}" style="margin: 0 auto"</div>',
     props: ['title','key','datain','datain2'],
@@ -835,6 +1430,7 @@ include 'includes/head-new.php';
 		        chart: {
         	    	renderTo: 'containeryield'+this.title,
                     type:'spline',
+                    zoomType: 'xy'
 	        	},
     	    	title: {
         	    	text: 'Yield over time '
@@ -851,7 +1447,8 @@ include 'includes/head-new.php';
                     value: 0,
                     width: 1,
                     color: '#808080'
-                }]
+                }],
+                min: 0,
             },
             credits: {
                 enabled: false
@@ -866,40 +1463,245 @@ include 'includes/head-new.php';
     ,
 
 
-    created: function() {
-    },
     ready: function() {
       this.$nextTick(function() {
       		this.chart = new Highcharts.Chart(this.opts);
-            //console.log(this.datain2);
-            //this.chart.series[0].data = this.datain2;
             this.chart.series[0].setData(this.datain2);
-
-            //minion=this.key;
             setInterval(function () {
                 //console.log(this.datain2);
-                //var d = new Date();
-                //var t = d.getTime();
-                //console.log(this.chart.yAxis[0].series[0].processedYData[this.chart.yAxis[0].series[0].processedYData.length-1]);
-                //if (parseInt(this.datain)<this.chart.yAxis[0].series[0].processedYData[this.chart.yAxis[0].series[0].processedYData.length-1]){
-                    //console.log(this.datain2);
-                    //this.chart.series[0].remove(true);
-                    //this.chart.series[0].data = [parseInt(this.datain2)];
-                    //this.chart.series[0].addPoint([t,0]);
-                //}
-                //if (parseInt(this.datain)>this.chart.yAxis[0].series[0].processedYData[this.chart.yAxis[0].series[0].processedYData.length-1]){
-                //    this.chart.series[0].addPoint([t,parseInt(this.datain2)]);
-                //}
-                //console.log(this.chart.series[0]);
                 this.chart.series[0].setData(this.datain2);
                 this.chart.redraw();
-                //console.log(this.chart.series[0])
-            //        console.log(this.datain);
-                    //var x = (new Date()).getTime(), // current time
-                    //    y = Math.random();
-                    //series.addPoint([x, y], true, true);
-                    //series[0].data = [parseInt(this.datain)];
-            //        chart.series[0].setData(parseInt(this.datain), true);
+        }.bind(this), 5000);
+            });
+        }
+    })
+
+    Vue.component('perchistory', {
+	template: '<div id="perchistory{{title}}" style="margin: 0 auto"</div>',
+    props: ['title','key','datain2'],
+    data: function() {
+        //var d = new Date();
+        //var t = d.getTime();
+        return {
+        	opts: {
+		        chart: {
+        	    	renderTo: 'perchistory'+this.title,
+                    type:'spline',
+                    zoomType: 'xy'
+	        	},
+    	    	title: {
+        	    	text: '% Occupancy Over Time'
+	        	},
+                xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150
+            },
+            yAxis: {
+                title: {
+                    text: '% Occupancy'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }],
+                min: 0,
+            },
+            credits: {
+                enabled: false
+            },
+            series: [{
+                name: '% Occupancy',
+                data: []
+            }
+            ]
+         			}
+    	    }
+    }
+    ,
+    ready: function() {
+      this.$nextTick(function() {
+      		this.chart = new Highcharts.Chart(this.opts);
+            this.chart.series[0].setData(this.datain2["percent"]);
+            setInterval(function () {
+                //console.log(this.datain2);
+                this.chart.series[0].setData(this.datain2["percent"]);
+                this.chart.redraw();
+        }.bind(this), 5000);
+            });
+        }
+    })
+
+    Vue.component('porehistory', {
+	template: '<div id="porehistory{{title}}" style="margin: 0 auto"</div>',
+    props: ['title','key','datain2'],
+    data: function() {
+        //var d = new Date();
+        //var t = d.getTime();
+        return {
+        	opts: {
+		        chart: {
+        	    	renderTo: 'porehistory'+this.title,
+                    type:'spline',
+                    zoomType: 'xy'
+	        	},
+    	    	title: {
+        	    	text: 'In Strand Counts'
+	        	},
+                xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150
+            },
+            yAxis: {
+                title: {
+                    text: 'Number of Pores In Strand'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }],
+                min: 0,
+            },
+            credits: {
+                enabled: false
+            },
+            series: [{
+                name: 'In Strand',
+                data: []
+            }
+            ]
+         			}
+    	    }
+    }
+    ,
+    ready: function() {
+      this.$nextTick(function() {
+      		this.chart = new Highcharts.Chart(this.opts);
+            this.chart.series[0].setData(this.datain2["strand"]);
+            setInterval(function () {
+                //console.log(this.datain2);
+                this.chart.series[0].setData(this.datain2["strand"]);
+                this.chart.redraw();
+        }.bind(this), 5000);
+            });
+        }
+    })
+
+    Vue.component('temphistory', {
+	template: '<div id="temphistory{{title}}" style="margin: 0 auto"</div>',
+    props: ['title','key','datain2'],
+    data: function() {
+        //var d = new Date();
+        //var t = d.getTime();
+        return {
+        	opts: {
+		        chart: {
+        	    	renderTo: 'temphistory'+this.title,
+                    type:'spline',
+                    zoomType: 'xy'
+	        	},
+    	    	title: {
+        	    	text: 'Temperature over time '
+	        	},
+                xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150
+            },
+            yAxis: {
+                title: {
+                    text: 'Cumulative Events'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }],
+                min: 0,
+            },
+            credits: {
+                enabled: false
+            },
+            series: [{
+                name: 'Asic Temperature',
+                data: []
+            },{
+                name: 'Heat Sink Temperature',
+                data: []
+            }
+            ]
+         			}
+    	    }
+    }
+    ,
+    ready: function() {
+      this.$nextTick(function() {
+      		this.chart = new Highcharts.Chart(this.opts);
+            this.chart.series[0].setData(this.datain2["asictemp"]);
+            this.chart.series[1].setData(this.datain2["heatsinktemp"]);
+            setInterval(function () {
+                //console.log(this.datain2["asictemp"]);
+                this.chart.series[0].setData(this.datain2["asictemp"]);
+                this.chart.series[1].setData(this.datain2["heatsinktemp"]);
+                this.chart.redraw();
+        }.bind(this), 5000);
+            });
+        }
+    })
+
+    Vue.component('volthistory', {
+	template: '<div id="volthistory{{title}}" style="margin: 0 auto"</div>',
+    props: ['title','key','datain2'],
+    data: function() {
+        //var d = new Date();
+        //var t = d.getTime();
+        return {
+        	opts: {
+		        chart: {
+        	    	renderTo: 'volthistory'+this.title,
+                    type:'spline',
+                    zoomType: 'xy'
+	        	},
+    	    	title: {
+        	    	text: 'Global Voltage over time '
+	        	},
+                xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150
+            },
+            yAxis: {
+                title: {
+                    text: 'Voltage (mV)'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }],
+                //min: 0,
+            },
+            credits: {
+                enabled: false
+            },
+            series: [{
+                name: 'Global Voltage',
+                data: []
+            }
+            ]
+         			}
+    	    }
+    }
+    ,
+    ready: function() {
+      this.$nextTick(function() {
+      		this.chart = new Highcharts.Chart(this.opts);
+            this.chart.series[0].setData(this.datain2["voltage"]);
+            //this.chart.series[1].setData(this.datain2["heatsinktemp"]);
+            setInterval(function () {
+                //console.log(this.datain2["asictemp"]);
+                this.chart.series[0].setData(this.datain2["voltage"]);
+                //this.chart.series[1].setData(this.datain2["heatsinktemp"]);
+                this.chart.redraw();
         }.bind(this), 5000);
             });
         }
@@ -965,6 +1767,7 @@ include 'includes/head-new.php';
   });
 
 </script>
+
 
 
   </body>

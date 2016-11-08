@@ -2538,7 +2538,7 @@ function barcodingcov($jobname,$currun,$refid) {
 
 			//Dump the ref info into a lookup table
 			$reflookup=[];
-
+            $barcodearray = array();
 
 			if ($refinfoquery->num_rows >= 1) {
 				foreach ($refinfoquery as $row) {
@@ -2552,6 +2552,9 @@ function barcodingcov($jobname,$currun,$refid) {
 			if ($barcovquerytemp->num_rows >= 1) {
 				foreach ($barcovquerytemp as $row) {
 					$referenceids = explode("_", $row['ref_id']);
+                    if (!in_array($referenceids[1], $barcodearray)){
+					    $barcodearray[] = $referenceids[1];
+					}
                     //echo $referenceids[0] . "\t" . $referenceids[1] . "\n";
 					$barcodlookup[$reflookup[$referenceids[0]]." template"][$referenceids[1]]=$row['avecount'];
 					#print $reflookup[$referenceids[0]] . " " . $referenceids[1] . " " . $row['avecount'] . "\n";
@@ -2560,6 +2563,9 @@ function barcodingcov($jobname,$currun,$refid) {
             if ($barcovquerycomp->num_rows >= 1) {
 				foreach ($barcovquerycomp as $row) {
 					$referenceids = explode("_", $row['ref_id']);
+                    if (!in_array($referenceids[1], $barcodearray)){
+					    $barcodearray[] = $referenceids[1];
+					}
                     //echo $referenceids[0] . "\t" . $referenceids[1] . "\n";
 					$barcodlookup[$reflookup[$referenceids[0]]." complement"][$referenceids[1]]=$row['avecount'];
 					#print $reflookup[$referenceids[0]] . " " . $referenceids[1] . " " . $row['avecount'] . "\n";
@@ -2568,13 +2574,28 @@ function barcodingcov($jobname,$currun,$refid) {
             if ($barcovquery->num_rows >= 1) {
 				foreach ($barcovquery as $row) {
 					$referenceids = explode("_", $row['ref_id']);
+                    if (!in_array($referenceids[1], $barcodearray)){
+					    $barcodearray[] = $referenceids[1];
+					}
                     //echo $referenceids[0] . "\t" . $referenceids[1] . "\n";
 					$barcodlookup[$reflookup[$referenceids[0]]." 2D"][$referenceids[1]]=$row['avecount'];
 					#print $reflookup[$referenceids[0]] . " " . $referenceids[1] . " " . $row['avecount'] . "\n";
 				}
 			}
-			//var_dump ($barcodlookup);
+			//var_dump ($barcodearray);
 			//Plot the results in a lovely bargraph with beautiful data presentation skills.
+
+            $jsonstring = $jsonstring . "{\n";
+            $jsonstring = $jsonstring . "\"name\": \"". "categories". "\",\n";
+            $jsonstring = $jsonstring . "\"data\":\n";
+            $jsonstring = $jsonstring . "[\n";
+            foreach ($barcodearray as $key=>$value){
+                //echo $key . "\t" . $value . "\n";
+                $jsonstring = $jsonstring . "'" . $value . "',";
+            }
+            $jsonstring = $jsonstring . "]\n";
+            $jsonstring = $jsonstring . "},\n";
+
 			foreach ($barcodlookup as $key=>$value){
 				#print $key . "\n";
 				$jsonstring = $jsonstring . "{\n";
@@ -5289,7 +5310,116 @@ function histogram($jobname,$currun) {
 }
 
 
+function depthcoverageglob($jobname,$currrun){
+    $jobname = $jobname;
+    $checkvar = $currun . $jobname;
+    $checkrunning = $currun . $jobname . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;
+	//echo $refid . "\n";
+	$jsonstring = $memcache->get("$checkvar");
+	$checkingrunning = $memcache->get("$checkrunning");
+    if($checkingrunning === "No" || $checkingrunning === FALSE){
+        if (strlen($jsonstring) <= 1){
+		//$memcache->set("$checkrunning", "YES", 0, 0);
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if (is_object($checking) && $checking->num_rows ==1){
+			//echo "We have already run this!";
+			foreach ($checking as $row){
+				$jsonstring = $row['json'];
+			}
+		} else {
+			//echo "do something interesting here...";
+            $table_check = "SHOW TABLES LIKE 'last_align_basecalled_template'";
+            $table_exists = $mindb_connection->query($table_check);
+            $jsonstring="";
+            //echo $table_check;
+            if ($table_exists->num_rows >= 1){
+                //echo "startibartfast";
+            }else{
+                //echo "james bond";
+                $sql_template = "SELECT avg(A+T+G+C) as depth,ref_id,refname FROM reference_coverage_template inner join reference_seq_info where refid=ref_id group by ref_id;";
+                $sql_complement = "SELECT avg(A+T+G+C) as depth,ref_id,refname FROM reference_coverage_complement inner join reference_seq_info where refid=ref_id group by ref_id;";
+                $sql_2d = "SELECT avg(A+T+G+C) as depth,ref_id,refname FROM reference_coverage_2d inner join reference_seq_info where refid=ref_id group by ref_id;";
+                $template=$mindb_connection->query($sql_template);
+                $complement=$mindb_connection->query($sql_complement);
+                $read2d=$mindb_connection->query($sql_2d);
 
+                $covarray=array();
+                $refarray=array();
+
+                if ($template->num_rows >= 1){
+                    foreach ($template as $row) {
+                        if (!in_array($row['refname'], $refarray)){$refarray[] = $row['refname'];}
+                        $perccov=$row['depth'];
+                        $covarray['template'][$row['refname']]['percov']=$perccov;
+                    }
+                }
+                if ($complement->num_rows >= 1){
+                    foreach ($complement as $row) {
+                        if (!in_array($row['refname'], $refarray)){$refarray[] = $row['refname'];}
+                        $perccov=$row['depth'];
+                        $covarray['complement'][$row['refname']]['percov']=$perccov;
+                    }
+                }
+                if ($read2d->num_rows >= 1){
+                    foreach ($read2d as $row) {
+                        if (!in_array($row['refname'], $refarray)){$refarray[] = $row['refname'];}
+                        $perccov=$row['depth'];
+                        $covarray['2d'][$row['refname']]['percov']=$perccov;
+                    }
+                }
+                //var_dump($covarray);
+                //var_dump($refarray);
+                $jsonstring = $jsonstring . "[\n";
+
+                $jsonstring = $jsonstring .  "{\n";
+
+                $jsonstring = $jsonstring .  "\"name\" : \"" . "categories" . "\", \n";
+                $jsonstring = $jsonstring .  "\"data\": [";
+                foreach ($refarray as $ref) {
+                    $jsonstring = $jsonstring .  "'" . $ref . "',";
+                }
+
+                $jsonstring = $jsonstring .  "]\n";
+                $jsonstring = $jsonstring .  "},\n";
+
+                foreach ($covarray as $type => $typeval){
+                    $jsonstring = $jsonstring .  "{\n";
+                    $jsonstring = $jsonstring .  "\"name\" : \"" . $type . "\", \n";
+                    $jsonstring = $jsonstring .  "\"data\": [";
+
+                    foreach ($refarray as $ref) {
+                        $value = 0;
+                        if (array_key_exists($ref, $typeval)){
+                            $value = $typeval[$ref]["percov"];
+                        }
+                        $jsonstring = $jsonstring .  "$value,";
+                    }
+                    $jsonstring = $jsonstring .  "]\n";
+                    $jsonstring = $jsonstring .  "},\n";
+
+                }
+
+            }
+		}
+		$jsonstring = $jsonstring . "]\n";
+		if ($_GET["prev"] == 1){
+			include 'savejson.php';
+		}
+		$memcache->set("$checkvar", "$jsonstring",MEMCACHE_COMPRESSED,5);
+
+	}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}
+}
+	// cache for 2 minute as we want yield to update semi-regularly...
+	$memcache->delete("$checkrunning");
+   	return $jsonstring;
+
+}
 
 
 ##Average Depth of Coverage - primitive depth calculator
@@ -5493,7 +5623,117 @@ function depthcoverage($jobname,$currun,$refid) {
     return $jsonstring;
 }
 
+function percentcoverageglob($jobname,$currrun){
 
+    $jobname = $jobname;
+    $checkvar = $currun . $jobname;
+    $checkrunning = $currun . $jobname . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;
+	//echo $refid . "\n";
+	$jsonstring = $memcache->get("$checkvar");
+	$checkingrunning = $memcache->get("$checkrunning");
+    if($checkingrunning === "No" || $checkingrunning === FALSE){
+        if (strlen($jsonstring) <= 1){
+		//$memcache->set("$checkrunning", "YES", 0, 0);
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if (is_object($checking) && $checking->num_rows ==1){
+			//echo "We have already run this!";
+			foreach ($checking as $row){
+				$jsonstring = $row['json'];
+			}
+		} else {
+			//echo "do something interesting here...";
+            $table_check = "SHOW TABLES LIKE 'last_align_basecalled_template'";
+            $table_exists = $mindb_connection->query($table_check);
+            $jsonstring="";
+            //echo $table_check;
+            if ($table_exists->num_rows >= 1){
+                //echo "startibartfast";
+            }else{
+                //echo "james bond";
+                $sql_template = "SELECT (count(*)/reflen)*100 as coverage,ref_id,refname FROM reference_coverage_template inner join reference_seq_info where refid=ref_id group by ref_id;";
+                $sql_complement = "SELECT (count(*)/reflen)*100 as coverage,ref_id,refname FROM reference_coverage_complement inner join reference_seq_info where refid=ref_id group by ref_id;";
+                $sql_2d = "SELECT (count(*)/reflen)*100 as coverage,ref_id,refname FROM reference_coverage_2d inner join reference_seq_info where refid=ref_id group by ref_id;";
+                $template=$mindb_connection->query($sql_template);
+                $complement=$mindb_connection->query($sql_complement);
+                $read2d=$mindb_connection->query($sql_2d);
+
+                $covarray=array();
+                $refarray=array();
+
+                if ($template->num_rows >= 1){
+                    foreach ($template as $row) {
+                        if (!in_array($row['refname'], $refarray)){$refarray[] = $row['refname'];}
+                        $perccov=$row['coverage'];
+                        $covarray['template'][$row['refname']]['percov']=$perccov;
+                    }
+                }
+                if ($complement->num_rows >= 1){
+                    foreach ($complement as $row) {
+                        if (!in_array($row['refname'], $refarray)){$refarray[] = $row['refname'];}
+                        $perccov=$row['coverage'];
+                        $covarray['complement'][$row['refname']]['percov']=$perccov;
+                    }
+                }
+                if ($read2d->num_rows >= 1){
+                    foreach ($read2d as $row) {
+                        if (!in_array($row['refname'], $refarray)){$refarray[] = $row['refname'];}
+                        $perccov=$row['coverage'];
+                        $covarray['2d'][$row['refname']]['percov']=$perccov;
+                    }
+                }
+                //var_dump($covarray);
+                //var_dump($refarray);
+                $jsonstring = $jsonstring . "[\n";
+
+                $jsonstring = $jsonstring .  "{\n";
+
+                $jsonstring = $jsonstring .  "\"name\" : \"" . "categories" . "\", \n";
+                $jsonstring = $jsonstring .  "\"data\": [";
+                foreach ($refarray as $ref) {
+                    $jsonstring = $jsonstring .  "'" . $ref . "',";
+                }
+
+                $jsonstring = $jsonstring .  "]\n";
+                $jsonstring = $jsonstring .  "},\n";
+
+                foreach ($covarray as $type => $typeval){
+                    $jsonstring = $jsonstring .  "{\n";
+                    $jsonstring = $jsonstring .  "\"name\" : \"" . $type . "\", \n";
+                    $jsonstring = $jsonstring .  "\"data\": [";
+
+                    foreach ($refarray as $ref) {
+                        $value = 0;
+                        if (array_key_exists($ref, $typeval)){
+                            $value = $typeval[$ref]["percov"];
+                        }
+                        $jsonstring = $jsonstring .  "$value,";
+                    }
+                    $jsonstring = $jsonstring .  "]\n";
+                    $jsonstring = $jsonstring .  "},\n";
+
+                }
+
+            }
+		}
+		$jsonstring = $jsonstring . "]\n";
+		if ($_GET["prev"] == 1){
+			include 'savejson.php';
+		}
+		$memcache->set("$checkvar", "$jsonstring",MEMCACHE_COMPRESSED,5);
+
+	}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}
+}
+	// cache for 2 minute as we want yield to update semi-regularly...
+	$memcache->delete("$checkrunning");
+   	return $jsonstring;
+
+}
 
 ##Percentage of Reference with Read - primitive coverage calculator based on total coverage of all sequences being aligned too.
 function percentcoverage($jobname,$currun,$refid) {
@@ -5570,9 +5810,9 @@ function percentcoverage($jobname,$currun,$refid) {
 					$jsonstring = $jsonstring .  "]\n";
 				}else{
 					//echo "Yep - we're in here!";
-					$sql_template = "SELECT (sum(A+T+G+C)/reflen) as coverage,ref_id,refname FROM reference_coverage_template inner join reference_seq_info where refid=ref_id and refid = " . $refid . " group by ref_id;";
-					$sql_complement = "SELECT (sum(A+T+G+C)/reflen) as coverage,ref_id,refname FROM reference_coverage_complement inner join reference_seq_info where refid=ref_id and refid = " . $refid . "  group by ref_id;";
-					$sql_2d = "SELECT (sum(A+T+G+C)/reflen) as coverage,ref_id,refname FROM reference_coverage_2d inner join reference_seq_info where refid=ref_id and refid = " . $refid . " group by ref_id;";
+					$sql_template = "SELECT (count(*)/reflen)*100 as coverage,ref_id,refname FROM reference_coverage_template inner join reference_seq_info where refid=ref_id and refid = " . $refid . " group by ref_id;";
+					$sql_complement = "SELECT (count(*)/reflen)*100 as coverage,ref_id,refname FROM reference_coverage_complement inner join reference_seq_info where refid=ref_id and refid = " . $refid . "  group by ref_id;";
+					$sql_2d = "SELECT (count(*)/reflen)*100 as coverage,ref_id,refname FROM reference_coverage_2d inner join reference_seq_info where refid=ref_id and refid = " . $refid . " group by ref_id;";
 
 					$pre_template="SELECT (sum(reference_pre_coverage_template.count))/reflen as coverage,ref_id,refname FROM reference_pre_coverage_template inner join reference_seq_info where refid=ref_id and refid = " . $refid . " group by ref_id;";
 					$pre_complement="SELECT (sum(reference_pre_coverage_complement.count))/reflen as coverage,ref_id,refname FROM reference_pre_coverage_complement inner join reference_seq_info where refid=ref_id and refid = " . $refid . " group by ref_id;";

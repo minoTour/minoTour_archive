@@ -658,12 +658,8 @@
                                                 labels: {
 						            	enabled:true,
 						            	},
-						            	categories: [
-
-									                ]
-
-
-                                            },
+						            	categories: []
+                                        },
                                             yAxis: {
                                                         title: {
                                                             text: 'Barcode Coverage Depth'
@@ -673,7 +669,7 @@
                                                         enabled: false
                                                       },
                                     legend: {
-                                        layout: 'vertical',
+                                        layout: 'horizontal',
                                         align: 'center',
                                         verticalAlign: 'bottom',
                                         borderWidth: 0
@@ -684,8 +680,9 @@
 									if($('#barcodingcheck').prop('checked')) {
    										 $.getJSON('jsonencode/barcodingcov.php?prev=0&callback=?', function(data) {
                                                 //alert("success");
-
-                                        options.series = data; // <- just assign the data to the series property.
+                                                options.xAxis.categories = data[0]['data'];
+                                                options.series = data.slice(1,);
+                                        //options.series = data; // <- just assign the data to the series property.
 
                                                 setTimeout(loadchirpbarcodcov,<?php echo $_SESSION['pagerefresh'] ;?>);
 
@@ -1204,6 +1201,7 @@ if($('#poreactivitycheck').prop('checked')) {
 <script>
 
 								$(document).ready(function() {
+
 								    var options = {
 								        chart: {
 								            renderTo: 'maxlen',
@@ -1270,12 +1268,136 @@ if($('#poreactivitycheck').prop('checked')) {
 
 
 								<?php if ($_SESSION['activereference'] != "NOREFERENCE") {?>
+
+                                        <?php if (count($_SESSION['activerefnames']) >= 3){?>
+                                            <script>
+                                                $(document).ready(function() {
+                                                    var options = {
+                                                        chart: {
+                                                            renderTo: 'percentcoverageglob',
+                                                            type: 'column',
+                                                        },
+                                                        plotOptions: {
+                                                            column: {
+                                                                animation: false,
+                                                            }
+                                                        },
+                                                        title: {
+                                                          text: 'Percentage of Reference Sequenced'
+                                                        },
+                                                        xAxis: {
+                                                                    title: {
+                                                                        text: 'Reference'
+                                                                    },
+                                                                    labels: {
+                                                                        rotation: -45,
+                                                            enabled:true,
+                                                            },
+                                                            categories: []
+                                                                },
+                                                                yAxis: {
+                                                                            title: {
+                                                                                text: '% Coverage'
+                                                                            }
+                                                                        },
+                                                                        credits: {
+                                                                            enabled: false
+                                                                          },
+                                                        legend: {
+                                                            layout: 'horizontal',
+                                                            align: 'center',
+                                                            verticalAlign: 'bottom',
+                                                            borderWidth: 0
+                                                        },
+                                                        series: []
+                                                    };
+                                                    function loadchirppercentcoverageglob() {
+                                                        $.getJSON('jsonencode/percentcoverageglob.php?prev=0&callback=?', function(data) {
+                                                            options.xAxis.categories = data[0]['data'];
+                                                            options.series = data.slice(1,); // <- just assign the data to the series property.
+                                                            setTimeout(loadchirppercentcoverageglob,<?php //echo $_SESSION['pagerefresh'] ;?>);
+                                                            var chart = new Highcharts.Chart(options);
+                                                        })
+                                                    };
+
+                                                    loadchirppercentcoverageglob();
+
+                                                });
+                                            </script>
+
+                                            <script>
+
+                                            $(document).ready(function() {
+                                                //alert("camel");
+                                                var options = {
+                                                    chart: {
+                                                        renderTo: 'depthcoverageglob',
+                                                        type: 'column'
+                                                        //type: 'line'
+                                                    },
+                                                    plotOptions: {
+                                                        column: {
+                                                            animation: false,
+                                                        }
+                                                            },
+                                                    title: {
+                                                      text: 'Average Depth of Sequenced Positions'
+                                                    },
+                                                    xAxis: {
+                                                                title: {
+                                                                    text: 'Reference'
+                                                                },
+                                                                labels: {
+                                                                    rotation: -45,
+                                                        enabled:true,
+                                                        },
+                                                            },
+                                                            yAxis: {
+                                                                        title: {
+                                                                            text: 'Depth'
+                                                                            //text: ''
+                                                                        },
+                                                                    },
+                                                                    credits: {
+                                                                        enabled: false
+                                                                      },
+                                                    legend: {
+                                                        layout: 'horizontal',
+                                                        align: 'center',
+                                                        verticalAlign: 'bottom',
+                                                        borderWidth: 0
+                                                    },
+                                                    series: []
+                                                };
+                                                function loadchirpdepthglob() {
+                if($('#readsummarycheck').prop('checked')) {
+                                         $.getJSON('jsonencode/depthcoverageglob.php?prev=0&refid=<?php echo $key;?>&callback=?', function(data) {
+                                             options.xAxis.categories = data[0]['data'];
+                                             options.series = data.slice(1,);
+                                                setTimeout(loadchirpdepthglob,<?php echo $_SESSION['pagerefresh'] ;?>);
+                                                var chart = new Highcharts.Chart(options);
+                                                });} else {
+   setTimeout(loadchirpdepthglob,<?php echo $_SESSION['pagerefresh'] ;?>);
+}
+
+                                        }
+
+
+                                                        loadchirpdepthglob();
+
+                                            });
+
+                                                //]]>
+
+                                                </script>
+
+                                            <?php
+                                        }else{?>
 									<?php foreach ($_SESSION['activerefnames'] as $key => $value) {
 										//echo $key . " " . $value . "<br>";?>
 
 
 										<script>
-
 																				$(document).ready(function() {
 																				    var options = {
 																				        chart: {
@@ -1412,6 +1534,7 @@ if($('#poreactivitycheck').prop('checked')) {
 
 
 										<?php
+                                        }
 										}
 										?>
 										<?php }

@@ -32,6 +32,7 @@
 
 		if ($template->num_rows >= 1){
 			foreach ($template as $row) {
+                echo $row['refid'];
 				$array[] = $row['refid'];
 				if ($row['max_length'] > $maxlengththreshold){
 					//echo "LONG MAN LONG";

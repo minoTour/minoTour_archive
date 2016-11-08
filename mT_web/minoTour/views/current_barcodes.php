@@ -594,8 +594,9 @@ include 'includes/head-new.php';
                                   };
                                   $.getJSON('jsonencode/barcodingcov.php?prev=0&callback=?', function(data) {
   					                //alert("success");
-
-  					        options.series = data; // <- just assign the data to the series property.
+                                    options.xAxis.categories = data[0]['data'];
+                                    options.series = data.slice(1,);
+  					        //options.series = data; // <- just assign the data to the series property.
 
   					        //options.series = JSON2;
   					                var chart = new Highcharts.Chart(options);
