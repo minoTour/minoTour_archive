@@ -150,16 +150,17 @@ include 'includes/head-new.php';
 
       <?php include 'includes/reporting-new.php'; ?>
       <!-- DataTables -->
-      <script src="plugins/datatables/jquery.dataTables.min.js"></script>
+      <!--<script src="plugins/datatables/jquery.dataTables.min.js"></script>-->
       <script src="plugins/datatables/dataTables.bootstrap.min.js"></script>
+      <script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.12/cr-1.3.2/datatables.min.js"></script>
       <script>
       $(document).ready(function() {
           $('#example').dataTable( {
-              "scrollX":true,
-              "paging": true,
-              "ordering": true,
-              "processing": true,
-        "serverSide": true,
+              //"scrollX":true,
+              //"paging": true,
+              //"ordering": true,
+              //"processing": true,
+        //"serverSide": true,
         //"ajax": "data_tables/data_table_prev_runs.php?prev=1"
               //"serverSide": true,
             //  "paging": true,

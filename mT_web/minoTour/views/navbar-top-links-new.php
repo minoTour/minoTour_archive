@@ -45,6 +45,9 @@
         <li id = "livecontrol">
             <a href="live_control.php"><i class="fa fa-dashboard fa-fw"></i><span> Remote Control</span></a>
         </li>
+        <li id = "prevcontrol">
+            <a href="prev_control.php"><i class="fa fa-dashboard fa-fw"></i><span> Live Archive</span></a>
+        </li>
         <?php if (checkactiverun()) { ?>
             <li id="currentruns" class="treeview">
                 <a href="#"><i class="fa fa-bolt fa-fw"></i><span> Current Sequencing Run</span> <i class="fa fa-angle-left pull-right"></i></a>

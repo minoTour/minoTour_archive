@@ -86,7 +86,7 @@ include 'includes/head-new.php';
         <!-- Content Header (Page header) -->
 
         <section class="content-header">
-            <h1>Live Control <small> - run: <?php echo cleanname($_SESSION['active_run_name']);; ?></small></h1>
+            <h1>Record of Previous Runs<small></small></h1>
           <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-edit"></i> External Links</a></li>
             <li class="active">Here</li>
@@ -101,20 +101,44 @@ include 'includes/head-new.php';
 
                 <div class="box">
                 <div class="box-header">
-                  <h3 class="box-title">Live Interaction</h3>
+                  <h3 class="box-title">Live Data: Previous Runs</h3>
                 </div><!-- /.box-header -->
                 <div class="box-body">
                     <div class="row">
                         <div class="col-lg-12">
-                            <p>This page allows you to remotely control minKNOW. You use it at your own risk.</p>
-                            <p>Once connected you will see the minION id below. If you have multiple minIONs connected to one account and all active, they can all be controlled from this page. Further options to implement 'Run Until' are available within the Current Sequencing Run folder.</p>
-                            <label id="conn_text"></label><br />
+                            <p>A record of your previous interactions with minKNOW.</p>
+                            <p></p>
 
                                 <div id="messages_txt" />
                             <div>
 
+                                <div class="box">
+                                <div class="box-header">
+                                  <h3 class="box-title">Previous Live Run Data</h3>
+                                </div><!-- /.box-header -->
+                                <div class="box-body">
+                                     <table id="example" class="table table-bordered table-striped table-hover" cellspacing="0">
+                                         <thead>
+                                             <tr>
+                                                 <th>ID</th>
+                                                 <th>Date</th>
+                                                 <th>minION</th>
+                                                 <th>Run Name</th>
+                                             </tr>
+                                         </thead>
+                                         <tfoot>
+                                             <tr>
+                                                 <th>ID</th>
+                                                 <th>Date</th>
+                                                 <th>minION</th>
+                                                 <th>Run Name</th>
+                                            </tr>
+                                         </tfoot>
+                                     </table>
+                                 </div>
+                             </div>
 
-
+                             <div id = "read_details">Select a row from the table above to view run details.</div>
 
   <div id="app">
 
@@ -127,13 +151,8 @@ include 'includes/head-new.php';
   <!-- Tab panes-->
   <div class="tab-content">
     <div v-for="(key,minion) in minions | orderBy 'name'" role="tabpanel" class="tab-pane" id="{{minion.name}}">
-        <h5>You are interacting with minION: {{minion.name}}</h5>
-
-
-        <div v-if="minion.state==1">
-
-            <h5>It is currently <b>active</b>.</h5>
-
+        <h5>This is a record of: {{minion.name}}</h5>
+        <div>
             <div class="panel panel-info">
                 <div class="panel-heading">
                 <h3 class="panel-title">minKNOW Details</h3>
@@ -171,12 +190,12 @@ include 'includes/head-new.php';
                     <div class="col-md-2"><p><i>Completed Read Count</i>: {{minion.statistics.selected_completed_count}}</p></div>
                     <div class="row">
                         <div class="col-lg-12">
-                            <div class="col-lg-6" id="{{minion.name}}"><div is="chartreadhist" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count_weighted_hist" :datain2="minion.statistics.read_event_count_weighted_hist_bin_width"></div></div>
-                            <div class="col-lg-6" id="{{minion.name}}"><div is="chartyield" :title="minion.name" :key="key" :datain="minion.engine_states.yield" :datain2="minion.yield_history"></div></div>
-                            <div class="col-lg-6" id="{{minion.name}}"><div is="porehistory" :title="minion.name" :key="key" :datain2="minion.pore_history"></div></div>
-                            <div class="col-lg-6" id="{{minion.name}}"><div is="perchistory" :title="minion.name" :key="key" :datain2="minion.pore_history"></div></div>
-                            <div class="col-lg-6" id="{{minion.name}}"><div is="temphistory" :title="minion.name" :key="key" :datain2="minion.temp_history"></div></div>
-                            <div class="col-lg-6" id="{{minion.name}}"><div is="volthistory" :title="minion.name" :key="key" :datain2="minion.temp_history"></div></div>
+                            <div class="col-lg-12" id="{{minion.name}}"><div is="chartreadhist" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count_weighted_hist" :datain2="minion.statistics.read_event_count_weighted_hist_bin_width"></div></div>
+                            <div class="col-lg-12" id="{{minion.name}}"><div is="chartyield" :title="minion.name" :key="key" :datain="minion.engine_states.yield" :datain2="minion.yield_history"></div></div>
+                            <div class="col-lg-12" id="{{minion.name}}"><div is="porehistory" :title="minion.name" :key="key" :datain2="minion.pore_history"></div></div>
+                            <div class="col-lg-12" id="{{minion.name}}"><div is="perchistory" :title="minion.name" :key="key" :datain2="minion.pore_history"></div></div>
+                            <div class="col-lg-12" id="{{minion.name}}"><div is="temphistory" :title="minion.name" :key="key" :datain2="minion.temp_history"></div></div>
+                            <div class="col-lg-12" id="{{minion.name}}"><div is="volthistory" :title="minion.name" :key="key" :datain2="minion.temp_history"></div></div>
 
                         </div>
                     </div>
@@ -217,162 +236,7 @@ include 'includes/head-new.php';
           </div>
           </div>
 
-            <div class="col-md-4">
-                <div class="panel panel-warning">
-                    <div class="panel-heading">
-                    <h3 class="panel-title">minKNOW Control options</h3>
-                    </div>
-                  <div class="panel-body">
-                      <h5>To test if you have a connection to minKNOW:</h5>
-                        <button v-on:click="testmessage" id='{{minion.name}}' type='button' class='btn btn-info btn-sm'><i class='fa fa-magic'></i> Test Communication</button>
-                          <br>
-                          <!--<h5>To increase/decrease the current bias voltage offset in minKNOW by 10 mV:</h5>
-                          <button v-on:click="biasvoltageinc" id='{{minion.name}}' type='button' class='btn btn-info btn-sm'><i class='fa fa-arrow-circle-up'></i> Inc Bias Voltage</button>
-                          <button v-on:click="biasvoltagedec" id='{{minion.name}}' type='button' class='btn btn-info btn-sm'><i class='fa fa-arrow-circle-down'></i> Dec Bias Voltage</button>
-                          <br>-->
 
-                          <h5>Rename Your Run:</h5>
-                          <!--<button id='renamerun' type='button' class='btn btn-info btn-sm'><i class='fa fa-magic'></i> Rename Run</button>-->
-                          <!-- Indicates a dangerous or potentially negative action -->
-                          <!-- Button trigger modal -->
-                          <button id='renamerun' class='btn btn-info btn-sm' data-toggle='modal' data-target='#{{minion.name}}renamemodal'>
-                            <i class='fa fa-magic'></i> Rename Run
-                          </button>
-                          <!-- Modal -->
-                          <div class='modal fade' id='{{minion.name}}renamemodal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
-                              <div class='modal-dialog'>
-                                  <div class='modal-content'>
-                                      <div class='modal-header'>
-                                          <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-                                          <h4 class='modal-title' id='myModalLabel'>Rename Your Run</h4>
-                                      </div>
-                                      <div class='modal-body'>
-                                          <div id='{{minion.name}}renameinfo'>
-                                              <p>You can rename a run if you wish to do so. Note there is no need to do this unless you wish to change the sample ID for some reason.</p>
-                                              <input type="text" id="{{minion.name}}newname" class="form-control" placeholder="New Run Name">
-                                              <p>If you are sure you wish to do this enter your new name above and click 'Rename Run' below. Otherwise close this window.</p>
-                                              <p> We dont recommend doing this when a run is in progress!</p>
-                                          </div>
-                                          <div class='modal-footer'>
-                                              <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
-                                              <button v-on:click="renamenow" id='{{minion.name}}' type='button' class='btn btn-danger' data-dismiss='modal'>Rename Run</button>
-                                          </div>
-                                      </div><!-- /.modal-content -->
-                                  </div><!-- /.modal-dialog -->
-                              </div><!-- /.modal -->
-                          </div>
-                          <h5>Rename Flow Cell:</h5>
-                          <!--<button id='renamerun' type='button' class='btn btn-info btn-sm'><i class='fa fa-magic'></i> Rename Run</button>-->
-                          <!-- Indicates a dangerous or potentially negative action -->
-                          <!-- Button trigger modal -->
-                          <button id='renameflowcell' class='btn btn-info btn-sm' data-toggle='modal' data-target='#{{minion.name}}renameflowcell'>
-                            <i class='fa fa-magic'></i> Rename Flowcell
-                          </button>
-                          <!-- Modal -->
-                          <div class='modal fade' id='{{minion.name}}renameflowcell' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
-                              <div class='modal-dialog'>
-                                  <div class='modal-content'>
-                                      <div class='modal-header'>
-                                          <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-                                          <h4 class='modal-title' id='myModalLabel'>Rename Your Flowcell</h4>
-                                      </div>
-                                      <div class='modal-body'>
-                                          <div id='{{minion.name}}renameflowcellinfo'>
-                                              <p>You can rename a flowcell if you wish to do so. Note there is no need to do this unless you wish to change the Flowcell ID for some reason.</p>
-                                              <input type="text" id="{{minion.name}}newflowcellname" class="form-control" placeholder="New Flowcell ID">
-                                              <p>If you are sure you wish to do this enter your new Flowcell ID above and click 'Rename Run' below. Otherwise close this window.</p>
-                                              <p> We dont recommend doing this when a run is in progress!</p>
-                                          </div>
-                                          <div class='modal-footer'>
-                                              <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
-                                              <button v-on:click="renameflowcellnow" id='{{minion.name}}' type='button' class='btn btn-danger' data-dismiss='modal'>Rename Flowcell</button>
-                                          </div>
-                                      </div><!-- /.modal-content -->
-                                  </div><!-- /.modal-dialog -->
-                              </div><!-- /.modal -->
-                          </div>
-
-
-
-                          <br>
-                          <h5>Remote Start/Stop Sequencing:</h5>
-
-                                  <!-- Indicates a dangerous or potentially negative action -->
-                                  <!-- Button trigger modal -->
-                                  <button id='stopminion' class='btn btn-danger btn-sm' data-toggle='modal' data-target='#{{minion.name}}stopminionmodal'>
-                                    <i class='fa fa-stop'></i> Stop minION
-                                  </button>
-
-                                  <!-- Modal -->
-                                  <div class='modal fade' id='{{minion.name}}stopminionmodal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
-                                      <div class='modal-dialog'>
-                                          <div class='modal-content'>
-                                              <div class='modal-header'>
-                                                  <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-                                                  <h4 class='modal-title' id='myModalLabel'>Stop your minION</h4>
-                                              </div>
-                                              <div class='modal-body'>
-                                                  <div id='{{minion.name}}stopminioninfo'>
-                                                      <p>This will attempt to stop your minION sequencer remotely. It should be possible to restart sequencing remotely but software crashes on the minION controlling device may cause problems. You should only stop your minION device remotely if you are certain you wish to do so and <strong> at your own risk</strong>.</p>
-
-                                                      <p>If you are sure you wish to do this, click 'Stop minION' below. Otherwise close this window.</p>
-                                                  </div>
-                                                  <div class='modal-footer'>
-                                                      <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
-                                                      <button v-on:click="stopminion" id='{{minion.name}}' type='button' class='btn btn-danger' data-dismiss='modal'>Stop minION</button>
-                                                  </div>
-                                              </div><!-- /.modal-content -->
-                                          </div><!-- /.modal-dialog -->
-                                      </div><!-- /.modal -->
-                                  </div>
-
-
-                                  <!-- Indicates a dangerous or potentially negative action -->
-                                  <!-- Button trigger modal -->
-                                  <button id='startminion' class='btn btn-success btn-sm' data-toggle='modal' data-target='#{{minion.name}}startminionmodal'>
-                                    <i class='fa fa-play'></i> Start minION
-                                  </button>
-
-                                  <!-- Modal -->
-                                  <div class='modal fade' id='{{minion.name}}startminionmodal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
-                                      <div class='modal-dialog'>
-                                          <div class='modal-content'>
-                                              <div class='modal-header'>
-                                                  <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-                                                  <h4 class='modal-title' id='myModalLabel'>Start your minION</h4>
-                                              </div>
-                                              <div class='modal-body'>
-                                                  <div id='{{minion.name}}startminioninfo'>
-                                                      <p>This will attempt to restart your minION sequencer remotely.</p>
-
-                                                      <p>If you are sure you wish to do this select an available run script and click 'Start minION' below. Otherwise close this window.</p>
-                                                      <div v-for="script in minion.scripts" class='radio'>
-                                                          <label>
-                                                              <input type='radio' name='scriptRadios' id='{{script.name}}' value='{{script.name}}' >{{script.name}}.py</label>
-                                                      </div>
-                                                  </div>
-                                                  <div class='modal-footer'>
-                                                      <button type='button' class='btn btn-default btn-sm' data-dismiss='modal'>Close</button>
-                                                      <button v-on:click="startminion" id='{{minion.name}}' type='button' class='btn btn-success' data-dismiss='modal'>Start minION</button>
-                                                  </div>
-                                              </div><!-- /.modal-content -->
-                                          </div><!-- /.modal-dialog -->
-                                      </div><!-- /.modal -->
-                                  </div>
-                                  <br><br>
-                                  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample{{minion.name}}" aria-expanded="false" aria-controls="collapseExample">
-                                    Available Scripts:
-                                  </button>
-                                  <div class="collapse" id="collapseExample{{minion.name}}">
-                                    <div class="well">
-                                      <div v-for="script in minion.scripts">{{script.name}}</div>
-                                    </div>
-                                  </div>
-
-
-                  </div>
-              </div>
-          </div>
 
             <div class="col-md-4">
             <div class='panel panel-info'>
@@ -437,50 +301,18 @@ include 'includes/head-new.php';
 </div>
         </div>
 
-        <div v-else>
-            It is currently <i>inactive</i>.
 
-            <!-- Indicates a dangerous or potentially negative action -->
-            <!-- Button trigger modal -->
-            <button id='initminion' class='btn btn-warning btn-sm' data-toggle='modal' data-target='#{{minion.name}}initminionmodal'>
-              <i class='fa fa-stop'></i> Initialise minION
-            </button>
-
-            <!-- Modal -->
-            <div class='modal fade' id='{{minion.name}}initminionmodal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
-                <div class='modal-dialog'>
-                    <div class='modal-content'>
-                        <div class='modal-header'>
-                            <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-                            <h4 class='modal-title' id='myModalLabel'>Start your minION</h4>
-                        </div>
-                        <div class='modal-body'>
-                            <div id='{{minion.name}}initminioninfo'>
-                                <p>This action will switch the minION to the active state.</p>
-
-                                <p>If you are sure you wish to do this, click 'Initialise minION' below. Otherwise close this window.</p>
-                            </div>
-                            <div class='modal-footer'>
-                                <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
-                                <button v-on:click="initminion" id='{{minion.name}}' type='button' class='btn btn-warning' data-dismiss='modal'>Initialise minION</button>
-                            </div>
-                        </div><!-- /.modal-content -->
-                    </div><!-- /.modal-dialog -->
-                </div><!-- /.modal -->
-            </div>
-
-
-        </div>
     </div>
 
   </div>
           </div>
 </div>
 
-<button data-toggle="collapse" data-target="#demo">Debugging Info</button>
 <div id="demo" class="collapse">
 <label id="server_message"></label><br />
 <label id="merged_message"></label><br />
+</div>
+
 </div>
 
                             								<!--NEW BLOCK-->
@@ -492,12 +324,11 @@ include 'includes/head-new.php';
 
       <?php include 'includes/reporting-new.php'; ?>
       <script src="js/plugins/dataTables/jquery.dataTables.js" type="text/javascript" charset="utf-8"></script>
-      <script src="js/plugins/dataTables/dataTables.bootstrap.js" type="text/javascript" charset="utf-8"></script>
+      <!--<script src="js/plugins/dataTables/dataTables.bootstrap.js" type="text/javascript" charset="utf-8"></script>-->
+      <script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.12/cr-1.3.2/datatables.min.js"></script>
       <script src="https://code.highcharts.com/highcharts-more.js"></script>
       <script src="https://code.highcharts.com/modules/solid-gauge.src.js"></script>
       <script src="js/json-patch.min.js"></script>
-
-
 
       <script>
   $(document).ready(function () {
@@ -541,19 +372,7 @@ include 'includes/head-new.php';
     	return(yval+1+1);
     }
 
-    //function check(){
-        //alert ('check called');
-    //    var timerId = setInterval(function(){
-    //        if(!ws || ws.readyState == 3) {
-    //            clearInterval(timerId);
-    //            start();
 
-    //        }else{
-    //            clearInterval(timerId);
-    //        }
-
-    //    },1000);
-    //}
 
     function formatdatetime(timetoconvert){
         var date = new Date(timetoconvert*1000);
@@ -579,7 +398,7 @@ include 'includes/head-new.php';
     }
 
 
-    var ws = null;
+    /*var ws = null;
 
     //change example.com with your IP or your host
     function start() {
@@ -587,12 +406,12 @@ include 'includes/head-new.php';
         ws = new ReconnectingWebSocket("ws://127.0.0.1:8080/ws");
 
 
-        //alert ("<?php echo $_SESSION['user_name'];?>");
+        //alert ("<?php #echo $_SESSION['user_name'];?>");
         ws.onopen = function(evt) {
             //alert ("weve connected");
           var conn_status = document.getElementById('conn_text');
           conn_status.innerHTML = "Connection status: Connected!";
-          var subscribemessage={"SUBSCRIBE":"<?php echo $_SESSION['user_name'];?>"};
+          var subscribemessage={"SUBSCRIBE":"<?php #echo $_SESSION['user_name'];?>"};
           ws.send(JSON.stringify(subscribemessage));
         };
         ws.onmessage = function(evt) {
@@ -609,48 +428,7 @@ include 'includes/head-new.php';
           //console.log("output");
           //console.log(jsonholder);
           jsonreturn=jsonholder;
-          //console.log(JsonPatchError);
-          //console.log("message recieved");
-          //console.log(typeof(jsonreturn),"jsonreturn",jsonreturn);
-          //console.log(typeof(jsonholder));
-          //console.log(jsonreturn.length);
-          //jsonpatch.apply(jsonholder,jsonreturn);
-          //console.log("merged message");
-          //console.log(jsonholder);
-          //var myobj = { firstName:"Albert", contactDetails: { phoneNumbers: [ ] } };
-          //var myobj2 = { firstName:"Funky", contactDetails: { phoneNumbers: [number:"1234-567"] } };
-          //console.log(myobj);
-          //console.log(myobj2);
-        //    var patches = [
-        //       {op:"replace", path:"/firstName", value:"Joachim" },
-        //       {op:"add", path:"/lastName", value:"Wester" },
-        //       {op:"add", path:"/contactDetails/phoneNumbers/0", value:{ number:"555-123" }  }
-        //       ];
-        //    jsonpatch.apply( myobj, patches );
-        //    console.log(myobj);
-        //  console.log("orig");
-        //  console.log(jsonreturn);
-        //  $.extend( true, jsonholder, JSON.parse(evt.data) );
-        //  console.log("bo");
-        //  console.log(jsonholder);
-          //console.log(jsonholder.length);
-          //if (jsonholder.length < 1){
-            //   jsonholder = $.extend(true,{},jsonreturn);
-          //}else{
-              //var finalObj = jsonholder.concat(jsonreturn);
-        //      jsonholder = $.merge(jsonholder, jsonreturn);
-          //}
-          //jsonreturn = jsonholder;
-          //jsonholder = $.merge(jsonholder, jsonreturn);
-          //console.log(jsonholder);
-          //jsonreturn = $.extend( true, {}, jsonholder );
-          //console.log(jsonreturn)
-          //jsonreturn=jsonholder;
-          //jsonreturn=JSON_delta.patch(jsonholder,jsonreturn);
-          //console.log(jsonreturn);
-          //jsonholder=jsonreturn;
-          //var message_merge = document.getElementById('merged_message');
-          //message_merge.innerHTML=jsonholder;
+
           var minion_select = document.getElementById('minions');
           var miniondict;
           for (var thing in minionsthings.minions) {
@@ -742,12 +520,12 @@ include 'includes/head-new.php';
           //check();
 
         };
-    }
+    }*/
     function round(value, decimals) {
         return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
     }
 
-    start();
+    //start();
 
     Vue.filter('reverse', function(value){
         return value;
@@ -1397,7 +1175,7 @@ include 'includes/head-new.php';
                             //    this.chart.redraw();
                             if (this.chart) {
                                 point = this.chart.series[0].points[0];
-                                console.log(this.datain);
+                                //console.log(this.datain);
                                 var single = 0;
                                 if (parseFloat(this.datain["good_single"]) > 0) {
                                     single = parseFloat(this.datain["good_single"]);
@@ -1758,9 +1536,86 @@ include 'includes/head-new.php';
 
 
 
-  });
 
-</script>
+    var searchTable = $('#example').dataTable( {
+        "columnDefs": [
+            { "visible": false, "targets": 0 }
+          ],
+        //"scrollX":true,
+        //"paging": true,
+        //"ordering": true,
+        //"processing": true,
+        //"serverSide": true,
+  //"ajax": "data_tables/data_table_prev_runs.php?prev=1"
+        //"serverSide": true,
+      //  "paging": true,
+    //"ordering": true,
+  "sAjaxSource": "data_tables/data_table_prev_live.php?prev=1"
+    } );
+    $('#example tbody').on('click', 'tr', function () {
+            //console.log("hello");
+            //var name = $('td', this).eq(0).text();
+            var position = searchTable.fnGetPosition(this); // getting the clicked row position
+            var contactId = searchTable.fnGetData(position)[0]; // getting the value of the first (invisible) column
+            var minIONid = searchTable.fnGetData(position)[2];
+            var userid = "<?php echo $_SESSION['user_name'];?>";
+            //alert(contactId);
+            $.post( "views/prev_live_details.php?prev=1", { liverunname: contactId })
+              .done(function( data ) {
+              var message_status = document.getElementById('server_message');
+              message_status.innerHTML = data;
+              var jsonreturn = data;
+              //alert(minIONid);
+
+
+              jsonreturn = jsonreturn["DETAILS"][userid];
+
+              //var jsonreturn = JSON.parse(data);
+              //var jsonreturn = jQuery.parseJSON(data);
+              //var jsonreturn = JSON.parse(jsonreturn);
+              //console.log(typeof(jsonreturn));
+              //console.log(jsonreturn);
+              var minion_select = document.getElementById('minions');
+              var miniondict;
+              /*for (var thing in minionsthings.minions) {
+                  var adder=0;
+                  for (var prop in jsonreturn) {
+                      if (prop != minionsthings.minions[thing].name){
+                      }else{
+                          adder ++;
+                      }
+                  }
+                  if (adder == 0){
+                      minionsthings.minions.splice([thing]);
+                  }
+
+              }*/
+              minionsthings.minions=[];
+              for (var prop in jsonreturn) {
+
+                  //console.log(prop);
+                  //console.log(jsonreturn[prop].state);
+                  var adder=0;
+                  //console.log(adder);
+                  if (adder == 0){
+                      //console.log(prop);
+                      //console.log(minIONid);
+                      if (prop == minIONid){
+                          console.log(prop);
+                          //channel_info: jsonreturn[prop].detailsdata.channel_info,
+                          //timestamp: jsonreturn[prop].detailsdata.timestamp,statistics: jsonreturn[prop].detailsdata.statistics,multiplex_states: jsonreturn[prop].detailsdata.multiplex_states, engine_states: jsonreturn[prop].detailsdata.engine_states,
+                          minionsthings.minions.push({ name: prop ,channel_info: jsonreturn[prop].detailsdata.channel_info,timestamp: jsonreturn[prop].detailsdata.timestamp,statistics: jsonreturn[prop].detailsdata.statistics,multiplex_states: jsonreturn[prop].detailsdata.multiplex_states, engine_states: jsonreturn[prop].detailsdata.engine_states,simplechanstats: jsonreturn[prop].simplesummary,simplesummary: jsonreturn[prop].simplesummary, yield_history: jsonreturn[prop].yield_history, temp_history: jsonreturn[prop].temp_history, pore_history: jsonreturn[prop].pore_history,  channelstuff: jsonreturn[prop].channelstuff, state: jsonreturn[prop].state ,scripts: jsonreturn[prop].scripts , livedata: jsonreturn[prop].livedata, comms: jsonreturn[prop].comms});
+                      }
+                  }
+                  console.log(minionsthings.minions);
+              }
+            });
+      } );
+
+
+} );
+
+    </script>
 
 
 

@@ -86,11 +86,11 @@ include 'includes/head-new.php';
         <section class="content-header">
 
           <h1>
-            Current Summary
+            Previous Summary
             <small> - run: <?php echo cleanname($_SESSION['focusrun']); ?></small>
           </h1>
           <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-table"></i> Current Run</a></li>
+            <li><a href="#"><i class="fa fa-table"></i> Previous Run</a></li>
             <li><a href="#"><i class="fa fa-bar-chart-o"></i> Data Summary</a></li>
             <li class="active">Here</li>
           </ol>
@@ -119,9 +119,8 @@ include 'includes/head-new.php';
                   <li><a href="previous_quality.php">Read Quality</a></li>
                   <?php if ($_SESSION['focusreference'] != "NOREFERENCE") {?>
                   <li><a href="previous_coverage.php">Coverage Detail</a></li>
-                  <li><a href="previous_bases.php">Base Coverage</a></li>
                   <?php }; ?>
-
+                  <li><a href="previous_bases.php">Base Coverage</a></li>
                 </ul>
                 <div class="tab-content">
                   <div class="tab-pane active" id="tab_1">
@@ -151,14 +150,13 @@ include 'includes/head-new.php';
 </div></h3>
             </div>
             <div class="panel-body">
-                <div id="meanskips" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mean Skips Over Time.</div>
-                <div id="meanstays" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mean Stays Over Time</div>
-                <h4> The remainder of these plots only generate data for HMM base called data. </h4>
-                <div id="meanshifttime" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mean Shifts for reads Over Time</div>
+                  <div id="meanshifttime" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mean Shifts for reads Over Time</div>
                   <div id="meanscaletime" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mean Scales for reads Over Time</div>
                   <div id="meanqualtime" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mean Read Qualities Over Time</div>
                   <div id="meanabasicheight" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating The Mean Abasic Height Over Time.</div>
                   <div id="meancurrentplots" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mean Currents Over Time.</div>
+                  <div id="meanskips" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mean Skips Over Time.</div>
+                  <div id="meanstays" style="width:100%; height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Mean Stays Over Time</div>
 
             </div>
           </div>

@@ -149,16 +149,17 @@ include 'includes/head-new.php';
       </div><!-- /.content-wrapper -->
 
       <?php include 'includes/reporting-new.php'; ?>
-      <script src="js/plugins/dataTables/jquery.dataTables.js" type="text/javascript" charset="utf-8"></script>
+      <!--<script src="js/plugins/dataTables/jquery.dataTables.js" type="text/javascript" charset="utf-8"></script>-->
+       <script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.12/cr-1.3.2/datatables.min.js"></script>
       <script src="js/plugins/dataTables/dataTables.bootstrap.js" type="text/javascript" charset="utf-8"></script>
       <script>
       $(document).ready(function() {
           $('#example').dataTable( {
-              "scrollX":true,
-              "paging": true,
-              "ordering": true,
-              "processing": true,
-        "serverSide": true,
+              //"scrollX":true,
+              //"paging": true,
+              //"ordering": true,
+              //"processing": true,
+        //"serverSide": true,
               "sAjaxSource": "data_tables/data_table_active_runs.php"
           } );
           $('#example tbody').on('click', 'tr', function () {
