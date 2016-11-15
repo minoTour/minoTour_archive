@@ -1326,7 +1326,7 @@ include 'includes/head-new.php';
             },
             yAxis: {
                 title: {
-                    text: 'Number of Pores In Strand'
+                    text: 'Number of Pores In Strand/Single'
                 },
                 plotLines: [{
                     value: 0,
@@ -1338,10 +1338,14 @@ include 'includes/head-new.php';
             credits: {
                 enabled: false
             },
-            series: [{
-                name: 'In Strand',
-                data: []
-            }
+            series: [
+                {
+                    name: 'In Strand',
+                    data: []
+                },{
+                    name: 'Single Pore',
+                    data: []
+                }
             ]
          			}
     	    }
@@ -1351,9 +1355,11 @@ include 'includes/head-new.php';
       this.$nextTick(function() {
       		this.chart = new Highcharts.Chart(this.opts);
             this.chart.series[0].setData(this.datain2["strand"]);
+            this.chart.series[1].setData(this.datain2["single"]);
             setInterval(function () {
                 //console.log(this.datain2);
                 this.chart.series[0].setData(this.datain2["strand"]);
+                this.chart.series[1].setData(this.datain2["single"]);
                 this.chart.redraw();
         }.bind(this), 5000);
             });

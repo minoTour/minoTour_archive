@@ -136,7 +136,7 @@ include 'includes/head-new.php';
 
             <div class="panel panel-info">
                 <div class="panel-heading">
-                <h3 class="panel-title">minKNOW Details</h3>
+                <h3 class="panel-title">minKNOW Details - {{minion.livedata.dataset.result}}</h3>
                 </div>
 
               <div class="panel-body">
@@ -584,8 +584,8 @@ include 'includes/head-new.php';
     //change example.com with your IP or your host
     function start() {
         var jsonholder= {};
-        ws = new ReconnectingWebSocket("ws://127.0.0.1:8080/ws");
-
+        //ws = new ReconnectingWebSocket("ws://127.0.0.1:8080/ws");
+        ws = new ReconnectingWebSocket("ws://<?php echo $_SERVER['SERVER_NAME']; ?>:8080/ws");
 
         //alert ("<?php echo $_SESSION['user_name'];?>");
         ws.onopen = function(evt) {
@@ -597,60 +597,12 @@ include 'includes/head-new.php';
         };
         ws.onmessage = function(evt) {
           var newMessage = document.createElement('p');
-          //console.log(evt);
           newMessage.textContent = "Server: " + evt.data;
           var message_status = document.getElementById('server_message');
           message_status.innerHTML = evt.data;
-          //console.log(evt.data);
           var jsonreturn = JSON.parse(evt.data);
-          //console.log("input");
-          //console.log(jsonreturn);
           jsonpatch.apply(jsonholder,jsonreturn);
-          //console.log("output");
-          //console.log(jsonholder);
           jsonreturn=jsonholder;
-          //console.log(JsonPatchError);
-          //console.log("message recieved");
-          //console.log(typeof(jsonreturn),"jsonreturn",jsonreturn);
-          //console.log(typeof(jsonholder));
-          //console.log(jsonreturn.length);
-          //jsonpatch.apply(jsonholder,jsonreturn);
-          //console.log("merged message");
-          //console.log(jsonholder);
-          //var myobj = { firstName:"Albert", contactDetails: { phoneNumbers: [ ] } };
-          //var myobj2 = { firstName:"Funky", contactDetails: { phoneNumbers: [number:"1234-567"] } };
-          //console.log(myobj);
-          //console.log(myobj2);
-        //    var patches = [
-        //       {op:"replace", path:"/firstName", value:"Joachim" },
-        //       {op:"add", path:"/lastName", value:"Wester" },
-        //       {op:"add", path:"/contactDetails/phoneNumbers/0", value:{ number:"555-123" }  }
-        //       ];
-        //    jsonpatch.apply( myobj, patches );
-        //    console.log(myobj);
-        //  console.log("orig");
-        //  console.log(jsonreturn);
-        //  $.extend( true, jsonholder, JSON.parse(evt.data) );
-        //  console.log("bo");
-        //  console.log(jsonholder);
-          //console.log(jsonholder.length);
-          //if (jsonholder.length < 1){
-            //   jsonholder = $.extend(true,{},jsonreturn);
-          //}else{
-              //var finalObj = jsonholder.concat(jsonreturn);
-        //      jsonholder = $.merge(jsonholder, jsonreturn);
-          //}
-          //jsonreturn = jsonholder;
-          //jsonholder = $.merge(jsonholder, jsonreturn);
-          //console.log(jsonholder);
-          //jsonreturn = $.extend( true, {}, jsonholder );
-          //console.log(jsonreturn)
-          //jsonreturn=jsonholder;
-          //jsonreturn=JSON_delta.patch(jsonholder,jsonreturn);
-          //console.log(jsonreturn);
-          //jsonholder=jsonreturn;
-          //var message_merge = document.getElementById('merged_message');
-          //message_merge.innerHTML=jsonholder;
           var minion_select = document.getElementById('minions');
           var miniondict;
           for (var thing in minionsthings.minions) {
@@ -664,15 +616,11 @@ include 'includes/head-new.php';
               if (adder == 0){
                   minionsthings.minions.splice([thing]);
               }
-
           }
           for (var prop in jsonreturn) {
-              //console.log(jsonreturn[prop].state);
               var adder=0;
               for (var thing in minionsthings.minions) {
-                  //console.log(thing);
                   if (prop != minionsthings.minions[thing].name){
-
                   }else{
                       if (minionsthings.minions[thing].state != jsonreturn[prop].state){
                           minionsthings.minions[thing].state = jsonreturn[prop].state;
@@ -850,7 +798,7 @@ include 'includes/head-new.php';
 		        chart: {
         	    	renderTo: 'container'+this.title,
                     type:'column',
-                    zoomType: 'xy'
+                    zoomType: 'x'
 	        	},
     	    	title: {
         	    	text: 'Read length Histograms'
@@ -1424,7 +1372,7 @@ include 'includes/head-new.php';
 		        chart: {
         	    	renderTo: 'containeryield'+this.title,
                     type:'spline',
-                    zoomType: 'xy'
+                    zoomType: 'x'
 	        	},
     	    	title: {
         	    	text: 'Yield over time '
@@ -1481,7 +1429,7 @@ include 'includes/head-new.php';
 		        chart: {
         	    	renderTo: 'perchistory'+this.title,
                     type:'spline',
-                    zoomType: 'xy'
+                    zoomType: 'x'
 	        	},
     	    	title: {
         	    	text: '% Occupancy Over Time'
@@ -1537,7 +1485,7 @@ include 'includes/head-new.php';
 		        chart: {
         	    	renderTo: 'porehistory'+this.title,
                     type:'spline',
-                    zoomType: 'xy'
+                    zoomType: 'x'
 	        	},
     	    	title: {
         	    	text: 'In Strand Counts'
@@ -1548,7 +1496,7 @@ include 'includes/head-new.php';
             },
             yAxis: {
                 title: {
-                    text: 'Number of Pores In Strand'
+                    text: 'Number of Pores In Strand/Single'
                 },
                 plotLines: [{
                     value: 0,
@@ -1560,10 +1508,14 @@ include 'includes/head-new.php';
             credits: {
                 enabled: false
             },
-            series: [{
-                name: 'In Strand',
-                data: []
-            }
+            series: [
+                {
+                    name: 'In Strand',
+                    data: []
+                },{
+                    name: 'Single Pore',
+                    data: []
+                }
             ]
          			}
     	    }
@@ -1573,9 +1525,11 @@ include 'includes/head-new.php';
       this.$nextTick(function() {
       		this.chart = new Highcharts.Chart(this.opts);
             this.chart.series[0].setData(this.datain2["strand"]);
+            this.chart.series[1].setData(this.datain2["single"]);
             setInterval(function () {
                 //console.log(this.datain2);
                 this.chart.series[0].setData(this.datain2["strand"]);
+                this.chart.series[1].setData(this.datain2["single"]);
                 this.chart.redraw();
         }.bind(this), 5000);
             });
@@ -1593,7 +1547,7 @@ include 'includes/head-new.php';
 		        chart: {
         	    	renderTo: 'temphistory'+this.title,
                     type:'spline',
-                    zoomType: 'xy'
+                    zoomType: 'x'
 	        	},
     	    	title: {
         	    	text: 'Temperature over time '
@@ -1604,7 +1558,7 @@ include 'includes/head-new.php';
             },
             yAxis: {
                 title: {
-                    text: 'Cumulative Events'
+                    text: 'Temperature Celcius'
                 },
                 plotLines: [{
                     value: 0,
@@ -1654,7 +1608,7 @@ include 'includes/head-new.php';
 		        chart: {
         	    	renderTo: 'volthistory'+this.title,
                     type:'spline',
-                    zoomType: 'xy'
+                    zoomType: 'x'
 	        	},
     	    	title: {
         	    	text: 'Global Voltage over time '
@@ -1665,7 +1619,7 @@ include 'includes/head-new.php';
             },
             yAxis: {
                 title: {
-                    text: 'Voltage (mV)'
+                    text: 'Voltage'
                 },
                 plotLines: [{
                     value: 0,
