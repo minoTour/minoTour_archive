@@ -155,17 +155,33 @@ include 'includes/head-new.php';
         <div>
             <div class="panel panel-info">
                 <div class="panel-heading">
-                <h3 class="panel-title">minKNOW Details</h3>
+                <h3 class="panel-title">minKNOW Details - {{minion.livedata.dataset.result}}</h3>
                 </div>
 
               <div class="panel-body">
                   <div v-if='minion.engine_states.status!="ready"'>
+                      <div class="col-md-2"><p><i>Last Update</i>: {{minion.timestamp}}</p></div>
+                      <div class="col-md-2"><p><i>MinKNOW version</i>: {{minion.engine_states.version_string}}</p></div>
+                      <div class="col-md-2"><p><i>minION heatsink temperature</i>: {{minion.engine_states.minion_heatsink_temperature}}</p></div>
+                      <div class="col-md-2"><p><i>minION ID</i>: {{minion.name}}</p></div>
+                      <div class="col-md-2"><p><i>ASIC ID</i>: {{minion.engine_states.asic_id_full}}/{{minion.engine_states.asic_id}}</p></div>
+                      <div class="col-md-2"><p><i>minION ASIC temperature</i>: {{minion.engine_states.minion_asic_temperature}}</p></div>
+                      <div class="col-md-2"><p><i>Yield</i>: {{minion.engine_states.yield}}/{{minion.statistics.read_event_count}}</p></div>
+                      <div class="col-md-2"><p><i>Experiment Start Time</i>: {{minion.engine_states.daq_start_time}}</p></div>
+                      <!--<div class="col-md-2"><p><i>Experiment End Time</i>: {{minion.engine_states.daq_stop_time}}</p></div>-->
+                      <div class="col-md-2"><p><i>Status</i>: {{minion.engine_states.status}}</p></div>
+                      <div class="col-md-2"><p><i>Flow Cell ID</i>: {{minion.livedata.flow_cell_id.result}}</p></div>
+                      <div class="col-md-2"><p><i>Channels with Reads</i>: {{minion.statistics.channels_with_read_event_count}}</p></div>
+                      <div class="col-md-2"><p><i>Read Event Count</i>: {{minion.statistics.read_event_count}}</p></div>
+                      <div class="col-md-2"><p><i>Completed Read Count</i>: {{minion.statistics.selected_completed_count}}</p></div>
+
                       <div class="row">
                           <div class="col-lg-12">
-                              <div class="col-lg-3" id="{{minion.name}}"><div is="container-temp" :title="minion.name" :key="key" :datain="minion.engine_states.minion_heatsink_temperature"></div></div>
-                              <div class="col-lg-3" id="{{minion.name}}"><div is="container-chan" :title="minion.name" :key="key" :datain="minion.statistics.channels_with_read_event_count"></div></div>
-                              <div class="col-lg-3" id="{{minion.name}}"><div is="container-strand" :title="minion.name" :key="key" :datain="minion.simplesummary"></div></div>
-                              <div class="col-lg-3" id="{{minion.name}}"><div is="container-perc" :title="minion.name" :key="key" :datain="minion.simplesummary"></div></div>
+                              <div class="col-lg-2" id="{{minion.name}}"><div is="container-avg" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count" :datain2="minion.statistics.selected_completed_count"></div></div>
+                              <div class="col-lg-2" id="{{minion.name}}"><div is="container-temp" :title="minion.name" :key="key" :datain="minion.engine_states.minion_heatsink_temperature"></div></div>
+                              <div class="col-lg-2" id="{{minion.name}}"><div is="container-chan" :title="minion.name" :key="key" :datain="minion.statistics.channels_with_read_event_count"></div></div>
+                              <div class="col-lg-2" id="{{minion.name}}"><div is="container-strand" :title="minion.name" :key="key" :datain="minion.simplesummary"></div></div>
+                              <div class="col-lg-2" id="{{minion.name}}"><div is="container-perc" :title="minion.name" :key="key" :datain="minion.simplesummary"></div></div>
                           </div>
                       </div>
                       <div class="row">
@@ -174,20 +190,6 @@ include 'includes/head-new.php';
                   </div>
 
                   <hr>
-                    <div class="col-md-2"><p><i>Last Update</i>: {{minion.timestamp}}</p></div>
-                    <div class="col-md-2"><p><i>MinKNOW version</i>: {{minion.engine_states.version_string}}</p></div>
-                    <div class="col-md-2"><p><i>minION heatsink temperature</i>: {{minion.engine_states.minion_heatsink_temperature}}</p></div>
-                    <div class="col-md-2"><p><i>minION ID</i>: {{minion.engine_states.minion_id}}</p></div>
-                    <div class="col-md-2"><p><i>ASIC ID</i>: {{minion.engine_states.asic_id_full}}/{{minion.engine_states.asic_id}}</p></div>
-                    <div class="col-md-2"><p><i>minION ASIC temperature</i>: {{minion.engine_states.minion_asic_temperature}}</p></div>
-                    <div class="col-md-2"><p><i>Yield</i>: {{minion.engine_states.yield}}/{{minion.statistics.read_event_count}}</p></div>
-                    <div class="col-md-2"><p><i>Experiment Start Time</i>: {{minion.engine_states.daq_start_time}}</p></div>
-                    <!--<div class="col-md-2"><p><i>Experiment End Time</i>: {{minion.engine_states.daq_stop_time}}</p></div>-->
-                    <div class="col-md-2"><p><i>Status</i>: {{minion.engine_states.status}}</p></div>
-                    <div class="col-md-2"><p><i>Flow Cell ID</i>: {{minion.engine_states.flow_cell_id}}</p></div>
-                    <div class="col-md-2"><p><i>Channels with Reads</i>: {{minion.statistics.channels_with_read_event_count}}</p></div>
-                    <div class="col-md-2"><p><i>Read Event Count</i>: {{minion.statistics.read_event_count}}</p></div>
-                    <div class="col-md-2"><p><i>Completed Read Count</i>: {{minion.statistics.selected_completed_count}}</p></div>
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="col-lg-12" id="{{minion.name}}"><div is="chartreadhist" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count_weighted_hist" :datain2="minion.statistics.read_event_count_weighted_hist_bin_width"></div></div>
@@ -201,6 +203,7 @@ include 'includes/head-new.php';
                     </div>
                     <!--  <div v-for="(key,value) in minion.engine_states">{{key}}:{{value}}</div>-->
                       </div>
+
 
 
                   <div v-else>
@@ -398,129 +401,6 @@ include 'includes/head-new.php';
     }
 
 
-    /*var ws = null;
-
-    //change example.com with your IP or your host
-    function start() {
-        var jsonholder= {};
-        ws = new ReconnectingWebSocket("ws://127.0.0.1:8080/ws");
-
-
-        //alert ("<?php #echo $_SESSION['user_name'];?>");
-        ws.onopen = function(evt) {
-            //alert ("weve connected");
-          var conn_status = document.getElementById('conn_text');
-          conn_status.innerHTML = "Connection status: Connected!";
-          var subscribemessage={"SUBSCRIBE":"<?php #echo $_SESSION['user_name'];?>"};
-          ws.send(JSON.stringify(subscribemessage));
-        };
-        ws.onmessage = function(evt) {
-          var newMessage = document.createElement('p');
-          //console.log(evt);
-          newMessage.textContent = "Server: " + evt.data;
-          var message_status = document.getElementById('server_message');
-          message_status.innerHTML = evt.data;
-          //console.log(evt.data);
-          var jsonreturn = JSON.parse(evt.data);
-          //console.log("input");
-          //console.log(jsonreturn);
-          jsonpatch.apply(jsonholder,jsonreturn);
-          //console.log("output");
-          //console.log(jsonholder);
-          jsonreturn=jsonholder;
-
-          var minion_select = document.getElementById('minions');
-          var miniondict;
-          for (var thing in minionsthings.minions) {
-              var adder=0;
-              for (var prop in jsonreturn) {
-                  if (prop != minionsthings.minions[thing].name){
-                  }else{
-                      adder ++;
-                  }
-              }
-              if (adder == 0){
-                  minionsthings.minions.splice([thing]);
-              }
-
-          }
-          for (var prop in jsonreturn) {
-              //console.log(jsonreturn[prop].state);
-              var adder=0;
-              for (var thing in minionsthings.minions) {
-                  //console.log(thing);
-                  if (prop != minionsthings.minions[thing].name){
-
-                  }else{
-                      if (minionsthings.minions[thing].state != jsonreturn[prop].state){
-                          minionsthings.minions[thing].state = jsonreturn[prop].state;
-                      }
-                      if (minionsthings.minions[thing].scripts.length != jsonreturn[prop].scripts.length) {
-                          minionsthings.minions[thing].scripts = jsonreturn[prop].scripts;
-                      }
-                      if (minionsthings.minions[thing].livedata != jsonreturn[prop].livedata){
-                          minionsthings.minions[thing].livedata = jsonreturn[prop].livedata;
-                      }
-                      if (minionsthings.minions[thing].channelstuff != jsonreturn[prop].channelstuff){
-                          minionsthings.minions[thing].channelstuff = jsonreturn[prop].channelstuff;
-                      }
-                      if (minionsthings.minions[thing].comms != jsonreturn[prop].comms){
-                          minionsthings.minions[thing].comms = jsonreturn[prop].comms;
-                      }
-                      if (minionsthings.minions[thing].engine_states != jsonreturn[prop].detailsdata.engine_states){
-                          minionsthings.minions[thing].engine_states = jsonreturn[prop].detailsdata.engine_states;
-                    }
-                      if (minionsthings.minions[thing].multiplex_states != jsonreturn[prop].detailsdata.multiplex_states){
-                          minionsthings.minions[thing].multiplex_states = jsonreturn[prop].detailsdata.multiplex_states;
-                      }
-                      if (minionsthings.minions[thing].channel_info != jsonreturn[prop].detailsdata.channel_info){
-                          minionsthings.minions[thing].channel_info = jsonreturn[prop].detailsdata.channel_info;
-                      }
-                      if (minionsthings.minions[thing].statistics != jsonreturn[prop].detailsdata.statistics){
-                          minionsthings.minions[thing].statistics = jsonreturn[prop].detailsdata.statistics;
-                      }
-                      if (minionsthings.minions[thing].timestamp != jsonreturn[prop].detailsdata.timestamp){
-                          minionsthings.minions[thing].timestamp = formatdatetime(jsonreturn[prop].detailsdata.timestamp);
-                      }
-                      if (minionsthings.minions[thing].yield_history != jsonreturn[prop].yield_history){
-                          minionsthings.minions[thing].yield_history = jsonreturn[prop].yield_history;
-                      }
-                      if (minionsthings.minions[thing].temp_history != jsonreturn[prop].temp_history){
-                          minionsthings.minions[thing].temp_history = jsonreturn[prop].temp_history;
-                      }
-                      if (minionsthings.minions[thing].pore_history != jsonreturn[prop].pore_history){
-                          minionsthings.minions[thing].pore_history = jsonreturn[prop].pore_history;
-                      }
-                      if (minionsthings.minions[thing].simplechanstats != jsonreturn[prop].simplechanstats){
-                          minionsthings.minions[thing].simplechanstats = jsonreturn[prop].simplechanstats;
-                      }
-                      if (minionsthings.minions[thing].simplesummary != jsonreturn[prop].simplesummary){
-                          minionsthings.minions[thing].simplesummary = jsonreturn[prop].simplesummary;
-                      }
-
-                      //minionsthings.minions[thing].starttimething = formatdatetime(jsonreturn[prop].detailsdata.engine_states.daq_start_time);
-                      adder ++;
-                  }
-              }
-              if (adder == 0){
-                  minionsthings.minions.push({ name: prop ,simplechanstats: jsonreturn[prop].simplesummary,simplesummary: jsonreturn[prop].simplesummary,channel_info: jsonreturn[prop].detailsdata.channel_info, yield_history: jsonreturn[prop].yield_history, temp_history: jsonreturn[prop].temp_history, pore_history: jsonreturn[prop].pore_history, timestamp: jsonreturn[prop].detailsdata.timestamp, channelstuff: jsonreturn[prop].channelstuff,statistics: jsonreturn[prop].detailsdata.statistics,multiplex_states: jsonreturn[prop].detailsdata.multiplex_states, engine_states: jsonreturn[prop].detailsdata.engine_states, state: jsonreturn[prop].state ,scripts: jsonreturn[prop].scripts , livedata: jsonreturn[prop].livedata, comms: jsonreturn[prop].comms});
-              }
-
-
-              //console.log(minionsthings.minions);
-
-          }
-
-        };
-        ws.onclose = function(evt) {
-          //alert ("Connection closed");
-          var conn_status = document.getElementById('conn_text');
-          conn_status.innerHTML = "Connection status: Closed. <br>This page will try to reconnect automatically. <br>You do not need to refresh.";
-          minionsthings.minions=[];
-          //check();
-
-        };
-    }*/
     function round(value, decimals) {
         return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
     }
@@ -680,6 +560,134 @@ include 'includes/head-new.php';
         }
     })
 
+    Vue.component('container-avg', {
+        template: '<div id="container-avg{{title}}" style="height: 140px; margin: 0 auto"</div>',
+        props: ['title','key','datain','datain2'],
+        data: function() {
+            return {
+
+                opts: {
+                    chart: {
+                        renderTo: 'container-avg'+this.title,
+                        type: 'solidgauge'
+                    },
+
+                    title: "Average Read Length (Events)",
+
+                    pane: {
+                        center: ['50%', '85%'],
+                        size: '100%',
+                        startAngle: -90,
+                        endAngle: 90,
+                        background: {
+                            backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+                            innerRadius: '60%',
+                            outerRadius: '100%',
+                            shape: 'arc'
+                        }
+                    },
+
+                    tooltip: {
+                        enabled: false
+                    },
+
+                    // the value axis
+                    yAxis: {
+                        //type: 'logarithmic',
+                        stops: [
+                            [0.3, '#0000FF'], // blue
+                            [0.37, '#DDDF0D'], // green
+                            [0.43, '#DF5353'], // red
+                        ],
+                        lineWidth: 0,
+                        minorTickInterval: null,
+                        tickPixelInterval: 400,
+                        tickWidth: 0,
+                        title: {
+                            y: -70
+                        },
+                        labels: {
+                            y: 16
+                        },
+                        min: 0.1,
+                        max: 100000,
+                        title: {
+                            text: null
+                        }
+                    },
+
+                    plotOptions: {
+                        solidgauge: {
+                            dataLabels: {
+                                y: -30,
+                                borderWidth: 0,
+                                useHTML: true
+                            }
+                        }
+                    },
+
+
+       credits: {
+           enabled: false
+       },
+
+       series: [{
+           name: 'Events',
+           data: [0],
+           dataLabels: {
+               format: '<div style="text-align:center"><span style="font-size:15px;color:' +
+               ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
+               '<span style="font-size:12px;color:silver"> Avg event len</span></div>'
+           },
+           tooltip: {
+               valueSuffix: ' events'
+           }
+       }],
+
+                    plotOptions: {
+                        solidgauge: {
+                            dataLabels: {
+                                y: 30,
+                                borderWidth: 0,
+                                useHTML: true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        ,
+        ready: function() {
+            //alert(this.datain);
+
+          this.$nextTick(function() {
+          		this.chart = new Highcharts.Chart(this.opts);
+                //this.chart.series[0].setData(this.datain);
+                if (this.chart) {
+                    //point = this.chart.series[0].points[0];
+                    this.chart.series[0].points[0].update(round(parseFloat(this.datain/this.datain2),0));
+                    //point.update(this.datain);
+                    //alert("camel");
+                }
+
+                setInterval(function () {
+                //    this.chart.series[0].setData(this.datain);
+                //    this.chart.redraw();
+                if (this.chart) {
+                    point = this.chart.series[0].points[0];
+
+                    point.update(round(parseFloat(this.datain/this.datain2),0));
+                    //this.chart.redraw();
+
+
+                }
+            }.bind(this), 5000);
+                });
+            }
+        }),
+
     Vue.component('container-temp', {
         template: '<div id="container-temp{{title}}" style="height: 140px; margin: 0 auto"</div>',
         props: ['title','key','datain'],
@@ -696,7 +704,7 @@ include 'includes/head-new.php';
 
                     pane: {
                         center: ['50%', '85%'],
-                        size: '140%',
+                        size: '100%',
                         startAngle: -90,
                         endAngle: 90,
                         background: {
@@ -822,7 +830,7 @@ include 'includes/head-new.php';
 
                         pane: {
                             center: ['50%', '85%'],
-                            size: '140%',
+                            size: '100%',
                             startAngle: -90,
                             endAngle: 90,
                             background: {
@@ -948,7 +956,7 @@ include 'includes/head-new.php';
 
                             pane: {
                                 center: ['50%', '85%'],
-                                size: '140%',
+                                size: '100%',
                                 startAngle: -90,
                                 endAngle: 90,
                                 background: {
@@ -1075,7 +1083,7 @@ include 'includes/head-new.php';
 
                                 pane: {
                                     center: ['50%', '85%'],
-                                    size: '140%',
+                                    size: '100%',
                                     startAngle: -90,
                                     endAngle: 90,
                                     background: {
@@ -1175,7 +1183,7 @@ include 'includes/head-new.php';
                             //    this.chart.redraw();
                             if (this.chart) {
                                 point = this.chart.series[0].points[0];
-                                //console.log(this.datain);
+                                console.log(this.datain);
                                 var single = 0;
                                 if (parseFloat(this.datain["good_single"]) > 0) {
                                     single = parseFloat(this.datain["good_single"]);

@@ -141,12 +141,28 @@ include 'includes/head-new.php';
 
               <div class="panel-body">
                   <div v-if='minion.engine_states.status!="ready"'>
+                      <div class="col-md-2"><p><i>Last Update</i>: {{minion.timestamp}}</p></div>
+                      <div class="col-md-2"><p><i>MinKNOW version</i>: {{minion.engine_states.version_string}}</p></div>
+                      <div class="col-md-2"><p><i>minION heatsink temperature</i>: {{minion.engine_states.minion_heatsink_temperature}}</p></div>
+                      <div class="col-md-2"><p><i>minION ID</i>: {{minion.name}}</p></div>
+                      <div class="col-md-2"><p><i>ASIC ID</i>: {{minion.engine_states.asic_id_full}}/{{minion.engine_states.asic_id}}</p></div>
+                      <div class="col-md-2"><p><i>minION ASIC temperature</i>: {{minion.engine_states.minion_asic_temperature}}</p></div>
+                      <div class="col-md-2"><p><i>Yield</i>: {{minion.engine_states.yield}}/{{minion.statistics.read_event_count}}</p></div>
+                      <div class="col-md-2"><p><i>Experiment Start Time</i>: {{minion.engine_states.daq_start_time}}</p></div>
+                      <!--<div class="col-md-2"><p><i>Experiment End Time</i>: {{minion.engine_states.daq_stop_time}}</p></div>-->
+                      <div class="col-md-2"><p><i>Status</i>: {{minion.engine_states.status}}</p></div>
+                      <div class="col-md-2"><p><i>Flow Cell ID</i>: {{minion.livedata.flow_cell_id.result}}</p></div>
+                      <div class="col-md-2"><p><i>Channels with Reads</i>: {{minion.statistics.channels_with_read_event_count}}</p></div>
+                      <div class="col-md-2"><p><i>Read Event Count</i>: {{minion.statistics.read_event_count}}</p></div>
+                      <div class="col-md-2"><p><i>Completed Read Count</i>: {{minion.statistics.selected_completed_count}}</p></div>
+
                       <div class="row">
                           <div class="col-lg-12">
-                              <div class="col-lg-3" id="{{minion.name}}"><div is="container-temp" :title="minion.name" :key="key" :datain="minion.engine_states.minion_heatsink_temperature"></div></div>
-                              <div class="col-lg-3" id="{{minion.name}}"><div is="container-chan" :title="minion.name" :key="key" :datain="minion.statistics.channels_with_read_event_count"></div></div>
-                              <div class="col-lg-3" id="{{minion.name}}"><div is="container-strand" :title="minion.name" :key="key" :datain="minion.simplesummary"></div></div>
-                              <div class="col-lg-3" id="{{minion.name}}"><div is="container-perc" :title="minion.name" :key="key" :datain="minion.simplesummary"></div></div>
+                              <div class="col-lg-2" id="{{minion.name}}"><div is="container-avg" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count" :datain2="minion.statistics.selected_completed_count"></div></div>
+                              <div class="col-lg-2" id="{{minion.name}}"><div is="container-temp" :title="minion.name" :key="key" :datain="minion.engine_states.minion_heatsink_temperature"></div></div>
+                              <div class="col-lg-2" id="{{minion.name}}"><div is="container-chan" :title="minion.name" :key="key" :datain="minion.statistics.channels_with_read_event_count"></div></div>
+                              <div class="col-lg-2" id="{{minion.name}}"><div is="container-strand" :title="minion.name" :key="key" :datain="minion.simplesummary"></div></div>
+                              <div class="col-lg-2" id="{{minion.name}}"><div is="container-perc" :title="minion.name" :key="key" :datain="minion.simplesummary"></div></div>
                           </div>
                       </div>
                       <div class="row">
@@ -155,20 +171,6 @@ include 'includes/head-new.php';
                   </div>
 
                   <hr>
-                    <div class="col-md-2"><p><i>Last Update</i>: {{minion.timestamp}}</p></div>
-                    <div class="col-md-2"><p><i>MinKNOW version</i>: {{minion.engine_states.version_string}}</p></div>
-                    <div class="col-md-2"><p><i>minION heatsink temperature</i>: {{minion.engine_states.minion_heatsink_temperature}}</p></div>
-                    <div class="col-md-2"><p><i>minION ID</i>: {{minion.engine_states.minion_id}}</p></div>
-                    <div class="col-md-2"><p><i>ASIC ID</i>: {{minion.engine_states.asic_id_full}}/{{minion.engine_states.asic_id}}</p></div>
-                    <div class="col-md-2"><p><i>minION ASIC temperature</i>: {{minion.engine_states.minion_asic_temperature}}</p></div>
-                    <div class="col-md-2"><p><i>Yield</i>: {{minion.engine_states.yield}}/{{minion.statistics.read_event_count}}</p></div>
-                    <div class="col-md-2"><p><i>Experiment Start Time</i>: {{minion.engine_states.daq_start_time}}</p></div>
-                    <!--<div class="col-md-2"><p><i>Experiment End Time</i>: {{minion.engine_states.daq_stop_time}}</p></div>-->
-                    <div class="col-md-2"><p><i>Status</i>: {{minion.engine_states.status}}</p></div>
-                    <div class="col-md-2"><p><i>Flow Cell ID</i>: {{minion.engine_states.flow_cell_id}}</p></div>
-                    <div class="col-md-2"><p><i>Channels with Reads</i>: {{minion.statistics.channels_with_read_event_count}}</p></div>
-                    <div class="col-md-2"><p><i>Read Event Count</i>: {{minion.statistics.read_event_count}}</p></div>
-                    <div class="col-md-2"><p><i>Completed Read Count</i>: {{minion.statistics.selected_completed_count}}</p></div>
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="col-lg-6" id="{{minion.name}}"><div is="chartreadhist" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count_weighted_hist" :datain2="minion.statistics.read_event_count_weighted_hist_bin_width"></div></div>
@@ -412,7 +414,7 @@ include 'includes/head-new.php';
                     </tr>
                     <tr>
                         <td>Voltage Offset</td>
-                        <td>{{minion.livedata.biasvoltageget.result.bias_voltage}} mV</td>
+                        <td>{{minion.livedata.biasvoltageget.result.bias_voltage * minion.livedata.bias_voltage_gain.result}} mV</td>
                     </tr>
                     <tr>
                         <td>Yield</td>
@@ -540,21 +542,6 @@ include 'includes/head-new.php';
     	yval=(15 - ag38);
     	return(yval+1+1);
     }
-
-    //function check(){
-        //alert ('check called');
-    //    var timerId = setInterval(function(){
-    //        if(!ws || ws.readyState == 3) {
-    //            clearInterval(timerId);
-    //            start();
-
-    //        }else{
-    //            clearInterval(timerId);
-    //        }
-
-    //    },1000);
-    //}
-
     function formatdatetime(timetoconvert){
         var date = new Date(timetoconvert*1000);
         // Hours part from the timestamp
@@ -850,6 +837,134 @@ include 'includes/head-new.php';
         }
     })
 
+    Vue.component('container-avg', {
+        template: '<div id="container-avg{{title}}" style="height: 140px; margin: 0 auto"</div>',
+        props: ['title','key','datain','datain2'],
+        data: function() {
+            return {
+
+                opts: {
+                    chart: {
+                        renderTo: 'container-avg'+this.title,
+                        type: 'solidgauge'
+                    },
+
+                    title: "Average Read Length (Events)",
+
+                    pane: {
+                        center: ['50%', '85%'],
+                        size: '100%',
+                        startAngle: -90,
+                        endAngle: 90,
+                        background: {
+                            backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+                            innerRadius: '60%',
+                            outerRadius: '100%',
+                            shape: 'arc'
+                        }
+                    },
+
+                    tooltip: {
+                        enabled: false
+                    },
+
+                    // the value axis
+                    yAxis: {
+                        type: 'logarithmic',
+                        stops: [
+                            [0.3, '#0000FF'], // blue
+                            [0.37, '#DDDF0D'], // green
+                            [0.43, '#DF5353'], // red
+                        ],
+                        lineWidth: 0,
+                        minorTickInterval: null,
+                        tickPixelInterval: 400,
+                        tickWidth: 0,
+                        title: {
+                            y: -70
+                        },
+                        labels: {
+                            y: 16
+                        },
+                        min: 0.1,
+                        max: 100000,
+                        title: {
+                            text: null
+                        }
+                    },
+
+                    plotOptions: {
+                        solidgauge: {
+                            dataLabels: {
+                                y: -30,
+                                borderWidth: 0,
+                                useHTML: true
+                            }
+                        }
+                    },
+
+
+       credits: {
+           enabled: false
+       },
+
+       series: [{
+           name: 'Events',
+           data: [0],
+           dataLabels: {
+               format: '<div style="text-align:center"><span style="font-size:15px;color:' +
+               ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
+               '<span style="font-size:12px;color:silver"> Avg event len</span></div>'
+           },
+           tooltip: {
+               valueSuffix: ' events'
+           }
+       }],
+
+                    plotOptions: {
+                        solidgauge: {
+                            dataLabels: {
+                                y: 30,
+                                borderWidth: 0,
+                                useHTML: true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        ,
+        ready: function() {
+            //alert(this.datain);
+
+          this.$nextTick(function() {
+          		this.chart = new Highcharts.Chart(this.opts);
+                //this.chart.series[0].setData(this.datain);
+                if (this.chart) {
+                    //point = this.chart.series[0].points[0];
+                    this.chart.series[0].points[0].update(round(parseFloat(this.datain/this.datain2),0));
+                    //point.update(this.datain);
+                    //alert("camel");
+                }
+
+                setInterval(function () {
+                //    this.chart.series[0].setData(this.datain);
+                //    this.chart.redraw();
+                if (this.chart) {
+                    point = this.chart.series[0].points[0];
+
+                    point.update(round(parseFloat(this.datain/this.datain2),0));
+                    //this.chart.redraw();
+
+
+                }
+            }.bind(this), 5000);
+                });
+            }
+        }),
+
     Vue.component('container-temp', {
         template: '<div id="container-temp{{title}}" style="height: 140px; margin: 0 auto"</div>',
         props: ['title','key','datain'],
@@ -866,7 +981,7 @@ include 'includes/head-new.php';
 
                     pane: {
                         center: ['50%', '85%'],
-                        size: '140%',
+                        size: '100%',
                         startAngle: -90,
                         endAngle: 90,
                         background: {
@@ -992,7 +1107,7 @@ include 'includes/head-new.php';
 
                         pane: {
                             center: ['50%', '85%'],
-                            size: '140%',
+                            size: '100%',
                             startAngle: -90,
                             endAngle: 90,
                             background: {
@@ -1118,7 +1233,7 @@ include 'includes/head-new.php';
 
                             pane: {
                                 center: ['50%', '85%'],
-                                size: '140%',
+                                size: '100%',
                                 startAngle: -90,
                                 endAngle: 90,
                                 background: {
@@ -1245,7 +1360,7 @@ include 'includes/head-new.php';
 
                                 pane: {
                                     center: ['50%', '85%'],
-                                    size: '140%',
+                                    size: '100%',
                                     startAngle: -90,
                                     endAngle: 90,
                                     background: {
