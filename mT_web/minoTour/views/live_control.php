@@ -121,18 +121,13 @@ include 'includes/head-new.php';
 
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist" >
-    <li v-for="(key,minion) in minions | orderBy 'name'" role="presentation" ><a href="#{{minion.name}}" role="tab" data-toggle="tab"><div v-if='minion.engine_states.status!="ready"'>Sequencing:{{minion.livedata.machine_id.result}}/{{minion.name}}</div><div v-else><div v-if='minion.livedata.machine_id.result!=""'>On:{{minion.livedata.machine_id.result}}/{{minion.name}}</div><div v-else>Off:{{minion.name}}</div></div></a></li>
+    <li v-for="(key,minion) in minions | orderBy 'name'" role="presentation" ><a href="#{{minion.name}}" role="tab" data-toggle="tab"><div v-if='minion.livedata.current_script.result.length>0'>Sequencing:{{minion.livedata.machine_id.result}}/{{minion.name}}</div><div v-else><div v-if='minion.livedata.machine_id.result!=""'>On:{{minion.livedata.machine_id.result}}/{{minion.name}}</div><div v-else>Off:{{minion.name}}</div></div></a></li>
   </ul>
 
   <!-- Tab panes-->
   <div class="tab-content">
     <div v-for="(key,minion) in minions | orderBy 'name'" role="tabpanel" class="tab-pane" id="{{minion.name}}">
-        <h5>You are interacting with minION: {{minion.name}}</h5>
-
-
         <div v-if="minion.state==1">
-
-            <h5>It is currently <b>active</b>.</h5>
 
             <div class="panel panel-info">
                 <div class="panel-heading">
@@ -140,22 +135,28 @@ include 'includes/head-new.php';
                 </div>
 
               <div class="panel-body">
-                  <div v-if='minion.engine_states.status!="ready"'>
-                      <div class="col-md-2"><p><i>Last Update</i>: {{minion.timestamp}}</p></div>
+                  <!--<div v-if='minion.engine_states.status!="ready"'>-->
+                  <div v-if="minion.livedata.current_script.result.length>0">
+                  <div class="row">
+                      <div class="col-md-8"><p><b></i>Experiment Started</i>: {{ (minion.engine_states.daq_start_time*1000) | date '%Y-%m-%d %I:%M:%s %p' }}</b></p></div>
+                      <div class="col-md-4"><p><i>(Last Update</i>: {{minion.timestamp}})</p></div>
+                  </div>
+                      <div class="row">
                       <div class="col-md-2"><p><i>MinKNOW version</i>: {{minion.engine_states.version_string}}</p></div>
-                      <div class="col-md-2"><p><i>minION heatsink temperature</i>: {{minion.engine_states.minion_heatsink_temperature}}</p></div>
+                      <div class="col-md-2"><p><i>Flow Cell ID</i>: {{minion.livedata.flow_cell_id.result}}</p></div>
                       <div class="col-md-2"><p><i>minION ID</i>: {{minion.name}}</p></div>
                       <div class="col-md-2"><p><i>ASIC ID</i>: {{minion.engine_states.asic_id_full}}/{{minion.engine_states.asic_id}}</p></div>
-                      <div class="col-md-2"><p><i>minION ASIC temperature</i>: {{minion.engine_states.minion_asic_temperature}}</p></div>
+                  </div>
+                  <div class="row">
+                      <div class="col-md-8"><p><i>Run Name</i>: {{minion.livedata.dataset.result}}</p></div>
+                      <div class="col-md-4"><p><i>Status</i>: {{minion.engine_states.status}}</p></div>
+                  </div>
+                  <div class="row">
                       <div class="col-md-2"><p><i>Yield</i>: {{minion.engine_states.yield}}/{{minion.statistics.read_event_count}}</p></div>
-                      <div class="col-md-2"><p><i>Experiment Start Time</i>: {{minion.engine_states.daq_start_time}}</p></div>
-                      <!--<div class="col-md-2"><p><i>Experiment End Time</i>: {{minion.engine_states.daq_stop_time}}</p></div>-->
-                      <div class="col-md-2"><p><i>Status</i>: {{minion.engine_states.status}}</p></div>
-                      <div class="col-md-2"><p><i>Flow Cell ID</i>: {{minion.livedata.flow_cell_id.result}}</p></div>
                       <div class="col-md-2"><p><i>Channels with Reads</i>: {{minion.statistics.channels_with_read_event_count}}</p></div>
                       <div class="col-md-2"><p><i>Read Event Count</i>: {{minion.statistics.read_event_count}}</p></div>
                       <div class="col-md-2"><p><i>Completed Read Count</i>: {{minion.statistics.selected_completed_count}}</p></div>
-
+                  </div>
                       <div class="row">
                           <div class="col-lg-12">
                               <div class="col-lg-2" id="{{minion.name}}"><div is="container-avg" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count" :datain2="minion.statistics.selected_completed_count"></div></div>
@@ -166,14 +167,13 @@ include 'includes/head-new.php';
                           </div>
                       </div>
                       <div class="row">
-
-                      <div class ="col-lg-12" id="{{minion.name}}"><div is="channelstatescalc" :title="minion.name" : key="key" :counts='minion.simplesummary' :datain2="minion.channelstuff"></div></div>
                   </div>
 
                   <hr>
                     <div class="row">
                         <div class="col-lg-12">
-                            <div class="col-lg-6" id="{{minion.name}}"><div is="chartreadhist" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count_weighted_hist" :datain2="minion.statistics.read_event_count_weighted_hist_bin_width"></div></div>
+                            <div class="col-lg-12" id="{{minion.name}}"><div is="chartreadhist" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count_weighted_hist" :datain2="minion.statistics.read_event_count_weighted_hist_bin_width"></div></div>
+                            <div class="col-lg-6" id="{{minion.name}}"><div is="chartporehist" :title="minion.name" :key="key" :datain="minion.channelstuff" :datain2="minion.simplesummary"></div></div>
                             <div class="col-lg-6" id="{{minion.name}}"><div is="chartyield" :title="minion.name" :key="key" :datain="minion.engine_states.yield" :datain2="minion.yield_history"></div></div>
                             <div class="col-lg-6" id="{{minion.name}}"><div is="porehistory" :title="minion.name" :key="key" :datain2="minion.pore_history"></div></div>
                             <div class="col-lg-6" id="{{minion.name}}"><div is="perchistory" :title="minion.name" :key="key" :datain2="minion.pore_history"></div></div>
@@ -440,6 +440,7 @@ include 'includes/head-new.php';
         </div>
 
         <div v-else>
+            <h5>You are interacting with minION: {{minion.name}}</h5>
             It is currently <i>inactive</i>.
 
             <!-- Indicates a dangerous or potentially negative action -->
@@ -510,7 +511,8 @@ include 'includes/head-new.php';
         //var counter = 0;
         //console.log(minionsthings.minions[minion].statistics.read_event_count_weighted_hist);
         for (var i = 0; i < readeventcountweightedhist.length; i++) {
-            if (readeventcountweightedhist[i] > 0){
+
+            //if (readeventcountweightedhist[i] > 0){
                 //counter+=1;
                 //console.log(readeventcountweightedhistbinwidth);
                 //console.log(i);
@@ -518,7 +520,7 @@ include 'includes/head-new.php';
                 var category = String((i) * readeventcountweightedhistbinwidth) + " - " + String((i+1) * readeventcountweightedhistbinwidth) + " bp";
                 categories.push(category);
                 results.push({ "name": category, "y": readeventcountweightedhist[i] });
-            }
+            //}
         }
         //console.log(results);
         return [results,categories];
@@ -775,6 +777,127 @@ include 'includes/head-new.php';
             });
         }
     })
+    Vue.component('chartporehist', {
+	template: '<div id="container-pore{{title}}" style="margin: 0 auto"</div>',
+    props: ['title','key','datain','datain2'],
+    data: function() {
+        return {
+        	opts: {
+		        chart: {
+        	    	renderTo: 'container-pore'+this.title,
+                    type:'column',
+                    zoomType: 'xy',
+                    height: 300,
+                    animation: false
+	        	},
+    	    	title: {
+        	    	text: 'Pore States'
+	        	},
+                xAxis: {
+                    categories: []
+                },
+                //colors:[],
+                yAxis: {
+                    title: {
+                        //text: 'Pore Type'
+                    }
+                },
+                legend: {
+            enabled: false
+        },
+                plotOptions: {
+            series: {
+                dataLabels: {
+                    enabled: true,
+                    formatter:function() {
+                        return this.y;
+                    }
+                }
+            }
+        },
+                credits: {
+                    enabled: false
+                },
+                series: [{
+                    name: 'porestates',
+                    data:[],
+                }
+                ],
+
+         			}
+    	    }
+    }
+    ,
+
+
+    created: function() {
+    },
+    ready: function() {
+        //var returndata=parsechanstats(this.datain,this.datain2);
+        //console.log(returndata);
+        //var returndata = tohistogram(this.datain,parseInt(this.datain2));
+        //this.chart.series[0].setData(returndata[3]);
+        //console.log(returndata[2]);
+        //this.chart.xAxis[0].setCategories(returndata[2]);
+        //var returndata=parsechanstats(this.datain,this.datain2);
+      this.$nextTick(function() {
+      		this.chart = new Highcharts.Chart(this.opts);
+            //minion=this.key;
+            setInterval(function () {
+                //console.log(this.datain);
+                //console.log(this.datain2);
+                var returndata=parsechanstats(this.datain,this.datain2);
+                //console.log(returndata);
+                //var returndata = tohistogram(this.datain,parseInt(this.datain2));
+                this.chart.series[0].setData(returndata[3]);
+                //console.log(returndata[2]);
+                this.chart.xAxis[0].setCategories(returndata[2]);
+                //while(this.chart.series.length > 0)
+                //    this.chart.series[0].remove(true);
+                //for (var i = 0; i < returndata[0].length; i++) {
+                //    this.chart.addSeries(returndata[0][i]);
+                //}
+                //this.chart.colors=returndata[1];
+                //this.chart.redraw();
+                //console.log(returndata[1]);
+        }.bind(this), 5000);
+            });
+        }
+    })
+
+    function parsechanstats(descriptions,counts) {
+        var results =[];
+        var colors = [];
+        var categories = [];
+        var datam = [];
+        //console.log(descriptions);
+        //console.log(counts);
+
+        //for (var i = 0; i < descriptions.length; i++) {
+        for (var thing in descriptions) {
+            if (descriptions.hasOwnProperty(thing)) {
+                //console.log(thing);
+            //    console.log(descriptions[thing]);
+                if (descriptions[thing].hasOwnProperty("style")){
+            //        console.log(descriptions[thing]["style"]["label"]);
+            //        console.log(descriptions[thing]["style"]["colour"]);
+
+                    if(counts.hasOwnProperty(descriptions[thing]["name"])){
+                        var porenumber = counts[descriptions[thing]["name"]];
+                        //console.log(counts[descriptions[thing]["name"]]);
+                    }else{
+                        var porenumber = 0;
+                        //console.log("0");
+                    }
+                    results.push({"name":descriptions[thing]["style"]["label"], "data":[{"y":porenumber}],"color":"#"+descriptions[thing]["style"]["colour"]});
+                    colors.push("#"+descriptions[thing]["style"]["colour"]);
+                    categories.push(descriptions[thing]["style"]["label"]);
+                    datam.push({"y":porenumber,"color":"#"+descriptions[thing]["style"]["colour"]});
+                }
+            }
+        }
+        return [results,colors,categories,datam];
+    }
 
     Vue.component('chartreadhist', {
 	template: '<div id="container{{title}}" style="margin: 0 auto"</div>',
@@ -803,7 +926,7 @@ include 'includes/head-new.php';
   },
             series: [{
                 name: 'Read Histogram',
-                data: this.datain
+                //data: this.datain
             }]
          			}
     	    }
@@ -824,7 +947,7 @@ include 'includes/head-new.php';
                 this.chart.series[0].setData(returndata[0]);
                 this.chart.xAxis[0].setCategories(returndata[1]);
                 //this.chart.series[0].setData(this.datain);
-                this.chart.redraw();
+                //this.chart.redraw();
                 //console.log("chart in",this.datain);
             //        console.log(this.datain);
                     //var x = (new Date()).getTime(), // current time
@@ -1487,7 +1610,8 @@ include 'includes/head-new.php';
 		        chart: {
         	    	renderTo: 'containeryield'+this.title,
                     type:'spline',
-                    zoomType: 'x'
+                    zoomType: 'x',
+                    height: 300,
 	        	},
     	    	title: {
         	    	text: 'Yield over time '
@@ -1544,7 +1668,8 @@ include 'includes/head-new.php';
 		        chart: {
         	    	renderTo: 'perchistory'+this.title,
                     type:'spline',
-                    zoomType: 'x'
+                    zoomType: 'x',
+                    height: 300,
 	        	},
     	    	title: {
         	    	text: '% Occupancy Over Time'
@@ -1563,6 +1688,7 @@ include 'includes/head-new.php';
                     color: '#808080'
                 }],
                 min: 0,
+                max: 100,
             },
             credits: {
                 enabled: false
@@ -1600,7 +1726,8 @@ include 'includes/head-new.php';
 		        chart: {
         	    	renderTo: 'porehistory'+this.title,
                     type:'spline',
-                    zoomType: 'x'
+                    zoomType: 'x',
+                    height: 300,
 	        	},
     	    	title: {
         	    	text: 'In Strand Counts'
@@ -1662,7 +1789,8 @@ include 'includes/head-new.php';
 		        chart: {
         	    	renderTo: 'temphistory'+this.title,
                     type:'spline',
-                    zoomType: 'x'
+                    zoomType: 'x',
+                    height: 300,
 	        	},
     	    	title: {
         	    	text: 'Temperature over time '
@@ -1723,7 +1851,8 @@ include 'includes/head-new.php';
 		        chart: {
         	    	renderTo: 'volthistory'+this.title,
                     type:'spline',
-                    zoomType: 'x'
+                    zoomType: 'x',
+                    height: 300,
 	        	},
     	    	title: {
         	    	text: 'Global Voltage over time '

@@ -43,10 +43,10 @@
             <a href="index.php"><i class="fa fa-dashboard fa-fw"></i><span> Overview</span></a>
         </li>
         <li id = "livecontrol">
-            <a href="live_control.php"><i class="fa fa-dashboard fa-fw"></i><span> Remote Control</span></a>
+            <a href="live_control.php"><i class="fa fa-gamepad fa-fw"></i><span> Remote Control</span></a>
         </li>
         <li id = "prevcontrol">
-            <a href="prev_control.php"><i class="fa fa-dashboard fa-fw"></i><span> Live Archive</span></a>
+            <a href="prev_control.php"><i class="fa fa-gamepad fa-fw"></i><span> Remote Archive</span></a>
         </li>
         <?php if (checkactiverun()) { ?>
             <li id="currentruns" class="treeview">
