@@ -195,9 +195,11 @@ include 'includes/head-new.php';
                   </div>
 
                   <hr>
+
                     <div class="row">
                         <div class="col-lg-12">
-                            <div class="col-lg-12" id="{{minion.name}}"><div is="chartporehist" :title="minion.name" :key="key" :datain="minion.channelstuff" :datain2="minion.simplesummary"></div></div>
+                            <div class="col-lg-12" id="{{minion.name}}"><div is="chartporehistdetails" :title="minion.name" :key="key" :datain="minion.channelstuff" :datain2="minion.pore_history.details"></div></div>
+                            <!--<div class="col-lg-12" id="{{minion.name}}"><div is="chartporehist" :title="minion.name" :key="key" :datain="minion.channelstuff" :datain2="minion.simplesummary"></div></div>-->
                             <div class="col-lg-12" id="{{minion.name}}"><div is="chartreadhist" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count_weighted_hist" :datain2="minion.statistics.read_event_count_weighted_hist_bin_width"></div></div>
                             <div class="col-lg-12" id="{{minion.name}}"><div is="chartyield" :title="minion.name" :key="key" :datain="minion.engine_states.yield" :datain2="minion.yield_history"></div></div>
                             <div class="col-lg-12" id="{{minion.name}}"><div is="porehistory" :title="minion.name" :key="key" :datain2="minion.pore_history"></div></div>
@@ -568,6 +570,156 @@ include 'includes/head-new.php';
         }
     })
 
+    Vue.component('chartporehistdetails', {
+	template: '<div id="container-porehist{{title}}" style="margin: 0 auto"</div>',
+    props: ['title','key','datain','datain2'],
+    data: function() {
+        return {
+        	opts: {
+		        chart: {
+        	    	renderTo: 'container-porehist'+this.title,
+                    type:'area',
+                    zoomType: 'xy',
+                    animation: false
+	        	},
+    	    	title: {
+        	    	text: 'Pore States'
+	        	},
+                xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150
+            },
+                //colors:[],
+                yAxis: {
+                    max: 512,
+                    endOnTick: false,
+                    title: {
+                        text: 'Channel Classifications'
+                    }
+                },
+                legend: {
+            enabled: true
+        },
+                plotOptions: {
+                    area: {
+                stacking: 'normal',
+            },
+            series: {
+                dataLabels: {
+                    enabled: false,
+                    formatter:function() {
+                        return this.y;
+                    }
+                }
+            }
+        },
+                credits: {
+                    enabled: false
+                },
+                series: [
+                ],
+
+         			}
+    	    }
+    }
+    ,
+
+
+    created: function() {
+    },
+    ready: function() {
+    //var returndata=parsechanstats(this.datain,this.datain2);
+      this.$nextTick(function() {
+      		this.chart = new Highcharts.Chart(this.opts);
+            //minion=this.key;
+    //        setInterval(function () {
+                //console.log(this.datain);
+                //console.log(this.datain2);
+                var returndata=parseporehist(this.datain,this.datain2);
+                console.log(returndata);
+                //var returndata = tohistogram(this.datain,parseInt(this.datain2));
+                for (var i = 0; i< returndata.length; i++){
+                    this.chart.addSeries(returndata[i]);
+                }
+                //this.chart.series[0].setData(returndata);
+                //console.log(returndata[2]);
+                //this.chart.xAxis[0].setCategories(returndata[2]);
+                //while(this.chart.series.length > 0)
+                //    this.chart.series[0].remove(true);
+                //for (var i = 0; i < returndata[0].length; i++) {
+                //    this.chart.addSeries(returndata[0][i]);
+                //}
+                //this.chart.colors=returndata[1];
+                this.chart.redraw();
+                //console.log(returndata[1]);
+    //    }.bind(this), 500);
+            });
+        }
+    })
+
+    function parseporehist(descriptions,counts) {
+        var results =[];
+        var colors = [];
+        var categories = [];
+        var datam = [];
+        var colorlookup=[];
+        //console.log(counts);
+        //times=gettimelist(counts);
+        //console.log(times);
+
+        for (var thing in descriptions) {
+            if (descriptions.hasOwnProperty(thing)) {
+
+                if (descriptions[thing].hasOwnProperty("style")){
+                    //console.log(thing);
+                    //console.log(descriptions[thing]);
+                    //console.log(descriptions[thing]["name"]);
+                    //console.log(descriptions[thing]["style"]["colour"]);
+                    colorlookup[descriptions[thing]["name"]]=descriptions[thing]["style"]["colour"];
+            //        console.log(descriptions[thing]["style"]["label"]);
+            //        console.log(descriptions[thing]["style"]["colour"]);
+
+
+                }
+            }
+        }
+
+        for (var pore in counts){
+            //console.log(pore);
+            //console.log(counts[pore]);
+            //results.push({"name":descriptions[thing]["style"]["label"], "data":[{"y":porenumber}],"color":"#"+descriptions[thing]["style"]["colour"]});
+            results.push({"name":pore,"color": "#"+colorlookup[pore],"data":counts[pore]})//,"color":"#121212"]});
+            //results.push({"name":pore,"data":[{100000,1},{200000,2}]});
+            //break;
+            //console.log(results);
+        }
+        /*for (var pore in counts){
+        //    console.log(pore);
+            //for (var timepoint in counts[pore]){
+                console.log(counts[pore]);
+            //}
+        }*/
+        return results
+    }
+
+    function gettimelist(counts){
+        var times=[];
+        for (var pore in counts){
+            for (var timethings in counts[pore]){
+
+                times.push(counts[pore][timethings][0]);
+            }
+        }
+        //console.log(times);
+        return uniq(times)
+    }
+
+    function uniq(a) {
+    return a.sort().filter(function(item, pos, ary) {
+        return !pos || item != ary[pos - 1];
+    })
+}
+
     Vue.component('chartporehist', {
 	template: '<div id="container-pore{{title}}" style="margin: 0 auto"</div>',
     props: ['title','key','datain','datain2'],
@@ -627,11 +779,11 @@ include 'includes/head-new.php';
       this.$nextTick(function() {
       		this.chart = new Highcharts.Chart(this.opts);
             //minion=this.key;
-            setInterval(function () {
+            //setInterval(function () {
                 //console.log(this.datain);
                 //console.log(this.datain2);
                 var returndata=parsechanstats(this.datain,this.datain2);
-                //console.log(returndata);
+                //console.log(returndata[3]);
                 //var returndata = tohistogram(this.datain,parseInt(this.datain2));
                 this.chart.series[0].setData(returndata[3]);
                 //console.log(returndata[2]);
@@ -644,7 +796,7 @@ include 'includes/head-new.php';
                 //this.chart.colors=returndata[1];
                 //this.chart.redraw();
                 //console.log(returndata[1]);
-        }.bind(this), 500);
+        //}.bind(this), 500);
             });
         }
     })
@@ -1370,11 +1522,11 @@ include 'includes/head-new.php';
       this.$nextTick(function() {
       		this.chart = new Highcharts.Chart(this.opts);
             this.chart.series[0].setData(this.datain2);
-            setInterval(function () {
-                //console.log(this.datain2);
+            //setInterval(function () {
+                console.log(this.datain2);
                 this.chart.series[0].setData(this.datain2);
                 this.chart.redraw();
-        }.bind(this), 5000);
+        //}.bind(this), 5000);
             });
         }
     })

@@ -31,7 +31,7 @@ dbname = sys.argv[1]
 
 sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
-verbose = False # sys.argvTrue
+verbose = True # sys.argvTrue
 def output(s):
     if verbose is True: print s
 def output2(s,s_):
@@ -200,12 +200,15 @@ def processCigar(ref, i):
     r_array=()
     q_string=""
 
+    output2("cigar is",cigar)
     cigpatsA = re.findall('[^A-Z]+', cigar)
     cigpatsB = re.findall('[A-Z]+', cigar)
     cigparts = zip(map(int, cigpatsA), cigpatsB)
-
+    output2("cigparts is", cigparts)
     readbases=ref.seq[i] # '//'.split(ref.seq[i])
 
+    tmpthang = list()
+    tmpthangq = list()
     # splice ~= take()
     for cigarpartbasecount, cigartype in cigparts:
         ####
@@ -218,19 +221,29 @@ def processCigar(ref, i):
         # so its not a deletion or insertion. Its 0:M
             q_array = readbases[q_pos:q_pos+cigarpartbasecount]
             r_array = [ "X" for _ in xrange(r_pos,r_pos+cigarpartbasecount)]
-
+            tmpthang = tmpthang + r_array
+            tmpthangq = tmpthangq + q_array
             q_pos=q_pos+cigarpartbasecount
             r_pos=r_pos+cigarpartbasecount
 
         if cigartype == "I":
             q_array=readbases[q_pos:q_pos+cigarpartbasecount]
             r_array = [ "-" for _ in xrange(r_pos,r_pos+cigarpartbasecount)]
+            tmpthang = tmpthang + r_array
+            tmpthangq = tmpthangq + q_array
             q_pos=q_pos+cigarpartbasecount
 
         if cigartype == "D":
             q_array=["-" for _ in xrange(cigarpartbasecount)]
             r_array = [ "o" for _ in xrange(r_pos,r_pos+cigarpartbasecount)]
+            tmpthang = tmpthang + r_array
+            tmpthangq = tmpthangq + q_array
             r_pos=r_pos+cigarpartbasecount
+
+    output2("R_array",r_array)
+    output2("Tmpthang", tmpthang)
+    r_array = tmpthang
+    q_array = tmpthangq
 
 
     for j in xrange(len(r_array)):
@@ -290,14 +303,15 @@ def processDF(ref):
         try:
           #if len(ref.barcode_arrangement[i]) > 0:
           if numRows(tbl_check_barcode)>0:
-              if len(ref.barcode_arrangement[i]) > 0:
+              if hasattr(ref, 'barcode_arrangment') and ref.barcode_arrangement[i] is not None and len(ref.barcode_arrangement[i]) > 0:
                   output2("We have spotted a barcode", ref.barcode_arrangement[i])
                   refid_ = str(refid)+"_"+ref.barcode_arrangement[i]
                   output(refid_)
               else: refid_ = str(refid)+"_UC"
           else: refid_ = refid
-        except: pass
-
+        #except: pass
+        except Exception,err:
+            print "Error line 301",err
         flag=ref.flag[i]
         refstart = (ref.pos[i])-1
 
@@ -340,9 +354,10 @@ def processDF(ref):
             #posn =     genreflength - refstart
             posn = refstart ##Idiot fixes
         output2("The refstart is ", refstart )
-
+        output2("The reflength is" , reflength)
+        output2("The refstring is",refstring)
         for x in xrange(reflength):
-
+            #output2(x)
             if refstring[x] != "-":
                 posn+=1
                 #output("posn", posn)
@@ -374,7 +389,7 @@ def processDF(ref):
                  output("mm")
             #print _hash
 
-        output2("The refend is ", posn )
+        output2("378 The refend is ", posn )
 
         if verbose is True and posn > 49000:  output("OH DEAR!")
         output2("Flag is ", flag  )
@@ -419,7 +434,7 @@ def mkTriggerTable(dbname, t1, t2, cursor):
 
     #t1_ = quote(dbname, t1)
     #t2_ = quote(dbname, t2)
-
+    print dbname,t1,t2
     trigger_name = t1 + "_trigger"
 
     cond = " ref_id = NEW.ref_id and ref_pos = NEW.ref_pos"
@@ -590,18 +605,7 @@ else:
                     cursor.execute(sql_2_tmp)
 
 
-                '''
-                target = "reference_pre_coverage_" + readtype
-                tmp = target + "_tmp"
 
-                sql = dropTrigger(tmp)
-                print sql
-                cursor.execute(sql)
-                mkTrigger(tmp, target, fs)
-                sql = "DELETE FROM "+ tmp
-                print sql
-                cursor.execute(sql)
-                '''
 
                 checkreads = dbname + "checkreads" + readtype
                 output2("replacing checkvar ",readtype)
@@ -687,6 +691,7 @@ else:
 
                 # 2D ....
                 #if readtype == "2d" and numRows(tbl_check_barcode)>0:
+                print tbl_check_barcode
                 if numRows(tbl_check_barcode)>0:
                     if tabletype == "last_align_maf_basecalled_template":
                         output("parsing barcodes")
@@ -770,12 +775,13 @@ else:
                                 alignnum = 1 order by ID limit 100"
 
                 elif tabletype == "align_sam_basecalled_template":
+
                 # Process SAM align  ....
                     output("We have found sam data to process.")
                     # Note that we need to deal with multiply aligned
                     # sequences still - could do using the alignnum=1
                     # but it doesn't really work...
-
+                    print readtype
                     t1 = dbname + ".align_sam_basecalled_" + readtype
                     t2 = dbname + ".reference_seq_info"
                     t3 = dbname + ".read_tracking_" + readtype
@@ -816,6 +822,7 @@ else:
                     df = array2frame(array,colNames,indexes)
 
                     # Insert dataframe into db table ...
+                    print "we're here inserting ", readtype
                     tname = "reference_coverage_" +readtype+ "_tmp"
                     insertDF(df, tname)
 

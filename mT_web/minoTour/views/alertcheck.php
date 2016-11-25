@@ -197,8 +197,8 @@ if ($login->isUserLoggedIn() == true) {
 
                         //We will send an email to the user about this as well.
                         $to = $_SESSION['user_email'];
-                        $subject = "minoTour Disk Space Message re: " . cleanname($computer[1]);
-                        $message = "<br>Your minION run <b>".cleanname($computer[1])."</b> has consumed a lot of disk space. minKNOW is suggesting there is a problem and will shut down soon.";
+                        $subject = "minoTour Disk Space Message re: " . $index["type"];
+                        $message = "<br>Your minION run <b>".$index["type"]."</b> has consumed a lot of disk space. minKNOW is suggesting there is a problem and will shut down soon.";
                         $message .= "<br>This message has been sent from an email address which is not monitored.";
                         $message .= "<br>Good luck with your run!";
                         $message .= "<br>Regards.";
@@ -211,53 +211,50 @@ if ($login->isUserLoggedIn() == true) {
 
                         if( $retval == true )
                             {
-                                echo "Message sent successfully...";
+                                echo "Email Message sent successfully...";
                             }
                         else
                             {
-                                echo "Message could not be sent...";
+                                echo "Email Message could not be sent...";
                             }
 
                         if ($webnotify == 1){
                             echo"<script type=\"text/javascript\" id=\"runscript\">
                                 new PNotify({
                                     title: 'Drive Space Alert!',
-                                    text: 'MinKNOW is sending a warning about disk space on your computer. You might want to deal with it.',
+                                    text: 'MinKNOW is sending a warning about disk space on your computer ".$index["type"].". You might want to deal with it.',
                                     type: 'error',
                                     hide: false
                                     });";
                                     echo "</script>";
                             }
                         if (isset($_SESSION['twittername'])) {
+            					$message = "has raised a Disk Space Warning";
+            					$postData = "twitteruser=" . ($_SESSION['twittername']) . "&run=". (urlencode($index["type"])) ."&message=" . (urlencode($message));
+            					$curl = curl_init();
+            					// Set some options - we are passing in a useragent too here
+            					curl_setopt_array($curl, array(
+            						CURLOPT_RETURNTRANSFER => 1,
+            				    	CURLOPT_URL => $twiturl . 'tweet.php?' .$postData ,
+            				    	CURLOPT_USERAGENT => 'Codular Sample cURL Request'
+            					));
+            					// Send the request & save response to $resp
+            					$resp = curl_exec($curl);
+            					// Close request to clear up some resources
+            					curl_close($curl);
+            				}
 
-                            $message = "MinKNOW Is reporting drive issues on the machine running ".cleanname($computer[1]).".";
-                            $postData = "twitteruser=" . ($_SESSION['twittername']) . "&run=". (urlencode(cleanname($index['database']))) ."&message=" . (urlencode($message));
-                            //echo "alert ('".$postData."');";
-                            // Get cURL resource
-                            $curl = curl_init();
-                            // Set some options - we are passing in a useragent too here
-                            curl_setopt_array($curl, array(
-                                CURLOPT_RETURNTRANSFER => 1,
-                                CURLOPT_URL => $twiturl . 'tweet.php?' .$postData ,
-                                CURLOPT_USERAGENT => 'Codular Sample cURL Request'
-                            ));
-                            // Send the request & save response to $resp
-                            $resp = curl_exec($curl);
-                            // Close request to clear up some resources
-                            curl_close($curl);
-                            //echo "alert ('tryingtotweet');";
-                        }
                         $resetalert="update " . $index['database'] .".alerts set complete = 1 where alert_index = " . $index['jobid'] . ";";
                         //echo $resetalert;
                         $resetalerts=$mindb_connection->query($resetalert);
-                    
+
                 }
                 if ($index['job'] == "disknotify"){
                     if ($index['end'] == 1 ){
                         //We will send an email to the user about this as well.
                         $to = $_SESSION['user_email'];
-                        $subject = "minoTour Disk Space Message re: " . cleanname($computer[1]);
-                        $message = "<br>Your minION run <b>".cleanname($computer[1])."</b> has consumed a lot of disk space. minoTour reports less than ".$index['threshold']."GB free space left on the machine running it.";
+                        $subject = "minoTour Disk Space Message re: " . $index["type"];
+                        $message = "<br>Your minION run on computer <b>".$index["type"]."</b> has consumed a lot of disk space. minoTour reports less than ".$index['threshold']."GB free space left on the machine running it.";
                         $message .= "<br>This message has been sent from an email address which is not monitored.";
                         $message .= "<br>Good luck with your run!";
                         $message .= "<br>Regards.";
@@ -281,7 +278,7 @@ if ($login->isUserLoggedIn() == true) {
                             echo"<script type=\"text/javascript\" id=\"runscript\">
                                 new PNotify({
                                     title: 'Drive Space Alert!',
-                                    text: 'Your hard drive has less than ".$index['threshold']."GB free space left on the machine running ".cleanname($computer[1]).". You might want to deal with it.',
+                                    text: 'Your hard drive has less than ".$index['threshold']."GB free space left on the machine ".$index["type"].". You might want to deal with it.',
                                     type: 'error',
                                     hide: false
                                     });";
@@ -289,7 +286,7 @@ if ($login->isUserLoggedIn() == true) {
                             }
                         if (isset($_SESSION['twittername'])) {
 
-                            $message = "Your hard drive has less than ".$index['threshold']."GB free space left on the machine running ".cleanname($computer[1]).".";
+                            $message = "< ".$index['threshold']."GB free on computer ".$index["type"].".";
                             $postData = "twitteruser=" . ($_SESSION['twittername']) . "&run=". (urlencode(cleanname($index['database']))) ."&message=" . (urlencode($message));
                             //echo "alert ('".$postData."');";
                             // Get cURL resource
@@ -681,7 +678,7 @@ if ($login->isUserLoggedIn() == true) {
 					</script>";
 				}
 				if (isset($_SESSION['twittername'])) {
-					$message = "run started.";
+					$message = "run started!";
 					$postData = "twitteruser=" . ($_SESSION['twittername']) . "&run=". (urlencode(cleanname($value))) ."&message=" . (urlencode($message));
 					$curl = curl_init();
 					// Set some options - we are passing in a useragent too here

@@ -137,47 +137,57 @@ include 'includes/head-new.php';
               <div class="panel-body">
                   <!--<div v-if='minion.engine_states.status!="ready"'>-->
                   <div v-if="minion.livedata.current_script.result.length>0">
-                  <div class="row">
-                      <div class="col-md-8"><p><b></i>Experiment Started</i>: {{ (minion.engine_states.daq_start_time*1000) | date '%Y-%m-%d %I:%M:%s %p' }}</b></p></div>
-                      <div class="col-md-4"><p><i>(Last Update</i>: {{minion.timestamp}})</p></div>
-                  </div>
                       <div class="row">
-                      <div class="col-md-2"><p><i>MinKNOW version</i>: {{minion.engine_states.version_string}}</p></div>
-                      <div class="col-md-2"><p><i>Flow Cell ID</i>: {{minion.livedata.flow_cell_id.result}}</p></div>
-                      <div class="col-md-2"><p><i>minION ID</i>: {{minion.name}}</p></div>
-                      <div class="col-md-2"><p><i>ASIC ID</i>: {{minion.engine_states.asic_id_full}}/{{minion.engine_states.asic_id}}</p></div>
-                  </div>
-                  <div class="row">
-                      <div class="col-md-8"><p><i>Run Name</i>: {{minion.livedata.dataset.result}}</p></div>
-                      <div class="col-md-4"><p><i>Status</i>: {{minion.engine_states.status}}</p></div>
-                  </div>
-                  <div class="row">
-                      <div class="col-md-2"><p><i>Yield</i>: {{minion.engine_states.yield}}/{{minion.statistics.read_event_count}}</p></div>
-                      <div class="col-md-2"><p><i>Channels with Reads</i>: {{minion.statistics.channels_with_read_event_count}}</p></div>
-                      <div class="col-md-2"><p><i>Read Event Count</i>: {{minion.statistics.read_event_count}}</p></div>
-                      <div class="col-md-2"><p><i>Completed Read Count</i>: {{minion.statistics.selected_completed_count}}</p></div>
-                  </div>
-                      <div class="row">
-                          <div class="col-lg-12">
-                              <div class="col-lg-2" id="{{minion.name}}"><div is="container-avg" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count" :datain2="minion.statistics.selected_completed_count"></div></div>
-                              <div class="col-lg-2" id="{{minion.name}}"><div is="container-temp" :title="minion.name" :key="key" :datain="minion.engine_states.minion_heatsink_temperature"></div></div>
-                              <div class="col-lg-2" id="{{minion.name}}"><div is="container-chan" :title="minion.name" :key="key" :datain="minion.statistics.channels_with_read_event_count"></div></div>
-                              <div class="col-lg-2" id="{{minion.name}}"><div is="container-strand" :title="minion.name" :key="key" :datain="minion.simplesummary"></div></div>
-                              <div class="col-lg-2" id="{{minion.name}}"><div is="container-perc" :title="minion.name" :key="key" :datain="minion.simplesummary"></div></div>
+                          <div class="col-sm-8">
+                              <div class="row">
+                                  <div class="col-md-8"><p><b></i>Experiment Started</i>: {{ (minion.engine_states.daq_start_time*1000) | date '%Y-%m-%d %I:%M:%s %p' }}</b></p></div>
+                                  <div class="col-md-4"><p><i>(Last Update</i>: {{minion.timestamp}})</p></div>
+                              </div>
+                              <div class="row">
+                              <div class="col-md-3"><p><i>MinKNOW version</i>: {{minion.engine_states.version_string}}</p></div>
+                              <div class="col-md-3"><p><i>Flow Cell ID</i>: {{minion.livedata.flow_cell_id.result}}</p></div>
+                              <div class="col-md-3"><p><i>minION ID</i>: {{minion.name}}</p></div>
+                              <div class="col-md-3"><p><i>ASIC ID</i>: {{minion.engine_states.asic_id_full}}/{{minion.engine_states.asic_id}}</p></div>
                           </div>
-                      </div>
+                          <div class="row">
+                              <div class="col-md-8"><p><i>Run Name</i>: {{minion.livedata.dataset.result}}</p></div>
+                              <div class="col-md-4"><p><i>Status</i>: {{minion.engine_states.status}}</p></div>
+                          </div>
+                          <div class="row">
+                              <div class="col-md-3"><p><i>Yield</i>: {{minion.engine_states.yield}}/{{minion.statistics.read_event_count}}</p></div>
+                              <div class="col-md-3"><p><i>Channels with Reads</i>: {{minion.statistics.channels_with_read_event_count}}</p></div>
+                              <div class="col-md-3"><p><i>Read Event Count</i>: {{minion.statistics.read_event_count}}</p></div>
+                              <div class="col-md-3"><p><i>Completed Read Count</i>: {{minion.statistics.selected_completed_count}}</p></div>
+                          </div>
+                          <div class="row">
+
+                                  <div class="col-md-3" id="{{minion.name}}"><div is="container-avg" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count" :datain2="minion.statistics.selected_completed_count"></div></div>
+                                  <!--<div class="col-md-3" id="{{minion.name}}"><div is="container-temp" :title="minion.name" :key="key" :datain="minion.engine_states.minion_heatsink_temperature"></div></div>-->
+                                  <div class="col-md-3" id="{{minion.name}}"><div is="container-chan" :title="minion.name" :key="key" :datain="minion.statistics.channels_with_read_event_count"></div></div>
+                                  <div class="col-md-3" id="{{minion.name}}"><div is="container-strand" :title="minion.name" :key="key" :datain="minion.simplesummary"></div></div>
+                                  <div class="col-md-3" id="{{minion.name}}"><div is="container-perc" :title="minion.name" :key="key" :datain="minion.simplesummary"></div></div>
+
+
+                          </div>
+                        </div>
+                         <div class="col-sm-4">
+                             <div class="col-lg-12" id="{{minion.name}}"><div is="chartporehist" :title="minion.name" :key="key" :datain="minion.channelstuff" :datain2="minion.simplesummary"></div></div>
+                        </div>
+                    </div>
                       <div class="row">
                   </div>
 
                   <hr>
                     <div class="row">
                         <div class="col-lg-12">
-                            <div class="col-lg-12" id="{{minion.name}}"><div is="chartreadhist" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count_weighted_hist" :datain2="minion.statistics.read_event_count_weighted_hist_bin_width"></div></div>
-                            <div class="col-lg-6" id="{{minion.name}}"><div is="chartporehist" :title="minion.name" :key="key" :datain="minion.channelstuff" :datain2="minion.simplesummary"></div></div>
                             <div class="col-lg-6" id="{{minion.name}}"><div is="chartyield" :title="minion.name" :key="key" :datain="minion.engine_states.yield" :datain2="minion.yield_history"></div></div>
                             <div class="col-lg-6" id="{{minion.name}}"><div is="porehistory" :title="minion.name" :key="key" :datain2="minion.pore_history"></div></div>
                             <div class="col-lg-6" id="{{minion.name}}"><div is="perchistory" :title="minion.name" :key="key" :datain2="minion.pore_history"></div></div>
+                            <div class="col-lg-6" id="{{minion.name}}"><div is="chartporehistdetails" :title="minion.name" :key="key" :datain="minion.channelstuff" :datain2="minion.pore_history.details"></div></div>
+
+                            <div class="col-lg-12" id="{{minion.name}}"><div is="chartreadhist" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count_weighted_hist" :datain2="minion.statistics.read_event_count_weighted_hist_bin_width"></div></div>
                             <div class="col-lg-6" id="{{minion.name}}"><div is="temphistory" :title="minion.name" :key="key" :datain2="minion.temp_history"></div></div>
+
                             <div class="col-lg-6" id="{{minion.name}}"><div is="volthistory" :title="minion.name" :key="key" :datain2="minion.temp_history"></div></div>
 
                         </div>
@@ -777,6 +787,151 @@ include 'includes/head-new.php';
             });
         }
     })
+    Vue.component('chartporehistdetails', {
+	template: '<div id="container-porehist{{title}}" style="margin: 0 auto"</div>',
+    props: ['title','key','datain','datain2'],
+    data: function() {
+        return {
+        	opts: {
+		        chart: {
+        	    	renderTo: 'container-porehist'+this.title,
+                    type:'area',
+                    zoomType: 'xy',
+                    animation: false,
+                    height: 350,
+	        	},
+    	    	title: {
+        	    	text: 'Pore States'
+	        	},
+                xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150
+            },
+                //colors:[],
+                yAxis: {
+                    max: 512,
+                    endOnTick: false,
+                    title: {
+                        text: 'Channel Classifications'
+                    }
+                },
+                legend: {
+            enabled: true
+        },
+                plotOptions: {
+                    area: {
+                stacking: 'normal',
+            },
+            series: {
+                dataLabels: {
+                    enabled: false,
+                    formatter:function() {
+                        return this.y;
+                    }
+                }
+            }
+        },
+                credits: {
+                    enabled: false
+                },
+                series: [
+                ],
+
+         			}
+    	    }
+    }
+    ,
+
+
+    created: function() {
+    },
+    ready: function() {
+    //var returndata=parsechanstats(this.datain,this.datain2);
+      this.$nextTick(function() {
+      		this.chart = new Highcharts.Chart(this.opts);
+            var returndata=parseporehist(this.datain,this.datain2);
+            console.log(returndata);
+            //var returndata = tohistogram(this.datain,parseInt(this.datain2));
+
+            while(this.chart.series.length > 0)
+                this.chart.series[0].remove(true);
+            for (var i = 0; i< returndata.length; i++){
+                this.chart.addSeries(returndata[i]);
+            }
+            //minion=this.key;
+            setInterval(function () {
+                //console.log(this.datain);
+                //console.log(this.datain2);
+                var returndata=parseporehist(this.datain,this.datain2);
+                console.log(returndata);
+                //var returndata = tohistogram(this.datain,parseInt(this.datain2));
+
+                while(this.chart.series.length > 0)
+                    this.chart.series[0].remove(true);
+                for (var i = 0; i< returndata.length; i++){
+                    this.chart.addSeries(returndata[i]);
+                }
+                //this.chart.series[0].setData(returndata);
+                //console.log(returndata[2]);
+                //this.chart.xAxis[0].setCategories(returndata[2]);
+                //while(this.chart.series.length > 0)
+                //    this.chart.series[0].remove(true);
+                //for (var i = 0; i < returndata[0].length; i++) {
+                //    this.chart.addSeries(returndata[0][i]);
+                //}
+                //this.chart.colors=returndata[1];
+                //this.chart.redraw();
+                //console.log(returndata[1]);
+        }.bind(this), 30000);
+            });
+        }
+    })
+
+    function parseporehist(descriptions,counts) {
+        var results =[];
+        var colors = [];
+        var categories = [];
+        var datam = [];
+        var colorlookup=[];
+        //console.log(counts);
+        //times=gettimelist(counts);
+        //console.log(times);
+
+        for (var thing in descriptions) {
+            if (descriptions.hasOwnProperty(thing)) {
+
+                if (descriptions[thing].hasOwnProperty("style")){
+                    //console.log(thing);
+                    //console.log(descriptions[thing]);
+                    //console.log(descriptions[thing]["name"]);
+                    //console.log(descriptions[thing]["style"]["colour"]);
+                    colorlookup[descriptions[thing]["name"]]=descriptions[thing]["style"]["colour"];
+            //        console.log(descriptions[thing]["style"]["label"]);
+            //        console.log(descriptions[thing]["style"]["colour"]);
+
+
+                }
+            }
+        }
+
+        for (var pore in counts){
+            //console.log(pore);
+            //console.log(counts[pore]);
+            //results.push({"name":descriptions[thing]["style"]["label"], "data":[{"y":porenumber}],"color":"#"+descriptions[thing]["style"]["colour"]});
+            results.push({"name":pore,"color": "#"+colorlookup[pore],"data":counts[pore]})//,"color":"#121212"]});
+            //results.push({"name":pore,"data":[{100000,1},{200000,2}]});
+            //break;
+            //console.log(results);
+        }
+        /*for (var pore in counts){
+        //    console.log(pore);
+            //for (var timepoint in counts[pore]){
+                console.log(counts[pore]);
+            //}
+        }*/
+        return results
+    }
+
     Vue.component('chartporehist', {
 	template: '<div id="container-pore{{title}}" style="margin: 0 auto"</div>',
     props: ['title','key','datain','datain2'],
@@ -787,7 +942,7 @@ include 'includes/head-new.php';
         	    	renderTo: 'container-pore'+this.title,
                     type:'column',
                     zoomType: 'xy',
-                    height: 300,
+                    height: 350,
                     animation: false
 	        	},
     	    	title: {
@@ -1611,7 +1766,7 @@ include 'includes/head-new.php';
         	    	renderTo: 'containeryield'+this.title,
                     type:'spline',
                     zoomType: 'x',
-                    height: 300,
+                    height: 350,
 	        	},
     	    	title: {
         	    	text: 'Yield over time '
@@ -1669,7 +1824,7 @@ include 'includes/head-new.php';
         	    	renderTo: 'perchistory'+this.title,
                     type:'spline',
                     zoomType: 'x',
-                    height: 300,
+                    height: 350,
 	        	},
     	    	title: {
         	    	text: '% Occupancy Over Time'
@@ -1727,7 +1882,7 @@ include 'includes/head-new.php';
         	    	renderTo: 'porehistory'+this.title,
                     type:'spline',
                     zoomType: 'x',
-                    height: 300,
+                    height: 350,
 	        	},
     	    	title: {
         	    	text: 'In Strand Counts'
@@ -1790,7 +1945,7 @@ include 'includes/head-new.php';
         	    	renderTo: 'temphistory'+this.title,
                     type:'spline',
                     zoomType: 'x',
-                    height: 300,
+                    height: 350,
 	        	},
     	    	title: {
         	    	text: 'Temperature over time '
@@ -1852,7 +2007,7 @@ include 'includes/head-new.php';
         	    	renderTo: 'volthistory'+this.title,
                     type:'spline',
                     zoomType: 'x',
-                    height: 300,
+                    height: 350,
 	        	},
     	    	title: {
         	    	text: 'Global Voltage over time '
