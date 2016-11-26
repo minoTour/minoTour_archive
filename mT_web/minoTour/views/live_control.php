@@ -796,20 +796,22 @@ include 'includes/head-new.php';
 		        chart: {
         	    	renderTo: 'container-porehist'+this.title,
                     type:'area',
-                    zoomType: 'xy',
-                    animation: false,
-                    height: 350,
+                    //zoomType: 'xy',
+                    //animation: false
 	        	},
+                rangeSelector: {
+                    enabled: false
+                },
     	    	title: {
         	    	text: 'Pore States'
 	        	},
-                xAxis: {
-                type: 'datetime',
-                tickPixelInterval: 150
-            },
+                //xAxis: {
+                //type: 'datetime',
+                //tickPixelInterval: 150
+            //},
                 //colors:[],
                 yAxis: {
-                    max: 512,
+                    //max: 512,
                     endOnTick: false,
                     title: {
                         text: 'Channel Classifications'
@@ -820,17 +822,20 @@ include 'includes/head-new.php';
         },
                 plotOptions: {
                     area: {
-                stacking: 'normal',
-            },
-            series: {
-                dataLabels: {
-                    enabled: false,
-                    formatter:function() {
-                        return this.y;
-                    }
-                }
-            }
-        },
+                        stacking: 'percent',
+                    },
+                    series: {
+                        showInNavigator: true,
+                        dataLabels: {
+                            enabled: false,
+                                formatter:function() {
+                                    return this.y;
+                                }
+                            }
+                        }
+                    },
+
+
                 credits: {
                     enabled: false
                 },
@@ -848,7 +853,7 @@ include 'includes/head-new.php';
     ready: function() {
     //var returndata=parsechanstats(this.datain,this.datain2);
       this.$nextTick(function() {
-      		this.chart = new Highcharts.Chart(this.opts);
+      		this.chart = new Highcharts.stockChart(this.opts);
             var returndata=parseporehist(this.datain,this.datain2);
             console.log(returndata);
             //var returndata = tohistogram(this.datain,parseInt(this.datain2));
