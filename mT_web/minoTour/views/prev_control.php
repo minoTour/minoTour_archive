@@ -580,9 +580,9 @@ include 'includes/head-new.php';
         	opts: {
 		        chart: {
         	    	renderTo: 'container-porehist'+this.title,
-                    type:'area',
+                    //type:'area',
                     //zoomType: 'xy',
-                    animation: false
+                    //animation: false
 	        	},
                 rangeSelector: {
                     enabled: false
@@ -590,10 +590,10 @@ include 'includes/head-new.php';
     	    	title: {
         	    	text: 'Pore States'
 	        	},
-                xAxis: {
-                type: 'datetime',
-                tickPixelInterval: 150
-            },
+                //xAxis: {
+                //type: 'datetime',
+                //tickPixelInterval: 150
+            //},
                 //colors:[],
                 yAxis: {
                     max: 512,
@@ -610,6 +610,7 @@ include 'includes/head-new.php';
                         stacking: 'normal',
                     },
                     series: {
+                        showInNavigator: true,
                         dataLabels: {
                             enabled: false,
                                 formatter:function() {
@@ -657,7 +658,7 @@ include 'includes/head-new.php';
                 //    this.chart.addSeries(returndata[0][i]);
                 //}
                 //this.chart.colors=returndata[1];
-                this.chart.redraw();
+                //this.chart.redraw();
                 //console.log(returndata[1]);
     //    }.bind(this), 500);
             });
