@@ -580,7 +580,7 @@ include 'includes/head-new.php';
         	opts: {
 		        chart: {
         	    	renderTo: 'container-porehist'+this.title,
-                    //type:'area',
+                    type:'area',
                     //zoomType: 'xy',
                     //animation: false
 	        	},
@@ -596,7 +596,7 @@ include 'includes/head-new.php';
             //},
                 //colors:[],
                 yAxis: {
-                    max: 512,
+                    //max: 512,
                     endOnTick: false,
                     title: {
                         text: 'Channel Classifications'
@@ -607,7 +607,7 @@ include 'includes/head-new.php';
         },
                 plotOptions: {
                     area: {
-                        stacking: 'normal',
+                        stacking: 'percent',
                     },
                     series: {
                         showInNavigator: true,
