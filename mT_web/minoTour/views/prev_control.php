@@ -334,12 +334,14 @@ include 'includes/head-new.php';
       </div><!-- /.content-wrapper -->
 
       <?php include 'includes/reporting-new.php'; ?>
+      <!--<script src="https://code.highcharts.com/stock/highstock.js"></script>-->
       <script src="js/plugins/dataTables/jquery.dataTables.js" type="text/javascript" charset="utf-8"></script>
       <!--<script src="js/plugins/dataTables/dataTables.bootstrap.js" type="text/javascript" charset="utf-8"></script>-->
       <script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.12/cr-1.3.2/datatables.min.js"></script>
-      <script src="https://code.highcharts.com/highcharts-more.js"></script>
-      <script src="https://code.highcharts.com/modules/solid-gauge.src.js"></script>
+      <!--<script src="https://code.highcharts.com/highcharts-more.js"></script>-->
+      <!--<script src="https://code.highcharts.com/modules/solid-gauge.src.js"></script>-->
       <script src="js/json-patch.min.js"></script>
+
 
       <script>
   $(document).ready(function () {
@@ -579,9 +581,12 @@ include 'includes/head-new.php';
 		        chart: {
         	    	renderTo: 'container-porehist'+this.title,
                     type:'area',
-                    zoomType: 'xy',
+                    //zoomType: 'xy',
                     animation: false
 	        	},
+                rangeSelector: {
+                    enabled: false
+                },
     	    	title: {
         	    	text: 'Pore States'
 	        	},
@@ -602,17 +607,19 @@ include 'includes/head-new.php';
         },
                 plotOptions: {
                     area: {
-                stacking: 'normal',
-            },
-            series: {
-                dataLabels: {
-                    enabled: false,
-                    formatter:function() {
-                        return this.y;
-                    }
-                }
-            }
-        },
+                        stacking: 'normal',
+                    },
+                    series: {
+                        dataLabels: {
+                            enabled: false,
+                                formatter:function() {
+                                    return this.y;
+                                }
+                            }
+                        }
+                    },
+
+
                 credits: {
                     enabled: false
                 },
@@ -630,7 +637,7 @@ include 'includes/head-new.php';
     ready: function() {
     //var returndata=parsechanstats(this.datain,this.datain2);
       this.$nextTick(function() {
-      		this.chart = new Highcharts.Chart(this.opts);
+      		this.chart = new Highcharts.stockChart(this.opts);
             //minion=this.key;
     //        setInterval(function () {
                 //console.log(this.datain);

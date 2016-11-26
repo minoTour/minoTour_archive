@@ -341,7 +341,8 @@ $('#twittercheck').change(function() {
 PNotify.prototype.options.styling = "fontawesome";
 </script>
 <!-- Highcharts Addition -->
-<script src="http://code.highcharts.com/highcharts.js"></script>
+<!--<script src="http://code.highcharts.com/highcharts.js"></script>-->
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
 <script src="https://code.highcharts.com/highcharts-more.js"></script>
 <script src="https://code.highcharts.com/modules/solid-gauge.src.js"></script>
 <script type="text/javascript" src="js/themes/grid-light.js"></script>
