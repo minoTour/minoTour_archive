@@ -108,7 +108,9 @@ include 'includes/head-new.php';
                         <div class="col-lg-12">
                             <p>This page allows you to remotely control minKNOW. You use it at your own risk.</p>
                             <p>Once connected you will see the minION id below. If you have multiple minIONs connected to one account and all active, they can all be controlled from this page. Further options to implement 'Run Until' are available within the Current Sequencing Run folder.</p>
-                            <label id="conn_text"></label><br />
+                            <p>Note that data can take 10-20 seconds to be populated at busy times.</p>
+                            <p>The pore history chart is only updated every 5 minutes to reduce page loading times.</p>
+                            <label id="conn_text">Currently trying to connect to the server...</label><br />
 
                                 <div id="messages_txt" />
                             <div>
@@ -138,7 +140,7 @@ include 'includes/head-new.php';
                   <!--<div v-if='minion.engine_states.status!="ready"'>-->
                   <div v-if="minion.livedata.current_script.result.length>0">
                       <div class="row">
-                          <div class="col-sm-8">
+                          <div class="col-md-5">
                               <div class="row">
                                   <div class="col-md-8"><p><b></i>Experiment Started</i>: {{ (minion.engine_states.daq_start_time*1000) | date '%Y-%m-%d %I:%M:%s %p' }}</b></p></div>
                                   <div class="col-md-4"><p><i>(Last Update</i>: {{minion.timestamp}})</p></div>
@@ -170,8 +172,17 @@ include 'includes/head-new.php';
 
                           </div>
                         </div>
-                         <div class="col-sm-4">
-                             <div class="col-lg-12" id="{{minion.name}}"><div is="chartporehist" :title="minion.name" :key="key" :datain="minion.channelstuff" :datain2="minion.simplesummary"></div></div>
+                         <div class="col-md-4">
+                             <div class="col-md-12" id="{{minion.name}}"><div is="chartporehist" :title="minion.name" :key="key" :datain="minion.channelstuff" :datain2="minion.simplesummary"></div></div>
+                        </div>
+                        <div class="col-md-3">
+                            <h5><b>Messages from MinKNOW:</b></h5>
+                            <div class="pre-scrollable">
+                                <div v-for="message in minion.messages | reverse" >
+                                 <!--<div class="alert alert-{{message.severity}} alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{message.message}}<br>{{message.timestamp}}</div>-->
+                                 <span class="label label-{{message.severity}}">{{message.severity}}</span>  {{message.message}}<br><i>{{message.timestamp | date "%c"}}</i>
+                             </div>
+                            </div>
                         </div>
                     </div>
                       <div class="row">
@@ -197,10 +208,23 @@ include 'includes/head-new.php';
 
 
                   <div v-else>
+                      <div class="row">
+                          <div class="col-md-7">
                       <p>This minION is not currently running.</p>
                       <button id='inactivateminion' class='btn btn-danger btn-sm' data-toggle='modal' data-target='#{{minion.name}}offminionmodal'>
                         <i class='fa fa-stop'></i> Switch Off minION
                       </button>
+                  </div>
+                      <div class="col-md-5">
+                          <h5><b>Messages from MinKNOW:</b></h5>
+                          <div class="pre-scrollable">
+                              <div v-for="message in minion.messages | reverse" >
+                               <!--<div class="alert alert-{{message.severity}} alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{message.message}}<br>{{message.timestamp}}</div>-->
+                               <span class="label label-{{message.severity}}">{{message.severity}}</span>  {{message.message}}<br><i>{{message.timestamp | date "%c"}}</i>
+                           </div>
+                          </div>
+                      </div>
+                  </div>
 
                       <!-- Modal -->
                       <div class='modal fade' id='{{minion.name}}offminionmodal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
@@ -590,7 +614,7 @@ include 'includes/head-new.php';
         ws.onopen = function(evt) {
             //alert ("weve connected");
           var conn_status = document.getElementById('conn_text');
-          conn_status.innerHTML = "Connection status: Connected!";
+          conn_status.innerHTML = "Connection status: Connected! Note that minIONs may take several seconds to appear here.";
           var subscribemessage={"SUBSCRIBE":"<?php echo $_SESSION['user_name'];?>"};
           ws.send(JSON.stringify(subscribemessage));
         };
@@ -630,6 +654,9 @@ include 'includes/head-new.php';
                       if (minionsthings.minions[thing].livedata != jsonreturn[prop].livedata){
                           minionsthings.minions[thing].livedata = jsonreturn[prop].livedata;
                       }
+                      if (minionsthings.minions[thing].messages != jsonreturn[prop].messages){
+                          minionsthings.minions[thing].messages = jsonreturn[prop].messages;
+                      }
                       if (minionsthings.minions[thing].channelstuff != jsonreturn[prop].channelstuff){
                           minionsthings.minions[thing].channelstuff = jsonreturn[prop].channelstuff;
                       }
@@ -659,6 +686,8 @@ include 'includes/head-new.php';
                       }
                       if (minionsthings.minions[thing].pore_history != jsonreturn[prop].pore_history){
                           minionsthings.minions[thing].pore_history = jsonreturn[prop].pore_history;
+                          //console.log(jsonreturn[prop].pore_history);
+
                       }
                       if (minionsthings.minions[thing].simplechanstats != jsonreturn[prop].simplechanstats){
                           minionsthings.minions[thing].simplechanstats = jsonreturn[prop].simplechanstats;
@@ -672,7 +701,8 @@ include 'includes/head-new.php';
                   }
               }
               if (adder == 0){
-                  minionsthings.minions.push({ name: prop ,simplechanstats: jsonreturn[prop].simplesummary,simplesummary: jsonreturn[prop].simplesummary,channel_info: jsonreturn[prop].detailsdata.channel_info, yield_history: jsonreturn[prop].yield_history, temp_history: jsonreturn[prop].temp_history, pore_history: jsonreturn[prop].pore_history, timestamp: jsonreturn[prop].detailsdata.timestamp, channelstuff: jsonreturn[prop].channelstuff,statistics: jsonreturn[prop].detailsdata.statistics,multiplex_states: jsonreturn[prop].detailsdata.multiplex_states, engine_states: jsonreturn[prop].detailsdata.engine_states, state: jsonreturn[prop].state ,scripts: jsonreturn[prop].scripts , livedata: jsonreturn[prop].livedata, comms: jsonreturn[prop].comms});
+                  //console.log(jsonreturn[prop].pore_history);
+                  minionsthings.minions.push({ name: prop ,simplechanstats: jsonreturn[prop].simplesummary,simplesummary: jsonreturn[prop].simplesummary,channel_info: jsonreturn[prop].detailsdata.channel_info, yield_history: jsonreturn[prop].yield_history, temp_history: jsonreturn[prop].temp_history, pore_history: jsonreturn[prop].pore_history, timestamp: jsonreturn[prop].detailsdata.timestamp, channelstuff: jsonreturn[prop].channelstuff,statistics: jsonreturn[prop].detailsdata.statistics,multiplex_states: jsonreturn[prop].detailsdata.multiplex_states, engine_states: jsonreturn[prop].detailsdata.engine_states, state: jsonreturn[prop].state ,scripts: jsonreturn[prop].scripts , messages: jsonreturn[prop].messages, livedata: jsonreturn[prop].livedata, comms: jsonreturn[prop].comms});
               }
 
 
@@ -697,7 +727,7 @@ include 'includes/head-new.php';
     start();
 
     Vue.filter('reverse', function(value){
-        return value;
+        return  value.slice().reverse();
     })
     Vue.component('channelstatescalc',{
         template:"<hr><div v-for='item in countdata'><div class='col-md-1'><div class='row'><font size='6' color='{{item.colour}}'>&#x25CF</font> {{item.count}} </div><div class='row'>{{item.label}}</div></div></div></div>",
@@ -805,7 +835,9 @@ include 'includes/head-new.php';
     	    	title: {
         	    	text: 'Pore States'
 	        	},
-                //xAxis: {
+                xAxis: {
+                    range: 1 * 3600 * 1000, //set range to last hour of data
+                },
                 //type: 'datetime',
                 //tickPixelInterval: 150
             //},
@@ -855,7 +887,7 @@ include 'includes/head-new.php';
       this.$nextTick(function() {
       		this.chart = new Highcharts.stockChart(this.opts);
             var returndata=parseporehist(this.datain,this.datain2);
-            console.log(returndata);
+            //console.log(returndata);
             //var returndata = tohistogram(this.datain,parseInt(this.datain2));
 
             while(this.chart.series.length > 0)
@@ -868,7 +900,7 @@ include 'includes/head-new.php';
                 //console.log(this.datain);
                 //console.log(this.datain2);
                 var returndata=parseporehist(this.datain,this.datain2);
-                console.log(returndata);
+                //console.log(returndata);
                 //var returndata = tohistogram(this.datain,parseInt(this.datain2));
 
                 while(this.chart.series.length > 0)
@@ -887,7 +919,7 @@ include 'includes/head-new.php';
                 //this.chart.colors=returndata[1];
                 //this.chart.redraw();
                 //console.log(returndata[1]);
-        }.bind(this), 30000);
+        }.bind(this), 60000);
             });
         }
     })
@@ -1743,7 +1775,7 @@ include 'includes/head-new.php';
                             //    this.chart.redraw();
                             if (this.chart) {
                                 point = this.chart.series[0].points[0];
-                                console.log(this.datain);
+                                //console.log(this.datain);
                                 var single = 0;
                                 if (parseFloat(this.datain["good_single"]) > 0) {
                                     single = parseFloat(this.datain["good_single"]);

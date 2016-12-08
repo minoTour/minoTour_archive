@@ -105,21 +105,21 @@ include 'includes/head-new.php';
         </ol>
         <div class="carousel-inner">
           <div class="item active">
-            <img src="http://placehold.it/900x500/39CCCC/ffffff&text=Capture+Love+Bootstrap" alt="First slide">
+            <img src="images/real_time_monitoring.JPG" alt="First slide">
             <div class="carousel-caption">
-              First Slide
+              Real Time Run Monitoring
             </div>
           </div>
           <div class="item">
-            <img src="http://placehold.it/900x500/3c8dbc/ffffff&text=I+Love+Bootstrap" alt="Second slide">
+            <img src="images/remote_control.jpg" alt="Second slide">
             <div class="carousel-caption">
-              Second Slide
+              Full Remote Control of MinKNOW
             </div>
           </div>
           <div class="item">
-            <img src="http://placehold.it/900x500/f39c12/ffffff&text=I+Love+Bootstrap" alt="Third slide">
+            <img src="images/run_archive.jpg" alt="Third slide">
             <div class="carousel-caption">
-              Third Slide
+              Archive of Real Time Stats from MinKNOW
             </div>
           </div>
         </div>

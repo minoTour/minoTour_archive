@@ -157,7 +157,19 @@ include 'includes/head-new.php';
                 <div class="panel-heading">
                 <h3 class="panel-title">minKNOW Details - {{minion.livedata.dataset.result}}</h3>
                 </div>
-
+                <div class="row">
+                <div class="col-md-3">
+                     <div class="panel-body">
+                <h5><b>Messages from MinKNOW:</b></h5>
+                <div class="pre-scrollable">
+                    <div v-for="message in minion.messages | reverse" >
+                     <!--<div class="alert alert-{{message.severity}} alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{message.message}}<br>{{message.timestamp}}</div>-->
+                     <span class="label label-{{message.severity}}">{{message.severity}}</span>  {{message.message}}<br><i>{{message.timestamp | date "%c"}}</i>
+                 </div>
+                </div>
+            </div>
+            </div>
+            <div class="col-md-9">
               <div class="panel-body">
                   <div v-if='minion.engine_states.status!="ready"'>
                       <div class="row">
@@ -180,6 +192,10 @@ include 'includes/head-new.php';
                           <div class="col-md-2"><p><i>Read Event Count</i>: {{minion.statistics.read_event_count}}</p></div>
                           <div class="col-md-2"><p><i>Completed Read Count</i>: {{minion.statistics.selected_completed_count}}</p></div>
                       </div>
+                  </div>
+                  </div>
+
+
                       <div class="row">
                           <div class="col-lg-12">
                               <div class="col-lg-2" id="{{minion.name}}"><div is="container-avg" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count" :datain2="minion.statistics.selected_completed_count"></div></div>
@@ -189,6 +205,7 @@ include 'includes/head-new.php';
                               <div class="col-lg-2" id="{{minion.name}}"><div is="container-perc" :title="minion.name" :key="key" :datain="minion.simplesummary"></div></div>
                           </div>
                       </div>
+                  </div>
                       <div class="row">
 
 
@@ -214,35 +231,7 @@ include 'includes/head-new.php';
 
 
 
-                  <div v-else>
-                      <p>This minION is not currently running.</p>
-                      <button id='inactivateminion' class='btn btn-danger btn-sm' data-toggle='modal' data-target='#{{minion.name}}offminionmodal'>
-                        <i class='fa fa-stop'></i> Switch Off minION
-                      </button>
-
-                      <!-- Modal -->
-                      <div class='modal fade' id='{{minion.name}}offminionmodal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
-                          <div class='modal-dialog'>
-                              <div class='modal-content'>
-                                  <div class='modal-header'>
-                                      <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-                                      <h4 class='modal-title' id='myModalLabel'>Stop your minION</h4>
-                                  </div>
-                                  <div class='modal-body'>
-                                      <div id='{{minion.name}}offminioninfo'>
-                                          <p>This action will switch the minION to an inactive state. It should be possible to reactivate the minION remotely but software crashes on the minION controlling device may cause problems. You should only inactivate your minION device remotely if you are certain you wish to do so and <strong> at your own risk</strong>.</p>
-
-                                          <p>If you are sure you wish to do this, click 'Inactivate minION' below. Otherwise close this window.</p>
-                                      </div>
-                                      <div class='modal-footer'>
-                                          <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
-                                          <button v-on:click="inactivateminion" id='{{minion.name}}' type='button' class='btn btn-danger' data-dismiss='modal'>Switch Off minION</button>
-                                      </div>
-                                  </div><!-- /.modal-content -->
-                              </div><!-- /.modal-dialog -->
-                          </div><!-- /.modal -->
-                      </div>
-                  </div>
+                  
 
           </div>
           </div>
@@ -418,7 +407,7 @@ include 'includes/head-new.php';
     //start();
 
     Vue.filter('reverse', function(value){
-        return value;
+        return  value.slice().reverse();
     })
     Vue.component('channelstatescalc',{
         template:"<hr><div v-for='item in countdata'><div class='col-md-1'><div class='row'><font size='6' color='{{item.colour}}'>&#x25CF</font> {{item.count}} </div><div class='row'>{{item.label}}</div></div></div></div>",
@@ -590,7 +579,9 @@ include 'includes/head-new.php';
     	    	title: {
         	    	text: 'Pore States'
 	        	},
-                //xAxis: {
+                xAxis: {
+                    range: 1 * 3600 * 1000, //set range to last hour of data
+                },
                 //type: 'datetime',
                 //tickPixelInterval: 150
             //},
@@ -1901,7 +1892,8 @@ include 'includes/head-new.php';
                           //console.log(prop);
                           //channel_info: jsonreturn[prop].detailsdata.channel_info,
                           //timestamp: jsonreturn[prop].detailsdata.timestamp,statistics: jsonreturn[prop].detailsdata.statistics,multiplex_states: jsonreturn[prop].detailsdata.multiplex_states, engine_states: jsonreturn[prop].detailsdata.engine_states,
-                          minionsthings.minions.push({ name: prop ,channel_info: jsonreturn[prop].detailsdata.channel_info,timestamp: jsonreturn[prop].detailsdata.timestamp,statistics: jsonreturn[prop].detailsdata.statistics,multiplex_states: jsonreturn[prop].detailsdata.multiplex_states, engine_states: jsonreturn[prop].detailsdata.engine_states,simplechanstats: jsonreturn[prop].simplesummary,simplesummary: jsonreturn[prop].simplesummary, yield_history: jsonreturn[prop].yield_history, temp_history: jsonreturn[prop].temp_history, pore_history: jsonreturn[prop].pore_history,  channelstuff: jsonreturn[prop].channelstuff, state: jsonreturn[prop].state ,scripts: jsonreturn[prop].scripts , livedata: jsonreturn[prop].livedata, comms: jsonreturn[prop].comms});
+                          //minionsthings.minions.push({ name: prop ,channel_info: jsonreturn[prop].detailsdata.channel_info,timestamp: jsonreturn[prop].detailsdata.timestamp,statistics: jsonreturn[prop].detailsdata.statistics,multiplex_states: jsonreturn[prop].detailsdata.multiplex_states, engine_states: jsonreturn[prop].detailsdata.engine_states,simplechanstats: jsonreturn[prop].simplesummary,simplesummary: jsonreturn[prop].simplesummary, yield_history: jsonreturn[prop].yield_history, temp_history: jsonreturn[prop].temp_history, pore_history: jsonreturn[prop].pore_history,  channelstuff: jsonreturn[prop].channelstuff, state: jsonreturn[prop].state ,scripts: jsonreturn[prop].scripts , livedata: jsonreturn[prop].livedata, comms: jsonreturn[prop].comms});
+                          minionsthings.minions.push({ name: prop ,simplechanstats: jsonreturn[prop].simplesummary,simplesummary: jsonreturn[prop].simplesummary,channel_info: jsonreturn[prop].detailsdata.channel_info, yield_history: jsonreturn[prop].yield_history, temp_history: jsonreturn[prop].temp_history, pore_history: jsonreturn[prop].pore_history, timestamp: jsonreturn[prop].detailsdata.timestamp, channelstuff: jsonreturn[prop].channelstuff,statistics: jsonreturn[prop].detailsdata.statistics,multiplex_states: jsonreturn[prop].detailsdata.multiplex_states, engine_states: jsonreturn[prop].detailsdata.engine_states, state: jsonreturn[prop].state ,scripts: jsonreturn[prop].scripts , messages: jsonreturn[prop].messages, livedata: jsonreturn[prop].livedata, comms: jsonreturn[prop].comms});
                       }
                   }
                   //console.log(minionsthings.minions);
