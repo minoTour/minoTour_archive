@@ -262,10 +262,37 @@ include 'includes/head-new.php';
                       <h5>To test if you have a connection to minKNOW:</h5>
                         <button v-on:click="testmessage" id='{{minion.name}}' type='button' class='btn btn-info btn-sm'><i class='fa fa-magic'></i> Test Communication</button>
                           <br>
-                          <!--<h5>To increase/decrease the current bias voltage offset in minKNOW by 10 mV:</h5>
-                          <button v-on:click="biasvoltageinc" id='{{minion.name}}' type='button' class='btn btn-info btn-sm'><i class='fa fa-arrow-circle-up'></i> Inc Bias Voltage</button>
-                          <button v-on:click="biasvoltagedec" id='{{minion.name}}' type='button' class='btn btn-info btn-sm'><i class='fa fa-arrow-circle-down'></i> Dec Bias Voltage</button>
-                          <br>-->
+
+
+                          <h5>Log Custom Message:</h5>
+                          <!--<button id='renamerun' type='button' class='btn btn-info btn-sm'><i class='fa fa-magic'></i> Rename Run</button>-->
+                          <!-- Indicates a dangerous or potentially negative action -->
+                          <!-- Button trigger modal -->
+                          <button id='custommessage' class='btn btn-info btn-sm' data-toggle='modal' data-target='#{{minion.name}}custommessage'>
+                            <i class='fa fa-magic'></i> Send Message
+                          </button>
+                          <!-- Modal -->
+                          <div class='modal fade' id='{{minion.name}}custommessage' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
+                              <div class='modal-dialog'>
+                                  <div class='modal-content'>
+                                      <div class='modal-header'>
+                                          <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+                                          <h4 class='modal-title' id='myModalLabel'>Send a custom message to MinKNOW</h4>
+                                      </div>
+                                      <div class='modal-body'>
+                                          <div id='{{minion.name}}custommessage'>
+                                              <p>You can log a custom message into minKNOW to document things such as addition of library or other event. This will then be written into the log files for this run.</p>
+                                              <input type="text" id="{{minion.name}}custommessagefield" class="form-control" placeholder="">
+                                          </div>
+                                          <div class='modal-footer'>
+                                              <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
+                                              <button v-on:click="custommessage" id='{{minion.name}}' type='button' class='btn btn-danger' data-dismiss='modal'>Send Message</button>
+                                          </div>
+                                      </div><!-- /.modal-content -->
+                                  </div><!-- /.modal-dialog -->
+                              </div><!-- /.modal -->
+                          </div>
+
 
                           <h5>Rename Your Run:</h5>
                           <!--<button id='renamerun' type='button' class='btn btn-info btn-sm'><i class='fa fa-magic'></i> Rename Run</button>-->
@@ -2123,6 +2150,13 @@ include 'includes/head-new.php';
             startminion: function(event){
                 var script = $("input[type='radio'][name='scriptRadios']:checked").val();
                 var instructionmessage={"INSTRUCTION":{"USER":"<?php echo $_SESSION['user_name'];?>","minion":event.target.id,"JOB":"startminion","SCRIPT":script}};
+                ws.send(JSON.stringify(instructionmessage));
+                //$('#startminionmodal').modal('hide');
+            },
+            custommessage: function(event){
+                //var script = $("input[type='radio'][name='scriptRadios']:checked").val();
+                //alert($("#"+event.target.id+"custommessagefield").val());
+                var instructionmessage={"INSTRUCTION":{"USER":"<?php echo $_SESSION['user_name'];?>","minion":event.target.id,"JOB":"custommessage","SCRIPT":$("#"+event.target.id+"custommessagefield").val()}};
                 ws.send(JSON.stringify(instructionmessage));
                 //$('#startminionmodal').modal('hide');
             },
