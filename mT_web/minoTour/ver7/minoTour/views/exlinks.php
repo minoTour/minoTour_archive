@@ -102,7 +102,7 @@ include 'includes/head-new.php';
               <h3 class="box-title">Links</h3>
             </div><!-- /.box-header -->
             <div class="box-body">
-            <a href="https://www.nanoporetech.com" target="_blank"><img src="https://www.nanoporetech.com/favicon.ico" > Oxford Nanopore</a><br><br>
+            <a href="https://www.nanoporetech.com" target="_blank"><img src="https://nanoporetech.com/themes/custom/nanopore/images/ont-logo.svg" > Oxford Nanopore</a><br><br>
 			<a href="http://www.nottingham.ac.uk/deepseq/index.aspx" target="_blank"> DeepSeq at the University of Nottingham</a>
         </div>
     </div>
