@@ -172,15 +172,16 @@ include 'includes/head-new.php';
                                     <div class="col-md-6" id="depthcoverageglob" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Depth for sequences</div>
                                     <?php
                                 }else {?>
-                                    <?php var_dump($_SESSION['activerefnames']); ?>
-                                <?php foreach ($_SESSION['activerefnames'] as $key => $value) {
-                                    echo $key . " " . $value . "<br>";?>
-                                    <div class="col-md-6" id="percentcoverage<?php echo $key;?>" style="height:200px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Coverage for <?php echo $value;?></div>
-                                    <div class="col-md-6" id="depthcoverage<?php echo $key;?>" style="height:200px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Depth for <?php echo $value;?></div>
-                                    <?php
+
+                                    <?php foreach ($_SESSION['activerefnames'] as $key => $value) {?>
+                                        <div class="col-md-6" id="<?php echo $key;?>" style="height:200px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Coverage for <?php echo $value;?></div>
+                                        <div class="col-md-6" id="depthcoverage<?php echo $key;?>" style="height:200px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Reference Depth for <?php echo $value;?></div>
+                                        <?php
+                                    }
                                 }
                             }
-                        }else { ?>
+
+                        else { ?>
           															<div><p class="text-center"><small>This dataset has not been aligned to a reference sequence.</small></p></div>
           							<?php }; ?>
           				</div>
@@ -279,8 +280,8 @@ include 'includes/head-new.php';
                     title: {
                         text: 'Read Length'
                     },
-                    type: 'logarithmic',
-                    //min :0,
+                    //type: 'logarithmic',
+                    min :0,
 
                 },
 
@@ -819,12 +820,12 @@ include 'includes/head-new.php';
 
 
                             <?php
-                        }else{?>
-                    <?php foreach ($_SESSION['activerefnames'] as $key => $value) {
+                        }else{ ?>
+                            <?php foreach ($_SESSION['activerefnames'] as $key => $value) {
                         //echo $key . " " . $value . "<br>";?>
 
 
-                        <script>
+                                        <script>
                                                                 $(document).ready(function() {
                                                                     var options = {
                                                                         chart: {

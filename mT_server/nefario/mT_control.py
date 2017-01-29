@@ -5,7 +5,7 @@
 # File Name: mT_control.py
 # Purpose:
 # Creation Date: 09-06-2016
-# Last Modified: Thu, Oct 13, 2016  4:19:18 PM
+# Last Modified: Mon, Jan 16, 2017  3:06:50 PM
 # Author(s): The DeepSEQ Team, University of Nottingham UK
 # Copyright 2016 The Author(s) All Rights Reserved
 # Credits:
@@ -22,37 +22,7 @@ import subprocess
 
 sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
-#-------------------------------------------------------------------------------
-# UTILITIES
-
-def getTable(cur, conn, sql, t):
-    xs = runSQL(cur, conn, sql)
-    colNames = [ x[0] for x in runSQL(cur, conn, "DESC "+t) ]
-    df = pd.DataFrame(np.array(xs).T).T
-    if len(xs)>0: df.columns = colNames
-    #print t
-    #print df.T
-    #print "-"*80
-    return df
-
-
-def runSQL(cur, conn, sql):
-     #print sql
-     try:
-            cur.execute(sql)
-            conn.commit()
-            #print "... OK"
-     except:
-            #print "... FAIL"
-            pass
-     return cur.fetchall()
-
-#-------------------------------------------------------------------------------
-
-
-#-------------------------------------------------------------------------------
-
-
+sleeptime =10 
 
 # Execute a numbe of jobs every x period of time
 
@@ -80,10 +50,67 @@ parser.add_argument('-hb', '--heartbeat', action="store_true", default=False)
 parser.add_argument('-d', '--development', action="store_true", default=False)
 parser.add_argument('-t', '--twitter', action="store_true", default=False)
 
+
+for p,v in mT_params.items():
+    if p=="dbhost":
+        parser.add_argument("-dbh", "--dbhost", action="store_true", default=v)
+    if p=="dbpass":
+        parser.add_argument("-pw", "--dbpass", action="store_true", default=v)
+    if p=="dbuser":
+        parser.add_argument("-dbu", "--dbusername", action="store_true", default=v)
+parser.add_argument("-dbp", "--dbport", action="store_true", default=3306)
+
 args = parser.parse_args()
 print args
 
+#-------------------------------------------------------------------------------
 
+class DB:
+  conn = None
+
+  def connect(self):
+    #print "trying to connect to ",args.dbhost
+    self.conn = MySQLdb.connect(host=args.dbhost, user=args.dbusername,
+                         passwd=args.dbpass, port=args.dbport)
+    #print "yay"
+
+  def query(self, sql):
+    try:
+      #print "trying out ",sql
+      cursor = self.conn.cursor()
+      #print "Got here!"
+      cursor.execute(sql)
+      self.conn.commit()
+      #print "here?"
+    except (AttributeError, MySQLdb.OperationalError):
+      self.connect()
+      cursor = self.conn.cursor()
+      #print "cursor type",type(cursor)
+      cursor.execute(sql)
+      self.conn.commit()
+    #print "Return",type(cursor)
+    return cursor
+
+db = DB()
+
+#-------------------------------------------------------------------------------
+# UTILITIES
+
+def getTable(db, sql, t):
+    xs = runSQL(db, sql)
+    colNames = [ x[0] for x in runSQL(db, "DESC "+t) ]
+    df = pd.DataFrame(np.array(xs).T).T
+    if len(xs)>0: df.columns = colNames
+    #print t
+    #print df.T
+    #print "-"*80
+    return df
+
+
+def runSQL(db, sql):
+    #print sql
+    cur=db.query(sql)
+    return cur.fetchall()
 
 #-------------------------------------------------------------------------------
 
@@ -116,17 +143,6 @@ def jobs(args, mT_params, dbname, jobname, reflength, minupversion):
 
 
 #-------------------------------------------------------------------------------
-try:
-    conn = MySQLdb.connect (host = mT_params['dbhost'],
-                            user = mT_params['dbuser'],
-                            passwd = mT_params['dbpass'],
-                            db = "Gru")
-    cur = conn.cursor()
-except MySQLdb.Error, e:
-     print "Error %d: %s" % (e.args[0], e.args[1])
-     sys.exit (1)
-
-
 # Create two arrays of jobs to run thru
 
 # Define an array with a list of tasks that need to be completed for each database if the reference length is greater than 0
@@ -142,7 +158,6 @@ heartcount=0
 # This is our master loop which will run endlessley checking for changes to the databases;
 
 #-------------------------------------------------------------------------------
-sleeptime = 10
 
 while 42:
 # If you have to ask the significance of 42 you shouldn't be reading computer code.
@@ -173,7 +188,7 @@ while 42:
 
         # Query the database to see if there are any active minION runs that need processing
         query = "SELECT * FROM Gru.minIONruns where activeflag = 1;"
-        results_df = getTable(cur, conn, query, 'Gru.minIONruns')
+        results_df = getTable(db, query, 'Gru.minIONruns')
         numRows,numCols = results_df.shape # runname[0]
         ref = results_df
         if numCols>0:
@@ -191,17 +206,17 @@ while 42:
                 if args.verbose is True:
                         print str(run_counter) \
                                  + "\t" + ref.runname[run_counter]
-                runname = "perl_active_" + str(run_counter)
+                runname = "python_" + str(run_counter)
                 memc.set(runname, ref.runname[run_counter], sleeptime)
 
-                for j in jobarray:
-                        #print j
-                        jobs(args, mT_params
-                            , ref.runname[run_counter]
-                            , j
-                            , ref.reflength[run_counter]
-                            , ref.minup_version[run_counter]
-                            )
+                #for j in jobarray:
+                #        #print j
+                #        jobs(args, mT_params
+                #            , ref.runname[run_counter]
+                #            , j
+                #            , ref.reflength[run_counter]
+                #            , ref.minup_version[run_counter]
+                #            )
 
                 if ref.reflength[run_counter] > 0:
                         for j in alignjobarray:
@@ -214,7 +229,7 @@ while 42:
                         ##proc_align($ref->{runname},$dbh);
                         #aligncommand = "c:/Perl64/bin/perl win_mT_align.pl " + ref.runname[run_counter] #+ " &"
                         #aligncommand = "perl mT_align.pl " + ref.runname[run_counter] #+ " &"
-                        aligncommand = "python mT_align.py " + ref.runname[run_counter] #+ " &"
+                        aligncommand = "python mT_coverage.py " + ref.runname[run_counter] #+ " &"
                         if args.verbose is True:
                             print "ALIGNCOMMAND: ", aligncommand
                         subprocess.Popen(aligncommand, shell=True)

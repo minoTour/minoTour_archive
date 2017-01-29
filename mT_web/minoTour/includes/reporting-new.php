@@ -288,7 +288,7 @@ var vm2 = new Vue({
        {
        $( "#API" ).load( "api/api.php" );
        eval(document.getElementById("API").innerHTML);
-       }, 10000); // refresh every 5000 milliseconds
+   }, 10000); // refresh every 5000 milliseconds
 </script>
 <script>
    $( "#API" ).load( "api/api_prev.php" );

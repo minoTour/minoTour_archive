@@ -2,7 +2,7 @@
 
 //Setting general system wide parameters for various features
 $_SESSION['minotourversion']=0.7;
-$_SESSION['pagerefresh']=10000;
+$_SESSION['pagerefresh']=5000;
 
 
 function cvf_convert_object_to_array($data) {
@@ -1069,10 +1069,11 @@ function runsummary() {
             echo "No Pre Basecalled Data Available<br>";
         }
     }else{
-        echo "No read data are currently available. There may be a problem. <br>";
+        //echo "No read data are currently available. There may be a problem. <br>";
     }
 
     $summarystats = retrievefromsession($_SESSION["active_run_name"],"summarystats","");
+    //var_dump($summarystats);
     if( !empty( $summarystats ) ){
         if (array_key_exists("totalcount",$summarystats)){
             echo "<h3>Read Data</h3>";
@@ -1087,7 +1088,7 @@ function runsummary() {
                     if (isset($_SESSION["activerefnames"]) && count($_SESSION["activerefnames"])> 0) {echo "<th>Aligned Reads</th>";}
                     echo "<th>Pass/Fail</th>
                     <th>Average Length</th>
-                    <th>Standard Deviation</th>
+                    <!--<th>Standard Deviation</th>-->
                     <th>Min Length</th>
                     <th>Max Length</th>
                     </tr>
@@ -1103,7 +1104,7 @@ function runsummary() {
                         if (isset($_SESSION["activerefnames"]) && count($_SESSION["activerefnames"])> 0) {echo "<td>" . $summarystats["totalalign"][$type] ."</td>";}
                         echo "<td>" . $summarystats["totalpass"][$type] . "/" . $summarystats["totalfail"][$type] . "</td>";
                         echo "<td>" . round($summarystats["avglen"][$type],2) . "</td>";
-    					echo "<td>" . round($summarystats["std"][$type],2) . "</td>";
+    					//echo "<td>" . round($summarystats["std"][$type],2) . "</td>";
     					echo "<td>" . $summarystats["minlen"][$type]. "</td>";
     					echo "<td>" . $summarystats["maxlen"][$type]. "</td>";
     					echo "</tr>";

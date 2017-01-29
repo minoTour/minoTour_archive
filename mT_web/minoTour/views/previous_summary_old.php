@@ -98,7 +98,7 @@ include 'includes/head-new.php';
 
         <!-- Main content -->
         <section class="content"><?php include 'includes/run_check.php';?>
-            
+
             <div class="box">
             <div class="box-header">
               <h3 class="box-title"><?php echo cleanname($_SESSION['focusrun']);?></h3>
@@ -282,8 +282,8 @@ include 'includes/head-new.php';
                     title: {
                         text: 'Read Length'
                     },
-                    type: 'logarithmic',
-                    //min :0,
+                    //type: 'logarithmic',
+                    min :0,
 
                 },
 

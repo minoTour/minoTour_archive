@@ -67,9 +67,10 @@ function average_length_over_time($jobname,$currun){
 					$jsonstring = $row['json'];
 				}
 			} else {
-			$sql_template = "select 1minwin,exp_start_time, ROUND(AVG(seqlen)) as average_length from basecalled_template group by 2,1 order by 2,1;";
-			$sql_complement = "select 1minwin,exp_start_time, ROUND(AVG(seqlen)) as average_length from basecalled_complement group by 2,1 order by 2,1;";
-
+			//$sql_template = "select 1minwin,exp_start_time, ROUND(AVG(seqlen)) as average_length from basecalled_template group by 2,1 order by 2,1;";
+			//$sql_complement = "select 1minwin,exp_start_time, ROUND(AVG(seqlen)) as average_length from basecalled_complement group by 2,1 order by 2,1;";
+            $sql_template = "select 1minwin,exp_start_time, average_length from basecalled_template_1minwin_sum where average_length != 'null' order by 2,1;";
+            $sql_complement = "select 1minwin,exp_start_time, average_length from basecalled_complement_1minwin_sum where average_length != 'null' order by 2,1;";
 			$resultarray=array();
 
 			$template=$mindb_connection->query($sql_template);
@@ -343,8 +344,10 @@ function sequencingrate($jobname,$currun) {
 
       			//do something interesting here...
       			//Query to get pore occupancy over 15 minutes -> select (floor((basecalled_template.start_time)/60/15)*60*15+exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist, sum(basecalled_template.duration+basecalled_complement.duration)/count(distinct config_general.channel)/9 as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) inner join basecalled_complement using (basename_id) group by 1 order by 1
-      			$sqltemplate = "select (basecalled_template.5minwin*5*60+basecalled_template.exp_start_time)*1000 as bin_floor,sum(basecalled_template.duration) as time,sum(ifnull(basecalled_template.seqlen,0)+ifnull(basecalled_complement.seqlen,0))/60/5/count(distinct config_general.channel) as effective_rate, count(distinct config_general.channel) as chandist, sum(basecalled_template.seqlen)/sum(basecalled_template.duration) as rate from basecalled_template inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by 1 order by 1;";
-      			$sqlcomplement = "select (basecalled_complement.5minwin*5*60+basecalled_complement.exp_start_time)*1000 as bin_floor, sum(basecalled_complement.duration) as time,  sum(ifnull(basecalled_template.seqlen,0)+ifnull(basecalled_complement.seqlen,0))/60/5/count(distinct config_general.channel) as effective_rate, count(distinct config_general.channel) as channels, sum(basecalled_complement.seqlen)/sum(basecalled_complement.duration) as rate from basecalled_template inner join config_general using (basename_id)  inner join basecalled_complement using (basename_id) group by 1 order by 1;";
+      			#$sqltemplate = "select (basecalled_template.5minwin*5*60+basecalled_template.exp_start_time)*1000 as bin_floor,sum(basecalled_template.duration) as time,sum(ifnull(basecalled_template.seqlen,0)+ifnull(basecalled_complement.seqlen,0))/60/5/count(distinct config_general.channel) as effective_rate, count(distinct config_general.channel) as chandist, sum(basecalled_template.seqlen)/sum(basecalled_template.duration) as rate from basecalled_template inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by 1 order by 1;";
+                $sqltemplate = "select (1minwin*60+exp_start_time)*1000 as bin_floor,basecalled_template_1minwin_sum.cumuduration+basecalled_complement_1minwin_sum.cumuduration as time,(basecalled_template_1minwin_sum.cumulength+basecalled_complement_1minwin_sum.cumulength)/60/basecalled_template_1minwin_sum.distchan as effective_rate,basecalled_template_1minwin_sum.distchan as chandist, basecalled_template_1minwin_sum.cumulength/basecalled_template_1minwin_sum.cumuduration as rate from basecalled_template_1minwin_sum inner join basecalled_complement_1minwin_sum using (1minwin,exp_start_time) order by 1;";
+                $sqlcomplement = "select (1minwin*60+exp_start_time)*1000 as bin_floor,basecalled_template_1minwin_sum.cumuduration+basecalled_complement_1minwin_sum.cumuduration as time,(basecalled_template_1minwin_sum.cumulength+basecalled_complement_1minwin_sum.cumulength)/60/basecalled_complement_1minwin_sum.distchan as effective_rate,basecalled_complement_1minwin_sum.distchan as chandist, basecalled_complement_1minwin_sum.cumulength/basecalled_complement_1minwin_sum.cumuduration as rate from basecalled_template_1minwin_sum inner join basecalled_complement_1minwin_sum using (1minwin,exp_start_time) where basecalled_complement_1minwin_sum.bases != 'Null' order by 1;";
+                #$sqlcomplement = "select (basecalled_complement.5minwin*5*60+basecalled_complement.exp_start_time)*1000 as bin_floor, sum(basecalled_complement.duration) as time,  sum(ifnull(basecalled_template.seqlen,0)+ifnull(basecalled_complement.seqlen,0))/60/5/count(distinct config_general.channel) as effective_rate, count(distinct config_general.channel) as channels, sum(basecalled_complement.seqlen)/sum(basecalled_complement.duration) as rate from basecalled_template inner join config_general using (basename_id)  inner join basecalled_complement using (basename_id) group by 1 order by 1;";
       			$prebasecalledevents="select (floor((pre_config_general.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor, sum(pre_config_general.total_events) as total_events,  sum(pre_config_general.total_events)/60/5/count(*) as effective_rate, sum(pre_config_general.total_events)/sum(pre_config_general.total_events/pre_config_general.sample_rate)/100 as rate from pre_config_general inner join pre_tracking_id using (basename_id) group by 1 order by 1;";
 
       			$resulttemplate = $mindb_connection->query($sqltemplate);
@@ -647,12 +650,15 @@ function sequencingrate($jobname,$currun) {
               //Now we execute the code to retrieve whatever values we are after and store them in the $jsonstring value:
               //do something interesting here...
               #$sqltemplate = "select (basecalled_template.5minwin*60*5+exp_start_time)*1000 as bin_floor,   sum(seqlen)/count(*) as meanlength from basecalled_template group by 2,1 order by 2,1;";
-              $sqltemplate = "select 5minwin,exp_start_time, count(*) as count from basecalled_template group by 2,1 order by 2,1  ".$limiter .";";
-              $sqltemplatepass = "select 5minwin,exp_start_time, count(*) as count from basecalled_template where pass = 1  group by 2,1 order by 2,1  ".$limiter .";";
-  			$sqlcomplement = "select 5minwin,exp_start_time, count(*) as count from basecalled_complement group by 2,1 order by 2,1  ".$limiter .";";
-  			$sqlcomplementpass = "select 5minwin,exp_start_time, count(*) as count from basecalled_complement where pass = 1  group by 2,1 order by 2,1  ".$limiter .";";
-  			$sql2d = "select 5minwin,exp_start_time, count(*) as count from basecalled_2d group by 2,1 order by 2,1  ".$limiter .";";
-  			$sql2dpass = "select 5minwin,exp_start_time, count(*) as count from basecalled_2d where pass = 1  group by 2,1 order by 2,1  ".$limiter .";";
+              $sqltemplate = "select 1minwin,exp_start_time,readcount,passcount from basecalled_template_1minwin_sum order by 2,1;";
+              $sqlcomplement = "select 1minwin,exp_start_time,readcount,passcount from basecalled_complement_1minwin_sum where readcount !='NULL'  order by 2,1 ;";
+              #$sqltemplate = "select 5minwin,exp_start_time, count(*) as count from basecalled_template group by 2,1 order by 2,1  ".$limiter .";";
+              #$sqltemplatepass = "select 5minwin,exp_start_time, count(*) as count from basecalled_template where pass = 1  group by 2,1 order by 2,1  ".$limiter .";";
+  			//$sqlcomplement = "select 5minwin,exp_start_time, count(*) as count from basecalled_complement group by 2,1 order by 2,1  ".$limiter .";";
+  			//$sqlcomplementpass = "select 5minwin,exp_start_time, count(*) as count from basecalled_complement where pass = 1  group by 2,1 order by 2,1  ".$limiter .";";
+            $sql2d = "select 1minwin,exp_start_time,readcount,passcount from basecalled_2d_1minwin_sum where readcount !='NULL' order by 2,1;";
+            //$sql2d = "select 5minwin,exp_start_time, count(*) as count from basecalled_2d group by 2,1 order by 2,1  ".$limiter .";";
+  			//$sql2dpass = "select 5minwin,exp_start_time, count(*) as count from basecalled_2d where pass = 1  group by 2,1 order by 2,1  ".$limiter .";";
   			$pretemplate = "select (floor((pre_config_general.start_time)/60/5)*5*60+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id)  group by 1 order by 1  ".$limiter .";";
   			$precomplement = "select (floor((pre_config_general.start_time)/60/5)*5*60+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found = 1 group by 1 order by 1  ".$limiter .";";
                 //echo $sqltemplate;
@@ -663,9 +669,9 @@ function sequencingrate($jobname,$currun) {
   			$resulttemplate = $mindb_connection->query($sqltemplate);
   			$resultcomplement = $mindb_connection->query($sqlcomplement);
   			$result2d = $mindb_connection->query($sql2d);
-  			$resulttemplatepass = $mindb_connection->query($sqltemplatepass);
-  			$resultcomplementpass = $mindb_connection->query($sqlcomplementpass);
-  			$result2dpass = $mindb_connection->query($sql2dpass);
+  			//$resulttemplatepass = $mindb_connection->query($sqltemplatepass);
+  			//$resultcomplementpass = $mindb_connection->query($sqlcomplementpass);
+  			//$result2dpass = $mindb_connection->query($sql2dpass);
   			$resultpretemp = $mindb_connection->query($pretemplate);
   			$resultprecomp = $mindb_connection->query($precomplement);
 
@@ -675,13 +681,14 @@ function sequencingrate($jobname,$currun) {
 
   			if ($resulttemplate->num_rows >=1) {
   				$cumucount = 0;
+
   				foreach ($resulttemplate as $row) {
                     $temparray=array();
-  					$cumucount=$cumucount+$row['count'];
-  					#echo "Count is ". $row['count'] . "\n";
+  					$cumucount=$cumucount+$row['readcount'];
+  				    #echo "Count is ". $row['count'] . "\n";
   					#echo "Cumu Count is ". $cumucount . "\n";
                     #echo "Time is " . $row['5minwin'] . "\n";
-                    $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
+                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
                     #echo "Binfloor is " . $binfloor . "\n";
                     #echo $binfloor . "\t" . $cumucount . "\n";
   					#$resultarray['template'][$cumucount]=$row['bin_floor'];
@@ -692,24 +699,102 @@ function sequencingrate($jobname,$currun) {
                     array_push($temparray, $cumucount);
                     //echo "Temparray is " . var_dump($temparray) . "\n";
                     $resultarray2[$INDEXPOSITION]["data"][]=$temparray;
+                }
+                $INDEXPOSITION++;
+
+                $passcumucount = 0;
+                foreach ($resulttemplate as $row){
+                    $passtemparray=array();
+  					$passcumucount=$passcumucount+$row['passcount'];
+                    //echo $passcumucount;
+                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    $resultarray['template pass'][$binfloor]=$passcumucount;
+                    $resultarray2[$INDEXPOSITION]["name"]='template pass';
+                    array_push($passtemparray,$binfloor);
+                    array_push($passtemparray, $passcumucount);
+                    $resultarray2[$INDEXPOSITION]["data"][]=$passtemparray;
+
   				}
                 $INDEXPOSITION++;
-  			}
-  			if ($resultcomplement->num_rows >=1) {
+            }
+
+            if ($resultcomplement->num_rows >=1) {
   				$cumucount = 0;
+
   				foreach ($resultcomplement as $row) {
                     $temparray=array();
-  					$cumucount=$cumucount+$row['count'];
-                      $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
+  					$cumucount=$cumucount+$row['readcount'];
+  				    #echo "Count is ". $row['count'] . "\n";
+  					#echo "Cumu Count is ". $cumucount . "\n";
+                    #echo "Time is " . $row['5minwin'] . "\n";
+                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    #echo "Binfloor is " . $binfloor . "\n";
+                    #echo $binfloor . "\t" . $cumucount . "\n";
+  					#$resultarray['complement'][$cumucount]=$row['bin_floor'];
+
   					$resultarray['complement'][$binfloor]=$cumucount;
                     $resultarray2[$INDEXPOSITION]["name"]='complement';
                     array_push($temparray,$binfloor);
                     array_push($temparray, $cumucount);
+                    //echo "Temparray is " . var_dump($temparray) . "\n";
                     $resultarray2[$INDEXPOSITION]["data"][]=$temparray;
+                }
+                $INDEXPOSITION++;
+
+                $passcumucount = 0;
+                foreach ($resultcomplement as $row){
+                    $passtemparray=array();
+  					$passcumucount=$passcumucount+$row['passcount'];
+                    //echo $passcumucount;
+                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    $resultarray['complement pass'][$binfloor]=$passcumucount;
+                    $resultarray2[$INDEXPOSITION]["name"]='complement pass';
+                    array_push($passtemparray,$binfloor);
+                    array_push($passtemparray, $passcumucount);
+                    $resultarray2[$INDEXPOSITION]["data"][]=$passtemparray;
+
   				}
                 $INDEXPOSITION++;
-  			}
-  			if ($result2d->num_rows >=1) {
+            }
+            if ($result2d->num_rows >=1) {
+  				$cumucount = 0;
+
+  				foreach ($result2d as $row) {
+                    $temparray=array();
+  					$cumucount=$cumucount+$row['readcount'];
+  				    #echo "Count is ". $row['count'] . "\n";
+  					#echo "Cumu Count is ". $cumucount . "\n";
+                    #echo "Time is " . $row['5minwin'] . "\n";
+                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    #echo "Binfloor is " . $binfloor . "\n";
+                    #echo $binfloor . "\t" . $cumucount . "\n";
+  					#$resultarray['complement'][$cumucount]=$row['bin_floor'];
+
+  					$resultarray['2d'][$binfloor]=$cumucount;
+                    $resultarray2[$INDEXPOSITION]["name"]='2d';
+                    array_push($temparray,$binfloor);
+                    array_push($temparray, $cumucount);
+                    //echo "Temparray is " . var_dump($temparray) . "\n";
+                    $resultarray2[$INDEXPOSITION]["data"][]=$temparray;
+                }
+                $INDEXPOSITION++;
+
+                $passcumucount = 0;
+                foreach ($result2d as $row){
+                    $passtemparray=array();
+  					$passcumucount=$passcumucount+$row['passcount'];
+                    //echo $passcumucount;
+                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    $resultarray['2d pass'][$binfloor]=$passcumucount;
+                    $resultarray2[$INDEXPOSITION]["name"]='2d pass';
+                    array_push($passtemparray,$binfloor);
+                    array_push($passtemparray, $passcumucount);
+                    $resultarray2[$INDEXPOSITION]["data"][]=$passtemparray;
+
+  				}
+                $INDEXPOSITION++;
+            }
+  			/*if ($result2d->num_rows >=1) {
   				$cumucount = 0;
   				foreach ($result2d as $row) {
                     $temparray=array();
@@ -724,37 +809,7 @@ function sequencingrate($jobname,$currun) {
                 $INDEXPOSITION++;
   			}
 
-  			if ($resulttemplatepass->num_rows >=1) {
-  				$cumucount = 0;
-  				foreach ($resulttemplatepass as $row) {
-                    $temparray=array();
-  					$cumucount=$cumucount+$row['count'];
-  					#echo "Count is ". $row['count'] . "\n";
-  					#echo "Cumu Count is ". $cumucount . "\n";
-  					#$resultarray['template'][$cumucount]=$row['bin_floor'];
-                      $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
-  					$resultarray['template pass'][$binfloor]=$cumucount;
-                    $resultarray2[$INDEXPOSITION]["name"]='template pass';
-                    array_push($temparray,$binfloor);
-                    array_push($temparray, $cumucount);
-                    $resultarray2[$INDEXPOSITION]["data"][]=$temparray;
-  				}
-                $INDEXPOSITION++;
-  			}
-  			if ($resultcomplementpass->num_rows >=1) {
-  				$cumucount = 0;
-  				foreach ($resultcomplementpass as $row) {
-                    $temparray=array();
-  					$cumucount=$cumucount+$row['count'];
-                      $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
-  					$resultarray['complement pass'][$binfloor]=$cumucount;
-                    $resultarray2[$INDEXPOSITION]["name"]='complement pass';
-                    array_push($temparray,$binfloor);
-                    array_push($temparray, $cumucount);
-                    $resultarray2[$INDEXPOSITION]["data"][]=$temparray;
-  				}
-                $INDEXPOSITION++;
-  			}
+
   			if ($result2dpass->num_rows >=1) {
   				$cumucount = 0;
   				foreach ($result2dpass as $row) {
@@ -769,6 +824,7 @@ function sequencingrate($jobname,$currun) {
   				}
                 $INDEXPOSITION++;
   			}
+            */
   			if ($resultpretemp->num_rows >=1) {
   				$cumucount = 0;
   				foreach ($resultpretemp as $row) {
@@ -1051,5 +1107,243 @@ function lengthtimewindow($jobname,$currun) {
     return $jsonstring;
 }
 
+##### ratiopassfail
+
+function ratiopassfail($jobname,$currun) {
+	$checkvar = $currun . $jobname;
+	//echo $type . "\n";
+	$checkrunning = $currun . $jobname . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;
+	$jsonstring = $memcache->get("$checkvar");
+	$checkingrunning = $memcache->get("$checkrunning");
+	if($checkingrunning === "No" || $checkingrunning === FALSE){
+		//$memcache->set("$checkrunning", "YES", 0, 0);
+        if (strlen($jsonstring) <= 1){
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if (is_object($checking) && $checking->num_rows ==1){
+			//echo "We have already run this!";
+			foreach ($checking as $row){
+				$jsonstring = $row['json'];
+			}
+		} else {
+			//do something interesting here...
+            //echo "badger";
+			#$sqltotalcount = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) group by 2,1 order by 2,1;";
+            //$sqltotalcount = "select 10minwin,exp_start_time, count(*) as count from basecalled_template group by 2,1 order by 2,1;";
+            $sqltotalcount = "select 1minwin,exp_start_time, readcount as count from basecalled_template_1minwin_sum order by 2,1;";
+            #$sqltemplate = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) where pass = 1 group by 2,1 order by 2,1;";
+
+            //$sqltemplate = "select 10minwin,exp_start_time, count(*) as count from basecalled_template where pass = 1 group by 2,1 order by 2,1;";
+            $sqltemplate = "select 1minwin,exp_start_time, passcount as count from basecalled_template_1minwin_sum order by 2,1;";
+
+            $sqlcomplement = "select 1minwin,exp_start_time, passcount as count from basecalled_complement_1minwin_sum where bases!='Null' order by 2,1;";
+			#$sql2d = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) where pass = 1 group by 2,1 order by 2,1;";
+			#$sql2d="select 10minwin,exp_start_time, count(*) as count from basecalled_2d where pass = 1 group by 2,1 order by 2,1;";
+            $sql2d = "select 1minwin,exp_start_time, passcount as count from basecalled_2d_1minwin_sum where bases!='Null' order by 2,1;";
+            //$sqltemplate2 = "select 10minwin,exp_start_time, count(*) as count from basecalled_template where pass = 0 group by 2,1 order by 2,1;";
+            $sqltemplate2 = "select 1minwin,exp_start_time, (readcount-passcount) as count from basecalled_template_1minwin_sum order by 2,1;";
+            $sqlcomplement2 = "select 1minwin,exp_start_time, (readcount-passcount) as count from basecalled_complement_1minwin_sum where bases!='Null' order by 2,1;";
+			#$sql2d2 = "select 10minwin,exp_start_time, count(*) as count from basecalled_2d where pass = 0 group by 2,1 order by 2,1;";
+            $sql2d2 = "select 1minwin,exp_start_time, (readcount-passcount) as count from basecalled_2d_1minwin_sum where bases!='Null' order by 2,1;";
+			$resulttotal = $mindb_connection->query($sqltotalcount);
+
+			$resulttemplate = $mindb_connection->query($sqltemplate);
+			$resultcomplement = $mindb_connection->query($sqlcomplement);
+			$result2d = $mindb_connection->query($sql2d);
+
+			$resulttemplate2 = $mindb_connection->query($sqltemplate2);
+			$resultcomplement2 = $mindb_connection->query($sqlcomplement2);
+			$result2d2 = $mindb_connection->query($sql2d2);
+
+			$totalarray;
+
+			if ($resulttotal->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resulttotal as $row) {
+					#$cumucount++;
+                    $binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+					$totalarray[$binfloor]=$row['count'];
+
+				}
+			}
+
+			$resultarray=array();
+
+			if ($resulttemplate->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resulttemplate as $row) {
+					#$cumucount++;
+                    $binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+					$resultarray['template pass'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+                    //echo $row['count'];
+				}
+			}
+			if ($resultcomplement->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultcomplement as $row) {
+					#$cumucount++;
+                    $binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+					$resultarray['complement pass'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+				}
+			}
+			if ($result2d->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($result2d as $row) {
+					#$cumucount++;
+                    $binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+					$resultarray['2d pass'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+				}
+			}
+			if ($resulttemplate2->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resulttemplate2 as $row) {
+					#$cumucount++;
+                    $binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+					$resultarray['template fail'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+
+				}
+			}
+			if ($resultcomplement2->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultcomplement2 as $row) {
+					#$cumucount++;
+                    $binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+					$resultarray['complement fail'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+				}
+			}
+			if ($result2d2->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($result2d2 as $row) {
+					#$cumucount++;
+                    $binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+					$resultarray['2d fail'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+				}
+			}
+
+		}
+		//$resultarray=array();
+		$jsonstring="";
+		$jsonstring = $jsonstring . "[\n";
+
+		foreach ($resultarray as $key => $value) {
+				$jsonstring = $jsonstring . "{\n";
+				$jsonstring = $jsonstring . "\"name\": \"" . $key .  "\",\n";
+
+				//if ($key == "template") {
+					//$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+				//}else if ($key == "complement") {
+				//	$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+				//}else if ($key == "2d") {
+				//	$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+				//}
+				$jsonstring = $jsonstring . "\"data\":[";
+				foreach ($value as $key2 => $value2) {
+					$jsonstring = $jsonstring . "[  $key2 , $value2 ],";
+				}
+
+			$jsonstring = $jsonstring . "]\n";
+		$jsonstring = $jsonstring . "},\n";
+			}
+		$jsonstring = $jsonstring . "]\n";
+
+		if ($_GET["prev"] == 1){
+			//include 'savejson.php';
+		}
+		$memcache->set("$checkvar", "$jsonstring",MEMCACHE_COMPRESSED,5);
+
+	}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}
+}
+	// cache for 2 minute as we want yield to update semi-regularly...
+	$memcache->delete("$checkrunning");
+   	return $jsonstring;
+
+}
+
+##Reads_over_time2 - determines the rate of basecalling
+function reads_over_time2($jobname,$currun) {
+	$checkvar = $currun . $jobname;
+	$checkrunning = $currun . $jobname . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;
+	$jsonstring = $memcache->get("$checkvar");
+	$checkingrunning = $memcache->get("$checkrunning");
+	if($checkingrunning === "No" || $checkingrunning === FALSE){
+        if (strlen($jsonstring) <= 1){
+		$memcache->set("$checkrunning", "YES", 0, 0);
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if (is_object($checking) && $checking->num_rows ==1){
+			//echo "We have already run this!";
+			foreach ($checking as $row){
+				$jsonstring = $row['json'];
+			}
+		} else {
+			$sql_template = "select 1minwin,exp_start_time, readcount as count from basecalled_template_1minwin_sum where readcount != 'Null' order by 2,1 ;";
+
+			$sql_complement = "select 5minwin,exp_start_time, readcount as count from basecalled_complement_1minwin_sum where readcount != 'Null'  order by 2,1 ;";
+
+			$resultarray=array();
+
+			$template=$mindb_connection->query($sql_template);
+			$complement=$mindb_connection->query($sql_complement);
+
+			if ($template->num_rows >= 1){
+				foreach ($template as $row) {
+                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+					$resultarray['template'][$binfloor]=$row['count'];
+				}
+			}
+
+			if ($complement->num_rows >=1) {
+				foreach ($complement as $row) {
+                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+					$resultarray['complement'][$binfloor]=$row['count'];
+				}
+			}
+			//var_dump($resultarray);
+			//echo json_encode($resultarray);
+			$jsonstring="";
+			$jsonstring = $jsonstring . "[\n";
+			foreach ($resultarray as $key => $value){
+				$jsonstring = $jsonstring . "{\n";
+				$jsonstring = $jsonstring . "\"name\" : \"$key\", \n";
+				$jsonstring = $jsonstring . "\"data\": [";
+				foreach ($value as $key2 => $value2) {
+					$jsonstring = $jsonstring . "[$key2,$value2],\n";
+				}
+				$jsonstring = $jsonstring . "]\n";
+				$jsonstring = $jsonstring . "},\n";
+			}
+			$jsonstring = $jsonstring .  "]\n";
+			if ($_GET["prev"] == 1){
+				include 'savejson.php';
+			}
+		}
+		$memcache->set("$checkvar", "$jsonstring",MEMCACHE_COMPRESSED,5);
+
+	}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}
+}
+	// cache for 2 minute as we want yield to update semi-regularly...
+
+	         $memcache->delete("$checkrunning");
+    return $jsonstring;
+}
 
 ?>

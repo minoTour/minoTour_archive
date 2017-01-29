@@ -1,7 +1,5 @@
 <?php
 session_start();
-
-
 header('Content-Type: application/json');
 // checking for minimum PHP version
 if (version_compare(PHP_VERSION, '5.3.7', '<')) {
@@ -33,7 +31,7 @@ if ($login->isUserLoggedIn() == true) {
 	#$cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT) or die ("Memcached Failure");
 	$cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT);
 
-    //echo "SLARTIBARTFAST";
+
 
     function checkmemstore($dbname,$testtype,$ref,$memcache,$array){
         // A simple funtion to test if a given requested value is present in the memcache store or needs recalculating.
@@ -77,7 +75,7 @@ if ($login->isUserLoggedIn() == true) {
         // Will set three values:
         // First being the dataset which will have a long time out value approx 60 seconds
         // The second is the timer which will instruct the code to recalculate the value - typically every 5 seconds
-        $recalculationtime = 15;
+        $recalculationtime = 5;
         $timeouttestname = md5($dbname.$testtype.$ref."timeout");
         $checkrun = md5($dbname.$testtype.$ref."checkrun");
         $datastore = md5($dbname.$testtype.$ref."store");
@@ -98,8 +96,7 @@ if ($login->isUserLoggedIn() == true) {
 
     // create a login object. when this object is created, it will do all login/logout stuff automatically
     // so this single line handles the entire login process. in consequence, you can simply ...
-    //$login = new Login();
-
+    $login = new Login();
 
     // ... ask if we are logged in here:
     if ($login->isUserLoggedIn() == true) {
@@ -123,10 +120,9 @@ if ($login->isUserLoggedIn() == true) {
         list($runtest,$resultstore) = checkmemstore($_SESSION['active_run_name'],$jobname,$ref,$memcache,$resultstore);
         #echo $runtest . "\n";
         #echo $resultstore . "\n";
-
         if ($runtest==1){
             //Get exp_start_time
-            /*$start_time_queries = "select count(*) as count, device_id, exp_script_purpose,exp_start_time,run_id,version_name from tracking_id group by run_id order by exp_start_time;";
+            $start_time_queries = "select count(*) as count, device_id, exp_script_purpose,exp_start_time,run_id,version_name from tracking_id group by run_id order by exp_start_time;";
 
             //$start_time_queries = "select exp_start_time from tracking_id group by exp_start_time;";
             $starttime=$mindb_connection->query($start_time_queries);
@@ -140,56 +136,18 @@ if ($login->isUserLoggedIn() == true) {
                     $resultstore["BC"][$row['exp_start_time']]["version_name"]=$row['version_name'];
                     $resultstore["BC"][$row['exp_start_time']]["exp_start_time"]=$row['exp_start_time'];
                 }
-            }*/
-
-            //Optimising queries for large datasets:
-            //This gives the values for the mux_scan_counts
-            $start_time_queries_mux = 'select count(*) as count, device_id, exp_script_purpose, exp_start_time,run_id,version_name from tracking_id where exp_script_purpose = "mux_scan" and device_id!=null;';
-            $starttimemux=$mindb_connection->query($start_time_queries_mux);
-    //        $muxcounter = 0
-            if ($starttimemux->num_rows>=1){
-                foreach ($starttimemux as $row){
-                    //$resultarray["summaryinfo"]["exp_start_time"][]=$row['exp_start_time'];
-                    if ($row['count']>0){
-                        $muxcounter = $row['count'];
-                        $resultstore["BC"][$row['exp_start_time']]["count"]=$row['count'];
-                        $resultstore["BC"][$row['exp_start_time']]["device_id"]=$row['device_id'];
-                        $resultstore["BC"][$row['exp_start_time']]["exp_script_purpose"]=$row['exp_script_purpose'];
-                        $resultstore["BC"][$row['exp_start_time']]["run_id"]=$row['run_id'];
-                        $resultstore["BC"][$row['exp_start_time']]["version_name"]=$row['version_name'];
-                        $resultstore["BC"][$row['exp_start_time']]["exp_start_time"]=$row['exp_start_time'];
-                    }
-                }
             }
-            $start_time_queries = "select count(*) as count, device_id, exp_script_purpose, exp_start_time,run_id,version_name from tracking_id where exp_script_purpose = 'sequencing_run';";
-            $starttime=$mindb_connection->query($start_time_queries);
-            if ($starttime->num_rows>=1){
-                foreach ($starttime as $row){
-                    //$resultarray["summaryinfo"]["exp_start_time"][]=$row['exp_start_time'];
-                    if ($row['count']>0){
-                        $resultstore["BC"][$row['exp_start_time']]["count"]=$row['count'];
-                        $resultstore["BC"][$row['exp_start_time']]["device_id"]=$row['device_id'];
-                        $resultstore["BC"][$row['exp_start_time']]["exp_script_purpose"]=$row['exp_script_purpose'];
-                        $resultstore["BC"][$row['exp_start_time']]["run_id"]=$row['run_id'];
-                        $resultstore["BC"][$row['exp_start_time']]["version_name"]=$row['version_name'];
-                        $resultstore["BC"][$row['exp_start_time']]["exp_start_time"]=$row['exp_start_time'];
-                    }
-                }
-            }
-
             $pre_start_time_queries = "select count(*) as count,device_id, exp_script_purpose,exp_start_time,run_id,version_name from pre_tracking_id group by run_id order by exp_start_time;";
             $starttime=$mindb_connection->query($pre_start_time_queries);
             if ($starttime->num_rows>=1){
                 foreach ($starttime as $row){
                     //$resultarray["summaryinfo"]["exp_start_time"][]=$row['exp_start_time'];
-                    if ($row['count']>0){
-                        $resultstore["R"][$row['exp_start_time']]["count"]=$row['count'];
-                        $resultstore["R"][$row['exp_start_time']]["device_id"]=$row['device_id'];
-                        $resultstore["R"][$row['exp_start_time']]["exp_script_purpose"]=$row['exp_script_purpose'];
-                        $resultstore["R"][$row['exp_start_time']]["run_id"]=$row['run_id'];
-                        $resultstore["R"][$row['exp_start_time']]["version_name"]=$row['version_name'];
-                        $resultstore["R"][$row['exp_start_time']]["exp_start_time"]=$row['exp_start_time'];
-                    }
+                    $resultstore["R"][$row['exp_start_time']]["count"]=$row['count'];
+                    $resultstore["R"][$row['exp_start_time']]["device_id"]=$row['device_id'];
+                    $resultstore["R"][$row['exp_start_time']]["exp_script_purpose"]=$row['exp_script_purpose'];
+                    $resultstore["R"][$row['exp_start_time']]["run_id"]=$row['run_id'];
+                    $resultstore["R"][$row['exp_start_time']]["version_name"]=$row['version_name'];
+                    $resultstore["R"][$row['exp_start_time']]["exp_start_time"]=$row['exp_start_time'];
                 }
             }
             setmemstore($_SESSION['active_run_name'],$jobname,$ref,$memcache,$resultstore);
@@ -218,15 +176,9 @@ if ($login->isUserLoggedIn() == true) {
                 }
             }
 
-            //$sql_template = "select 1minwin,count(*) as readnum from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1 desc".$limiter.";";
-            //$sql_template = "select 1minwin,count(*) as readnum from basecalled_template group by 1 order by 1 desc".$limiter.";";
-            $sql_template = "select 1minwin, readcount as readnum from basecalled_template_1minwin_sum;";
-            //$sql_complement = "select 1minwin,count(*) as readnum from basecalled_complement inner join tracking_id using (basename_id) group by 1 order by 1 desc".$limiter.";";
-            //$sql_complement = "select 1minwin,count(*) as readnum from basecalled_complement group by 1 order by 1 desc".$limiter.";";
-            $sql_complement = "select 1minwin, readcount as readnum from basecalled_complement_1minwin_sum;";
-            //$sql_2d = "select 1minwin,count(*) as readnum from basecalled_2d inner join tracking_id using (basename_id) group by 1 order by 1 desc".$limiter.";";
-            //$sql_2d = "select 1minwin,count(*) as readnum from basecalled_2d group by 1 order by 1 desc".$limiter.";";
-            $sql_2d = "select 1minwin, readcount as readnum from basecalled_2d_1minwin_sum;";
+            $sql_template = "select 1minwin,count(*) as readnum from basecalled_template inner join tracking_id using (basename_id) group by 1 order by 1 desc".$limiter.";";
+            $sql_complement = "select 1minwin,count(*) as readnum from basecalled_complement inner join tracking_id using (basename_id) group by 1 order by 1 desc".$limiter.";";
+            $sql_2d = "select 1minwin,count(*) as readnum from basecalled_2d inner join tracking_id using (basename_id) group by 1 order by 1 desc".$limiter.";";
             $pre_template = "SELECT count(*) as readnum FROM pre_tracking_id group by 1 order by 1 desc".$limiter.";";
             $pre_complement = "SELECT count(*) as readnum FROM pre_tracking_id where hairpin_found = 1 group by 1 order by 1 desc".$limiter.";";
 
@@ -267,10 +219,10 @@ if ($login->isUserLoggedIn() == true) {
                     $resultstore['Raw Complement']['count'][$row['1minwin']]=$row['readnum'];
                 }
             }
-            //This query ends up running very very slowly.
-            $sql_template = "SELECT 1minwin,bases, maxlen,minlen FROM basecalled_template_1minwin_sum group by 1 order by 1;";
-            $sql_complement = "SELECT 1minwin,bases, maxlen,minlen FROM basecalled_complement_1minwin_sum group by 1 order by 1;";
-            $sql_2d = "SELECT 1minwin,bases, maxlen,minlen FROM basecalled_2d_1minwin_sum group by 1 order by 1;";
+
+            $sql_template = "SELECT 1minwin,sum(seqlen) as bases, max(seqlen) as maxlen,min(seqlen) as minlen FROM basecalled_template group by 1 order by 1 desc".$limiter.";";
+            $sql_complement = "SELECT 1minwin,sum(seqlen) as bases,max(seqlen) as maxlen,min(seqlen) as minlen FROM basecalled_complement group by 1 order by 1 desc".$limiter.";";
+            $sql_2d = "SELECT 1minwin,sum(seqlen) as bases,max(seqlen) as maxlen,min(seqlen) as minlen FROM basecalled_2d group by 1 order by 1 desc".$limiter.";";
             $pre_template="SELECT 1minwin,sum(case when pre_config_general.hairpin_found=1 then hairpin_event_index else total_events end) as events,max(case when pre_config_general.hairpin_found=1 then hairpin_event_index else total_events end) as maxevents,min(case when pre_config_general.hairpin_found=1 then hairpin_event_index else total_events end) as minevents FROM pre_config_general  group by 1 order by 1 desc".$limiter.";";
             $pre_complement = "SELECT 1minwin,sum(total_events-hairpin_event_index) as events, max(total_events-hairpin_event_index) as maxevents, min(total_events-hairpin_event_index) as minevents FROM pre_config_general where pre_config_general.hairpin_found = 1 group by 1 order by 1 desc".$limiter.";";
 
@@ -327,7 +279,7 @@ if ($login->isUserLoggedIn() == true) {
                     //$resultstore['Raw Complement']['std'][$row['1minwin']]=$row['stdevents'];
                 }
             }
-            //Adding aligned counts ###This needs further optimisation
+            //Adding aligned counts
             $sql_template = "select 1minwin,count(*) as readnum from basecalled_template where align = 1 group by 1 order by 1 desc".$limiter.";";
             $sql_complement = "select 1minwin,count(*) as readnum from basecalled_complement where align = 1 group by 1 order by 1 desc".$limiter.";";
             $sql_2d = "select 1minwin,count(*) as readnum from basecalled_2d where align = 1 group by 1 order by 1 desc".$limiter.";";
@@ -372,10 +324,9 @@ if ($login->isUserLoggedIn() == true) {
                 }
             }
             //Getting pass counts
-            //this query is very slow
-            $sql_template = "select 1minwin,passcount as readnum from basecalled_template_1minwin_sum group by 1 order by 1 desc;";
-            $sql_complement = "select 1minwin,passcount as readnum from basecalled_complement_1minwin_sum group by 1 order by 1 desc;";
-            $sql_2d = "select 1minwin,passcount as readnum from basecalled_2d_1minwin_sum group by 1 order by 1 desc;";
+            $sql_template = "select 1minwin,count(*) as readnum from basecalled_template where pass = 1 group by 1 order by 1 desc".$limiter.";";
+            $sql_complement = "select 1minwin,count(*) as readnum from basecalled_complement where pass = 1 group by 1 order by 1 desc".$limiter.";";
+            $sql_2d = "select 1minwin,count(*) as readnum from basecalled_2d where pass = 1 group by 1 order by 1 desc".$limiter.";";
             $template=$mindb_connection->query($sql_template);
             $complement=$mindb_connection->query($sql_complement);
             $read2d=$mindb_connection->query($sql_2d);
@@ -452,8 +403,7 @@ if ($login->isUserLoggedIn() == true) {
                 $resultstore["minlen"][$key]=$min;
             }
 
-            //This block of code is exceedingly slow.
-            /*$sql_template = "SELECT std(seqlen) as std FROM basecalled_template;";
+            $sql_template = "SELECT std(seqlen) as std FROM basecalled_template;";
             $sql_complement = "SELECT std(seqlen) as std FROM basecalled_complement;";
             $sql_2d = "SELECT std(seqlen) as std FROM basecalled_2d;";
             $pre_template = "SELECT std(case when pre_config_general.hairpin_found=1 then hairpin_event_index else total_events end) as std FROM pre_config_general;";
@@ -473,7 +423,7 @@ if ($login->isUserLoggedIn() == true) {
             $resultstore["std"]["Raw Template"]=$val[0];
             $val = mysqli_fetch_array($precomp);
             $resultstore["std"]["Raw Complement"]=$val[0];
-            */
+
             #The number of reads which have been processed:
     		$sql_template = "select count(*) as processed from read_tracking_template;";
     		$sql_complement = "select count(*) as processed from read_tracking_complement;";
@@ -497,12 +447,6 @@ if ($login->isUserLoggedIn() == true) {
 			$sql2dquartiles = "select (select floor(count(*)/4) from basecalled_2d) as first_q, (select floor(count(*)/2) from basecalled_2d) as mid_pos, (select floor(count(*)/4*3) from basecalled_2d) as third_q from basecalled_2d order by seqlen limit 1;";
 			$pretempquartiles = "select (select floor(count(*)/4) from pre_config_general) as first_q, (select floor(count(*)/2) from pre_config_general) as mid_pos, (select floor(count(*)/4*3) from pre_config_general) as third_q from pre_config_general order by hairpin_event_index limit 1;";
 			$precompquartiles = "select (select floor(count(*)/4) from pre_config_general where hairpin_found = 1) as first_q, (select floor(count(*)/2) from pre_config_general where hairpin_found = 1) as mid_pos, (select floor(count(*)/4*3) from pre_config_general where hairpin_found = 1) as third_q from pre_config_general where hairpin_found = 1 order by (total_events-hairpin_event_index) limit 1;";
-            //$sqltempquartiles = "select (select floor(count(*)/4) from basecalled_template) as first_q, (select floor(count(*)/2) from basecalled_template) as mid_pos, (select floor(count(*)/4*3) from basecalled_template) as third_q from basecalled_template limit 1;";
-			//$sqlcompquartiles = "select (select floor(count(*)/4) from basecalled_complement) as first_q, (select floor(count(*)/2) from basecalled_complement) as mid_pos, (select floor(count(*)/4*3) from basecalled_complement) as third_q from basecalled_complement limit 1;";
-			//$sql2dquartiles = "select (select floor(count(*)/4) from basecalled_2d) as first_q, (select floor(count(*)/2) from basecalled_2d) as mid_pos, (select floor(count(*)/4*3) from basecalled_2d) as third_q from basecalled_2d limit 1;";
-			//$pretempquartiles = "select (select floor(count(*)/4) from pre_config_general) as first_q, (select floor(count(*)/2) from pre_config_general) as mid_pos, (select floor(count(*)/4*3) from pre_config_general) as third_q from pre_config_general order by hairpin_event_index limit 1;";
-			//$precompquartiles = "select (select floor(count(*)/4) from pre_config_general where hairpin_found = 1) as first_q, (select floor(count(*)/2) from pre_config_general where hairpin_found = 1) as mid_pos, (select floor(count(*)/4*3) from pre_config_general where hairpin_found = 1) as third_q from pre_config_general where hairpin_found = 1 order by (total_events-hairpin_event_index) limit 1;";
-
             $resulttempquartiles = $mindb_connection->query($sqltempquartiles);
 			$resultcompquartiles = $mindb_connection->query($sqlcompquartiles);
 			$result2dquartiles = $mindb_connection->query($sql2dquartiles);
@@ -529,10 +473,10 @@ if ($login->isUserLoggedIn() == true) {
             $variablearray["Raw Complement"]["first_q"]=$val[0];
             $variablearray["Raw Complement"]["mid_pos"]=$val[1];
             $variablearray["Raw Complement"]["third_q"]=$val[2];
-            //These are very slow
-            $sqltemp = "select (select seqlen from basecalled_template order by seqlen limit " .$variablearray['template']['first_q'] . ",1) as firstq, (select seqlen from basecalled_template order by seqlen limit ".$variablearray['template']['mid_pos'].",1) as median, (select seqlen from basecalled_template order by seqlen limit ".$variablearray['template']['third_q'].",1) as lastq from basecalled_template limit 1;";
-			$sqlcomp = "select (select seqlen from basecalled_complement order by seqlen limit " .$variablearray['complement']['first_q'] . ",1) as firstq, (select seqlen from basecalled_complement order by seqlen limit ".$variablearray['complement']['mid_pos'].",1) as median, (select seqlen from basecalled_complement order by seqlen limit ".$variablearray['complement']['third_q'].",1) as lastq from basecalled_complement limit 1;";
-			$sql2d = "select (select seqlen from basecalled_2d order by seqlen limit " .$variablearray['2d']['first_q'] . ",1) as firstq, (select seqlen from basecalled_2d order by seqlen limit ".$variablearray['2d']['mid_pos'].",1) as median, (select seqlen from basecalled_2d order by seqlen limit ".$variablearray['2d']['third_q'].",1) as lastq from basecalled_2d limit 1;";
+
+            $sqltemp = "select (select seqlen from basecalled_template order by seqlen limit " .$variablearray['template']['first_q'] . ",1) as firstq, (select seqlen from basecalled_template order by seqlen limit ".$variablearray['template']['mid_pos'].",1) as median, (select seqlen from basecalled_template order by seqlen limit ".$variablearray['template']['third_q'].",1) as lastq from basecalled_template;";
+			$sqlcomp = "select (select seqlen from basecalled_complement order by seqlen limit " .$variablearray['complement']['first_q'] . ",1) as firstq, (select seqlen from basecalled_complement order by seqlen limit ".$variablearray['complement']['mid_pos'].",1) as median, (select seqlen from basecalled_complement order by seqlen limit ".$variablearray['complement']['third_q'].",1) as lastq from basecalled_complement;";
+			$sql2d = "select (select seqlen from basecalled_2d order by seqlen limit " .$variablearray['2d']['first_q'] . ",1) as firstq, (select seqlen from basecalled_2d order by seqlen limit ".$variablearray['2d']['mid_pos'].",1) as median, (select seqlen from basecalled_2d order by seqlen limit ".$variablearray['2d']['third_q'].",1) as lastq from basecalled_2d;";
 			$pretemp = "select (select hairpin_event_index from pre_config_general order by hairpin_event_index limit " .$variablearray['Raw Template']['first_q'] . ",1) as firstq, (select hairpin_event_index from pre_config_general order by hairpin_event_index limit ".$variablearray['Raw Template']['mid_pos'].",1) as median, (select hairpin_event_index from pre_config_general order by hairpin_event_index limit ".$variablearray['Raw Template']['third_q'].",1) as lastq from pre_config_general;";
 			$precomp = "select (select (total_events-hairpin_event_index) from pre_config_general where hairpin_found = 1 order by (total_events-hairpin_event_index) limit " .$variablearray['Raw Complement']['first_q'] . ",1) as firstq, (select (total_events-hairpin_event_index) from pre_config_general where hairpin_found = 1 order by (total_events-hairpin_event_index) limit ".$variablearray['Raw Complement']['mid_pos'].",1) as median, (select (total_events-hairpin_event_index) from pre_config_general where hairpin_found = 1 order by (total_events-hairpin_event_index) limit ".$variablearray['Raw Complement']['third_q'].",1) as lastq from pre_config_general where hairpin_found = 1;";
             #echo "<br>";

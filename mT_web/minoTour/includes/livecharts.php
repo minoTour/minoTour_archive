@@ -30,7 +30,7 @@
 						text: 'Read Length'
 					},
 					type: 'logarithmic',
-					//min :0,
+					min :1,
 
 				},
 
@@ -493,7 +493,7 @@
 					            }
 					        },
 			        title: {
-			          text: '2d, Complement and Template Pass/Fail Proportions in 15 minute windows'
+			          text: '2d, Complement and Template Pass/Fail Proportions'
 			        },
 					xAxis: {
 						type: 'datetime',
