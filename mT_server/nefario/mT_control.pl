@@ -123,11 +123,11 @@ while (42) {#If you have to ask the significance of 42 you shouldn't be reading 
 
 		foreach (@jobarray){
 			#print "$_\n";
-			jobs($ref->{runname},$_,$ref->{reflength},$ref->{minup_version});
+			#jobs($ref->{runname},$_,$ref->{reflength},$ref->{minup_version});
 		}
 		if ($ref->{reflength} > 0) {
 			foreach (@alignjobarray) {
-				jobs($ref->{runname},$_,$ref->{reflength},$ref->{minup_version});
+				#jobs($ref->{runname},$_,$ref->{reflength},$ref->{minup_version});
 			}
 			##proc_align($ref->{runname},$dbh);
 			my $aligncommand = "perl mT_align.pl " . $ref->{runname} . " &";
