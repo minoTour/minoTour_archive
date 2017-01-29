@@ -45,8 +45,8 @@
 
 		</div>
 		<div class="row">
-		<p class="text-center" style="color:white">Welcome to minoTour - to test out this site log in as user 'demo' with password 'demouser'. Datasets published by Joshua Quick, Aaron R Quinlan and Nicholas J Loman in <a href ="http://www.gigasciencejournal.com/content/3/1/22/abstract" target="_blank">GigaScience</a> are presented under the 'Previous Runs' (initially under 'Current Sequencing Runs') option in the left hand navigation.</p>
-<p class="text-center" style="color:white">For access to minoTour or to set up your own servers please contact Matt Loose -> <a href="mailto:matt.loose@nottingham.ac.uk?Subject=minoTour%20information%20request" target="_top"><i style="color:white" class="fa fa-envelope-o"></i></a> <i class="fa fa-twitter-square" style="color:white"></i> @mattloose.</p>
+		<p class="text-center" >Welcome to minoTour - to test out this site log in as user 'demo' with password 'demouser'. Datasets published by Joshua Quick, Aaron R Quinlan and Nicholas J Loman in <a href ="http://www.gigasciencejournal.com/content/3/1/22/abstract" target="_blank">GigaScience</a> are presented under the 'Previous Runs' (initially under 'Current Sequencing Runs') option in the left hand navigation.</p>
+<p class="text-center" >For access to minoTour or to set up your own servers please contact Matt Loose -> <a href="mailto:matt.loose@nottingham.ac.uk?Subject=minoTour%20information%20request" target="_top"><i class="fa fa-envelope-o"></i></a> <i class="fa fa-twitter-square" ></i> @mattloose.</p>
 		</div>
 		<?php } ?>
         <div class="row">

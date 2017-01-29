@@ -5,7 +5,7 @@
     <img style="max-width:100px;" src="images/minotaurlogo.png" alt="minoTour_logo">
   </div>
   <!-- Default to the left -->
-  <strong>Copyright &copy; Matt Loose 2016 <a href="www.nottingham.ac.uk">University of Nottingham</a>.</strong> Contact @mattloose for more information.
+  <strong>Copyright &copy; Matt Loose 2017 <a href="www.nottingham.ac.uk">University of Nottingham</a>.</strong> Contact @mattloose for more information.
 </footer>
 
 <!-- Control Sidebar -->
