@@ -12,9 +12,9 @@
 							  <i class="fa fa-circle fa-stack-2x"></i>
 							  <i class="fa fa-user fa-stack-1x fa-inverse"></i>
 							</span> User HELP: <?php echo $_SESSION['user_name']; ?>
-								
-								
-						    
+
+
+
                             <!--<div class="input-group custom-search-form">
                                 <input type="text" class="form-control" placeholder="Search...">
                                 <span class="input-group-btn">
@@ -37,11 +37,11 @@
                                     <a href="switch_run.php"><i class="fa fa-database fa-fw"></i> Switch Active Runs</a>
                                 </li>
                                 <?php }?>
-                                
+
                                 <li>
                                     <a href="live_data.php"><i class="fa fa-cog fa-spin"></i> Live Data</a>
                                 </li>
-                                
+
                                 <li>
                                     <a href="current_summary.php"><i class="fa fa-bar-chart-o fa-fw"></i> Data Summary</a>
                                 </li>
@@ -70,7 +70,7 @@
                         <li id="prevruns">
                             <a href="#"><i class="fa fa-table fa-fw"></i> Previous Run<span class="fa arrow"></a>
                             <ul class="nav nav-second-level">
-                                
+
 								<?php if (isset($_SESSION['focusrun'])) {?>
 	                            <li>
 	                                <a href="previous_runs.php" id="SR"><i class="fa fa-database fa-fw"></i> Change Run Now</a>
@@ -108,9 +108,9 @@
 								<?php };?>
                             </ul>
                         </li>
-                        
-                        
-                        	
+
+
+
 						<?php }?>
                         <?php if ($_SESSION['adminuser'] == 1){?>
 						<li id = "admin">
@@ -126,7 +126,7 @@
                                     <a href="admin_users.php"><i class="fa fa-users fa-fw"></i> Set Administrators</a>
  	                          </li>
  	                          <li>
- 	                          		<a href="cache_manage.php"><i class="fa fa-database fa-fw"></i> Cache Administration</a> 
+ 	                          		<a href="cache_manage.php"><i class="fa fa-database fa-fw"></i> Cache Administration</a>
  	                          </li>
  	                        </ul>
                         </li>
@@ -136,13 +136,11 @@
                         <li>
                             <a href="exlinks.php"><i class="fa fa-files-o fa-fw"></i>External Links</span></a>
                         </li>
+                        <!--
                         <li id="versions">
                         	<a href="#"><i class="fa fa-archive fa-fw"></i> Previous Versions<span class="fa arrow"></span></a>
     						<ul class="nav nav-second-level">
-    						<!--<li>
-    							<a href="versions/0.46/index.php">Version 0.46</a>
-    							</li>-->
-		    						<li>
+    								<li>
 		    							<a href="versions/0.45/index.php">Version 0.45</a>
 		    							</li>
 		    						<li>
@@ -153,26 +151,27 @@
 		    							</li>
     						</ul>
     						</li>
-                        
+                        -->
+
                     </ul>
 					<br>
 					<br>
-					
-						
+
+
                         <?php //if (isset($_SESSION['active_run_name'])) {
                             checkalerts();
 							?>
-							
-							
+
+
                        <!--- <div class='alert alert-info' role='alert'>
                             <small>This website and database backend were developed at the University of Nottingham by the DeepSeq Informatics Team. Please contact us <a href="mailto:matt.loose@nottingham.ac.uk"><i class="fa fa-envelope-square"></i></a> for more information.</small>
                         </div> --->
-					
+
                     <!-- /#side-menu -->
                 </div>
                 <!-- /.sidebar-collapse -->
             </div>
-			
+
 			<script>
 				var pathname = window.location.pathname;
 				//alert(pathname);
@@ -191,6 +190,5 @@
 								var d = document.getElementById("admin");
 								d.className = d.className + " active";
 							}
-				
+
 						</script>
-				

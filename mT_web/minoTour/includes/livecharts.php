@@ -30,7 +30,7 @@
 						text: 'Read Length'
 					},
 					type: 'logarithmic',
-					//min :0,
+					min :1,
 
 				},
 
@@ -49,7 +49,7 @@
 										//alert (data);
                                                 setTimeout(loadchirpbpl,<?php echo $_SESSION['pagerefresh'] ;?>);
 
-                                        //options.series = JSON2;
+
                                                 var chart = new Highcharts.Chart(options);
                                                 });} else {
    setTimeout(loadchirpbpl,<?php echo $_SESSION['pagerefresh'] ;?>);
@@ -151,7 +151,7 @@
 
                                                 setTimeout(loadchirpmtw,<?php echo $_SESSION['pagerefresh'] ;?>);
 
-                                        //options.series = JSON2;
+
                                                 var chart = new Highcharts.Chart(options);
                                                 });} else {
    setTimeout(loadchirpmtw,<?php echo $_SESSION['pagerefresh'] ;?>);
@@ -254,7 +254,7 @@
 
                                                 setTimeout(loadchirpltw,<?php echo $_SESSION['pagerefresh'] ;?>);
 
-                                        //options.series = JSON2;
+
                                                 var chart = new Highcharts.Chart(options);
                                                 });} else {
    setTimeout(loadchirpltw,<?php echo $_SESSION['pagerefresh'] ;?>);
@@ -355,7 +355,7 @@
 
                                                 setTimeout(loadchirpcy,<?php echo $_SESSION['pagerefresh'] ;?>);
 
-                                        //options.series = JSON2;
+
                                                 var chart = new Highcharts.Chart(options);
                                                 });} else {
    setTimeout(loadchirpcy,<?php echo $_SESSION['pagerefresh'] ;?>);
@@ -457,7 +457,7 @@
 
                                                 setTimeout(loadchirpsr,<?php echo $_SESSION['pagerefresh'] ;?>);
 
-                                        //options.series = JSON2;
+
                                                 var chart = new Highcharts.Chart(options);
                                                 });} else {
    setTimeout(loadchirpsr,<?php echo $_SESSION['pagerefresh'] ;?>);
@@ -493,7 +493,7 @@
 					            }
 					        },
 			        title: {
-			          text: '2d, Complement and Template Pass/Fail Proportions in 15 minute windows'
+			          text: '2d, Complement and Template Pass/Fail Proportions'
 			        },
 					xAxis: {
 						type: 'datetime',
@@ -532,7 +532,7 @@
 
                                                 setTimeout(loadchirprpf,<?php echo $_SESSION['pagerefresh'] ;?>);
 
-                                        //options.series = JSON2;
+
                                                 var chart = new Highcharts.Chart(options);
                                                 });} else {
    setTimeout(loadchirprpf,<?php echo $_SESSION['pagerefresh'] ;?>);
@@ -606,7 +606,7 @@
 
                                                 setTimeout(loadchirpr2t,<?php echo $_SESSION['pagerefresh'] ;?>);
 
-                                        //options.series = JSON2;
+
                                                 var chart = new Highcharts.Chart(options);
                                                 });} else {
    setTimeout(loadchirpr2t,<?php echo $_SESSION['pagerefresh'] ;?>);
@@ -658,12 +658,8 @@
                                                 labels: {
 						            	enabled:true,
 						            	},
-						            	categories: [
-
-									                ]
-
-
-                                            },
+						            	categories: []
+                                        },
                                             yAxis: {
                                                         title: {
                                                             text: 'Barcode Coverage Depth'
@@ -673,7 +669,7 @@
                                                         enabled: false
                                                       },
                                     legend: {
-                                        layout: 'vertical',
+                                        layout: 'horizontal',
                                         align: 'center',
                                         verticalAlign: 'bottom',
                                         borderWidth: 0
@@ -684,12 +680,13 @@
 									if($('#barcodingcheck').prop('checked')) {
    										 $.getJSON('jsonencode/barcodingcov.php?prev=0&callback=?', function(data) {
                                                 //alert("success");
-
-                                        options.series = data; // <- just assign the data to the series property.
+                                                options.xAxis.categories = data[0]['data'];
+                                                options.series = data.slice(1,);
+                                        //options.series = data; // <- just assign the data to the series property.
 
                                                 setTimeout(loadchirpbarcodcov,<?php echo $_SESSION['pagerefresh'] ;?>);
 
-                                        //options.series = JSON2;
+
                                                 var chart = new Highcharts.Chart(options);
                                                 });} else {
    setTimeout(loadchirpbarcodcov,<?php echo $_SESSION['pagerefresh'] ;?>);
@@ -755,7 +752,7 @@ if($('#barcodingcheck').prop('checked')) {
 
 	                setTimeout(loadchirpbarcode,<?php echo $_SESSION['pagerefresh'];?>);
 
-	        //options.series = JSON2;
+
 	                var chart = new Highcharts.Chart(options);
 	                });} else {
    setTimeout(loadchirpbarcode,<?php echo $_SESSION['pagerefresh'] ;?>);
@@ -835,7 +832,7 @@ if($('#poreactivitycheck').prop('checked')) {
 
 	                setTimeout(loadchirp23,<?php echo $_SESSION['pagerefresh'];?>);
 
-	        //options.series = JSON2;
+
 	                var chart = new Highcharts.Chart(options);
 	                });} else {
    setTimeout(loadchirp23,<?php echo $_SESSION['pagerefresh'] ;?>);
@@ -969,7 +966,7 @@ if($('#poreactivitycheck').prop('checked')) {
 
                                                 setTimeout(loadchirp77,<?php echo $_SESSION['pagerefresh'] ;?>);
 
-                                        //options.series = JSON2;
+
                                                 var chart = new Highcharts.Chart(options);
                                                 });} else {
    setTimeout(loadchirp7,<?php echo $_SESSION['pagerefresh'] ;?>);
@@ -1054,7 +1051,7 @@ if($('#poreactivitycheck').prop('checked')) {
 
                                                 setTimeout(loadchirp7,<?php echo $_SESSION['pagerefresh'] ;?>);
 
-                                        //options.series = JSON2;
+
                                                 var chart = new Highcharts.Chart(options);
                                                 });} else {
    setTimeout(loadchirp7,<?php echo $_SESSION['pagerefresh'] ;?>);
@@ -1121,7 +1118,7 @@ if($('#poreactivitycheck').prop('checked')) {
 
                                                 setTimeout(loadchirp13,<?php echo $_SESSION['pagerefresh'] ;?>);
 
-                                        //options.series = JSON2;
+
                                                 var chart = new Highcharts.Chart(options);
                                                 });} else {
    setTimeout(loadchirp13,<?php echo $_SESSION['pagerefresh'] ;?>);
@@ -1188,7 +1185,7 @@ if($('#poreactivitycheck').prop('checked')) {
 
                                                 setTimeout(loadchirp8,<?php echo $_SESSION['pagerefresh'] ;?>);
 
-                                        //options.series = JSON2;
+
                                                 var chart = new Highcharts.Chart(options);
                                                 });} else {
    setTimeout(loadchirp8,<?php echo $_SESSION['pagerefresh'] ;?>);
@@ -1204,6 +1201,7 @@ if($('#poreactivitycheck').prop('checked')) {
 <script>
 
 								$(document).ready(function() {
+
 								    var options = {
 								        chart: {
 								            renderTo: 'maxlen',
@@ -1252,7 +1250,7 @@ if($('#poreactivitycheck').prop('checked')) {
 
                                                 setTimeout(loadchirp9,<?php echo $_SESSION['pagerefresh'] ;?>);
 
-                                        //options.series = JSON2;
+
                                                 var chart = new Highcharts.Chart(options);
                                                 });} else {
    setTimeout(loadchirp9,<?php echo $_SESSION['pagerefresh'] ;?>);
@@ -1270,12 +1268,136 @@ if($('#poreactivitycheck').prop('checked')) {
 
 
 								<?php if ($_SESSION['activereference'] != "NOREFERENCE") {?>
+
+                                        <?php if (count($_SESSION['activerefnames']) >= 3){?>
+                                            <script>
+                                                $(document).ready(function() {
+                                                    var options = {
+                                                        chart: {
+                                                            renderTo: 'percentcoverageglob',
+                                                            type: 'column',
+                                                        },
+                                                        plotOptions: {
+                                                            column: {
+                                                                animation: false,
+                                                            }
+                                                        },
+                                                        title: {
+                                                          text: 'Percentage of Reference Sequenced'
+                                                        },
+                                                        xAxis: {
+                                                                    title: {
+                                                                        text: 'Reference'
+                                                                    },
+                                                                    labels: {
+                                                                        rotation: -45,
+                                                            enabled:true,
+                                                            },
+                                                            categories: []
+                                                                },
+                                                                yAxis: {
+                                                                            title: {
+                                                                                text: '% Coverage'
+                                                                            }
+                                                                        },
+                                                                        credits: {
+                                                                            enabled: false
+                                                                          },
+                                                        legend: {
+                                                            layout: 'horizontal',
+                                                            align: 'center',
+                                                            verticalAlign: 'bottom',
+                                                            borderWidth: 0
+                                                        },
+                                                        series: []
+                                                    };
+                                                    function loadchirppercentcoverageglob() {
+                                                        $.getJSON('jsonencode/percentcoverageglob.php?prev=0&callback=?', function(data) {
+                                                            options.xAxis.categories = data[0]['data'];
+                                                            options.series = data.slice(1,); // <- just assign the data to the series property.
+                                                            setTimeout(loadchirppercentcoverageglob,<?php //echo $_SESSION['pagerefresh'] ;?>);
+                                                            var chart = new Highcharts.Chart(options);
+                                                        })
+                                                    };
+
+                                                    loadchirppercentcoverageglob();
+
+                                                });
+                                            </script>
+
+                                            <script>
+
+                                            $(document).ready(function() {
+                                                //alert("camel");
+                                                var options = {
+                                                    chart: {
+                                                        renderTo: 'depthcoverageglob',
+                                                        type: 'column'
+                                                        //type: 'line'
+                                                    },
+                                                    plotOptions: {
+                                                        column: {
+                                                            animation: false,
+                                                        }
+                                                            },
+                                                    title: {
+                                                      text: 'Average Depth of Sequenced Positions'
+                                                    },
+                                                    xAxis: {
+                                                                title: {
+                                                                    text: 'Reference'
+                                                                },
+                                                                labels: {
+                                                                    rotation: -45,
+                                                        enabled:true,
+                                                        },
+                                                            },
+                                                            yAxis: {
+                                                                        title: {
+                                                                            text: 'Depth'
+                                                                            //text: ''
+                                                                        },
+                                                                    },
+                                                                    credits: {
+                                                                        enabled: false
+                                                                      },
+                                                    legend: {
+                                                        layout: 'horizontal',
+                                                        align: 'center',
+                                                        verticalAlign: 'bottom',
+                                                        borderWidth: 0
+                                                    },
+                                                    series: []
+                                                };
+                                                function loadchirpdepthglob() {
+                if($('#readsummarycheck').prop('checked')) {
+                                         $.getJSON('jsonencode/depthcoverageglob.php?prev=0&refid=<?php echo $key;?>&callback=?', function(data) {
+                                             options.xAxis.categories = data[0]['data'];
+                                             options.series = data.slice(1,);
+                                                setTimeout(loadchirpdepthglob,<?php echo $_SESSION['pagerefresh'] ;?>);
+                                                var chart = new Highcharts.Chart(options);
+                                                });} else {
+   setTimeout(loadchirpdepthglob,<?php echo $_SESSION['pagerefresh'] ;?>);
+}
+
+                                        }
+
+
+                                                        loadchirpdepthglob();
+
+                                            });
+
+                                                //]]>
+
+                                                </script>
+
+                                            <?php
+                                        }else{?>
 									<?php foreach ($_SESSION['activerefnames'] as $key => $value) {
 										//echo $key . " " . $value . "<br>";?>
 
 
 										<script>
-
 																				$(document).ready(function() {
 																				    var options = {
 																				        chart: {
@@ -1324,7 +1446,7 @@ if($('#poreactivitycheck').prop('checked')) {
 
 										                                                setTimeout(loadchirp10<?php echo $key;?>,<?php echo $_SESSION['pagerefresh'] ;?>);
 
-										                                        //options.series = JSON2;
+
 										                                                var chart = new Highcharts.Chart(options);
 										                                                });} else {
 										   setTimeout(loadchirp10<?php echo $key;?>,<?php echo $_SESSION['pagerefresh'] ;?>);
@@ -1391,7 +1513,7 @@ if($('#poreactivitycheck').prop('checked')) {
 
 										                                                setTimeout(loadchirp11<?php echo $key;?>,<?php echo $_SESSION['pagerefresh'] ;?>);
 
-										                                        //options.series = JSON2;
+
 										                                                var chart = new Highcharts.Chart(options);
 										                                                });} else {
 										   setTimeout(loadchirp11<?php echo $key;?>,<?php echo $_SESSION['pagerefresh'] ;?>);
@@ -1412,6 +1534,7 @@ if($('#poreactivitycheck').prop('checked')) {
 
 
 										<?php
+                                        }
 										}
 										?>
 										<?php }
@@ -1478,7 +1601,7 @@ $(document).ready(function() {
 
 	                setTimeout(loadchirp21,<?php echo $_SESSION['pagerefresh'];?>);
 
-	        //options.series = JSON2;
+
 	                var chart = new Highcharts.Chart(options);
 	                });
 } else {
@@ -1555,7 +1678,7 @@ if($('#histogramcheck').prop('checked')) {
 
 	                setTimeout(loadchirp22,<?php echo $_SESSION['pagerefresh'];?>);
 
-	        //options.series = JSON2;
+
 	                var chart = new Highcharts.Chart(options);
 	                });} else {
    setTimeout(loadchirp22,<?php echo $_SESSION['pagerefresh'] ;?>);
@@ -1632,7 +1755,7 @@ if($('#histogramcheck').prop('checked')) {
 
                                                 setTimeout(loadchirp,<?php echo $_SESSION['pagerefresh'] ;?>);
 
-                                        //options.series = JSON2;
+
                                                 var chart = new Highcharts.Chart(options);
                                                 });} else {
    setTimeout(loadchirp,<?php echo $_SESSION['pagerefresh'] ;?>);
@@ -1692,26 +1815,15 @@ if($('#histogramcheck').prop('checked')) {
 					function loadchirp2() {
 						if($('#sequencingratecheck').prop('checked')) {
    										  $.getJSON('jsonencode/average_length_over_time.php?prev=0&callback=?', function(data) {
-
                                         options.series = data; // <- just assign the data to the series property.
-
-                                                setTimeout(loadchirp2,<?php echo $_SESSION['pagerefresh'] ;?>);
-
-                                        //options.series = JSON2;
+                                                setTimeout(loadchirp2,<?php echo $_SESSION['pagerefresh'];?>);
                                                 var chart = new Highcharts.Chart(options);
                                                 });} else {
-   setTimeout(loadchirp2,<?php echo $_SESSION['pagerefresh'] ;?>);
-}
-
+                                                    setTimeout(loadchirp2,<?php echo $_SESSION['pagerefresh'] ;?>);
+                                                }
                                         }
-
-					        loadchirp2();
-
+                                    loadchirp2();
 				});
-
-
-					//]]>
-
 					</script>
 
 					<script>
@@ -1756,26 +1868,15 @@ if($('#histogramcheck').prop('checked')) {
 					function loadchirp3() {
 						if($('#sequencingratecheck').prop('checked')) {
    										 $.getJSON('jsonencode/average_time_over_time2.php?prev=0&callback=?', function(data) {
-
                                         options.series = data; // <- just assign the data to the series property.
-
                                                 setTimeout(loadchirp3,<?php echo $_SESSION['pagerefresh'] ;?>);
-
-                                        //options.series = JSON2;
                                                 var chart = new Highcharts.Chart(options);
                                                 });} else {
    setTimeout(loadchirp3,<?php echo $_SESSION['pagerefresh'] ;?>);
 }
-
                                         }
-
-
 				   loadchirp3();
-
 				});
-
-					//]]>
-
 					</script>
 
 <!-- Pore Activity Check activechannels poreactivity -->
@@ -1822,26 +1923,14 @@ if($('#histogramcheck').prop('checked')) {
 						function loadchirp4() {
 							if($('#poreactivitycheck').prop('checked')) {
    										  $.getJSON('jsonencode/active_channels_over_time.php?prev=0&callback=?', function(data) {
-
                                         options.series = data; // <- just assign the data to the series property.
-
                                                 setTimeout(loadchirp4,<?php echo $_SESSION['pagerefresh'] ;?>);
-
-                                        //options.series = JSON2;
                                                 var chart = new Highcharts.Chart(options);
                                                 });} else {
-   setTimeout(loadchirp4,<?php echo $_SESSION['pagerefresh'] ;?>);
-}
-
+   setTimeout(loadchirp4,<?php echo $_SESSION['pagerefresh']; ?>);
                                         }
-
-						    						        loadchirp4();
-
+loadchirp4();
 					});
-
-
-						//]]>
-
 						</script>
 
 
@@ -1905,21 +1994,14 @@ if($('#histogramcheck').prop('checked')) {
 								if($('#poreactivitycheck').prop('checked')) {
    										 $.getJSON('jsonencode/readsperpore.php?prev=0&callback=?', function(data) {
                                         options.series = data; // <- just assign the data to the series property.
-
                                                 setTimeout(loadchirp5,<?php echo $_SESSION['pagerefresh'] ;?>);
-
-                                        //options.series = JSON2;
                                                 var chart = new Highcharts.Chart(options);
                                                 });} else {
    setTimeout(loadchirp5,<?php echo $_SESSION['pagerefresh'] ;?>);
 }
-
                                         }
-
 							        loadchirp5();
-
 						});
-
 						</script>
 
 <!-- Quality info check avgquallength numberoverlength -->
@@ -1965,26 +2047,15 @@ if($('#histogramcheck').prop('checked')) {
 							function loadchirp6() {
 								if($('#qualityinfocheck').prop('checked')) {
    										 $.getJSON('jsonencode/readlengthqual.php?prev=0&callback=?', function(data) {                                                //
-
                                         options.series = data; // <- just assign the data to the series property.
-
                                                 setTimeout(loadchirp6,<?php echo $_SESSION['pagerefresh'] ;?>);
-
-                                        //options.series = JSON2;
                                                 var chart = new Highcharts.Chart(options);
                                                 });} else {
    setTimeout(loadchirp6,<?php echo $_SESSION['pagerefresh'] ;?>);
 }
-
                                         }
-
 							        loadchirp6();
-
 						});
-
-
-							//]]>
-
 							</script>
 								<script>
 							$(document).ready(function() {
@@ -2028,24 +2099,13 @@ if($('#histogramcheck').prop('checked')) {
 									if($('#qualityinfocheck').prop('checked')) {
    										 $.getJSON('jsonencode/readnumberlength.php?prev=0&callback=?', function(data) {
                                                 //alert("success");
-
                                         options.series = data; // <- just assign the data to the series property.
-
                                                 setTimeout(loadchirp12,<?php echo $_SESSION['pagerefresh'] ;?>);
-
-                                        //options.series = JSON2;
                                                 var chart = new Highcharts.Chart(options);
                                                 });} else {
    setTimeout(loadchirp12,<?php echo $_SESSION['pagerefresh'] ;?>);
 }
-
                                         }
-
 								        loadchirp12();
-
 							});
-
-
-								//]]>
-
 								</script>

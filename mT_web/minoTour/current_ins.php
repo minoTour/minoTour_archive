@@ -20,7 +20,7 @@ require_once("includes/functions.php");
         </nav>
 
         <div id="page-wrapper">
-						<?php include 'includes/run_check.php';?>
+						
             <div class="row">
                 <div class="col-lg-12">
                     <h1 class="page-header">Current Variants - run: <?php echo cleanname($_SESSION['active_run_name']);; ?></h1>
@@ -189,7 +189,7 @@ require_once("includes/functions.php");
 	<!-- Highcharts Addition -->
 	<script src="http://code.highcharts.com/highcharts.js"></script>
 	<script type="text/javascript" src="js/themes/grid-light.js"></script>
-	<script src="http://code.highcharts.com/modules/heatmap.js"></script>
+	<script src="http://code.highcharts.com/4.0.3/modules/heatmap.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
 	<script>
 		$(document).ready(function() {

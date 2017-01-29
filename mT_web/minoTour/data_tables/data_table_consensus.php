@@ -33,7 +33,7 @@ if ($login->isUserLoggedIn() == true) {
 		$database =$_SESSION['active_run_name'];
 		$barcodecheck = $_SESSION['currentbarcode'];
 	}
-	
+
 	$type = $_GET["type"];
 	$coverage = $_GET["coverage"];
 
@@ -47,7 +47,7 @@ if ($login->isUserLoggedIn() == true) {
 	* License:   GPL v2 or BSD (3-point)
 	*/
 	mb_internal_encoding('UTF-8');
- 
+
 	/**
 	* Array of database columns which should be read and sent back to DataTables. Use a space where
 	* you want to insert a non-database field (for example a counter or static image)
@@ -60,9 +60,9 @@ if ($login->isUserLoggedIn() == true) {
 	}
 	// Indexed column (used for fast and accurate table cardinality)
 	$sIndexColumn = 'ref_pos';
-	
-	
-	
+
+
+
 	/*select ref_id,ref_seq,ref_pos,A,T,G,C, (A+T+G+C) as total, (((A+T+G+C) - GREATEST(A,T,G,C))/(A+T+G+C)) as proportion, (GREATEST(A,T,G,C)/(A+T+G+C)) as consensus, @var_max_val:= GREATEST(A,T,G,C) AS max_value,
        CASE @var_max_val WHEN A THEN 'A'
                          WHEN T THEN 'T'
@@ -73,10 +73,10 @@ if ($login->isUserLoggedIn() == true) {
                          WHEN C THEN 'C'
                          WHEN G THEN 'G'
        END   */
-  
+
 	// DB table to use
 	if ($barcodecheck >= 1 && $type == "2d") {
-	$sTable = 'reference_coverage_barcode_' . $type;	
+	$sTable = 'reference_coverage_barcode_' . $type;
 	}else{
 	$sTable = 'reference_coverage_' . $type;
 	}
@@ -84,28 +84,28 @@ if ($login->isUserLoggedIn() == true) {
 	//$sTable3 = 'barcode_arrangement';
 	//$sTable4 = 'basecalled_complement';
 	//$sTable5 = 'basecalled_2d';
-  
+
 	// Database connection information
 	$gaSql['user']     = DB_USER;
 	$gaSql['password'] = DB_PASS;
 	$gaSql['db']       = $database;
 	$gaSql['server']   = DB_HOST;
 	$gaSql['port']     = DB_PORT; // 3306 is the default MySQL port
- 
+
 	// Input method (use $_GET, $_POST or $_REQUEST)
 	$input =& $_GET;
- 
+
 	/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	* If you just want to use the basic configuration for DataTables with PHP server-side, there is
 	* no need to edit below this line
 	*/
- 
+
 	/**
 	* Character set to use for the MySQL connection.
 	* MySQL will return all strings in this charset to PHP (if the data is stored correctly in the database).
 	*/
 	$gaSql['charset']  = 'utf8';
- 
+
 	/**
 	* MySQL connection
 	*/
@@ -113,12 +113,12 @@ if ($login->isUserLoggedIn() == true) {
 	if (mysqli_connect_error()) {
 		die( 'Error connecting to MySQL server (' . mysqli_connect_errno() .') '. mysqli_connect_error() );
 	}
- 
+
 	if (!$db->set_charset($gaSql['charset'])) {
 		die( 'Error loading character set "'.$gaSql['charset'].'": '.$db->error );
 	}
-  
-  
+
+
 	/**
 	* Paging
 	*/
@@ -126,8 +126,8 @@ if ($login->isUserLoggedIn() == true) {
 	if ( isset( $input['iDisplayStart'] ) && $input['iDisplayLength'] != '-1' ) {
 		$sLimit = " LIMIT ".intval( $input['iDisplayStart'] ).", ".intval( $input['iDisplayLength'] );
 	}
-  
-  
+
+
 	/**
 	* Ordering
 	*/
@@ -142,14 +142,14 @@ if ($login->isUserLoggedIn() == true) {
 			}
 		}
 	}
- 
+
 	if (!empty($aOrderingRules)) {
 		$sOrder = " ORDER BY ".implode(", ", $aOrderingRules);
 	} else {
 		$sOrder = "";
 	}
-  
- 
+
+
 	/**
 	* Filtering
 	* NOTE this does not match the built-in DataTables filtering which does it
@@ -157,7 +157,7 @@ if ($login->isUserLoggedIn() == true) {
 	* on very large tables, and MySQL's regex functionality is very limited
 	*/
 	$iColumnCount = count($aColumns);
- 
+
 	if ( isset($input['sSearch']) && $input['sSearch'] != "" ) {
 		$aFilteringRules = array();
 		for ( $i=0 ; $i<$iColumnCount ; $i++ ) {
@@ -169,14 +169,14 @@ if ($login->isUserLoggedIn() == true) {
 			$aFilteringRules = array('('.implode(" OR ", $aFilteringRules).')');
 		}
 	}
-  
+
 	// Individual column filtering
 	for ( $i=0 ; $i<$iColumnCount ; $i++ ) {
 		if ( isset($input['bSearchable_'.$i]) && $input['bSearchable_'.$i] == 'true' && $input['sSearch_'.$i] != '' ) {
 			$aFilteringRules[] = "`".$aColumns[$i]."` LIKE '%".$db->real_escape_string($input['sSearch_'.$i])."%'";
 		}
 	}
- 
+
 	if (!empty($aFilteringRules)) {
 		$sWhere = " WHERE (A+T+G+C) >= " . $coverage . " and ref_id = refid and ref_seq != case greatest(A,T,G,C) WHEN A THEN 'A'
                          WHEN T THEN 'T'
@@ -190,8 +190,8 @@ if ($login->isUserLoggedIn() == true) {
                          WHEN G THEN 'G'
        END";
 	}
-  
-  
+
+
 	/**
 	* SQL queries
 	* Get data to display
@@ -202,24 +202,24 @@ if ($login->isUserLoggedIn() == true) {
 			$aQueryColumns[] = $col;
 		}
 	}
- 
+
 	$sQuery = "
 		SELECT SQL_CALC_FOUND_ROWS ".implode(", ", $aQueryColumns)."
 	FROM ".$sTable ." inner join " . $sTable2 . " " .$sWhere.$sOrder.$sLimit;
  	//echo $sQuery . "\n\n\n";
 	$rResult = $db->query( $sQuery ) or die($db->error);
-  
+
 	// Data set length after filtering
 	$sQuery = "SELECT FOUND_ROWS()";
 	$rResultFilterTotal = $db->query( $sQuery ) or die($db->error);
 	list($iFilteredTotal) = $rResultFilterTotal->fetch_row();
- 
+
 	// Total data set length
 	$sQuery = "SELECT COUNT(`".$sIndexColumn."`) FROM `".$sTable."`";
 	$rResultTotal = $db->query( $sQuery ) or die($db->error);
 	list($iTotal) = $rResultTotal->fetch_row();
-  
-  
+
+
 	/**
 	* Output
 	*/
@@ -229,7 +229,7 @@ if ($login->isUserLoggedIn() == true) {
 		"iTotalDisplayRecords" => $iFilteredTotal,
 		"aaData"               => array(),
 	);
-  
+
 	while ( $aRow = $rResult->fetch_assoc() ) {
 		$row = array();
 		for ( $i=0 ; $i<$iColumnCount ; $i++ ) {
@@ -243,7 +243,7 @@ if ($login->isUserLoggedIn() == true) {
 		}
 		$output['aaData'][] = $row;
 	}
-  
+
 	//$jsonstring = json_encode( $output );
 	//$callback = $_GET['callback'];
 	//echo $callback.'('.$jsonstring.');';

@@ -72,7 +72,7 @@ if ($login->isUserLoggedIn() == true) {
 
 		$callback = $_GET['callback'];
 		echo $callback.'('.$jsonstring.');';
-        
+
 
 	}
 } else {

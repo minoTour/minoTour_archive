@@ -45,7 +45,6 @@ if ($login->isUserLoggedIn() == true) {
 			}
 
 			//$_SESSION['activerunarray']=$databases;
-
 			if ($getthemruns->num_rows == 1){
 				echo "<small>1 active run.</small><br>";
 			}else{
@@ -191,64 +190,123 @@ if ($login->isUserLoggedIn() == true) {
                 }
             }
             //var_dump($jobstodo);
+
 			if (isset ($jobstodo)){
 			foreach ($jobstodo as $index) {
-                if ($index['job'] == "diskalert10"){
-                    //We will send an email to the user about this as well.
-                    $to = $_SESSION['user_email'];
-                    $subject = "minoTour Disk Space Message re: " . cleanname($computer[1]);
-                    $message = "<br>Your minION run <b>".cleanname($computer[1])."</b> has consumed a lot of disk space. minoTour reports less than 10% free space left on the machine running it.";
-                    $message .= "<br>This message has been sent from an email address which is not monitored.";
-                    $message .= "<br>Good luck with your run!";
-                    $message .= "<br>Regards.";
-                    $message .= "<br>The minoTour.";
-                    $header = "From:minoTour@minotour.nottingham.ac.uk\r\n";
-                    $header .= "MIME-Version: 1.0\r\n";
-                    $header .= "Content-type: text/html\r\n";
+                if ($index['job'] == "minKNOWwarning"){
 
-                    $retval = mail ($to,$subject,$message,$header);
+                        //We will send an email to the user about this as well.
+                        $to = $_SESSION['user_email'];
+                        $subject = "minoTour Disk Space Message re: " . $index["type"];
+                        $message = "<br>Your minION run <b>".$index["type"]."</b> has consumed a lot of disk space. minKNOW is suggesting there is a problem and will shut down soon.";
+                        $message .= "<br>This message has been sent from an email address which is not monitored.";
+                        $message .= "<br>Good luck with your run!";
+                        $message .= "<br>Regards.";
+                        $message .= "<br>The minoTour.";
+                        $header = "From:minoTour@minotour.nottingham.ac.uk\r\n";
+                        $header .= "MIME-Version: 1.0\r\n";
+                        $header .= "Content-type: text/html\r\n";
 
-                    if( $retval == true )
-                        {
-                            echo "Message sent successfully...";
+                        $retval = mail ($to,$subject,$message,$header);
+
+                        if( $retval == true )
+                            {
+                                echo "Email Message sent successfully...";
+                            }
+                        else
+                            {
+                                echo "Email Message could not be sent...";
+                            }
+
+                        if ($webnotify == 1){
+                            echo"<script type=\"text/javascript\" id=\"runscript\">
+                                new PNotify({
+                                    title: 'Drive Space Alert!',
+                                    text: 'MinKNOW is sending a warning about disk space on your computer ".$index["type"].". You might want to deal with it.',
+                                    type: 'error',
+                                    hide: false
+                                    });";
+                                    echo "</script>";
+                            }
+                        if (isset($_SESSION['twittername'])) {
+            					$message = "has raised a Disk Space Warning";
+            					$postData = "twitteruser=" . ($_SESSION['twittername']) . "&run=". (urlencode($index["type"])) ."&message=" . (urlencode($message));
+            					$curl = curl_init();
+            					// Set some options - we are passing in a useragent too here
+            					curl_setopt_array($curl, array(
+            						CURLOPT_RETURNTRANSFER => 1,
+            				    	CURLOPT_URL => $twiturl . 'tweet.php?' .$postData ,
+            				    	CURLOPT_USERAGENT => 'Codular Sample cURL Request'
+            					));
+            					// Send the request & save response to $resp
+            					$resp = curl_exec($curl);
+            					// Close request to clear up some resources
+            					curl_close($curl);
+            				}
+
+                        $resetalert="update " . $index['database'] .".alerts set complete = 1 where alert_index = " . $index['jobid'] . ";";
+                        //echo $resetalert;
+                        $resetalerts=$mindb_connection->query($resetalert);
+
+                }
+                if ($index['job'] == "disknotify"){
+                    if ($index['end'] == 1 ){
+                        //We will send an email to the user about this as well.
+                        $to = $_SESSION['user_email'];
+                        $subject = "minoTour Disk Space Message re: " . $index["type"];
+                        $message = "<br>Your minION run on computer <b>".$index["type"]."</b> has consumed a lot of disk space. minoTour reports less than ".$index['threshold']."GB free space left on the machine running it.";
+                        $message .= "<br>This message has been sent from an email address which is not monitored.";
+                        $message .= "<br>Good luck with your run!";
+                        $message .= "<br>Regards.";
+                        $message .= "<br>The minoTour.";
+                        $header = "From:minoTour@minotour.nottingham.ac.uk\r\n";
+                        $header .= "MIME-Version: 1.0\r\n";
+                        $header .= "Content-type: text/html\r\n";
+
+                        $retval = mail ($to,$subject,$message,$header);
+
+                        if( $retval == true )
+                            {
+                                echo "Message sent successfully...";
+                            }
+                        else
+                            {
+                                echo "Message could not be sent...";
+                            }
+
+                        if ($webnotify == 1){
+                            echo"<script type=\"text/javascript\" id=\"runscript\">
+                                new PNotify({
+                                    title: 'Drive Space Alert!',
+                                    text: 'Your hard drive has less than ".$index['threshold']."GB free space left on the machine ".$index["type"].". You might want to deal with it.',
+                                    type: 'error',
+                                    hide: false
+                                    });";
+                                    echo "</script>";
+                            }
+                        if (isset($_SESSION['twittername'])) {
+
+                            $message = "< ".$index['threshold']."GB free on computer ".$index["type"].".";
+                            $postData = "twitteruser=" . ($_SESSION['twittername']) . "&run=". (urlencode(cleanname($index['database']))) ."&message=" . (urlencode($message));
+                            //echo "alert ('".$postData."');";
+                            // Get cURL resource
+                            $curl = curl_init();
+                            // Set some options - we are passing in a useragent too here
+                            curl_setopt_array($curl, array(
+                                CURLOPT_RETURNTRANSFER => 1,
+                                CURLOPT_URL => $twiturl . 'tweet.php?' .$postData ,
+                                CURLOPT_USERAGENT => 'Codular Sample cURL Request'
+                            ));
+                            // Send the request & save response to $resp
+                            $resp = curl_exec($curl);
+                            // Close request to clear up some resources
+                            curl_close($curl);
+                            //echo "alert ('tryingtotweet');";
                         }
-                    else
-                         {
-                            echo "Message could not be sent...";
-                         }
-
-                    if ($webnotify == 1){
-                        echo"<script type=\"text/javascript\" id=\"runscript\">
-                            new PNotify({
-                                title: 'Drive Space Alert!',
-                                text: 'Your hard drive has less than 10% free space left on the machine running ".cleanname($computer[1]).". You might want to deal with it.',
-                                type: 'error',
-                                hide: false
-                                });";
-                                echo "</script>";
+                        $resetalert="update " . $index['database'] .".alerts set complete = 1 where alert_index = " . $index['jobid'] . ";";
+                        //echo $resetalert;
+                        $resetalerts=$mindb_connection->query($resetalert);
                     }
-                    if (isset($_SESSION['twittername'])) {
-
-                        $message = "Your hard drive has less than 10% free space left on the machine running ".cleanname($computer[1]).".";
-                        $postData = "twitteruser=" . ($_SESSION['twittername']) . "&run=". (urlencode(cleanname($index['database']))) ."&message=" . (urlencode($message));
-                        //echo "alert ('".$postData."');";
-                        // Get cURL resource
-                        $curl = curl_init();
-                        // Set some options - we are passing in a useragent too here
-                        curl_setopt_array($curl, array(
-                            CURLOPT_RETURNTRANSFER => 1,
-                            CURLOPT_URL => $twiturl . 'tweet.php?' .$postData ,
-                            CURLOPT_USERAGENT => 'Codular Sample cURL Request'
-                        ));
-                        // Send the request & save response to $resp
-                        $resp = curl_exec($curl);
-                        // Close request to clear up some resources
-                        curl_close($curl);
-                        //echo "alert ('tryingtotweet');";
-                    }
-                    $resetalert="update " . $index['database'] .".alerts set complete = 1 where alert_index = " . $index['jobid'] . ";";
-                    //echo $resetalert;
-                    $resetalerts=$mindb_connection->query($resetalert);
                 }
 				if ($index['job'] == "gencoverage"){
 					$sql_template = "SELECT avg(A+T+G+C) as coverage, refname FROM " . $index['database'] . ".reference_coverage_" . $index['type'] . " inner join " . $index['database'] . ".reference_seq_info where ref_id = refid group by ref_id;";
@@ -620,7 +678,7 @@ if ($login->isUserLoggedIn() == true) {
 					</script>";
 				}
 				if (isset($_SESSION['twittername'])) {
-					$message = "run started.";
+					$message = "run started!";
 					$postData = "twitteruser=" . ($_SESSION['twittername']) . "&run=". (urlencode(cleanname($value))) ."&message=" . (urlencode($message));
 					$curl = curl_init();
 					// Set some options - we are passing in a useragent too here
@@ -650,6 +708,44 @@ if ($login->isUserLoggedIn() == true) {
 				//print $value . "<br>";
 			}
 		}
+        $queryarray;
+        foreach ($databases as $dbname){
+            $querycheck = "SELECT * from ".$dbname.".alerts;";
+
+            $querycheckresult = $mindb_connection->query($querycheck);
+            foreach ($querycheckresult as $row) {
+                //echo $row['name'] . "<br>";
+                $queryarray[$dbname][$row['name']][$row['alert_index']]['reference']=$row['reference'];
+                $queryarray[$dbname][$row['name']][$row['alert_index']]['threshold']=$row['threshold'];
+                $queryarray[$dbname][$row['name']][$row['alert_index']]['control']=$row['control'];
+                $queryarray[$dbname][$row['name']][$row['alert_index']]['complete']=$row['complete'];
+                $queryarray[$dbname][$row['name']][$row['alert_index']]['start']=$row['start'];
+                $queryarray[$dbname][$row['name']][$row['alert_index']]['end']=$row['end'];
+                $queryarray[$dbname][$row['name']][$row['alert_index']]['type']=$row['type'];
+                $queryarray[$dbname][$row['name']][$row['alert_index']]['alert_index']=$row['alert_index'];
+
+            }
+        }
+        echo "<script>
+        //Get number of live runs
+        var livenum = ".count($_SESSION["activerunarray"]).";
+        var prevnum = ".$_SESSION["totalruns"].";
+        var liveruns = [];";
+        foreach ($_SESSION["activerunarray"] as $run){
+            //$string = $string . $run;
+            echo "var newItem = \"".str_replace('_', ' ', $run)."\";";
+            echo "if (liveruns.indexOf(newItem) === -1) {liveruns.push(newItem);};";
+        }
+        echo "var d = new Date();
+        vm.a=liveruns.toString();
+        vm.livenumruns=livenum;
+        vm.liverunsnames=liveruns;
+        vm.prevnumruns=prevnum;
+        vm.activealerts=".$activealerts.";
+        vm.completedalerts=".$completedalerts.";
+        vm2.basenotificationmaster=JSON.parse( '".json_encode($queryarray)."' );
+        //alert('".json_encode($queryarray)."');
+        </script>";
 		if (isset ($runsfinished)){
 			//print "Runs deleted:";
 			foreach ($runsfinished as $value2){

@@ -213,8 +213,8 @@ function meanparamtime($jobname,$currun,$param,$param2,$timewin) {
 
 				foreach ($resultmeanparams as $row) {
 					#$cumucount++;
-                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
-                    settype($binfloor,"string");
+                    $binfloor = ($row['1minwin']*60*60+$row['exp_start_time'])*1000;
+                    #settype($binfloor,"string");
 					$resultarray['All'][$param][$binfloor]=$row['param'];
                     $resultarray['All'][$param2][$binfloor]=$row['param2'];
 				}
@@ -224,8 +224,8 @@ function meanparamtime($jobname,$currun,$param,$param2,$timewin) {
 
 				foreach ($resultmeanparamspass as $row) {
 					#$cumucount++;
-                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
-                    settype($binfloor,"string");
+                    $binfloor = ($row['1minwin']*60*60+$row['exp_start_time'])*1000;
+                    #settype($binfloor,"string");
                     $resultarray['Pass'][$param][$binfloor]=$row['param'];
                     $resultarray['Pass'][$param2][$binfloor]=$row['param2'];
 
@@ -236,8 +236,8 @@ function meanparamtime($jobname,$currun,$param,$param2,$timewin) {
 
 				foreach ($resultmeanparamsfail as $row) {
 					#$cumucount++;
-                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
-                    settype($binfloor,"string");
+                    $binfloor = ($row['1minwin']*60*60+$row['exp_start_time'])*1000;
+                    #settype($binfloor,"string");
                     $resultarray['Fail'][$param][$binfloor]=$row['param'];
                     $resultarray['Fail'][$param2][$binfloor]=$row['param2'];
 				}
@@ -247,11 +247,12 @@ function meanparamtime($jobname,$currun,$param,$param2,$timewin) {
     		$jsonstring = $jsonstring . "[\n";
 
             foreach ($resultarray as $key => $value) {
-
+                    #ksort ($value);
                     foreach ($value as $key2 => $value2) {
                         $jsonstring = $jsonstring . "{\n";
                         $jsonstring = $jsonstring . "\"name\": \"" . $key . " " . $key2 .  "\",\n";
         				$jsonstring = $jsonstring . "\"data\":[";
+                        ksort ($value2);
                         foreach ($value2 as $key3 => $value3){
     					                   //echo $value2['alignedreads'] . "\t" . $value2['allreads'] . "\n";
                                            if ($value3 > 0  ){
@@ -595,10 +596,302 @@ function boxplotlength($jobname,$currun) {
 
 }
 
+function mappabletime($jobname,$currun) {
+    #echo "yo bear";
+	$checkvar = $currun . $jobname;
+	//echo $type . "\n";
+	$checkrunning = $currun . $jobname . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;
+	$jsonstring = $memcache->get("$checkvar");
+	$checkingrunning = $memcache->get("$checkrunning");
+	if($checkingrunning === "No" || $checkingrunning === FALSE){
+
+		//$memcache->set("$checkrunning", "YES", 0, 0);
+        if (strlen($jsonstring) <= 1){
+
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if (is_object($checking) && $checking->num_rows ==1){
+
+			//echo "We have already run this!";
+			foreach ($checking as $row){
+				$jsonstring = $row['json'];
+			}
+		} else {
+
+			//do something interesting here...
+			#$sqltemplate = "select (basecalled_template.5minwin*10*5+exp_start_time)*1000 as bin_floor, sum(basecalled_template.duration) as time,  sum(seqlen)/60/5/count(*) as effective_rate, count(*) as channels, sum(seqlen)/sum(basecalled_template.duration) as rate from basecalled_template inner join tracking_id using (basename_id) group by 2,1 order by 2,1;";
+			#$sqlcomplement = "select (basecalled_complement.5minwin*10*5+exp_start_time)*1000 as bin_floor, sum(basecalled_complement.duration) as time,  sum(seqlen)/60/5/count(*) as effective_rate, count(*) as channels, sum(seqlen)/sum(basecalled_complement.duration) as rate from basecalled_complement inner join tracking_id using (basename_id) group by 2,1 order by 2,1;";
+            //These queries could be further optimised by placing time data into the 2D table.
+			$sql2dmapping ="select 10minwin,exp_start_time, count(*) as alignedreads from basecalled_2d where align=1 group by 2,1 order by 2,1;";
+			$sql2dtotal ="select 10minwin,exp_start_time, count(*) as allreads from basecalled_2d group by 2,1 order by 2,1;";
+
+			#$sqltempmapping ="select (basecalled_template.10minwin*10*60+exp_start_time)*1000 as bin_floor, count(*) as alignedreads from basecalled_template inner join tracking_id using (basename_id) inner join last_align_basecalled_template_5prime using (basename_id) group by 2,1 order by 2,1;";
+			$sqltempmapping = "select basecalled_template.10minwin, exp_start_time, count(*) as alignedreads from basecalled_template where align = 1 group by 2,1 order by 2,1;";
+			$sqltemptotal ="select basecalled_template.10minwin,exp_start_time, count(*) as allreads from basecalled_template group by 2,1 order by 2,1;";
+
+			$sqlcompmapping ="select 10minwin,exp_start_time, count(*) as alignedreads from basecalled_complement where align = 1 group by 2,1 order by 2,1";
+			$sqlcomptotal ="select 10minwin,exp_start_time, count(*) as allreads from basecalled_complement group by 2,1 order by 2,1;";
+
+			$pretempmapping="select (floor((pre_config_general.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as alignedreads from pre_config_general inner join pre_align_template using (basename_id) inner join pre_tracking_id using (basename_id) group by 2,1 order by 2,1;";
+			$pretemptotal="select (floor((pre_config_general.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id) group by 2,1 order by 2,1;";
+
+			$precompmapping="select (floor((pre_config_general.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as alignedreads from pre_config_general inner join pre_align_complement using (basename_id) inner join pre_tracking_id using (basename_id) group by 2,1 order by 2,1;";
+			$precomptotal="select (floor((pre_config_general.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id) group by 2,1 order by 2,1;";
+
+			$pre2dmapping="select (floor((pre_config_general.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as alignedreads from pre_config_general inner join pre_align_2d using (basename_id) inner join pre_tracking_id using (basename_id) group by 2,1 order by 2,1;";
+			$pre2dtotal="select (floor((pre_config_general.start_time)/60/10)*60*10+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id) group by 2,1 order by 2,1;";
+
+			$resultsql2dmap = $mindb_connection->query($sql2dmapping);
+			$resultsql2dtotal = $mindb_connection->query($sql2dtotal);
+
+			$resultsqltempmap = $mindb_connection->query($sqltempmapping);
+			$resultsqltemptotal = $mindb_connection->query($sqltemptotal);
+
+			$resultsqlcompmap = $mindb_connection->query($sqlcompmapping);
+			$resultsqlcomptotal = $mindb_connection->query($sqlcomptotal);
+
+			$resultpre2dmap = $mindb_connection->query($pre2dmapping);
+			$resultpre2dtotal = $mindb_connection->query($pre2dtotal);
+
+			$resultpretempmap = $mindb_connection->query($pretempmapping);
+			$resultpretemptotal = $mindb_connection->query($pretemptotal);
+
+			$resultprecompmap = $mindb_connection->query($precompmapping);
+			$resultprecomptotal = $mindb_connection->query($precomptotal);
+
+			#$resulttemplate = $mindb_connection->query($sqltemplate);
+			#$resultcomplement = $mindb_connection->query($sqlcomplement);
+            //echo "hello";
+			$resultarray=array();
+
+			if ($resultsql2dtotal->num_rows >=1) {
+				#$cumucount = 0;
+
+				foreach ($resultsql2dtotal as $row) {
+
+					#$cumucount++;
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+                    //echo $row['allreads'] . "\n";
+					$resultarray['2d'][$binfloor]['allreads']=$row['allreads'];
+
+				}
+			}
+			if ($resultsql2dmap->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultsql2dmap as $row) {
+					#$cumucount++;
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+					$resultarray['2d'][$binfloor]['alignedreads']=$row['alignedreads'];
+
+				}
+			}
+
+			if ($resultsqltemptotal->num_rows >=1) {
+				#$cumucount = 0;
+
+				foreach ($resultsqltemptotal as $row) {
+					#$cumucount++;
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+					$resultarray['Template'][$binfloor]['allreads']=$row['allreads'];
+
+				}
+			}
+			if ($resultsqltempmap->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultsqltempmap as $row) {
+					#$cumucount++;
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+					$resultarray['Template'][$binfloor]['alignedreads']=$row['alignedreads'];
+
+				}
+			}
+
+
+			if ($resultsqlcomptotal->num_rows >=1) {
+				#$cumucount = 0;
+
+				foreach ($resultsqlcomptotal as $row) {
+					#$cumucount++;
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+					$resultarray['Complement'][$binfloor]['allreads']=$row['allreads'];
+
+				}
+			}
+			if ($resultsqlcompmap->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultsqlcompmap as $row) {
+					#$cumucount++;
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+					$resultarray['Complement'][$binfloor]['alignedreads']=$row['alignedreads'];
+
+				}
+			}
+
+
+
+			if ($resultpre2dtotal->num_rows >=1) {
+				#$cumucount = 0;
+
+				foreach ($resultpre2dtotal as $row) {
+					#$cumucount++;
+					$resultarray['Raw 2d'][$row['bin_floor']]['allreads']=$row['count'];
+
+				}
+			}
+			if ($resultpre2dmap->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultpre2dmap as $row) {
+					#$cumucount++;
+					$resultarray['Raw 2d'][$row['bin_floor']]['alignedreads']=$row['alignedreads'];
+
+				}
+			}
+
+			if ($resultpretemptotal->num_rows >=1) {
+				#$cumucount = 0;
+
+				foreach ($resultpretemptotal as $row) {
+					#$cumucount++;
+					$resultarray['Raw Template'][$row['bin_floor']]['allreads']=$row['count'];
+
+				}
+			}
+			if ($resultpretempmap->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultpretempmap as $row) {
+					#$cumucount++;
+					$resultarray['Raw Template'][$row['bin_floor']]['alignedreads']=$row['alignedreads'];
+
+				}
+			}
+
+
+			if ($resultprecomptotal->num_rows >=1) {
+				#$cumucount = 0;
+
+				foreach ($resultprecomptotal as $row) {
+					#$cumucount++;
+					$resultarray['Raw Complement'][$row['bin_floor']]['allreads']=$row['count'];
+
+				}
+			}
+			if ($resultprecompmap->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultprecompmap as $row) {
+					#$cumucount++;
+					$resultarray['Raw Complement'][$row['bin_floor']]['alignedreads']=$row['alignedreads'];
+
+				}
+			}
+
+
+
+
+
+
+		$jsonstring="";
+		$jsonstring = $jsonstring . "[\n";
+
+		foreach ($resultarray as $key => $value) {
+				$jsonstring = $jsonstring . "{\n";
+				$jsonstring = $jsonstring . "\"name\": \"" . $key .  "\",\n";
+				//echo $key . "\n";
+
+				//if ($key == "template") {
+					//$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+				//}else if ($key == "complement") {
+				//	$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+				//}else if ($key == "2d") {
+				//	$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+				//}
+				$jsonstring = $jsonstring . "\"data\":[";
+				foreach ($value as $key2 => $value2) {
+					//echo $value2['alignedreads'] . "\t" . $value2['allreads'] . "\n";
+					$jsonstring = $jsonstring . "[  $key2 , " .$value2['alignedreads']/$value2['allreads']." ],";
+				}
+
+			$jsonstring = $jsonstring . "]\n";
+		$jsonstring = $jsonstring . "},\n";
+			}
+		$jsonstring = $jsonstring . "]\n";
+	}
+
+		if ($_GET["prev"] == 1){
+			include 'savejson.php';
+		}
+		$memcache->set("$checkvar", "$jsonstring",MEMCACHE_COMPRESSED,5);
+
+	}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}
+}
+	// cache for 2 minute as we want yield to update semi-regularly...
+	$memcache->delete("$checkrunning");
+
+
+   	return $jsonstring;
+
+}
+
+
 
 ###Calculate the proportion of mappable reads over time
+function mappabletime_buggered($jobname,$currun) {
+    $readnumberstats = retrievefromsession($currun,"readnumberstats","");
+    $starttimes = retrievefromsession($currun,"starttimes","");
+    //var_dump($starttimes);
+    $expstarttime = 0;
+    foreach ($starttimes["BC"] as $entry=>$bit){
+        #echo $entry . $bit ;
+        $expstarttime = $entry;
+    }
+    //echo $expstarttime;
+    if( !empty( $readnumberstats ) ){
+        //var_dump($readnumberstats);
+        $datarray=array();
+        $jsonstring ="";
+        $readtypearray=array('Raw Template','Raw Complement', 'template','complement','2d');
+        foreach ($readtypearray as $type){
+            if (isset ($readnumberstats[$type]["countalign"])){
+                //echo $type . "\n";
+                foreach ($readnumberstats[$type]["countalign"] as $time => $count){
+                    //echo $time . "\t" . $count . "\t" . $readnumberstats[$type]["lengthsum"][$time] . "\t" . $readnumberstats[$type]["lengthsum"][$time]/$count. "\n";
+                    $datarray[$type][($time*1*60+$expstarttime)*1000]=$count/$readnumberstats[$type]["count"][$time]*100;
+                }
+            }
+        }
+        $jsonstring = $jsonstring . "[\n";
+        foreach($readtypearray as $type){
+            if (isset ($datarray[$type])){
+                $jsonstring = $jsonstring . "{\n";
+                $jsonstring = $jsonstring . '"name":"'.$type. ' length"' . ",\n";
+                $jsonstring = $jsonstring . '"data":[' . "\n";
+                $holdarray = $datarray[$type];
+                ksort($holdarray);
+                //$holdarray = asort($holdarray);
+                foreach ($holdarray as $time=>$count){
+                    $jsonstring = $jsonstring . '[' . $time . "," . $count  . "],\n";
+                }
+                $jsonstring = $jsonstring . "]\n";
+                $jsonstring = $jsonstring . "},\n";
+            }
+        }
+        $jsonstring = $jsonstring . "]\n";
+    }
+    return $jsonstring;
+}
 
-function mappabletime($jobname,$currun) {
+
+function mappabletime_old($jobname,$currun) {
 	$checkvar = $currun . $jobname;
 	//echo $type . "\n";
 	$checkrunning = $currun . $jobname . "status";
@@ -861,8 +1154,7 @@ function occupancyrate($jobname,$currun) {
 			//do something interesting here...
 			//Query to get pore occupancy over 15 minutes -> select (floor((basecalled_template.start_time)/60/15)*60*15+exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist, sum(basecalled_template.duration+basecalled_complement.duration)/count(distinct config_general.channel)/9 as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) inner join basecalled_complement using (basename_id) group by 2,1 order by 2,1
             //Query semi optimised
-			#$occupancyquery = "select (basecalled_template.15minwin*15*60+basecalled_template.exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist, LEAST(sum(IFNULL(basecalled_template.duration,0)+IFNULL(basecalled_complement.duration,0))/count(distinct config_general.channel)/9,100) as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by 2,1 order by 2,1;";
-            $occupancyquery = "select (basecalled_template.15minwin*15*60+basecalled_template.exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist, sum(IFNULL(basecalled_template.duration,0)+IFNULL(basecalled_complement.duration,0))/10000 as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by 1 order by 1;";
+			$occupancyquery = "select (basecalled_template.15minwin*15*60+basecalled_template.exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist, LEAST(sum(ifnull(basecalled_template.duration,0)+ifnull(basecalled_complement.duration,0))/count(distinct config_general.channel)/9,100) as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by 1 order by 1;";
 
 			$resultoccupancy = $mindb_connection->query($occupancyquery);
 
@@ -947,9 +1239,9 @@ function sequencingrate($jobname,$currun) {
 
     			//do something interesting here...
     			//Query to get pore occupancy over 15 minutes -> select (floor((basecalled_template.start_time)/60/15)*60*15+exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist, sum(basecalled_template.duration+basecalled_complement.duration)/count(distinct config_general.channel)/9 as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) inner join basecalled_complement using (basename_id) group by 2,1 order by 2,1
-    			$sqltemplate = "select (basecalled_template.5minwin*5*60+basecalled_template.exp_start_time)*1000 as bin_floor,sum(basecalled_template.duration) as time,sum(basecalled_template.seqlen+basecalled_complement.seqlen)/60/5/count(distinct config_general.channel) as effective_rate, count(distinct config_general.channel) as chandist, sum(basecalled_template.seqlen)/sum(basecalled_template.duration) as rate from basecalled_template inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by 1 order by 1;";
-    			$sqlcomplement = "select (basecalled_complement.5minwin*5*60+basecalled_complement.exp_start_time)*1000 as bin_floor, sum(basecalled_complement.duration) as time,  sum(basecalled_complement.seqlen+basecalled_template.seqlen)/60/5/count(distinct config_general.channel) as effective_rate, count(distinct config_general.channel) as channels, sum(basecalled_complement.seqlen)/sum(basecalled_complement.duration) as rate from basecalled_template inner join config_general using (basename_id)  inner join basecalled_complement using (basename_id) group by 1 order by 1;";
-    			$prebasecalledevents="select (floor((pre_config_general.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor, sum(pre_config_general.total_events) as total_events,  sum(pre_config_general.total_events)/60/5/count(*) as effective_rate, sum(pre_config_general.total_events)/sum(pre_config_general.total_events/pre_config_general.sample_rate)/100 as rate from pre_config_general inner join pre_tracking_id using (basename_id) group by 1 order by 1;";
+    			$sqltemplate = "select (basecalled_template.5minwin*5*60+basecalled_template.exp_start_time)*1000 as bin_floor,sum(basecalled_template.duration) as time,sum(basecalled_template.seqlen+basecalled_complement.seqlen)/60/5/count(distinct config_general.channel) as effective_rate, count(distinct config_general.channel) as chandist, sum(basecalled_template.seqlen)/sum(basecalled_template.duration) as rate from basecalled_template inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by 2,1 order by 2,1;";
+    			$sqlcomplement = "select (basecalled_complement.5minwin*5*60+basecalled_complement.exp_start_time)*1000 as bin_floor, sum(basecalled_complement.duration) as time,  sum(basecalled_complement.seqlen+basecalled_template.seqlen)/60/5/count(distinct config_general.channel) as effective_rate, count(distinct config_general.channel) as channels, sum(basecalled_complement.seqlen)/sum(basecalled_complement.duration) as rate from basecalled_template inner join config_general using (basename_id)  inner join basecalled_complement using (basename_id) group by 2,1 order by 2,1;";
+    			$prebasecalledevents="select (floor((pre_config_general.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor, sum(pre_config_general.total_events) as total_events,  sum(pre_config_general.total_events)/60/5/count(*) as effective_rate, sum(pre_config_general.total_events)/sum(pre_config_general.total_events/pre_config_general.sample_rate)/100 as rate from pre_config_general inner join pre_tracking_id using (basename_id) group by 2,1 order by 2,1;";
 
     			$resulttemplate = $mindb_connection->query($sqltemplate);
     			$resultcomplement = $mindb_connection->query($sqlcomplement);
@@ -1024,6 +1316,51 @@ function sequencingrate($jobname,$currun) {
 }
 
 function lengthtimewindow($jobname,$currun) {
+    $readnumberstats = retrievefromsession($currun,"readnumberstats","");
+    $starttimes = retrievefromsession($currun,"starttimes","");
+    //var_dump($starttimes);
+    $expstarttime = 0;
+    foreach ($starttimes["BC"] as $entry=>$bit){
+        #echo $entry . $bit ;
+        $expstarttime = $entry;
+    }
+    //echo $expstarttime;
+    if( !empty( $readnumberstats ) ){
+        //var_dump($readnumberstats);
+        $datarray=array();
+        $jsonstring ="";
+        $readtypearray=array('Raw Template','Raw Complement', 'template','complement','2d');
+        foreach ($readtypearray as $type){
+            if (isset ($readnumberstats[$type]["count"])){
+                //echo $type . "\n";
+                foreach ($readnumberstats[$type]["count"] as $time => $count){
+                    //echo $time . "\t" . $count . "\t" . $readnumberstats[$type]["lengthsum"][$time] . "\t" . $readnumberstats[$type]["lengthsum"][$time]/$count. "\n";
+                    $datarray[$type][($time*1*60+$expstarttime)*1000]=$readnumberstats[$type]["lengthsum"][$time]/$count;
+                }
+            }
+        }
+        $jsonstring = $jsonstring . "[\n";
+        foreach($readtypearray as $type){
+            if (isset ($datarray[$type])){
+                $jsonstring = $jsonstring . "{\n";
+                $jsonstring = $jsonstring . '"name":"'.$type. ' length"' . ",\n";
+                $jsonstring = $jsonstring . '"data":[' . "\n";
+                $holdarray = $datarray[$type];
+                ksort($holdarray);
+                //$holdarray = asort($holdarray);
+                foreach ($holdarray as $time=>$count){
+                    $jsonstring = $jsonstring . '[' . $time . "," . $count  . "],\n";
+                }
+                $jsonstring = $jsonstring . "]\n";
+                $jsonstring = $jsonstring . "},\n";
+            }
+        }
+        $jsonstring = $jsonstring . "]\n";
+    }
+    return $jsonstring;
+}
+
+function lengthtimewindow_old($jobname,$currun) {
 	$checkvar = $currun . $jobname;
 	//echo $type . "\n";
 	$checkrunning = $currun . $jobname . "status";
@@ -1306,10 +1643,401 @@ function ratiopassfail($jobname,$currun) {
 
 }
 
+function ratiopassfail_buggered($jobname,$currun) {
+    $readnumberstats = retrievefromsession($currun,"readnumberstats","");
+    $starttimes = retrievefromsession($currun,"starttimes","");
+    //var_dump($starttimes);
+    $expstarttime = 0;
+    foreach ($starttimes["BC"] as $entry=>$bit){
+        #echo $entry . $bit ;
+        $expstarttime = $entry;
+    }
+    //echo $expstarttime;
+    if( !empty( $readnumberstats ) ){
+        //var_dump($readnumberstats);
+        $datarray=array();
+        $jsonstring ="";
+        $readtypearray=array('Raw Template','Raw Complement', 'template','complement','2d');
+        foreach ($readtypearray as $type){
+            if (isset ($readnumberstats[$type]["proppass"])){
+                //echo $type . "\n";
+                foreach ($readnumberstats[$type]["proppass"] as $time => $count){
+                    //echo $time . "\t" . $count . "\t" . $readnumberstats[$type]["lengthsum"][$time] . "\t" . $readnumberstats[$type]["lengthsum"][$time]/$count. "\n";
+                    $datarray[$type][($time*1*60+$expstarttime)*1000]=$count;
+                }
+            }
+        }
+        $jsonstring = $jsonstring . "[\n";
+        foreach($readtypearray as $type){
+            if (isset ($datarray[$type])){
+                $jsonstring = $jsonstring . "{\n";
+                $jsonstring = $jsonstring . '"name":"'.$type. ' pass"' . ",\n";
+                $jsonstring = $jsonstring . '"data":[' . "\n";
+                $holdarray = $datarray[$type];
+                ksort($holdarray);
+                //$holdarray = asort($holdarray);
+                foreach ($holdarray as $time=>$count){
+                    $jsonstring = $jsonstring . '[' . $time . "," . $count  . "],\n";
+                }
+                $jsonstring = $jsonstring . "]\n";
+                $jsonstring = $jsonstring . "},\n";
+            }
+        }
+        $datarray=array();
+        foreach ($readtypearray as $type){
+            if (isset ($readnumberstats[$type]["propfail"])){
+                //echo $type . "\n";
+                foreach ($readnumberstats[$type]["propfail"] as $time => $count){
+                    //echo $time . "\t" . $count . "\t" . $readnumberstats[$type]["lengthsum"][$time] . "\t" . $readnumberstats[$type]["lengthsum"][$time]/$count. "\n";
+                    $datarray[$type][($time*1*60+$expstarttime)*1000]=$count;
+                }
+            }
+        }
+        foreach($readtypearray as $type){
+            if (isset ($datarray[$type])){
+                $jsonstring = $jsonstring . "{\n";
+                $jsonstring = $jsonstring . '"name":"'.$type. ' fail"' . ",\n";
+                $jsonstring = $jsonstring . '"data":[' . "\n";
+                $holdarray = $datarray[$type];
+                ksort($holdarray);
+                //$holdarray = asort($holdarray);
+                foreach ($holdarray as $time=>$count){
+                    $jsonstring = $jsonstring . '[' . $time . "," . $count  . "],\n";
+                }
+                $jsonstring = $jsonstring . "]\n";
+                $jsonstring = $jsonstring . "},\n";
+            }
+        }
+        $jsonstring = $jsonstring . "]\n";
+    }
+    return $jsonstring;
+}
+
+
+function ratiopassfail_old($jobname,$currun) {
+	$checkvar = $currun . $jobname;
+	//echo $type . "\n";
+	$checkrunning = $currun . $jobname . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;
+	$jsonstring = $memcache->get("$checkvar");
+	$checkingrunning = $memcache->get("$checkrunning");
+	if($checkingrunning === "No" || $checkingrunning === FALSE){
+		//$memcache->set("$checkrunning", "YES", 0, 0);
+        if (strlen($jsonstring) <= 1){
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if (is_object($checking) && $checking->num_rows ==1){
+			//echo "We have already run this!";
+			foreach ($checking as $row){
+				$jsonstring = $row['json'];
+			}
+		} else {
+			//do something interesting here...
+            //echo "badger";
+			#$sqltotalcount = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) group by 2,1 order by 2,1;";
+            $sqltotalcount = "select 10minwin,exp_start_time, count(*) as count from basecalled_template group by 2,1 order by 2,1;";
+            #$sqltemplate = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) where pass = 1 group by 2,1 order by 2,1;";
+            $sqltemplate = "select 10minwin,exp_start_time, count(*) as count from basecalled_template where pass = 1 group by 2,1 order by 2,1;";
+            $sqlcomplement = "select 10minwin,exp_start_time, count(*) as count from basecalled_complement where pass = 1 group by 2,1 order by 2,1;";
+			#$sql2d = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) where pass = 1 group by 2,1 order by 2,1;";
+			$sql2d="select 10minwin,exp_start_time, count(*) as count from basecalled_2d where pass = 1 group by 2,1 order by 2,1;";
+            $sqltemplate2 = "select 10minwin,exp_start_time, count(*) as count from basecalled_template where pass = 0 group by 2,1 order by 2,1;";
+			$sqlcomplement2 = "select 10minwin,exp_start_time, count(*) as count from basecalled_complement where pass = 0 group by 2,1 order by 2,1;";
+			$sql2d2 = "select 10minwin,exp_start_time, count(*) as count from basecalled_2d where pass = 0 group by 2,1 order by 2,1;";
+
+			$resulttotal = $mindb_connection->query($sqltotalcount);
+
+			$resulttemplate = $mindb_connection->query($sqltemplate);
+			$resultcomplement = $mindb_connection->query($sqlcomplement);
+			$result2d = $mindb_connection->query($sql2d);
+
+			$resulttemplate2 = $mindb_connection->query($sqltemplate2);
+			$resultcomplement2 = $mindb_connection->query($sqlcomplement2);
+			$result2d2 = $mindb_connection->query($sql2d2);
+
+			$totalarray;
+
+			if ($resulttotal->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resulttotal as $row) {
+					#$cumucount++;
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+					$totalarray[$binfloor]=$row['count'];
+
+				}
+			}
+
+			$resultarray=array();
+
+			if ($resulttemplate->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resulttemplate as $row) {
+					#$cumucount++;
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+					$resultarray['template pass'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+                    //echo $row['count'];
+				}
+			}
+			if ($resultcomplement->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultcomplement as $row) {
+					#$cumucount++;
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+					$resultarray['complement pass'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+				}
+			}
+			if ($result2d->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($result2d as $row) {
+					#$cumucount++;
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+					$resultarray['2d pass'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+				}
+			}
+			if ($resulttemplate2->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resulttemplate2 as $row) {
+					#$cumucount++;
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+					$resultarray['template fail'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+
+				}
+			}
+			if ($resultcomplement2->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultcomplement2 as $row) {
+					#$cumucount++;
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+					$resultarray['complement fail'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+				}
+			}
+			if ($result2d2->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($result2d2 as $row) {
+					#$cumucount++;
+                    $binfloor = ($row['10minwin']*10*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+					$resultarray['2d fail'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+				}
+			}
+
+		}
+		//$resultarray=array();
+		$jsonstring="";
+		$jsonstring = $jsonstring . "[\n";
+
+		foreach ($resultarray as $key => $value) {
+				$jsonstring = $jsonstring . "{\n";
+				$jsonstring = $jsonstring . "\"name\": \"" . $key .  "\",\n";
+
+				//if ($key == "template") {
+					//$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+				//}else if ($key == "complement") {
+				//	$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+				//}else if ($key == "2d") {
+				//	$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+				//}
+				$jsonstring = $jsonstring . "\"data\":[";
+				foreach ($value as $key2 => $value2) {
+					$jsonstring = $jsonstring . "[  $key2 , $value2 ],";
+				}
+
+			$jsonstring = $jsonstring . "]\n";
+		$jsonstring = $jsonstring . "},\n";
+			}
+		$jsonstring = $jsonstring . "]\n";
+
+		if ($_GET["prev"] == 1){
+			//include 'savejson.php';
+		}
+		$memcache->set("$checkvar", "$jsonstring",MEMCACHE_COMPRESSED,5);
+
+	}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}
+}
+	// cache for 2 minute as we want yield to update semi-regularly...
+	$memcache->delete("$checkrunning");
+   	return $jsonstring;
+
+}
+
 
 ##### ratio2dtemplate
-
 function ratio2dtemplate($jobname,$currun) {
+	$checkvar = $currun . $jobname;
+	//echo $type . "\n";
+	$checkrunning = $currun . $jobname . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;
+	$jsonstring = $memcache->get("$checkvar");
+	$checkingrunning = $memcache->get("$checkrunning");
+	if($checkingrunning === "No" || $checkingrunning === FALSE){
+		//$memcache->set("$checkrunning", "YES", 0, 0);
+        if (strlen($jsonstring) <= 1){
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if (is_object($checking) && $checking->num_rows ==1){
+			//echo "We have already run this!";
+			foreach ($checking as $row){
+				$jsonstring = $row['json'];
+			}
+		} else {
+			//do something interesting here...
+			#$sqltemplate = "select ((basecalled_template.15minwin*15*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id)  group by 2,1 order by 2,1;";
+            $sqltemplate ="select 15minwin,exp_start_time, count(*) as count from basecalled_template group by 2,1 order by 2,1;";
+			$sqlcomplement = "select 15minwin,exp_start_time, count(*) as count from basecalled_complement group by 2,1 order by 2,1;";
+			$sql2d = "select 15minwin,exp_start_time, count(*) as count from basecalled_2d group by 2,1 order by 2,1;";
+
+			$pretemplate = "select (floor((pre_config_general.start_time)/60/15)*15*60+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id)  group by 2,1 order by 2,1;";
+
+			$precomplement = "select (floor((pre_config_general.start_time)/60/15)*15*60+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found = 1 group by 2,1 order by 2,1;";
+
+			$resulttemplate = $mindb_connection->query($sqltemplate);
+			$resultcomplement = $mindb_connection->query($sqlcomplement);
+			$result2d = $mindb_connection->query($sql2d);
+			$resultpretemplate = $mindb_connection->query($pretemplate);
+			$resultprecomplement = $mindb_connection->query($precomplement);
+
+			$resultarray=array();
+
+			if ($resulttemplate->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resulttemplate as $row) {
+					#$cumucount++;
+                    $binfloor = ($row['15minwin']*15*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+					$resultarray['template'][$binfloor]=$row['count'];
+				}
+			}
+			if ($resultcomplement->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultcomplement as $row) {
+					#$cumucount++;
+                    $binfloor = ($row['15minwin']*15*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+					$resultarray['complement'][$binfloor]=$row['count'];
+				}
+			}
+			if ($result2d->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($result2d as $row) {
+					#$cumucount++;
+                    $binfloor = ($row['15minwin']*15*60+$row['exp_start_time'])*1000;
+                    settype($binfloor,"string");
+					$resultarray['2d'][$binfloor]=$row['count'];
+				}
+			}
+			if ($resultpretemplate->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultpretemplate as $row) {
+					#$cumucount++;
+					$resultarray['Raw Template'][$row['bin_floor']]=$row['count'];
+				}
+			}
+			if ($resultprecomplement->num_rows >=1) {
+				#$cumucount = 0;
+				foreach ($resultprecomplement as $row) {
+					#$cumucount++;
+					$resultarray['Raw Complement'][$row['bin_floor']]=$row['count'];
+				}
+			}
+		}
+
+		$jsonstring="";
+		$jsonstring = $jsonstring . "[\n";
+
+		foreach ($resultarray as $key => $value) {
+				$jsonstring = $jsonstring . "{\n";
+				$jsonstring = $jsonstring . "\"name\": \"" . $key .  "\",\n";
+
+				//if ($key == "template") {
+					//$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+				//}else if ($key == "complement") {
+				//	$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+				//}else if ($key == "2d") {
+				//	$jsonstring = $jsonstring . "\"yAxis\": 0,\n";
+				//}
+				$jsonstring = $jsonstring . "\"data\":[";
+				foreach ($value as $key2 => $value2) {
+					$jsonstring = $jsonstring . "[  $key2 , $value2 ],";
+				}
+
+			$jsonstring = $jsonstring . "]\n";
+		$jsonstring = $jsonstring . "},\n";
+			}
+		$jsonstring = $jsonstring . "]\n";
+
+		if ($_GET["prev"] == 1){
+			//include 'savejson.php';
+		}
+		$memcache->set("$checkvar", "$jsonstring",MEMCACHE_COMPRESSED,5);
+
+	}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}
+}
+	// cache for 2 minute as we want yield to update semi-regularly...
+	$memcache->delete("$checkrunning");
+   	return $jsonstring;
+
+}
+
+function ratio2dtemplate_bugged($jobname,$currun){
+    $readnumberstats = retrievefromsession($currun,"readnumberstats","");
+    $starttimes = retrievefromsession($currun,"starttimes","");
+    //var_dump($starttimes);
+    $expstarttime = 0;
+    foreach ($starttimes["BC"] as $entry=>$bit){
+        #echo $entry . $bit ;
+        $expstarttime = $entry;
+    }
+    //echo $expstarttime;
+    if( !empty( $readnumberstats ) ){
+        //var_dump($readnumberstats);
+        $datarray=array();
+        $jsonstring ="";
+        $readtypearray=array('Raw Template','Raw Complement', 'template','complement','2d');
+        foreach ($readtypearray as $type){
+            if (isset ($readnumberstats[$type]["count"])){
+                //echo $type . "\n";
+                foreach ($readnumberstats[$type]["count"] as $time => $count){
+                    //echo $time . "\t" . $count . "\t" . $readnumberstats[$type]["lengthsum"][$time] . "\t" . $readnumberstats[$type]["lengthsum"][$time]/$count. "\n";
+                    $datarray[$type][($time*1*60+$expstarttime)*1000]=$count;
+                }
+            }
+        }
+        $jsonstring = $jsonstring . "[\n";
+        foreach($readtypearray as $type){
+            if (isset ($datarray[$type])){
+                $jsonstring = $jsonstring . "{\n";
+                $jsonstring = $jsonstring . '"name":"'.$type. ' length"' . ",\n";
+                $jsonstring = $jsonstring . '"data":[' . "\n";
+                $holdarray = $datarray[$type];
+                ksort($holdarray);
+                //$holdarray = asort($holdarray);
+                foreach ($holdarray as $time=>$count){
+                    $jsonstring = $jsonstring . '[' . $time . "," . $count  . "],\n";
+                }
+                $jsonstring = $jsonstring . "]\n";
+                $jsonstring = $jsonstring . "},\n";
+            }
+        }
+        $jsonstring = $jsonstring . "]\n";
+    }
+    return $jsonstring;
+}
+
+function ratio2dtemplate_old($jobname,$currun) {
 	$checkvar = $currun . $jobname;
 	//echo $type . "\n";
 	$checkrunning = $currun . $jobname . "status";
@@ -1432,7 +2160,54 @@ function ratio2dtemplate($jobname,$currun) {
 
 ##### cumulative yield...
 
-function cumulativeyield($jobname,$currun) {
+function cumulativeyield($jobname,$currun){
+    $readnumberstats = retrievefromsession($currun,"readnumberstats","");
+    $starttimes = retrievefromsession($currun,"starttimes","");
+    //var_dump($starttimes);
+    $expstarttime = 0;
+    foreach ($starttimes["BC"] as $entry=>$bit){
+        #echo $entry . $bit ;
+        $expstarttime = $entry;
+    }
+    //echo $expstarttime;
+    if( !empty( $readnumberstats ) ){
+        //var_dump($readnumberstats);
+        $datarray=array();
+        $jsonstring ="";
+        $readtypearray=array('Raw Template','Raw Complement', 'template','complement','2d');
+        foreach ($readtypearray as $type){
+            if (isset ($readnumberstats[$type]["count"])){
+                //echo $type . "\n";
+                foreach ($readnumberstats[$type]["count"] as $time => $count){
+                    //echo $time . "\t" . $count . "\t" . $readnumberstats[$type]["lengthsum"][$time] . "\t" . $readnumberstats[$type]["lengthsum"][$time]/$count. "\n";
+                    $datarray[$type][($time*1*60+$expstarttime)*1000]=$count;
+                }
+            }
+        }
+        $jsonstring = $jsonstring . "[\n";
+        foreach($readtypearray as $type){
+            if (isset ($datarray[$type])){
+                $jsonstring = $jsonstring . "{\n";
+                $jsonstring = $jsonstring . '"name":"'.$type. '"' . ",\n";
+                $jsonstring = $jsonstring . '"data":[' . "\n";
+                $holdarray = $datarray[$type];
+                ksort($holdarray);
+                //$holdarray = asort($holdarray);
+                $previous = 0;
+                foreach ($holdarray as $time=>$count){
+                    $previous = $previous + $count;
+                    $jsonstring = $jsonstring . '[' . $time . "," . $previous  . "],\n";
+                }
+                $jsonstring = $jsonstring . "]\n";
+                $jsonstring = $jsonstring . "},\n";
+            }
+        }
+        $jsonstring = $jsonstring . "]\n";
+    }
+    return $jsonstring;
+}
+
+function cumulativeyield_old($jobname,$currun) {
 	$checkvar = $currun . $jobname;
 	//echo $type . "\n";
 	$checkrunning = $currun . $jobname . "status";
@@ -1485,10 +2260,7 @@ function cumulativeyield($jobname,$currun) {
 					#echo "Count is ". $row['count'] . "\n";
 					#echo "Cumu Count is ". $cumucount . "\n";
 					#$resultarray['template'][$cumucount]=$row['bin_floor'];
-                    $binfloor = ($row['5minwin']*5.0*60.0+$row['exp_start_time'])*1000.0;
-                    #echo gettype($row['5minwin']) . "\n";
-                    #echo gettype($row['exp_start_time'])."\n";
-                    #echo $binfloor . "\n";
+                    $binfloor = ($row['5minwin']*5*60+$row['exp_start_time'])*1000;
                     settype($binfloor,"string");
 					$resultarray['template'][$binfloor]=$cumucount;
 				}
@@ -1559,7 +2331,6 @@ function cumulativeyield($jobname,$currun) {
 
 			$jsonstring="";
 			$jsonstring = $jsonstring . "[\n";
-            #var_dump($resultarray);
 
 			foreach ($resultarray as $key => $value) {
                 #echo "we're in";
@@ -1576,7 +2347,6 @@ function cumulativeyield($jobname,$currun) {
 				$jsonstring = $jsonstring . "\"data\":[";
 				foreach ($value as $key2 => $value2) {
 					$jsonstring = $jsonstring . "[ $key2 , $value2 ],";
-                    #echo $key2 . ":" . $value2 . "\n";
 				}
 
 				$jsonstring = $jsonstring . "]\n";
@@ -1768,7 +2538,7 @@ function barcodingcov($jobname,$currun,$refid) {
 
 			//Dump the ref info into a lookup table
 			$reflookup=[];
-
+            $barcodearray = array();
 
 			if ($refinfoquery->num_rows >= 1) {
 				foreach ($refinfoquery as $row) {
@@ -1782,6 +2552,9 @@ function barcodingcov($jobname,$currun,$refid) {
 			if ($barcovquerytemp->num_rows >= 1) {
 				foreach ($barcovquerytemp as $row) {
 					$referenceids = explode("_", $row['ref_id']);
+                    if (!in_array($referenceids[1], $barcodearray)){
+					    $barcodearray[] = $referenceids[1];
+					}
                     //echo $referenceids[0] . "\t" . $referenceids[1] . "\n";
 					$barcodlookup[$reflookup[$referenceids[0]]." template"][$referenceids[1]]=$row['avecount'];
 					#print $reflookup[$referenceids[0]] . " " . $referenceids[1] . " " . $row['avecount'] . "\n";
@@ -1790,6 +2563,9 @@ function barcodingcov($jobname,$currun,$refid) {
             if ($barcovquerycomp->num_rows >= 1) {
 				foreach ($barcovquerycomp as $row) {
 					$referenceids = explode("_", $row['ref_id']);
+                    if (!in_array($referenceids[1], $barcodearray)){
+					    $barcodearray[] = $referenceids[1];
+					}
                     //echo $referenceids[0] . "\t" . $referenceids[1] . "\n";
 					$barcodlookup[$reflookup[$referenceids[0]]." complement"][$referenceids[1]]=$row['avecount'];
 					#print $reflookup[$referenceids[0]] . " " . $referenceids[1] . " " . $row['avecount'] . "\n";
@@ -1798,13 +2574,28 @@ function barcodingcov($jobname,$currun,$refid) {
             if ($barcovquery->num_rows >= 1) {
 				foreach ($barcovquery as $row) {
 					$referenceids = explode("_", $row['ref_id']);
+                    if (!in_array($referenceids[1], $barcodearray)){
+					    $barcodearray[] = $referenceids[1];
+					}
                     //echo $referenceids[0] . "\t" . $referenceids[1] . "\n";
 					$barcodlookup[$reflookup[$referenceids[0]]." 2D"][$referenceids[1]]=$row['avecount'];
 					#print $reflookup[$referenceids[0]] . " " . $referenceids[1] . " " . $row['avecount'] . "\n";
 				}
 			}
-			//var_dump ($barcodlookup);
+			//var_dump ($barcodearray);
 			//Plot the results in a lovely bargraph with beautiful data presentation skills.
+
+            $jsonstring = $jsonstring . "{\n";
+            $jsonstring = $jsonstring . "\"name\": \"". "categories". "\",\n";
+            $jsonstring = $jsonstring . "\"data\":\n";
+            $jsonstring = $jsonstring . "[\n";
+            foreach ($barcodearray as $key=>$value){
+                //echo $key . "\t" . $value . "\n";
+                $jsonstring = $jsonstring . "'" . $value . "',";
+            }
+            $jsonstring = $jsonstring . "]\n";
+            $jsonstring = $jsonstring . "},\n";
+
 			foreach ($barcodlookup as $key=>$value){
 				#print $key . "\n";
 				$jsonstring = $jsonstring . "{\n";
@@ -1844,7 +2635,6 @@ function barcodingcov($jobname,$currun,$refid) {
    	return $jsonstring;
 
 }
-
 ##### Barcoding summary pie chart data
 
 function barcodingpie($jobname,$currun,$refid) {
@@ -3481,7 +4271,7 @@ function average_length_over_time($jobname,$currun){
 
 			if ($template->num_rows >= 1){
 				foreach ($template as $row) {
-                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    $binfloor = ($row['1minwin']*60*60+$row['exp_start_time'])*1000;
                     settype($binfloor,"string");
 					$resultarray['template'][$binfloor]=$row['average_length'];
 				}
@@ -3489,7 +4279,7 @@ function average_length_over_time($jobname,$currun){
 
 			if ($complement->num_rows >=1) {
 				foreach ($complement as $row) {
-                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    $binfloor = ($row['1minwin']*60*60+$row['exp_start_time'])*1000;
                     settype($binfloor,"string");
 					$resultarray['complement'][$binfloor]=$row['average_length'];
 				}
@@ -3956,8 +4746,8 @@ $checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 					$jsonstring = $row['json'];
 				}
 			} else {
-			$sql_template = "select basecalled_template.g_1minwin, count(*) as chan_count from basecalled_template inner join config_general using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
-			$sql_complement = "select basecalled_complement.g_1minwin, count(*) as chan_count from basecalled_complement inner join config_general using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
+			$sql_template = "select (floor(basecalled_template.start_time/60)*60 + basecalled_template.exp_start_time) *1000 as bin_floor, count(*) as chan_count from basecalled_template inner join config_general using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
+			$sql_complement = "select (floor(basecalled_complement.start_time/60)*60  + basecalled_complement.exp_start_time ) * 1000 as bin_floor, count(*) as chan_count from basecalled_complement inner join config_general using (basename_id) inner join tracking_id using (basename_id) group by 1 order by 1;";
 
 			$resultarray=array();
 
@@ -3966,18 +4756,13 @@ $checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
 
 			if ($template->num_rows >= 1){
 				foreach ($template as $row) {
-                    $binfloor = ($row['g_1minwin']*1*60)*1000;
-                    settype($binfloor,"string");
-					$resultarray['template'][$binfloor]=$row['chan_count'];
+					$resultarray['template'][$row['bin_floor']]=$row['chan_count'];
 				}
 			}
 
 			if ($complement->num_rows >=1) {
 				foreach ($complement as $row) {
-                    $binfloor = ($row['g_1minwin']*1*60)*1000;
-                    settype($binfloor,"string");
-					//$resultarray['template'][$binfloor]]=$row['chan_count'];
-					$resultarray['complement'][$binfloor]=$row['chan_count'];
+					$resultarray['complement'][$row['bin_floor']]=$row['chan_count'];
 				}
 			}
 
@@ -4055,7 +4840,7 @@ function average_time_over_time2($jobname,$currun){
 					//	)
 					//);
                     $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
-                    settype($binfloor,"string");
+                    #settype($binfloor,"string");
 					$resultarray['template'][$binfloor]=$row['average_time'];
 					//echo $row['average_time'] . "t\n";
 					//var_dump ($resultarray);
@@ -4070,7 +4855,7 @@ function average_time_over_time2($jobname,$currun){
 					//	)
 			//	);
                     $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
-                    settype($binfloor,"string");
+                    #settype($binfloor,"string");
 					$resultarray['complement'][$binfloor]=$row['average_time'];
 					//echo $row['average_time'] . "c\n";
 				}
@@ -4085,6 +4870,7 @@ function average_time_over_time2($jobname,$currun){
 				$jsonstring = $jsonstring . "{\n";
 				$jsonstring = $jsonstring . "\"name\" : \"$key\", \n";
 				$jsonstring = $jsonstring . "\"data\": [";
+                ksort($value);
 				foreach ($value as $key2 => $value2) {
 					$jsonstring = $jsonstring . "[$key2,$value2],\n";
 				}
@@ -4524,7 +5310,116 @@ function histogram($jobname,$currun) {
 }
 
 
+function depthcoverageglob($jobname,$currrun){
+    $jobname = $jobname;
+    $checkvar = $currun . $jobname;
+    $checkrunning = $currun . $jobname . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;
+	//echo $refid . "\n";
+	$jsonstring = $memcache->get("$checkvar");
+	$checkingrunning = $memcache->get("$checkrunning");
+    if($checkingrunning === "No" || $checkingrunning === FALSE){
+        if (strlen($jsonstring) <= 1){
+		//$memcache->set("$checkrunning", "YES", 0, 0);
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if (is_object($checking) && $checking->num_rows ==1){
+			//echo "We have already run this!";
+			foreach ($checking as $row){
+				$jsonstring = $row['json'];
+			}
+		} else {
+			//echo "do something interesting here...";
+            $table_check = "SHOW TABLES LIKE 'last_align_basecalled_template'";
+            $table_exists = $mindb_connection->query($table_check);
+            $jsonstring="";
+            //echo $table_check;
+            if ($table_exists->num_rows >= 1){
+                //echo "startibartfast";
+            }else{
+                //echo "james bond";
+                $sql_template = "SELECT avg(A+T+G+C) as depth,ref_id,refname FROM reference_coverage_template inner join reference_seq_info where refid=ref_id group by ref_id;";
+                $sql_complement = "SELECT avg(A+T+G+C) as depth,ref_id,refname FROM reference_coverage_complement inner join reference_seq_info where refid=ref_id group by ref_id;";
+                $sql_2d = "SELECT avg(A+T+G+C) as depth,ref_id,refname FROM reference_coverage_2d inner join reference_seq_info where refid=ref_id group by ref_id;";
+                $template=$mindb_connection->query($sql_template);
+                $complement=$mindb_connection->query($sql_complement);
+                $read2d=$mindb_connection->query($sql_2d);
 
+                $covarray=array();
+                $refarray=array();
+
+                if ($template->num_rows >= 1){
+                    foreach ($template as $row) {
+                        if (!in_array($row['refname'], $refarray)){$refarray[] = $row['refname'];}
+                        $perccov=$row['depth'];
+                        $covarray['template'][$row['refname']]['percov']=$perccov;
+                    }
+                }
+                if ($complement->num_rows >= 1){
+                    foreach ($complement as $row) {
+                        if (!in_array($row['refname'], $refarray)){$refarray[] = $row['refname'];}
+                        $perccov=$row['depth'];
+                        $covarray['complement'][$row['refname']]['percov']=$perccov;
+                    }
+                }
+                if ($read2d->num_rows >= 1){
+                    foreach ($read2d as $row) {
+                        if (!in_array($row['refname'], $refarray)){$refarray[] = $row['refname'];}
+                        $perccov=$row['depth'];
+                        $covarray['2d'][$row['refname']]['percov']=$perccov;
+                    }
+                }
+                //var_dump($covarray);
+                //var_dump($refarray);
+                $jsonstring = $jsonstring . "[\n";
+
+                $jsonstring = $jsonstring .  "{\n";
+
+                $jsonstring = $jsonstring .  "\"name\" : \"" . "categories" . "\", \n";
+                $jsonstring = $jsonstring .  "\"data\": [";
+                foreach ($refarray as $ref) {
+                    $jsonstring = $jsonstring .  "'" . $ref . "',";
+                }
+
+                $jsonstring = $jsonstring .  "]\n";
+                $jsonstring = $jsonstring .  "},\n";
+
+                foreach ($covarray as $type => $typeval){
+                    $jsonstring = $jsonstring .  "{\n";
+                    $jsonstring = $jsonstring .  "\"name\" : \"" . $type . "\", \n";
+                    $jsonstring = $jsonstring .  "\"data\": [";
+
+                    foreach ($refarray as $ref) {
+                        $value = 0;
+                        if (array_key_exists($ref, $typeval)){
+                            $value = $typeval[$ref]["percov"];
+                        }
+                        $jsonstring = $jsonstring .  "$value,";
+                    }
+                    $jsonstring = $jsonstring .  "]\n";
+                    $jsonstring = $jsonstring .  "},\n";
+
+                }
+
+            }
+		}
+		$jsonstring = $jsonstring . "]\n";
+		if ($_GET["prev"] == 1){
+			include 'savejson.php';
+		}
+		$memcache->set("$checkvar", "$jsonstring",MEMCACHE_COMPRESSED,5);
+
+	}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}
+}
+	// cache for 2 minute as we want yield to update semi-regularly...
+	$memcache->delete("$checkrunning");
+   	return $jsonstring;
+
+}
 
 
 ##Average Depth of Coverage - primitive depth calculator
@@ -4728,7 +5623,117 @@ function depthcoverage($jobname,$currun,$refid) {
     return $jsonstring;
 }
 
+function percentcoverageglob($jobname,$currrun){
 
+    $jobname = $jobname;
+    $checkvar = $currun . $jobname;
+    $checkrunning = $currun . $jobname . "status";
+	global $memcache;
+	global $mindb_connection;
+	global $reflength;
+	//echo $refid . "\n";
+	$jsonstring = $memcache->get("$checkvar");
+	$checkingrunning = $memcache->get("$checkrunning");
+    if($checkingrunning === "No" || $checkingrunning === FALSE){
+        if (strlen($jsonstring) <= 1){
+		//$memcache->set("$checkrunning", "YES", 0, 0);
+		$checkrow = "select name,json from jsonstore where name = '" . $jobname . "' ;";
+		$checking=$mindb_connection->query($checkrow);
+		if (is_object($checking) && $checking->num_rows ==1){
+			//echo "We have already run this!";
+			foreach ($checking as $row){
+				$jsonstring = $row['json'];
+			}
+		} else {
+			//echo "do something interesting here...";
+            $table_check = "SHOW TABLES LIKE 'last_align_basecalled_template'";
+            $table_exists = $mindb_connection->query($table_check);
+            $jsonstring="";
+            //echo $table_check;
+            if ($table_exists->num_rows >= 1){
+                //echo "startibartfast";
+            }else{
+                //echo "james bond";
+                $sql_template = "SELECT (count(*)/reflen)*100 as coverage,ref_id,refname FROM reference_coverage_template inner join reference_seq_info where refid=ref_id group by ref_id;";
+                $sql_complement = "SELECT (count(*)/reflen)*100 as coverage,ref_id,refname FROM reference_coverage_complement inner join reference_seq_info where refid=ref_id group by ref_id;";
+                $sql_2d = "SELECT (count(*)/reflen)*100 as coverage,ref_id,refname FROM reference_coverage_2d inner join reference_seq_info where refid=ref_id group by ref_id;";
+                $template=$mindb_connection->query($sql_template);
+                $complement=$mindb_connection->query($sql_complement);
+                $read2d=$mindb_connection->query($sql_2d);
+
+                $covarray=array();
+                $refarray=array();
+
+                if ($template->num_rows >= 1){
+                    foreach ($template as $row) {
+                        if (!in_array($row['refname'], $refarray)){$refarray[] = $row['refname'];}
+                        $perccov=$row['coverage'];
+                        $covarray['template'][$row['refname']]['percov']=$perccov;
+                    }
+                }
+                if ($complement->num_rows >= 1){
+                    foreach ($complement as $row) {
+                        if (!in_array($row['refname'], $refarray)){$refarray[] = $row['refname'];}
+                        $perccov=$row['coverage'];
+                        $covarray['complement'][$row['refname']]['percov']=$perccov;
+                    }
+                }
+                if ($read2d->num_rows >= 1){
+                    foreach ($read2d as $row) {
+                        if (!in_array($row['refname'], $refarray)){$refarray[] = $row['refname'];}
+                        $perccov=$row['coverage'];
+                        $covarray['2d'][$row['refname']]['percov']=$perccov;
+                    }
+                }
+                //var_dump($covarray);
+                //var_dump($refarray);
+                $jsonstring = $jsonstring . "[\n";
+
+                $jsonstring = $jsonstring .  "{\n";
+
+                $jsonstring = $jsonstring .  "\"name\" : \"" . "categories" . "\", \n";
+                $jsonstring = $jsonstring .  "\"data\": [";
+                foreach ($refarray as $ref) {
+                    $jsonstring = $jsonstring .  "'" . $ref . "',";
+                }
+
+                $jsonstring = $jsonstring .  "]\n";
+                $jsonstring = $jsonstring .  "},\n";
+
+                foreach ($covarray as $type => $typeval){
+                    $jsonstring = $jsonstring .  "{\n";
+                    $jsonstring = $jsonstring .  "\"name\" : \"" . $type . "\", \n";
+                    $jsonstring = $jsonstring .  "\"data\": [";
+
+                    foreach ($refarray as $ref) {
+                        $value = 0;
+                        if (array_key_exists($ref, $typeval)){
+                            $value = $typeval[$ref]["percov"];
+                        }
+                        $jsonstring = $jsonstring .  "$value,";
+                    }
+                    $jsonstring = $jsonstring .  "]\n";
+                    $jsonstring = $jsonstring .  "},\n";
+
+                }
+
+            }
+		}
+		$jsonstring = $jsonstring . "]\n";
+		if ($_GET["prev"] == 1){
+			include 'savejson.php';
+		}
+		$memcache->set("$checkvar", "$jsonstring",MEMCACHE_COMPRESSED,5);
+
+	}else{
+		$jsonstring = $memcache->get("$checkvar");
+	}
+}
+	// cache for 2 minute as we want yield to update semi-regularly...
+	$memcache->delete("$checkrunning");
+   	return $jsonstring;
+
+}
 
 ##Percentage of Reference with Read - primitive coverage calculator based on total coverage of all sequences being aligned too.
 function percentcoverage($jobname,$currun,$refid) {
@@ -4805,9 +5810,9 @@ function percentcoverage($jobname,$currun,$refid) {
 					$jsonstring = $jsonstring .  "]\n";
 				}else{
 					//echo "Yep - we're in here!";
-					$sql_template = "SELECT (sum(A+T+G+C)/reflen) as coverage,ref_id,refname FROM reference_coverage_template inner join reference_seq_info where refid=ref_id and refid = " . $refid . " group by ref_id;";
-					$sql_complement = "SELECT (sum(A+T+G+C)/reflen) as coverage,ref_id,refname FROM reference_coverage_complement inner join reference_seq_info where refid=ref_id and refid = " . $refid . "  group by ref_id;";
-					$sql_2d = "SELECT (sum(A+T+G+C)/reflen) as coverage,ref_id,refname FROM reference_coverage_2d inner join reference_seq_info where refid=ref_id and refid = " . $refid . " group by ref_id;";
+					$sql_template = "SELECT (count(*)/reflen)*100 as coverage,ref_id,refname FROM reference_coverage_template inner join reference_seq_info where refid=ref_id and refid = " . $refid . " group by ref_id;";
+					$sql_complement = "SELECT (count(*)/reflen)*100 as coverage,ref_id,refname FROM reference_coverage_complement inner join reference_seq_info where refid=ref_id and refid = " . $refid . "  group by ref_id;";
+					$sql_2d = "SELECT (count(*)/reflen)*100 as coverage,ref_id,refname FROM reference_coverage_2d inner join reference_seq_info where refid=ref_id and refid = " . $refid . " group by ref_id;";
 
 					$pre_template="SELECT (sum(reference_pre_coverage_template.count))/reflen as coverage,ref_id,refname FROM reference_pre_coverage_template inner join reference_seq_info where refid=ref_id and refid = " . $refid . " group by ref_id;";
 					$pre_complement="SELECT (sum(reference_pre_coverage_complement.count))/reflen as coverage,ref_id,refname FROM reference_pre_coverage_complement inner join reference_seq_info where refid=ref_id and refid = " . $refid . " group by ref_id;";
@@ -4905,8 +5910,10 @@ function percentcoverage($jobname,$currun,$refid) {
 }
 
 ##Read Number Upload - generates the numbers of reads uploaded, basecalled, aligned and processed for template, complement and 2d
+function readnumberupload($jobname,$currun){
 
-function readnumberupload($jobname,$currun) {
+}
+function readnumberupload_old($jobname,$currun) {
 	$checkvar = $currun . $jobname;
 	$checkrunning = $currun . $jobname . "status";
 	global $memcache;
@@ -4993,9 +6000,9 @@ function readnumberupload($jobname,$currun) {
 
 		#The number of reads yielding suequence will be:
 
-		$sql_template = "select count(*) as readnum, exp_script_purpose from basecalled_template inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" ;";
-		$sql_complement = "select count(*) as readnum, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" ;";
-		$sql_2d = "select count(*) as readnum, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" ;";
+		$sql_template = "select count(*) as readnum, exp_script_purpose from basecalled_template inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
+		$sql_complement = "select count(*) as readnum, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
+		$sql_2d = "select count(*) as readnum, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
 		//echo $sql_template;
 
 
@@ -5107,7 +6114,7 @@ function readnumberupload($jobname,$currun) {
 
 ##Read Number - generates the numbers of reads for each read type:
 
-function readnumber($jobname,$currun) {
+function readnumber_old($jobname,$currun) {
 	$checkvar = $currun . $jobname;
 	$checkrunning = $currun . $jobname . "status";
 	global $memcache;
@@ -5127,9 +6134,9 @@ function readnumber($jobname,$currun) {
 			}
 		} else {
 
-		$sql_template = "select count(*) as readnum, exp_script_purpose from basecalled_template inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\";";
-		$sql_complement = "select count(*) as readnum, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\";";
-		$sql_2d = "select count(*) as readnum, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\";";
+		$sql_template = "select count(*) as readnum, exp_script_purpose from basecalled_template inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
+		$sql_complement = "select count(*) as readnum, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
+		$sql_2d = "select count(*) as readnum, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
 		//echo $sql_template;
 
 		$pre_template = "SELECT count(*) as readnum , exp_script_purpose FROM pre_tracking_id;";
@@ -5141,7 +6148,6 @@ function readnumber($jobname,$currun) {
 		$template=$mindb_connection->query($sql_template);
 		$complement=$mindb_connection->query($sql_complement);
 		$read2d=$mindb_connection->query($sql_2d);
-
 		$pretemplate=$mindb_connection->query($pre_template);
 		$precomplement=$mindb_connection->query($pre_complement);
 
@@ -5226,9 +6232,9 @@ function maxlen($jobname,$currun) {
 				$jsonstring = $row['json'];
 			}
 		} else {
-			$sql_template = "select MAX(seqlen) as maxlen, exp_script_purpose from basecalled_template inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" ;";
-			$sql_complement = "select MAX(seqlen) as maxlen, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" ;";
-			$sql_2d = "select MAX(seqlen) as maxlen, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" ;";
+			$sql_template = "select MAX(seqlen) as maxlen, exp_script_purpose from basecalled_template inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
+			$sql_complement = "select MAX(seqlen) as maxlen, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
+			$sql_2d = "select MAX(seqlen) as maxlen, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
 			$pre_template = "SELECT MAX(hairpin_event_index) as maxlen, exp_script_purpose FROM pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found = 1;"; #note: this will not catch template only reads (i.e those with no hairpin). It is therefore less than ideal.
 			$pre_complement = "SELECT MAX(total_events-hairpin_event_index) as maxlen, exp_script_purpose FROM pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found = 1;";
 			$resultarray=array();
@@ -5321,9 +6327,9 @@ function avelen($jobname,$currun) {
 				$jsonstring = $row['json'];
 			}
 		} else {
-			$sql_template = "select ROUND(AVG(seqlen)) as average_length, exp_script_purpose from basecalled_template inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" ;";
-			$sql_complement = "select ROUND(AVG(seqlen)) as average_length, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" ;";
-			$sql_2d = "select ROUND(AVG(seqlen)) as average_length, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" ;";
+			$sql_template = "select ROUND(AVG(seqlen)) as average_length, exp_script_purpose from basecalled_template inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
+			$sql_complement = "select ROUND(AVG(seqlen)) as average_length, exp_script_purpose from basecalled_complement inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
+			$sql_2d = "select ROUND(AVG(seqlen)) as average_length, exp_script_purpose from basecalled_2d inner join tracking_id using (basename_id) where exp_script_purpose != \"dry_chip\" group by exp_script_purpose;";
 			$pre_template = "SELECT (hairpin_event_index) as average_length, exp_script_purpose FROM pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found =1;";
 			$pre_complement = "SELECT (total_events-hairpin_event_index) as average_length, exp_script_purpose FROM pre_config_general inner join pre_tracking_id using (basename_id) where pre_config_general.hairpin_found = 1;";
 			$resultarray=array();
@@ -5425,7 +6431,8 @@ function bases($jobname,$currun){
 			$sql_template = "SELECT sum(seqlen) as bases FROM basecalled_template;";
 			$sql_complement = "SELECT sum(seqlen) as bases FROM basecalled_complement;";
 			$sql_2d = "SELECT sum(seqlen) as bases FROM basecalled_2d;";
-			$pre_template="SELECT sum(hairpin_event_index) as events FROM pre_config_general where pre_config_general.hairpin_found = 1;";
+			//NOTE THIS IS BROKEN!
+            $pre_template="SELECT sum(hairpin_event_index) as events FROM pre_config_general where pre_config_general.hairpin_found = 1;";
 			$pre_complement = "SELECT sum(total_events-hairpin_event_index) as events FROM pre_config_general where pre_config_general.hairpin_found = 1;";
 
 

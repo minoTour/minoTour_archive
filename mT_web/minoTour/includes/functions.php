@@ -1,7 +1,7 @@
 <?php
 
 //Setting general system wide parameters for various features
-$_SESSION['minotourversion']=0.6;
+$_SESSION['minotourversion']=0.7;
 $_SESSION['pagerefresh']=5000;
 
 
@@ -17,6 +17,11 @@ if (is_array($data)) {
 else {
     return $data;
 }
+}
+
+function retrievefromsession($dbname,$jobname,$ref){
+    $valuetoget=md5($dbname.$jobname.$ref."store");
+    return ($_SESSION[$valuetoget]);
 }
 
 //Updated function for converting sam format data to maf for easy visualisation in a browser
@@ -483,7 +488,8 @@ function checkalerts(){
 	if (isset($_SESSION['user_login_status']) and $_SESSION['user_login_status'] == 1) {
 		//$db_connection = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 		//Check for all active databases and find those which have alerts set
-		echo "<div class='alert alert-success' role='alert'>";
+		#echo "<div class='alert alert-success' role='alert'>";
+        echo "<div class='text-yellow'>";
 		echo "Messages:<br>";
 		//if (!$db_connection->connect_errno) {
 		//	$getruns = "SELECT runname FROM minIONruns inner join userrun using (runindex) inner join users using (user_id) where users.user_name = '" . $_SESSION['user_name'] ."' and activeflag = 1;";
@@ -508,6 +514,23 @@ $basename = end(preg_split('/\//',$_SERVER['PHP_SELF']));
 		}
 	}
 
+
+function checkadmin(){
+    if (isset($_SESSION['user_login_status']) and $_SESSION['user_login_status'] == 1 and $_SESSION['adminuser']==1) {
+        $db_connection = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+        if (!$db_connection->connect_errno) {
+            $checkadmin = "SELECT user_name,admin FROM users;";
+            $adminresults = $db_connection->query($checkadmin);
+            $adminstatus;
+            if ($adminresults->num_rows>=1){
+                foreach ($adminresults as $row){
+                    $adminstatus[$row['user_name']]=$row['admin'];
+                }
+            }
+            return $adminstatus;
+        }
+    }
+}
 
 function getusers(){
 	if (isset($_SESSION['user_login_status']) and $_SESSION['user_login_status'] == 1) {
@@ -750,7 +773,7 @@ function checksessionvars(){
 					}
 
                     //Check for the existence of basecalled data in the active run database:
-
+                    echo "tits";
 					$intcheck = "select * from config_general limit 1;";
 					$intresult = $db_connection2->query($intcheck);
 					if (!empty ($intresult) && ($intresult->num_rows >= 1)) {
@@ -867,7 +890,7 @@ function checkuserruns()
 		$db_connection = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 		if (!$db_connection->connect_errno) {
 			$user_name=$_SESSION['user_name'];
-			$sql = "select users.user_name,runname, activeflag from users inner join userrun using (user_id) inner join minIONruns where userrun.runindex=minIONruns.runindex and users.user_name = '" . $user_name . "';";
+			$sql = "select users.user_name,runname, activeflag from users inner join userrun using (user_id) inner join minIONruns where userrun.runindex=minIONruns.runindex and users.user_name = '" . $user_name . "' order by date desc;";
 
 			$runs_available = $db_connection->query($sql);
 			if ($runs_available->num_rows >=1) {
@@ -879,6 +902,7 @@ function checkuserruns()
 				}
 
 				echo "You have " . $runs_available->num_rows . " minION runs available to view.<br>\n";
+                $_SESSION['totalruns']=($runs_available->num_rows)-sizeof($runarray);
 				if (array_key_exists('1', $runarray)) {
 					echo "You have active runs available.<br>\n";
 				//foreach ($runarray as $runinfo) {
@@ -962,8 +986,141 @@ function checkallruns() {
 	}
 }
 
-function runsummary() {
 
+
+function runsummary() {
+    #echo "Basecalled data now driven from one source - Pre Basecalled needs to do still.<br>";
+    #COMMENT - This needs finishing.
+
+    $startarray = retrievefromsession($_SESSION["active_run_name"],"starttimes","");
+    if( !empty( $startarray ) ){
+        if (array_key_exists("BC",$startarray)){
+            echo "<h4>Basecalled Data Summary</h4><div class='table-responsive'>
+            <table class='table table-condensed'>
+                <thead>
+            <tr>
+                    <th>Device ID</th>
+                    <th>Experiment Purpose</th>
+                    <th>Reads Generated</th>
+                    <th>Start Time</th>
+                    <th>Start Date</th>
+                    <th>Run ID</th>
+                    <th>Version Name</th>
+                    </tr>
+                </thead>
+                <tbody>";
+            //foreach ($startarray as $dataset){
+                //var_dump($dataset);
+                foreach ($startarray['BC'] as $thing){
+                    //var_dump($thing);
+                    echo "<tr>";
+                    echo "<td>" . $thing['device_id'] . "</td>";
+                    echo "<td>" . $thing['exp_script_purpose'] . "</td>";
+                    echo "<td>" . $thing['count'] . "</td>";
+                    echo "<td>" . gmdate('H:i:s', $thing['exp_start_time']) . "</td>";
+                    echo "<td>" . gmdate('d-m-y', $thing['exp_start_time']) . "</td>";
+                    echo "<td style='word-wrap: break-word;'>" . $thing['run_id'] . "</td>";
+                    echo "<td>" . $thing['version_name'] . "</td>";
+                    echo "</tr>";
+                }
+            //}
+            echo"</tbody>
+                </table>
+                </div>
+                ";
+        }else{
+            echo "No Basecalled Data Available<br>";
+        }
+        if (array_key_exists("R",$startarray)){
+            echo "<h4>Pre Basecalled Data Summary</h4><div class='table-responsive'>
+            <table class='table table-condensed'>
+                <thead>
+            <tr>
+                    <th>Device ID</th>
+                    <th>Experiment Purpose</th>
+                    <th>Reads Generated</th>
+                    <th>Start Time</th>
+                    <th>Start Date</th>
+                    <th>Run ID</th>
+                    <th>Version Name</th>
+                    </tr>
+                </thead>
+                <tbody>";
+            //foreach ($startarray as $dataset){
+                //var_dump($dataset);
+                foreach ($startarray['R'] as $thing){
+                    //var_dump($thing);
+                    echo "<tr>";
+                    echo "<td>" . $thing['device_id'] . "</td>";
+                    echo "<td>" . $thing['exp_script_purpose'] . "</td>";
+                    echo "<td>" . $thing['count'] . "</td>";
+                    echo "<td>" . gmdate('H:i:s', $thing['exp_start_time']) . "</td>";
+                    echo "<td>" . gmdate('d-m-y', $thing['exp_start_time']) . "</td>";
+                    echo "<td style='word-wrap: break-word;'>" . $thing['run_id'] . "</td>";
+                    echo "<td>" . $thing['version_name'] . "</td>";
+                    echo "</tr>";
+                }
+            //}
+            echo"</tbody>
+                </table>
+                </div>
+                ";
+        }else{
+            echo "No Pre Basecalled Data Available<br>";
+        }
+    }else{
+        //echo "No read data are currently available. There may be a problem. <br>";
+    }
+
+    $summarystats = retrievefromsession($_SESSION["active_run_name"],"summarystats","");
+    //var_dump($summarystats);
+    if( !empty( $summarystats ) ){
+        if (array_key_exists("totalcount",$summarystats)){
+            echo "<h3>Read Data</h3>";
+            echo "<h6>Basecalled Data (bases)</h6>";
+            echo "<div class='table-responsive'>
+            <table class='table table-condensed'>
+                <thead>
+            <tr>
+                    <th>Read Type</th>
+                    <th>Sequenced Reads</th>
+                    <th>Total Yield</th>";
+                    if (isset($_SESSION["activerefnames"]) && count($_SESSION["activerefnames"])> 0) {echo "<th>Aligned Reads</th>";}
+                    echo "<th>Pass/Fail</th>
+                    <th>Average Length</th>
+                    <!--<th>Standard Deviation</th>-->
+                    <th>Min Length</th>
+                    <th>Max Length</th>
+                    </tr>
+                </thead>
+                <tbody>";
+            $readtypearray=array('template','complement','2d','monkey');
+            foreach($readtypearray as $type){
+                if (array_key_exists($type,$summarystats["totalcount"])){
+                        echo "<tr>";
+    					echo "<td>Basecalled " . ucfirst($type) . "</td>";
+    					echo "<td>" . $summarystats["totalcount"][$type] . "</td>";
+                        echo "<td>" . $summarystats["totalyield"][$type] . "</td>";
+                        if (isset($_SESSION["activerefnames"]) && count($_SESSION["activerefnames"])> 0) {echo "<td>" . $summarystats["totalalign"][$type] ."</td>";}
+                        echo "<td>" . $summarystats["totalpass"][$type] . "/" . $summarystats["totalfail"][$type] . "</td>";
+                        echo "<td>" . round($summarystats["avglen"][$type],2) . "</td>";
+    					//echo "<td>" . round($summarystats["std"][$type],2) . "</td>";
+    					echo "<td>" . $summarystats["minlen"][$type]. "</td>";
+    					echo "<td>" . $summarystats["maxlen"][$type]. "</td>";
+    					echo "</tr>";
+
+                }
+            }
+            echo "</tbody>
+                </table>
+                </div>
+                ";
+
+            }
+        }else{
+            echo "<h3>No Read Data Found</h3>";
+        }
+    /*
 	if (isset($_SESSION['user_login_status']) and $_SESSION['user_login_status'] == 1 and isset($_SESSION['active_run_name'])) {
 		//echo "run summary is running - .";
 		$mindb_connection = new mysqli(DB_HOST, DB_USER, DB_PASS, $_SESSION['active_run_name']);
@@ -1232,6 +1389,7 @@ function runsummary() {
 			}
 
 		}
+    */
 }
 function prevrunsummary() {
 	if (isset($_SESSION['user_login_status']) and $_SESSION['user_login_status'] == 1 and isset($_SESSION['focusrun'])) {

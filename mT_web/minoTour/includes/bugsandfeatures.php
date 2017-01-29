@@ -1,7 +1,5 @@
 <!-- Button trigger modal -->
-			<button class="btn btn-danger" data-toggle="modal" data-target="#bugreport">
-			 <i class="fa fa-bug"></i> Bug Report
-			</button><!-- Modal -->
+
 <div class="modal fade" id="bugreport" tabindex="-1" role="dialog" aria-labelledby="bugreport" aria-hidden="true">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
@@ -52,9 +50,7 @@
 </div>
 
 <!-- Button trigger modal -->
-			<button class="btn btn-success" data-toggle="modal" data-target="#feature">
-			 <i class="fa fa-lightbulb-o"></i> Feature Request
-			</button><!-- Modal -->
+			
 <div class="modal fade" id="feature" tabindex="-1" role="dialog" aria-labelledby="feature" aria-hidden="true">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
@@ -96,7 +92,7 @@
 				  <button type="button" id="featuresubmit" class="btn btn-default">Submit</button>
 				</form>
 			</div>
-				
+
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -104,4 +100,3 @@
 		</div>
 	</div>
 </div>
-

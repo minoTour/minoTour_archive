@@ -18,6 +18,8 @@ require_once("classes/Login.php");
 // load the functions
 require_once("includes/functions.php");
 
+
+
 // create a login object. when this object is created, it will do all login/logout stuff automatically
 // so this single line handles the entire login process. in consequence, you can simply ...
 $login = new Login();
@@ -29,108 +31,206 @@ if ($login->isUserLoggedIn() == true) {
     //include("views/index_old.php");
 	?>
 
-
 <!DOCTYPE html>
+<!--
+This is a starter template page. Use this page to start your new project from
+scratch. This page gets rid of all links and provides the needed markup only.
+-->
 <html>
-<?php include "includes/head.php";?>
+<!--
+Import the header.
+-->
+<?php
+include 'includes/head-new.php';
+?>
+  <!--
+  BODY TAG OPTIONS:
+  =================
+  Apply one or more of the following classes to get the
+  desired effect
+  |---------------------------------------------------------|
+  | SKINS         | skin-blue                               |
+  |               | skin-black                              |
+  |               | skin-purple                             |
+  |               | skin-yellow                             |
+  |               | skin-red                                |
+  |               | skin-green                              |
+  |---------------------------------------------------------|
+  |LAYOUT OPTIONS | fixed                                   |
+  |               | layout-boxed                            |
+  |               | layout-top-nav                          |
+  |               | sidebar-collapse                        |
+  |               | sidebar-mini                            |
+  |---------------------------------------------------------|
+  -->
+  <body class="hold-transition skin-blue sidebar-mini fixed">
+    <div class="wrapper">
 
-<body>
+        <!--Import the header-->
+        <?php
+        include 'navbar-header-new.php';
+        ?>
 
-    <div id="wrapper">
+        <!--Import the left hand navigation-->
+        <?php
+        include 'navbar-top-links-new.php';
+        #include 'test.php';
+        ?>
 
-        <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
-            
-			<?php 
-			include 'navbar-header.php';
-			?>
-            <!-- /.navbar-top-links -->
-			<?php include 'navbar-top-links.php'; ?>
-            <!-- /.navbar-static-side -->
-        </nav>
 
-        <div id="page-wrapper">
-						<?php include 'includes/run_check.php';?>
-            <div class="row">
-                <div class="col-lg-12">
-                    <h1 class="page-header">Enable User Upload</h1>
-                </div>
-                <!-- /.col-lg-12 -->
-            </div>
-            <body><strong>The buttons on this page are non functional.</strong><br>We are looking at ways of securely implementing this system for admin users. Currently this page serves to tell you which users are currently authorsied to upload data and those which can only view data. To modify user permissions you can use the scripts provided with the original installation documents for minoTour.<p><br>
-			<body>These pages allow you to provide upload access for individual users to add data to the mySQL account associated with this installation of minoTour. <strong>Any admin user can enable others to upload data so exercise caution!</strong><br><br>
-			<p>The following users are currently authorised to upload data to the database:</p>	
-			<?php foreach (getallusers() as $user) {
-				if (checkminup($user) > 0) {
-					echo "<i>$user </i><button type='button' id='loading-example-btn-".$user."' data-loading-text='Revoking Access...' data-complete-text='Access Revoked' class='btn btn-alert btn-xs'>Revoke Access</button><br>";
-				}
-			} ?>
-			<p><br>These users are not authorised to upload data to the database:</p>
-			<?php foreach (getallusers() as $user) {
-				if (checkminup($user) == 0) {
-					echo "<i>$user </i><button type='button' id='loading-example-btn-".$user."' data-loading-text='Granting Access...' data-complete-text='Access Granted' class='btn btn-warning btn-xs'>Grant Access</button><br><br>";
-				}
-			} ?>
-			
-	
-	    </div>
-        <!-- /#page-wrapper -->
-    </div>
-    <!-- /#wrapper -->
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
 
-    <!-- Core Scripts - Include with every page -->
-    <script src="js/jquery-1.10.2.js"></script>
-    <script src="js/bootstrap.min.js"></script>-->
-    <script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
-	
-	<script>
-	<?php foreach (getallusers() as $user) {?>
-		$("#loading-example-btn-<?php echo $user;?>").
-		click(function () {
-    	//alert (this);
-    	//var btn = $(this);
-        //btn.button('loading');
-        //setTimeout(function () {
-        //	btn.button('complete');
-        //}, 1000);
-	  });
-		
-	<?php } ?>
+        <!-- Content Header (Page header) -->
 
-	</script>
-    <!-- Page-Level Plugin Scripts - Dashboard -->
-			    <script type="text/javascript" src="js/pnotify.custom.min.js"></script>
-			    <script type="text/javascript">
-				PNotify.prototype.options.styling = "fontawesome";
-				</script>
-    <script src="js/plugins/morris/raphael-2.1.0.min.js"></script>
-    <script src="js/plugins/morris/morris.js"></script>
+        <section class="content-header">
+            <h1>Enable User Upload:</h1>
+          <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-edit"></i> Enable User Upload</a></li>
+            <li class="active">Here</li>
+          </ol>
 
-    <!-- SB Admin Scripts - Include with every page -->
-    <script src="js/sb-admin.js"></script>
+        </section>
 
-    <!-- Page-Level Demo Scripts - Dashboard - Use for reference -->
-    <script src="js/demo/dashboard-demo.js"></script>
+        <!-- Main content -->
+        <section class="content"><?php include 'includes/run_check.php';?>
 
-     <script>
-        $( "#infodiv" ).load( "alertcheck.php" ).fadeIn("slow");
-        var auto_refresh = setInterval(function ()
-            {
-            $( "#infodiv" ).load( "alertcheck.php" ).fadeIn("slow");
-            //eval(document.getElementById("infodiv").innerHTML);
-            }, 10000); // refresh every 5000 milliseconds
+
+                <div class="box">
+                <div class="box-header">
+                  <h3 class="box-title">Enable User Upload:</h3>
+                  <div id="messages"></div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+
+                			<body>These pages allow you to provide upload access for individual users to add data to the mySQL account associated with this installation of minoTour. <strong>Any admin user can enable others to upload data so exercise caution!</strong><br>
+                                It is your responsibility to communicate the password you specify to the user. This will be automated in the future.<br><br>
+                                <div class = "col-md-6">
+                                <p>The following users are not authorised to upload data to the database:</p>
+                                <table class="table table-bordered table-striped table-hover">
+      <tr>
+        <th>User Name</th>
+        <th>Action</th>
+        <th>Password</th>
+        <th>Password</th>
+      </tr>
+                    			<?php foreach (getallusers() as $user) {
+                    				if (checkminup($user) == 0) {
+                                        echo "<tr>";
+                    					echo "<td><i>$user </i></td><td><button type='button' id='grant-btn-".$user."' data-loading-text='Granting Access...' data-complete-text='Access Granted' class='btn btn-warning btn-xs'>Grant Access</button></td><td><input type='password' id='password1-".$user."'></td><td><input type='password' id='password2-".$user."'></td>";
+                                        echo "</tr>";
+                    				}
+                    			} ?>
+                                </table>
+                                     </div>
+
+
+
+                                <div class = "col-md-6">
+                                    <p>The following users are currently authorised to upload data to the database:</p>
+                                <table class="table table-bordered table-striped table-hover">
+      <tr>
+        <th>User Name</th>
+        <th>Action</th>
+      </tr>
+
+
+
+
+
+                			<?php foreach (getallusers() as $user) {
+                				if (checkminup($user) > 0) {
+                                    echo "<tr>";
+                					echo "<td><i>$user </i></td><td><button type='button' id='revoke-btn-".$user."' data-loading-text='Revoking Access...' data-complete-text='Access Revoked' class='btn btn-alert btn-xs'>Revoke Access</button></td>";
+                                    echo "</tr>";
+                				}
+                			} ?>
+
+                      </table>
+                  </div>
+              </div>
+
+
+        </section><!-- /.content -->
+      </div><!-- /.content-wrapper -->
+
+      <?php include 'includes/reporting-new.php'; ?>
+      <script src="js/plugins/dataTables/jquery.dataTables.js" type="text/javascript" charset="utf-8"></script>
+      <script src="js/plugins/dataTables/dataTables.bootstrap.js" type="text/javascript" charset="utf-8"></script>
+
+
+      <script>
+
+  	<?php foreach (getallusers() as $user) {?>
+
+        $("#revoke-btn-<?php echo $user;?>").on('click', function(e){
+                            e.preventDefault(); // preventing default click action
+
+            $.ajax({
+                url: 'jsonencode/revokeuser.php?user=<?php echo $user;?>',
+                success: function(data){
+                    //alert ('success');
+                    //$('#resetmodal').modal('hide')
+                    //alert(data);
+                    $("#messages").html(data);
+                    var delay = 3000; //Your delay in milliseconds
+                    setTimeout(function(){ location.reload(); }, delay);
+                }, error: function(){
+                    alert('ajax failed');
+                },
+            })
+            //alert ("button clicked");
+        })
+
+
+  	<?php } ?>
+
+  	</script>
+    <script>
+
+    <?php foreach (getallusers() as $user) {?>
+
+      $("#grant-btn-<?php echo $user;?>").on('click', function(e){
+                          e.preventDefault(); // preventing default click action
+        if ( $("#password1-<?php echo $user;?>").val().length > 0 && $("#password1-<?php echo $user;?>").val() == $("#password2-<?php echo $user;?>").val()  ){
+            password = $("#password1-<?php echo $user;?>").val();
+            $.ajax({
+                url: 'jsonencode/createuser.php?user=<?php echo $user;?>&pass=' + password,
+                success: function(data){
+                    //alert ('success');
+                    //$('#resetmodal').modal('hide')
+                    //alert(data);
+                    $("#messages").html(data);
+                    var delay = 3000; //Your delay in milliseconds
+                    setTimeout(function(){ location.reload(); }, delay);
+                }, error: function(){
+                    alert('ajax failed');
+                },
+            })
+        }else{
+            alert("Passwords don't match or have zero length. Please try again.");
+        }
+
+
+          //alert ("button clicked");
+      })
+
+
+    <?php } ?>
+
     </script>
-    
-	
-<?php include "includes/reporting.php";?>
-</body>
 
+
+  </body>
 </html>
-<?php 
+<?php
 } else {
-	
+
 	    // the user is not logged in. you can do whatever you want here.
 	    // for demonstration purposes, we simply show the "you are not logged in" view.
 	    include("views/not_logged_in.php");
 	}
-	
+
 	?>

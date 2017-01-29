@@ -22,7 +22,7 @@ require_once("includes/functions.php");
         </nav>
 
          <div id="page-wrapper">
-			 			<?php include 'includes/run_check.php';?>
+			 			
              <div class="row">
                  <div class="col-lg-12">
                      <h1 class="page-header">Reads Summary - run: <?php echo cleanname($_SESSION['focusrun']);; ?></h1>
@@ -860,7 +860,7 @@ require_once("includes/functions.php");
 	<!--<script src='js/highcharts.js'></script>-->
 	<script src='http://code.highcharts.com/stock/2.0.4/highstock.js'></script>
 	<script type='text/javascript' src='js/themes/grid-light.js'></script>
-	<script src='http://code.highcharts.com/modules/heatmap.js'></script>
+	<script src='http://code.highcharts.com/4.0.3/modules/heatmap.js'></script>
 	<script src='http://code.highcharts.com/modules/exporting.js'></script>";
 	
 

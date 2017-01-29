@@ -68,9 +68,9 @@ if ($login->isUserLoggedIn() == true) {
 			$lasttable = "last_align_" . $querytable . "_5prime";
 
 			if ($_GET["align"] == 1) {
-				$sql = "select seqid,sequence, qual from $querytable inner join barcode_assignment using (basename_id) inner join $lasttable using (basename_id) where barcode_arrangement = \"". $_GET['code'] ."\";";
+				$sql = "select seqid,sequence, qual from $querytable inner join barcode_assignment using (basename_id) inner join $lasttable using (basename_id) where barcode_arrangement like \"%". $_GET['code'] ."\";";
 			}else {
-				$sql = "select seqid,sequence, qual from $querytable inner join barcode_assignment using (basename_id) where barcode_arrangement = \"". $_GET['code'] ."\";";
+				$sql = "select seqid,sequence, qual from $querytable inner join barcode_assignment using (basename_id) where barcode_arrangement like \"%". $_GET['code'] ."\";";
 				//echo $sql;
 			}
 			$queryresult=$mindb_connection->query($sql);
@@ -80,13 +80,7 @@ if ($login->isUserLoggedIn() == true) {
 						echo "@" . $row['seqid'] . "\n";
 						echo $row['sequence'] . "\n";
 						echo "+\n";
-                        $qualscore = "";
-                        if (strlen($row['qual']) > strlen($row['sequence'])){
-                            $qualscore= substr($row['qual'], 1, -1);
-                        }else{
-                            $qualscore = $row['qual'];
-                        }
-
+						$qualscore= substr($row['qual'], 1, -1);
 						$qualarray = str_split($qualscore);
 						foreach ($qualarray as $value){
 							if ($minupver < 0.5){
@@ -147,12 +141,7 @@ if ($login->isUserLoggedIn() == true) {
 					echo "@" . $row['seqid'] . "\n";
 					echo $row['sequence'] . "\n";
 					echo "+\n";
-                    $qualscore = "";
-                    if (strlen($row['qual']) > strlen($row['sequence'])){
-                        $qualscore= substr($row['qual'], 1, -1);
-                    }else{
-                        $qualscore = $row['qual'];
-                    }
+					$qualscore= substr($row['qual'], 1, -1);
 					$qualarray = str_split($qualscore);
 					foreach ($qualarray as $value){
 						if ($minupver < 0.5){
