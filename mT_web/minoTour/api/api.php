@@ -432,6 +432,16 @@ if ($login->isUserLoggedIn() == true) {
                 $count = array_sum($resultarray[$key]["count"]);
                 $align = array_sum($resultarray[$key]["countalign"]);
                 $yield = array_sum($resultarray[$key]["lengthsum"]);
+                //echo "key".$key."\n";
+                //echo "count".$count;
+                //echo "\n";
+                //echo "align".$align;
+                //echo "\n";
+                //echo "yield".$yield;
+                //echo "\n";
+                //echo $yield/$count."\n";
+                //echo "\n\n";
+
                 if (isset($_SESSION['activereflength'])){
                     $resultstore["est_cov"][$key]=array_sum($resultarray[$key]["lengthsum"])/intval($_SESSION['activereflength']);
                 }else{
@@ -447,7 +457,11 @@ if ($login->isUserLoggedIn() == true) {
                 $resultstore["totalalign"][$key]=$align;
                 $resultstore["totalpass"][$key]=$pass;
                 $resultstore["totalfail"][$key]=$fail;
-                $resultstore["avglen"][$key]=$yield/$count;
+                if ($count != 0) {
+                    $resultstore["avglen"][$key]=$yield/$count;
+                }else{
+                    $resultstore["avglen"][$key]=0;
+                }
                 $resultstore["maxlen"][$key]=$max;
                 $resultstore["minlen"][$key]=$min;
             }
