@@ -144,7 +144,7 @@ if ($login->isUserLoggedIn() == true) {
 
             //Optimising queries for large datasets:
             //This gives the values for the mux_scan_counts
-            $start_time_queries_mux = 'select count(*) as count, device_id, exp_script_purpose, exp_start_time,run_id,version_name from tracking_id where exp_script_purpose = "mux_scan" and device_id!=null;';
+            $start_time_queries_mux = 'select count(*) as count, device_id, exp_script_purpose, exp_start_time,run_id,version_name from tracking_id where exp_script_purpose = "mux_scan" and device_id!=null group by device_id, exp_script_purpose, exp_start_time,run_id,version_name;';
             $starttimemux=$mindb_connection->query($start_time_queries_mux);
     //        $muxcounter = 0
             if ($starttimemux->num_rows>=1){
@@ -161,7 +161,7 @@ if ($login->isUserLoggedIn() == true) {
                     }
                 }
             }
-            $start_time_queries = "select count(*) as count, device_id, exp_script_purpose, exp_start_time,run_id,version_name from tracking_id where exp_script_purpose = 'sequencing_run';";
+            $start_time_queries = "select count(*) as count, device_id, exp_script_purpose, exp_start_time,run_id,version_name from tracking_id where exp_script_purpose = 'sequencing_run' group by device_id, exp_script_purpose, exp_start_time,run_id,version_name;";
             $starttime=$mindb_connection->query($start_time_queries);
             if ($starttime->num_rows>=1){
                 foreach ($starttime as $row){
@@ -177,7 +177,7 @@ if ($login->isUserLoggedIn() == true) {
                 }
             }
 
-            $pre_start_time_queries = "select count(*) as count,device_id, exp_script_purpose,exp_start_time,run_id,version_name from pre_tracking_id group by run_id order by exp_start_time;";
+            $pre_start_time_queries = "select count(*) as count,device_id, exp_script_purpose,exp_start_time,run_id,version_name from pre_tracking_id  group by device_id, exp_script_purpose, exp_start_time,run_id,version_name order by exp_start_time;";
             $starttime=$mindb_connection->query($pre_start_time_queries);
             if ($starttime->num_rows>=1){
                 foreach ($starttime as $row){

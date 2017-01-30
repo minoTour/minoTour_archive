@@ -69,8 +69,8 @@ function average_length_over_time($jobname,$currun){
 			} else {
 			//$sql_template = "select 1minwin,exp_start_time, ROUND(AVG(seqlen)) as average_length from basecalled_template group by 2,1 order by 2,1;";
 			//$sql_complement = "select 1minwin,exp_start_time, ROUND(AVG(seqlen)) as average_length from basecalled_complement group by 2,1 order by 2,1;";
-            $sql_template = "select 1minwin,exp_start_time, average_length from basecalled_template_1minwin_sum where average_length != 'null' order by 2,1;";
-            $sql_complement = "select 1minwin,exp_start_time, average_length from basecalled_complement_1minwin_sum where average_length != 'null' order by 2,1;";
+            $sql_template = "select 1minwin, average_length from basecalled_template_1minwin_sum where average_length != 'null' order by 1;";
+            $sql_complement = "select 1minwin, average_length from basecalled_complement_1minwin_sum where average_length != 'null' order by 1;";
 			$resultarray=array();
 
 			$template=$mindb_connection->query($sql_template);
@@ -78,14 +78,16 @@ function average_length_over_time($jobname,$currun){
 
 			if ($template->num_rows >= 1){
 				foreach ($template as $row) {
-                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    #$binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    $binfloor = $row['1minwin']*1000;
 					$resultarray['template'][$binfloor]=$row['average_length'];
 				}
 			}
 
 			if ($complement->num_rows >=1) {
 				foreach ($complement as $row) {
-                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    #$binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    $binfloor = $row['1minwin']*1000;
 					$resultarray['complement'][$binfloor]=$row['average_length'];
 				}
 			}
@@ -345,8 +347,8 @@ function sequencingrate($jobname,$currun) {
       			//do something interesting here...
       			//Query to get pore occupancy over 15 minutes -> select (floor((basecalled_template.start_time)/60/15)*60*15+exp_start_time)*1000 as bin_floor, count(distinct config_general.channel) as chandist, sum(basecalled_template.duration+basecalled_complement.duration)/count(distinct config_general.channel)/9 as occupancy from basecalled_template inner join tracking_id using (basename_id) inner join config_general using (basename_id) inner join basecalled_complement using (basename_id) group by 1 order by 1
       			#$sqltemplate = "select (basecalled_template.5minwin*5*60+basecalled_template.exp_start_time)*1000 as bin_floor,sum(basecalled_template.duration) as time,sum(ifnull(basecalled_template.seqlen,0)+ifnull(basecalled_complement.seqlen,0))/60/5/count(distinct config_general.channel) as effective_rate, count(distinct config_general.channel) as chandist, sum(basecalled_template.seqlen)/sum(basecalled_template.duration) as rate from basecalled_template inner join config_general using (basename_id) left join basecalled_complement using (basename_id) group by 1 order by 1;";
-                $sqltemplate = "select (1minwin*60+exp_start_time)*1000 as bin_floor,basecalled_template_1minwin_sum.cumuduration+basecalled_complement_1minwin_sum.cumuduration as time,(basecalled_template_1minwin_sum.cumulength+basecalled_complement_1minwin_sum.cumulength)/60/basecalled_template_1minwin_sum.distchan as effective_rate,basecalled_template_1minwin_sum.distchan as chandist, basecalled_template_1minwin_sum.cumulength/basecalled_template_1minwin_sum.cumuduration as rate from basecalled_template_1minwin_sum inner join basecalled_complement_1minwin_sum using (1minwin,exp_start_time) order by 1;";
-                $sqlcomplement = "select (1minwin*60+exp_start_time)*1000 as bin_floor,basecalled_template_1minwin_sum.cumuduration+basecalled_complement_1minwin_sum.cumuduration as time,(basecalled_template_1minwin_sum.cumulength+basecalled_complement_1minwin_sum.cumulength)/60/basecalled_complement_1minwin_sum.distchan as effective_rate,basecalled_complement_1minwin_sum.distchan as chandist, basecalled_complement_1minwin_sum.cumulength/basecalled_complement_1minwin_sum.cumuduration as rate from basecalled_template_1minwin_sum inner join basecalled_complement_1minwin_sum using (1minwin,exp_start_time) where basecalled_complement_1minwin_sum.bases != 'Null' order by 1;";
+                $sqltemplate = "select 1minwin*60*1000 as bin_floor,IFNULL(basecalled_template_1minwin_sum.cumuduration,0)+IFNULL(basecalled_complement_1minwin_sum.cumuduration,0) as time,(IFNULL(basecalled_template_1minwin_sum.cumuduration,0)+IFNULL(basecalled_complement_1minwin_sum.cumuduration,0))/60/basecalled_template_1minwin_sum.distchan as effective_rate,basecalled_template_1minwin_sum.distchan as chandist, basecalled_template_1minwin_sum.cumulength/basecalled_template_1minwin_sum.cumuduration as rate from basecalled_template_1minwin_sum left join basecalled_complement_1minwin_sum using (1minwin) order by 1;";
+                $sqlcomplement = "select 1minwin*60*1000 as bin_floor,basecalled_template_1minwin_sum.cumuduration+basecalled_complement_1minwin_sum.cumuduration as time,(basecalled_template_1minwin_sum.cumulength+basecalled_complement_1minwin_sum.cumulength)/60/basecalled_complement_1minwin_sum.distchan as effective_rate,basecalled_complement_1minwin_sum.distchan as chandist, basecalled_complement_1minwin_sum.cumulength/basecalled_complement_1minwin_sum.cumuduration as rate from basecalled_template_1minwin_sum inner join basecalled_complement_1minwin_sum using (1minwin) where basecalled_complement_1minwin_sum.bases != 'Null' order by 1;";
                 #$sqlcomplement = "select (basecalled_complement.5minwin*5*60+basecalled_complement.exp_start_time)*1000 as bin_floor, sum(basecalled_complement.duration) as time,  sum(ifnull(basecalled_template.seqlen,0)+ifnull(basecalled_complement.seqlen,0))/60/5/count(distinct config_general.channel) as effective_rate, count(distinct config_general.channel) as channels, sum(basecalled_complement.seqlen)/sum(basecalled_complement.duration) as rate from basecalled_template inner join config_general using (basename_id)  inner join basecalled_complement using (basename_id) group by 1 order by 1;";
       			$prebasecalledevents="select (floor((pre_config_general.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor, sum(pre_config_general.total_events) as total_events,  sum(pre_config_general.total_events)/60/5/count(*) as effective_rate, sum(pre_config_general.total_events)/sum(pre_config_general.total_events/pre_config_general.sample_rate)/100 as rate from pre_config_general inner join pre_tracking_id using (basename_id) group by 1 order by 1;";
 
@@ -650,13 +652,13 @@ function sequencingrate($jobname,$currun) {
               //Now we execute the code to retrieve whatever values we are after and store them in the $jsonstring value:
               //do something interesting here...
               #$sqltemplate = "select (basecalled_template.5minwin*60*5+exp_start_time)*1000 as bin_floor,   sum(seqlen)/count(*) as meanlength from basecalled_template group by 2,1 order by 2,1;";
-              $sqltemplate = "select 1minwin,exp_start_time,readcount,passcount from basecalled_template_1minwin_sum order by 2,1;";
-              $sqlcomplement = "select 1minwin,exp_start_time,readcount,passcount from basecalled_complement_1minwin_sum where readcount !='NULL'  order by 2,1 ;";
+              $sqltemplate = "select 1minwin,readcount,passcount from basecalled_template_1minwin_sum order by 1;";
+              $sqlcomplement = "select 1minwin,readcount,passcount from basecalled_complement_1minwin_sum where readcount !='NULL'  order by 1 ;";
               #$sqltemplate = "select 5minwin,exp_start_time, count(*) as count from basecalled_template group by 2,1 order by 2,1  ".$limiter .";";
               #$sqltemplatepass = "select 5minwin,exp_start_time, count(*) as count from basecalled_template where pass = 1  group by 2,1 order by 2,1  ".$limiter .";";
   			//$sqlcomplement = "select 5minwin,exp_start_time, count(*) as count from basecalled_complement group by 2,1 order by 2,1  ".$limiter .";";
   			//$sqlcomplementpass = "select 5minwin,exp_start_time, count(*) as count from basecalled_complement where pass = 1  group by 2,1 order by 2,1  ".$limiter .";";
-            $sql2d = "select 1minwin,exp_start_time,readcount,passcount from basecalled_2d_1minwin_sum where readcount !='NULL' order by 2,1;";
+            $sql2d = "select 1minwin,readcount,passcount from basecalled_2d_1minwin_sum where readcount !='NULL' order by 1;";
             //$sql2d = "select 5minwin,exp_start_time, count(*) as count from basecalled_2d group by 2,1 order by 2,1  ".$limiter .";";
   			//$sql2dpass = "select 5minwin,exp_start_time, count(*) as count from basecalled_2d where pass = 1  group by 2,1 order by 2,1  ".$limiter .";";
   			$pretemplate = "select (floor((pre_config_general.start_time)/60/5)*5*60+exp_start_time)*1000 as bin_floor, count(*) as count from pre_config_general inner join pre_tracking_id using (basename_id)  group by 1 order by 1  ".$limiter .";";
@@ -688,7 +690,8 @@ function sequencingrate($jobname,$currun) {
   				    #echo "Count is ". $row['count'] . "\n";
   					#echo "Cumu Count is ". $cumucount . "\n";
                     #echo "Time is " . $row['5minwin'] . "\n";
-                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    #$binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    $binfloor = $row['1minwin']*60*1000;
                     #echo "Binfloor is " . $binfloor . "\n";
                     #echo $binfloor . "\t" . $cumucount . "\n";
   					#$resultarray['template'][$cumucount]=$row['bin_floor'];
@@ -707,7 +710,8 @@ function sequencingrate($jobname,$currun) {
                     $passtemparray=array();
   					$passcumucount=$passcumucount+$row['passcount'];
                     //echo $passcumucount;
-                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    #$binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    $binfloor = $row['1minwin']*60*1000;
                     $resultarray['template pass'][$binfloor]=$passcumucount;
                     $resultarray2[$INDEXPOSITION]["name"]='template pass';
                     array_push($passtemparray,$binfloor);
@@ -727,7 +731,8 @@ function sequencingrate($jobname,$currun) {
   				    #echo "Count is ". $row['count'] . "\n";
   					#echo "Cumu Count is ". $cumucount . "\n";
                     #echo "Time is " . $row['5minwin'] . "\n";
-                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    #$binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    $binfloor = $row['1minwin']*60*1000;
                     #echo "Binfloor is " . $binfloor . "\n";
                     #echo $binfloor . "\t" . $cumucount . "\n";
   					#$resultarray['complement'][$cumucount]=$row['bin_floor'];
@@ -746,7 +751,8 @@ function sequencingrate($jobname,$currun) {
                     $passtemparray=array();
   					$passcumucount=$passcumucount+$row['passcount'];
                     //echo $passcumucount;
-                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    #$binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    $binfloor = $row['1minwin']*60*1000;
                     $resultarray['complement pass'][$binfloor]=$passcumucount;
                     $resultarray2[$INDEXPOSITION]["name"]='complement pass';
                     array_push($passtemparray,$binfloor);
@@ -765,7 +771,8 @@ function sequencingrate($jobname,$currun) {
   				    #echo "Count is ". $row['count'] . "\n";
   					#echo "Cumu Count is ". $cumucount . "\n";
                     #echo "Time is " . $row['5minwin'] . "\n";
-                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    #$binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    $binfloor = $row['1minwin']*60*1000;
                     #echo "Binfloor is " . $binfloor . "\n";
                     #echo $binfloor . "\t" . $cumucount . "\n";
   					#$resultarray['complement'][$cumucount]=$row['bin_floor'];
@@ -784,7 +791,8 @@ function sequencingrate($jobname,$currun) {
                     $passtemparray=array();
   					$passcumucount=$passcumucount+$row['passcount'];
                     //echo $passcumucount;
-                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    #$binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    $binfloor = $row['1minwin']*60*1000;
                     $resultarray['2d pass'][$binfloor]=$passcumucount;
                     $resultarray2[$INDEXPOSITION]["name"]='2d pass';
                     array_push($passtemparray,$binfloor);
@@ -959,7 +967,7 @@ function lengthtimewindow($jobname,$currun) {
             #$sqltemplate = "select (basecalled_template.5minwin*60*5+exp_start_time)*1000 as bin_floor,   sum(seqlen)/count(*) as meanlength from basecalled_template group by 2,1 order by 2,1;";
             $sqltemplate = "select 1minwin,exp_start_time,sum(seqlen)/count(*) as meanlength from basecalled_template group by 2,1 order by 2,1 desc ".$limiter .";";
             $sqlcomplement = "select 1minwin,exp_start_time,sum(seqlen)/count(*) as meanlength from basecalled_complement group by 2,1 order by 2,1 desc ".$limiter .";";
-            $sql2d = "select 1minwin,exp_start_time,   sum(basecalled_2d.seqlen)/count(*) as meanlength from basecalled_2d  group by 2,1 order by 2,1 desc ".$limiter .";";
+            $sql2d = "select 1minwin,exp_start_time,sum(basecalled_2d.seqlen)/count(*) as meanlength from basecalled_2d  group by 2,1 order by 2,1 desc ".$limiter .";";
             $pretemplate = "select (floor((pre_config_general.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor,   sum(hairpin_event_index)/count(*) asx meanlength from pre_config_general inner join pre_tracking_id using (basename_id) group by 2,1 order by 2,1 desc ".$limiter .";";
             $precomplement = "select (floor((pre_config_general.start_time)/60/5)*60*5+exp_start_time)*1000 as bin_floor,   sum(total_events-hairpin_event_index)/count(*) as meanlength from pre_config_general inner join pre_tracking_id using (basename_id) group by 2,1 order by 2,1 desc ".$limiter .";";
             $resulttemplate = $mindb_connection->query($sqltemplate);
@@ -1133,21 +1141,21 @@ function ratiopassfail($jobname,$currun) {
             //echo "badger";
 			#$sqltotalcount = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) group by 2,1 order by 2,1;";
             //$sqltotalcount = "select 10minwin,exp_start_time, count(*) as count from basecalled_template group by 2,1 order by 2,1;";
-            $sqltotalcount = "select 1minwin,exp_start_time, readcount as count from basecalled_template_1minwin_sum order by 2,1;";
+            $sqltotalcount = "select 1minwin, readcount as count from basecalled_template_1minwin_sum order by 1;";
             #$sqltemplate = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) where pass = 1 group by 2,1 order by 2,1;";
 
             //$sqltemplate = "select 10minwin,exp_start_time, count(*) as count from basecalled_template where pass = 1 group by 2,1 order by 2,1;";
-            $sqltemplate = "select 1minwin,exp_start_time, passcount as count from basecalled_template_1minwin_sum order by 2,1;";
+            $sqltemplate = "select 1minwin, passcount as count from basecalled_template_1minwin_sum order by 1;";
 
-            $sqlcomplement = "select 1minwin,exp_start_time, passcount as count from basecalled_complement_1minwin_sum where bases!='Null' order by 2,1;";
+            $sqlcomplement = "select 1minwin, passcount as count from basecalled_complement_1minwin_sum where bases!='Null' order by 1;";
 			#$sql2d = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join basecalled_2d using (basename_id) inner join tracking_id using (basename_id) where pass = 1 group by 2,1 order by 2,1;";
 			#$sql2d="select 10minwin,exp_start_time, count(*) as count from basecalled_2d where pass = 1 group by 2,1 order by 2,1;";
-            $sql2d = "select 1minwin,exp_start_time, passcount as count from basecalled_2d_1minwin_sum where bases!='Null' order by 2,1;";
+            $sql2d = "select 1minwin, passcount as count from basecalled_2d_1minwin_sum where bases!='Null' order by 1;";
             //$sqltemplate2 = "select 10minwin,exp_start_time, count(*) as count from basecalled_template where pass = 0 group by 2,1 order by 2,1;";
-            $sqltemplate2 = "select 1minwin,exp_start_time, (readcount-passcount) as count from basecalled_template_1minwin_sum order by 2,1;";
-            $sqlcomplement2 = "select 1minwin,exp_start_time, (readcount-passcount) as count from basecalled_complement_1minwin_sum where bases!='Null' order by 2,1;";
+            $sqltemplate2 = "select 1minwin, (readcount-passcount) as count from basecalled_template_1minwin_sum order by 1;";
+            $sqlcomplement2 = "select 1minwin, (readcount-passcount) as count from basecalled_complement_1minwin_sum where bases!='Null' order by 1;";
 			#$sql2d2 = "select 10minwin,exp_start_time, count(*) as count from basecalled_2d where pass = 0 group by 2,1 order by 2,1;";
-            $sql2d2 = "select 1minwin,exp_start_time, (readcount-passcount) as count from basecalled_2d_1minwin_sum where bases!='Null' order by 2,1;";
+            $sql2d2 = "select 1minwin, (readcount-passcount) as count from basecalled_2d_1minwin_sum where bases!='Null' order by 1;";
 			$resulttotal = $mindb_connection->query($sqltotalcount);
 
 			$resulttemplate = $mindb_connection->query($sqltemplate);
@@ -1164,7 +1172,8 @@ function ratiopassfail($jobname,$currun) {
 				#$cumucount = 0;
 				foreach ($resulttotal as $row) {
 					#$cumucount++;
-                    $binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
+                    #$binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
+                    $binfloor = $row['1minwin']*60*1000;
                     settype($binfloor,"string");
 					$totalarray[$binfloor]=$row['count'];
 
@@ -1177,7 +1186,8 @@ function ratiopassfail($jobname,$currun) {
 				#$cumucount = 0;
 				foreach ($resulttemplate as $row) {
 					#$cumucount++;
-                    $binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
+                    #$binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
+                    $binfloor = $row['1minwin']*60*1000;
                     settype($binfloor,"string");
 					$resultarray['template pass'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
                     //echo $row['count'];
@@ -1187,7 +1197,8 @@ function ratiopassfail($jobname,$currun) {
 				#$cumucount = 0;
 				foreach ($resultcomplement as $row) {
 					#$cumucount++;
-                    $binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
+                    #$binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
+                    $binfloor = $row['1minwin']*60*1000;
                     settype($binfloor,"string");
 					$resultarray['complement pass'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
 				}
@@ -1196,7 +1207,8 @@ function ratiopassfail($jobname,$currun) {
 				#$cumucount = 0;
 				foreach ($result2d as $row) {
 					#$cumucount++;
-                    $binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
+                    #$binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
+                    $binfloor = $row['1minwin']*60*1000;
                     settype($binfloor,"string");
 					$resultarray['2d pass'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
 				}
@@ -1205,7 +1217,8 @@ function ratiopassfail($jobname,$currun) {
 				#$cumucount = 0;
 				foreach ($resulttemplate2 as $row) {
 					#$cumucount++;
-                    $binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
+                    #$binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
+                    $binfloor = $row['1minwin']*60*1000;
                     settype($binfloor,"string");
 					$resultarray['template fail'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
 
@@ -1215,7 +1228,8 @@ function ratiopassfail($jobname,$currun) {
 				#$cumucount = 0;
 				foreach ($resultcomplement2 as $row) {
 					#$cumucount++;
-                    $binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
+                    #$binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
+                    $binfloor = $row['1minwin']*60*1000;
                     settype($binfloor,"string");
 					$resultarray['complement fail'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
 				}
@@ -1224,7 +1238,8 @@ function ratiopassfail($jobname,$currun) {
 				#$cumucount = 0;
 				foreach ($result2d2 as $row) {
 					#$cumucount++;
-                    $binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
+                    #$binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
+                    $binfloor = $row['1minwin']*60*1000;
                     settype($binfloor,"string");
 					$resultarray['2d fail'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
 				}
@@ -1291,9 +1306,9 @@ function reads_over_time2($jobname,$currun) {
 				$jsonstring = $row['json'];
 			}
 		} else {
-			$sql_template = "select 1minwin,exp_start_time, readcount as count from basecalled_template_1minwin_sum where readcount != 'Null' order by 2,1 ;";
+			$sql_template = "select 1minwin, readcount as count from basecalled_template_1minwin_sum where readcount != 'Null' order by 1 ;";
 
-			$sql_complement = "select 5minwin,exp_start_time, readcount as count from basecalled_complement_1minwin_sum where readcount != 'Null'  order by 2,1 ;";
+			$sql_complement = "select 1minwin, readcount as count from basecalled_complement_1minwin_sum where readcount != 'Null'  order by 1 ;";
 
 			$resultarray=array();
 
@@ -1302,15 +1317,18 @@ function reads_over_time2($jobname,$currun) {
 
 			if ($template->num_rows >= 1){
 				foreach ($template as $row) {
-                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    #$binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    $binfloor = $row['1minwin']*60*1000;
                     settype($binfloor,"string");
 					$resultarray['template'][$binfloor]=$row['count'];
+
 				}
 			}
 
 			if ($complement->num_rows >=1) {
 				foreach ($complement as $row) {
-                    $binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    #$binfloor = ($row['1minwin']*1*60+$row['exp_start_time'])*1000;
+                    $binfloor = $row['1minwin']*60*1000;
                     settype($binfloor,"string");
 					$resultarray['complement'][$binfloor]=$row['count'];
 				}

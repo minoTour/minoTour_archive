@@ -1,5 +1,5 @@
 #!/bin/bash
-# This script will configure minoTour for the first time.                                                           
+# This script will configure minoTour for the first time.
 echo "                 ,\`                                         .               "
 echo "                 ,;.                                      \`;:               "
 echo "                 \`;;;;                                  :;;'\`               "
@@ -45,7 +45,7 @@ echo "This script will configure the environment for minoTour on the recommended
 echo "Are you happy to proceed? (y/n)"
 read proceed
 check='y'
-if [ "$proceed"	= "$check" ]; 
+if [ "$proceed"	= "$check" ];
 then
 	echo "OK - lets begin."
 else
@@ -55,10 +55,13 @@ fi
 git pull
 sudo apt-get update
 sudo apt-get install lamp-server^
-sudo apt-get install memcached php5-memcache
-sudo apt-get install php5-curl
+sudo apt-get install memcached php-memcache
+sudo apt-get install php-curl php-dev
 sudo apt-get install libcache-memcached-perl
 sudo apt-get install make
+sudo apt-get install php-mbstring
+sudo apt-get install python python-setuptools python-dev build-essential libmysqlclient-dev python-wxtools python-wxgtk3.0 python-pip
+sudo pip install watchdog MySQL-Python configargparse psutil BioPython numpy progressbar ws4py thrift dictdiffer twisted autobahn gooey h5py xmltodict jsonpatch python-memcached pandas
 wget http://search.cpan.org/CPAN/authors/id/P/PM/PMORCH/Parallel-Loops-0.07.tar.gz
 wget http://search.cpan.org/CPAN/authors/id/D/DL/DLUX/Parallel-ForkManager-0.7.9.tar.gz
 tar -zxvf Parallel-ForkManager-0.7.9.tar.gz
@@ -69,7 +72,7 @@ make
 make test
 sudo make install
 cd ..
-cd Parallel-Loops-0.07 
+cd Parallel-Loops-0.07
 perl Makefile.PL
 make
 make test
