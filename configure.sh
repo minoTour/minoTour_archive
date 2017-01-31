@@ -54,13 +54,14 @@ else
 fi
 git pull
 sudo apt-get update
-sudo apt-get install lamp-server^
-sudo apt-get install memcached php-memcache
-sudo apt-get install php-curl php-dev
-sudo apt-get install libcache-memcached-perl
-sudo apt-get install make
-sudo apt-get install php-mbstring
-sudo apt-get install python python-setuptools python-dev build-essential libmysqlclient-dev python-wxtools python-wxgtk3.0 python-pip
+sudo apt-get install -y lamp-server^
+sudo apt-get install -y memcached php-memcache
+sudo apt-get install -y php-curl php-dev
+sudo apt-get install -y libcache-memcached-perl
+sudo apt-get install -y make
+sudo apt-get install -y screen
+sudo apt-get install -y php-mbstring
+sudo apt-get install -y python python-setuptools python-dev build-essential libmysqlclient-dev python-wxtools python-wxgtk3.0 python-pip
 sudo pip install watchdog MySQL-Python configargparse psutil BioPython numpy progressbar ws4py thrift dictdiffer twisted autobahn gooey h5py xmltodict jsonpatch python-memcached pandas
 wget http://search.cpan.org/CPAN/authors/id/P/PM/PMORCH/Parallel-Loops-0.07.tar.gz
 wget http://search.cpan.org/CPAN/authors/id/D/DL/DLUX/Parallel-ForkManager-0.7.9.tar.gz
