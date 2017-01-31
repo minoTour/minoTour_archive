@@ -701,7 +701,14 @@ function checksessionvars(){
 					}else{
 						$_SESSION['currentbasesum'] = 0;// $barcoderesult->num_rows;
 					}
-
+                    //Check for the existence of an assmebly table in the active run database:
+                    $assemblycheck = "select * from  assembly_metrics;";
+                    $assemblycheckresult = $db_connection2->query($assemblycheck);
+                    if (!empty ($assemblycheckresult)  && ($assemblycheckresult->num_rows >= 1)) {
+						$_SESSION['assemblyactive'] = $assemblycheckresult->num_rows;
+					}else{
+						$_SESSION['assemblyactive'] = 0;// $barcoderesult->num_rows;
+					}
 
 					//Check for the existence of a barcoding table in the active run database:
 					$barcodecheck = "select * from barcode_assignment;";
