@@ -161,7 +161,7 @@ echo "Remember if I ask for your password it is the mySQL root password..."
 cd mT_server/db_control/setup
 ./createADMIN ${adminuser} ${OUTPUT} ${adminemail}
 cd ../../../
-cd mT_server/db_control/nefario
+cd mT_server/nefario
 screen -d -m -S websocket sh websocket.sh
 screen -d -m -S mTcontrol sh mTcontrol.sh
 cd ../../../
