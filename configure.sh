@@ -85,4 +85,5 @@ sudo /etc/init.d/mysql stop
 sudo sed -i '/bind-address		= 127.0.0.1/c\# bind-address		= 127.0.0.1/' /etc/mysql/my.cnf
 sudo sed -i '/max_allowed_packet	= 16M/c\max_allowed_packet	= 200M/' /etc/mysql/my.cnf
 sudo /etc/init.d/mysql start
+sudo service apache2 restart
 ./initialise.sh
