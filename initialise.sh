@@ -163,8 +163,8 @@ cd mT_server/db_control/setup
 cd ../../../
 cd mT_server/nefario
 screen -d -m -S websocket sh websocket.sh
-screen -d -m -S mTcontrol sh mTcontrol.sh
-cd ../../../
+screen -d -m -S mTcontrol sh mT_control.sh
+cd ../../
 echo "Removing old index files"
 sudo rm ${webpath}index.html
 echo "Now I am going to attempt to copy files - you may be asked to provide a sudo capable password."
