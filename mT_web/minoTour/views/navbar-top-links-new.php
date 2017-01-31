@@ -61,6 +61,12 @@
                                     <a href="live_data.php"><i class="fa fa-cog fa-spin"></i> Live Data</a>
                                 </li>
 
+                                <?php if ($_SESSION['assemblyactive'] >= 1) {?>
+                                    <li>
+                                        <a href="current_assembly.php"><i class="fa fa-puzzle-piece"></i><span> Assembly</span></a>
+                                    </li>
+                                <?php }; ?>
+
 								<?php if ($_SESSION['currentbarcode'] >= 1) {?>
 								<li>
                                     <a href="current_barcodes.php"><i class="fa fa-barcode"></i><span> Barcodes</span></a>
