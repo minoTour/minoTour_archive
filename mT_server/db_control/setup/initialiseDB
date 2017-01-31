@@ -17,4 +17,4 @@ then
 fi
  
 $MYSQL -uroot -p -e "$SQL"
-$MYSQL -uroot -p Gru < Gru.sql
+$MYSQL -uroot -p Gru < Gru0.7.sql
