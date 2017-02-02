@@ -1,5 +1,5 @@
 #!/bin/bash
-# This script will configure minoTour for the first time.                                                           
+# This script will configure minoTour for the first time.
 echo "                 ,\`                                         .               "
 echo "                 ,;.                                      \`;:               "
 echo "                 \`;;;;                                  :;;'\`               "
@@ -44,7 +44,7 @@ echo ""
 echo "Are you happy to proceed? (y/n)"
 read proceed
 check='y'
-if [ "$proceed"	= "$check" ]; 
+if [ "$proceed"	= "$check" ];
 then
 	echo "OK - lets begin."
 else
@@ -105,7 +105,7 @@ echo "First - where do you wish to install your minoTour installation to? Typica
 webpath='/var/www/html/'
 echo "Is this OK? (y/n)"
 read proceed
-if [ "$proceed"	= "$check" ]; 
+if [ "$proceed"	= "$check" ];
 then
 	echo "OK - great. We will install to ${webpath}"
 else
@@ -115,7 +115,7 @@ else
 	echo $webpath
 	echo "Is this correct? (y/n)"
 	read proceed
-	if [ "$proceed"	= "$check" ]; 
+	if [ "$proceed"	= "$check" ];
 	then
 		echo "OK - we'll continue then and install to ${webpath}"
 	else
@@ -126,7 +126,7 @@ fi
 echo "We assume you are connecting to a mysql database on the same host as this machine and that you are running memcached. We also assume that php is in /usr/bin/ . If this isn't the case please see the read me file. I will now try and configure minoTour for you automagically."
 echo "Are you happy to proceed on this basis? (y/n)"
 read proceed
-if [ "$proceed"	= "$check" ]; 
+if [ "$proceed"	= "$check" ];
 then
 	echo "OK - here goes..."
 	echo "From time to time you will be asked to enter your mySQL password. This is the mySQL root password."
@@ -174,6 +174,3 @@ echo "Make sure you have memcached running and get the mT_control scripts runnin
 echo "!!!!!!! IMPORTANT !!!!!!!"
 echo "It is up to you to maintain and configure your mysql hardware optimally for your setup."
 exit
-
-
-
