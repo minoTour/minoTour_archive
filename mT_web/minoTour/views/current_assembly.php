@@ -92,7 +92,7 @@ include 'includes/head-new.php';
           </h1>
           <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-table"></i> Current Run</a></li>
-            <li><a href="#"><i class="fa fa-bar-chart-o"></i> Assembly Summary</a></li>
+            <li><a href="#"><i class="fa fa-puzzle-piece"></i> Assembly Summary</a></li>
             <li class="active">Here</li>
           </ol>
         </section>
