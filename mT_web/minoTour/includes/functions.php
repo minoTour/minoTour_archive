@@ -1000,7 +1000,9 @@ function assemblysummary() {
         $sql = "select * from assembly_metrics;";
         $assemblies = $db_connection->query($sql);
         if ($assemblies->num_rows >=1) {
-            var_dump($assemblies);
+             foreach ($assemblies as $row) {
+                 echo $row;
+            }
         }
 
     }
