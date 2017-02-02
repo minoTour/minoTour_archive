@@ -1000,12 +1000,36 @@ function assemblysummary() {
         $sql = "select * from assembly_metrics;";
         $assemblies = $db_connection->query($sql);
         if ($assemblies->num_rows >=1) {
+            echo "<h4>Assembly Data Summary</h4><div class='table-responsive'>
+            <table class='table table-condensed'>
+                <thead>
+            <tr>
+                    <th>Assembly Number</th>
+                    <th>Assembly Time</th>
+                    <th>Number of Reads Used</th>
+                    <th>Longest Contig</th>
+                    <th>Shortest Contig</th>
+                    <th>Total Assembly Length</th>
+                    <th>Contig N50</th>
+                    </tr>
+                </thead>
+                <tbody>";
              foreach ($assemblies as $row) {
-                 foreach ($row as $bit){
-                        echo $bit ."\t";
-                 }
-                 echo "\n\n";
+                 echo "<tr>";
+                 echo "<td>" . $row[0] . "</td>";
+                 echo "<td>" . $row[1] . "</td>";
+                 echo "<td>" . $row[2] . "</td>";
+                 echo "<td>" . $row[3] . "</td>";
+                 echo "<td>" . $row[4] . "</td>";
+                 echo "<td>" . $row[5] . "</td>";
+                 echo "<td>" . $row[6] . "</td>";
+                 echo "</tr>";
+
             }
+            echo"</tbody>
+                </table>
+                </div>
+                ";
         }
 
     }
