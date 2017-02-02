@@ -1016,13 +1016,14 @@ function assemblysummary() {
                 <tbody>";
              foreach ($assemblies as $row) {
                  echo "<tr>";
-                 echo "<td>" . $row[0] . "</td>";
-                 echo "<td>" . $row[1] . "</td>";
-                 echo "<td>" . $row[2] . "</td>";
-                 echo "<td>" . $row[3] . "</td>";
-                 echo "<td>" . $row[4] . "</td>";
-                 echo "<td>" . $row[5] . "</td>";
-                 echo "<td>" . $row[6] . "</td>";
+                 echo "<td>" . $row['timeid'] . "</td>";
+                 echo "<td>" . $row['timeset'] . "</td>";
+                 echo "<td>" . $row['no_reads'] . "</td>";
+                 echo "<td>" . $row['no_contigs'] . "</td>";
+                 echo "<td>" . $row['maxlen'] . "</td>";
+                 echo "<td>" . $row['minlen'] . "</td>";
+                 echo "<td>" . $row['totallen'] . "</td>";
+                 echo "<td>" . $row['n50'] . "</td>";
                  echo "</tr>";
 
             }
