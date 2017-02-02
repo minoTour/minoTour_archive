@@ -110,22 +110,20 @@ include 'includes/head-new.php';
                 <div class="panel panel-default">
                 <div class="panel-heading">
                   <h3 class="panel-title"><!-- Button trigger modal -->
-    <button class="btn btn-info  btn-sm" data-toggle="modal" data-target="#modalbarcode">
-    <i class="fa fa-info-circle"></i> Barcoding Summary
+    <button class="btn btn-info  btn-sm" data-toggle="modal" data-target="#modalassembly">
+    <i class="fa fa-info-circle"></i> Assembly Summary
     </button>
 
     <!-- Modal -->
-    <div class="modal fade" id="modalbarcode" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal fade" id="modalassembly" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close  btn-sm" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-          <h4 class="modal-title" id="myModalLabel">Barcoding Summary</h4>
+          <h4 class="modal-title" id="myModalLabel">Assembly Summary</h4>
         </div>
         <div class="modal-body">
-          This panel provides information on the number of reads assigned to each barcode using the Oxford Nanopore barcoding protocol.<br><br>
-          The standard ONT barcoding analysis only searches for barcodes in PASS reads - i.e those reads generating full 2D sequence. Reads which cannot be classified are moved to the fail bin. We therefore show as unclassified (UC) those reads which generated 2D sequence but could not be barcoded by the ONT pipeline in the charts below.<br><br>
-          Note that further barcoding analysis options are availble under the specific barcoding tab in the left hand menu.<br>
+          minoTour can be used to trigger a basic minmap/miniasm assembly pipeline. The results of which are presented here.
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default  btn-sm" data-dismiss="modal">Close</button>
@@ -134,11 +132,9 @@ include 'includes/head-new.php';
     </div>
     </div>
                 </div>
-                <div id="barcoding">
+                <div id="assmbly">
                 <div class="panel-body">
                           <div class="row">
-                          <div class="col-md-5" id="barcod" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Barcoding</div>
-                          <div class="col-md-7" id="barcodcov" style="height:400px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Barcode Coverage</div>
 
 
                       </div>
@@ -148,92 +144,10 @@ include 'includes/head-new.php';
 
           </div>
 
-          <div class="panel panel-default">
-                    						  <div class="panel-heading">
-                    						    <h3 class="panel-title"><!-- Button trigger modal -->
-                    			<button class="btn btn-info  btn-sm" data-toggle="modal" data-target="#modalbarcodecov">
-                    			 <i class="fa fa-info-circle"></i> Barcoding Coverage Plots
-                    			</button>
-
-                    			<!-- Modal -->
-                    			<div class="modal fade" id="modalbarcodecov" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                    			  <div class="modal-dialog">
-                    			    <div class="modal-content">
-                    			      <div class="modal-header">
-                    			        <button type="button" class="close  btn-sm" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    			        <h4 class="modal-title" id="myModalLabel">Barcoding Coverage Plots</h4>
-                    			      </div>
-                    			      <div class="modal-body">
-                    			        These plots provide coverage details on a per barcode basis. They will not work well if you have more than one reference sequence and are currently experimental.<br>
-                    			      </div>
-                    			      <div class="modal-footer">
-                    			        <button type="button" class="btn btn-default  btn-sm" data-dismiss="modal">Close</button>
-                    			      </div>
-                    			    </div>
-                    			  </div>
-                    			</div>
-                    						  </div>
-                    						  <div id="barcodingcov">
-                    						  <div class="panel-body">
-                    									<div class="row">
-                    									<div class="col-md-12" id="barcodcovdet" style="height:1000px;"><i class="fa fa-cog fa-spin fa-3x"></i> Calculating Barcoding Coverage</div>
 
 
 
-                    								</div>
-
-                    						  </div>
-                    						</div>
-
-                    					</div>
-
-
-    <!--
-
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title"><!-- Button trigger modal -->
-    <!--<button class="btn btn-info" data-toggle="modal" data-target="#modal3">
-    <i class="fa fa-info-circle"></i> Barcodes Over Time</h4>
-    </button>
-
-    <!-- Modal -->
-    <!--<div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-    <div class="modal-content">
-    <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-    <h4 class="modal-title" id="myModalLabel"> New Views
-    </div>
-    <div class="modal-body">
-    This plot shows the accumulation of different barcode sequences over time. This is the total number of barcodes sequenced over time which have aligned to a reference sequence.
-    <br>
-    </div>
-    <div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-    </div>
-    </div>
-    </div>
-    </div></h3>
-    </div>
-    <div class="panel-body">
-          <?php if ($_SESSION['activereference'] != "NOREFERENCE") {?>
-          <?php $arr = array("template", "complement", "2d");?>
-          <?php foreach ($arr as $key => $value) {
-              //echo $key . " " . $value . "<br>";?>
-              <div id="barcodwimm<?php echo $key;?>" style="width:100%; height:300px;"><i class="fa fa-cog fa-spin fa-3x" ></i> Calculating <?php echo $value;?> WIMM</div>
-              <?php
-          }
-          ?>
-
-      <?php }else { ?>
-                                      <div><p class="text-center"><small>This dataset has not been aligned to a reference sequence - we cannot determine a WIMM plot for it.</small></p></div>
-      <?php }; ?>
-
-
-
-      </div>
-      </div>-->
+    
 
 
     <br>
