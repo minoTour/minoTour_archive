@@ -1001,7 +1001,10 @@ function assemblysummary() {
         $assemblies = $db_connection->query($sql);
         if ($assemblies->num_rows >=1) {
              foreach ($assemblies as $row) {
-                 echo $row;
+                 foreach ($row as $bit){
+                        echo $bit ."\t";
+                 }
+                 echo "\n\n";
             }
         }
 
