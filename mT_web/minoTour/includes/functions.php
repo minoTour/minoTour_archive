@@ -1007,6 +1007,7 @@ function assemblysummary() {
                     <th>Assembly Number</th>
                     <th>Assembly Time</th>
                     <th>Number of Reads Used</th>
+                    <th>Number of Contigs</th>
                     <th>Longest Contig</th>
                     <th>Shortest Contig</th>
                     <th>Total Assembly Length</th>
