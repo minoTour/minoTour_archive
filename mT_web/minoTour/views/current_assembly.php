@@ -135,7 +135,7 @@ include 'includes/head-new.php';
                 <div id="assmbly">
                 <div class="panel-body">
                           <div class="row">
-
+                              <?php assemblysummary(); ?>
 
                       </div>
 
@@ -147,7 +147,7 @@ include 'includes/head-new.php';
 
 
 
-    
+
 
 
     <br>
