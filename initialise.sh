@@ -97,7 +97,7 @@ else
 	done
 fi
 adminpass1=$(echo ${adminpass1}|tr -d '\n')
-OUTPUT="$(php init.php a=${adminpass1})"
+#OUTPUT="$(php init.php a=${adminpass1})"
 
 echo ""
 echo "Now we need to configure some additional parameters:"
@@ -159,12 +159,12 @@ cd ../../
 echo "Now we are going to configure your admin account. Hold on a sec..."
 echo "Remember if I ask for your password it is the mySQL root password..."
 cd mT_server/db_control/setup
-./createADMIN ${adminuser} ${OUTPUT} ${adminemail}
+./createADMIN ${adminuser} ${adminpass1} ${adminemail}
 cd ../../../
 cd mT_server/nefario
 screen -d -m -S websocket sh websocket.sh
-screen -d -m -S mTcontrol sh mTcontrol.sh
-cd ../../../
+screen -d -m -S mTcontrol sh mT_control.sh
+cd ../../
 echo "Removing old index files"
 sudo rm ${webpath}index.html
 echo "Now I am going to attempt to copy files - you may be asked to provide a sudo capable password."
