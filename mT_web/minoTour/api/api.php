@@ -328,10 +328,10 @@ if ($login->isUserLoggedIn() == true) {
                 }
             }
             //Adding aligned counts ###This needs further optimisation
-            $sql_template = "select 1minwin,count(*) as readnum from basecalled_template where align = 1 group by 1 order by 1 desc".$limiter.";";
-            $sql_complement = "select 1minwin,count(*) as readnum from basecalled_complement where align = 1 group by 1 order by 1 desc".$limiter.";";
-            $sql_2d = "select 1minwin,count(*) as readnum from basecalled_2d where align = 1 group by 1 order by 1 desc".$limiter.";";
-            $pre_template = "SELECT count(*) as readnum FROM pre_tracking_id where align = 1 group by 1 order by 1 desc".$limiter.";";
+            $sql_template = "select 1minwin,count(*) as readnum from basecalled_template where align = 1 group by 1 order by 1 desc ".$limiter.";";
+            $sql_complement = "select 1minwin,count(*) as readnum from basecalled_complement where align = 1 group by 1 order by 1 desc ".$limiter.";";
+            $sql_2d = "select 1minwin,count(*) as readnum from basecalled_2d where align = 1 group by 1 order by 1 desc ".$limiter.";";
+            $pre_template = "SELECT count(*) as readnum FROM pre_tracking_id where align = 1 group by 1 order by 1 desc ".$limiter.";";
             $pre_complement = "SELECT count(*) as readnum FROM pre_tracking_id where hairpin_found = 1 and align = 1 group by 1 order by 1 desc".$limiter.";";
 
 
@@ -385,8 +385,20 @@ if ($login->isUserLoggedIn() == true) {
                     //$resultarray["readcounts"][$row['exp_script_purpose']]['template'][$row['1minwin']]=$row['readnum'];
                     $resultstore['template']['countpass'][$row['1minwin']]=$row['readnum'];
                     $resultstore['template']['countfail'][$row['1minwin']]=$resultstore['template']['count'][$row['1minwin']]-$row['readnum'];
-                    $resultstore['template']["proppass"][$row['1minwin']]=$row['readnum']/$resultstore['template']['count'][$row['1minwin']]*100;
-                    $resultstore['template']["propfail"][$row['1minwin']]=$resultstore['template']['countfail'][$row['1minwin']]/$resultstore['template']['count'][$row['1minwin']]*100;
+                    if ($resultstore['template']['count'][$row['1minwin']] > 0){
+                        $resultstore['template']["proppass"][$row['1minwin']]=$row['readnum']/$resultstore['template']['count'][$row['1minwin']]*100;
+                    }elseif ($row['readnum']>0){
+                        $resultstore['template']["proppass"][$row['1minwin']]=100;
+                    }else{
+                        $resultstore['template']["proppass"][$row['1minwin']]=0;
+                    }
+                    if ($resultstore['template']['count'][$row['1minwin']] > 0){
+                        $resultstore['template']["propfail"][$row['1minwin']]=$resultstore['template']['countfail'][$row['1minwin']]/$resultstore['template']['count'][$row['1minwin']]*100;
+                    }elseif ($resultstore['template']['countfail'][$row['1minwin']]>0){
+                        $resultstore['template']["propfail"][$row['1minwin']]=100;
+                    }else{
+                        $resultstore['template']["propfail"][$row['1minwin']]=0;
+                    }
 
                 }
             }
@@ -395,8 +407,20 @@ if ($login->isUserLoggedIn() == true) {
                     //$resultarray["readcounts"][$row['exp_script_purpose']]['complement'][$row['1minwin']]=$row['readnum'];
                     $resultstore['complement']['countpass'][$row['1minwin']]=$row['readnum'];
                     $resultstore['complement']['countfail'][$row['1minwin']]=$resultstore['complement']['count'][$row['1minwin']]-$row['readnum'];
-                    $resultstore['complement']["proppass"][$row['1minwin']]=$row['readnum']/$resultstore['complement']['count'][$row['1minwin']]*100;
-                    $resultstore['complement']["propfail"][$row['1minwin']]=$resultstore['complement']['countfail'][$row['1minwin']]/$resultstore['complement']['count'][$row['1minwin']]*100;
+                    if ($resultstore['complement']['count'][$row['1minwin']] > 0){
+                        $resultstore['complement']["proppass"][$row['1minwin']]=$row['readnum']/$resultstore['complement']['count'][$row['1minwin']]*100;
+                    }elseif ($row['readnum']>0){
+                        $resultstore['complement']["proppass"][$row['1minwin']]=100;
+                    }else{
+                        $resultstore['complement']["proppass"][$row['1minwin']]=0;
+                    }
+                    if ($resultstore['complement']['count'][$row['1minwin']] > 0){
+                        $resultstore['complement']["propfail"][$row['1minwin']]=$resultstore['complement']['countfail'][$row['1minwin']]/$resultstore['complement']['count'][$row['1minwin']]*100;
+                    }elseif ($resultstore['complement']['countfail'][$row['1minwin']]>0){
+                        $resultstore['complement']["propfail"][$row['1minwin']]=100;
+                    }else{
+                        $resultstore['complement']["propfail"][$row['1minwin']]=0;
+                    }
                 }
             }
             if ($read2d->num_rows >= 1){
@@ -404,8 +428,20 @@ if ($login->isUserLoggedIn() == true) {
                     //$resultarray["readcounts"][$row['exp_script_purpose']]['2d'][$row['1minwin']]=$row['readnum'];
                     $resultstore['2d']['countpass'][$row['1minwin']]=$row['readnum'];
                     $resultstore['2d']['countfail'][$row['1minwin']]=$resultstore['2d']['count'][$row['1minwin']]-$row['readnum'];
-                    $resultstore['2d']["proppass"][$row['1minwin']]=$row['readnum']/$resultstore['2d']['count'][$row['1minwin']]*100;
-                    $resultstore['2d']["propfail"][$row['1minwin']]=$resultstore['2d']['countfail'][$row['1minwin']]/$resultstore['2d']['count'][$row['1minwin']]*100;
+                    if ($resultstore['2d']['count'][$row['1minwin']] > 0){
+                        $resultstore['2d']["proppass"][$row['1minwin']]=$row['readnum']/$resultstore['2d']['count'][$row['1minwin']]*100;
+                    }elseif ($row['readnum']>0){
+                        $resultstore['2d']["proppass"][$row['1minwin']]=100;
+                    }else{
+                        $resultstore['2d']["proppass"][$row['1minwin']]=0;
+                    }
+                    if ($resultstore['2d']['count'][$row['1minwin']] > 0){
+                        $resultstore['2d']["propfail"][$row['1minwin']]=$resultstore['2d']['countfail'][$row['1minwin']]/$resultstore['2d']['count'][$row['1minwin']]*100;
+                    }elseif ($resultstore['2d']['countfail'][$row['1minwin']]>0){
+                        $resultstore['2d']["propfail"][$row['1minwin']]=100;
+                    }else{
+                        $resultstore['2d']["propfail"][$row['1minwin']]=0;
+                    }
                 }
             }
 
