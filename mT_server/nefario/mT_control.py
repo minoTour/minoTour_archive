@@ -193,21 +193,23 @@ while 42:
         ref = results_df
         if numCols>0:
             print "Active Runs: "
-            for r in results_df['runname']: print "\t"+r
+            for r in ref['runname']: print "\t"+r
         else: print "No Active Runs."
 
 #-------------------------------------------------------------------------------
         #Loop through results and if we have any, set a memcache variable containing a list of database names:
         run_counter = 0 # Set counter for number of active runs.
         if numCols>0:
-          for run_counter in xrange(numRows):
-                #run_counter= ref # +=1
+            for x in xrange(numRows):
+                run_counter+=1
 
                 if args.verbose is True:
-                        print str(run_counter) \
-                                 + "\t" + ref.runname[run_counter]
-                runname = "python_" + str(run_counter)
-                memc.set(runname, ref.runname[run_counter], sleeptime)
+                    print str(run_counter) \
+                         + "\t" + ref.runname[x]
+                runname = "perl_active_" + str(run_counter)
+                print runname,ref.runname[x]
+                memc.set(runname, ref.runname[x], sleeptime)
+
 
                 #for j in jobarray:
                 #        #print j
@@ -218,7 +220,7 @@ while 42:
                 #            , ref.minup_version[run_counter]
                 #            )
 
-                if ref.reflength[run_counter] > 0:
+                if ref.reflength[x] > 0:
                         #for j in alignjobarray:
                         #    jobs(args, mT_params
                         #        , ref.runname[run_counter]
@@ -228,10 +230,12 @@ while 42:
                         #        )
                         ##proc_align($ref->{runname},$dbh);
                         #aligncommand = "c:/Perl64/bin/perl win_mT_align.pl " + ref.runname[run_counter] #+ " &"
-                        aligncommand = "perl mT_align.pl " + ref.runname[run_counter] #+ " &"
+                        aligncommand = "perl mT_align.pl " + ref.runname[x] #+ " &"
                         #aligncommand = "python mT_coverage.py " + ref.runname[run_counter] #+ " &"
                         if args.verbose is True:
                             print "ALIGNCOMMAND: ", aligncommand
                         subprocess.Popen(aligncommand, shell=True)
                 if args.verbose is True:
                         print "Executed..."
+        #print run_counter
+        memc.set("perl_proc_active", str(run_counter) ,sleeptime);
