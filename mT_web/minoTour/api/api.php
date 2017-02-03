@@ -144,7 +144,7 @@ if ($login->isUserLoggedIn() == true) {
 
             //Optimising queries for large datasets:
             //This gives the values for the mux_scan_counts
-            $start_time_queries_mux = 'select count(*) as count, device_id, exp_script_purpose, exp_start_time,run_id,version_name from tracking_id where exp_script_purpose = "mux_scan" and device_id!=null group by device_id, exp_script_purpose, exp_start_time,run_id,version_name;';
+            $start_time_queries_mux = 'select count(*) as count, device_id, exp_script_purpose, exp_start_time,run_id,version_name from tracking_id where exp_script_purpose = "mux_scan" and device_id!="null" group by device_id, exp_script_purpose, exp_start_time,run_id,version_name;';
             $starttimemux=$mindb_connection->query($start_time_queries_mux);
     //        $muxcounter = 0
             if ($starttimemux->num_rows>=1){

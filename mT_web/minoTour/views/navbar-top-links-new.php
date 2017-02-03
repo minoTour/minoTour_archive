@@ -100,6 +100,9 @@
                                 <li>
                                     <a href="live_report.php"><i class="fa fa-comments-o fa-fw"></i><span> Run Report</span></a>
                                 </li>
+                                <li>
+                                	<a href="jobs.php"><i class="fa fa-building"></i><span> Run Analysis Jobs</span></a>
+                                </li>
                                 <!--<li>
                                     <a href="set_alerts.php"><i class="fa fa-exclamation-circle"></i><span> Set Alerts</span></a>
                                 </li>-->
@@ -246,7 +249,7 @@
                     var d = document.getElementById("prevruns");
                     d.className = d.className + " active";
                 }
-                if (filename == "runadmin.php" || filename == "live_interaction.php" || filename == 'current_assembly.php' || filename == "current_barcodes.php" || filename == "current_bases.php" || filename == "current_insertions.php" || filename == "current_deletions.php" || filename == "current_variants.php" || filename == "current_var.php" || filename == "live_report.php" || filename == "switch_run.php" || filename == "live_reads_table.php" || filename  == "current_histogram.php"|| filename == "live_data.php" || filename  == "current_summary.php" || filename== "export.php" || filename== "set_alerts.php" || filename== "current_export.php" || filename== "current_histogram.php" || filename== "current_rates.php" || filename== "current_pores.php" || filename== "current_quality.php" || filename== "current_coverage.php" || filename== "current_development.php") {
+                if (filename == "runadmin.php" || filename == "live_interaction.php" || filename == "jobs.php" || filename == 'current_assembly.php' || filename == "current_barcodes.php" || filename == "current_bases.php" || filename == "current_insertions.php" || filename == "current_deletions.php" || filename == "current_variants.php" || filename == "current_var.php" || filename == "live_report.php" || filename == "switch_run.php" || filename == "live_reads_table.php" || filename  == "current_histogram.php"|| filename == "live_data.php" || filename  == "current_summary.php" || filename== "export.php" || filename== "set_alerts.php" || filename== "current_export.php" || filename== "current_histogram.php" || filename== "current_rates.php" || filename== "current_pores.php" || filename== "current_quality.php" || filename== "current_coverage.php" || filename== "current_development.php") {
                     var d = document.getElementById("currentruns");
                     d.className = d.className + " active";
                 }
