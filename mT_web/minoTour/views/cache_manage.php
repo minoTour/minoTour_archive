@@ -117,21 +117,22 @@ include 'includes/head-new.php';
 
             $cachecheck = $memcache->get("perl_mem_cache_connection");
             if($cachecheck === false){
-                echo "<strong>Your minotour installation is not using background perl scripts which accelerate web performance - please consult with the user manual to set these up.<br></strong>";
+                echo "<strong>Your minotour installation is not using background scripts which accelerate web performance - please consult with the user manual to set these up.<br></strong>";
             }else {
-                echo "<strong>Congratulations, you have memcache up and running and the perl script is communicating well with your web backend!</strong><br>";
+                echo "<strong>Congratulations, you have memcache up and running and the background scripts are communicating well with your web backend!</strong><br>";
                 $active_runs = $memcache->get("perl_proc_active");
                 if ($active_runs === false) {
                     echo "You have no active runs being processed at this time.<br>";
                 }else {
-                    echo "You have $active_runs active runs at this time.<br>";
+                    echo "You have $active_runs runs at this time.<br>";
                     for ($x=1; $x<=$active_runs; $x++) {
                         $run_to_retrieve = "perl_active_" . $x;
+                        //echo $run_to_retrieve . "<br>";
                         $runname = $memcache->get($run_to_retrieve);
                         echo "The number is $x: $runname <br>";
                         $jsonreads = $runname . "bases";
                         $json_test = $memcache->get($jsonreads);
-                        echo $jsonreads . "<br>";
+                        //echo $jsonreads . "<br>";
                         echo "$json_test<br>";
                     }
 
@@ -140,7 +141,7 @@ include 'includes/head-new.php';
             ?>
                                         <?php
                 echo '<pre>';
-            var_dump($_SESSION);
+            //var_dump($_SESSION);
             echo '</pre>';
 
             echo '<pre>';
