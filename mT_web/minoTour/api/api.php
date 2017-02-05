@@ -628,9 +628,15 @@ if ($login->isUserLoggedIn() == true) {
                 $variablearray["Raw Complement"]["third_q"]=$val[2];
             }
             //These are very slow
-            $sqltemp = "select (select seqlen from basecalled_template order by seqlen limit " .$variablearray['template']['first_q'] . ",1) as firstq, (select seqlen from basecalled_template order by seqlen limit ".$variablearray['template']['mid_pos'].",1) as median, (select seqlen from basecalled_template order by seqlen limit ".$variablearray['template']['third_q'].",1) as lastq from basecalled_template limit 1;";
-			$sqlcomp = "select (select seqlen from basecalled_complement order by seqlen limit " .$variablearray['complement']['first_q'] . ",1) as firstq, (select seqlen from basecalled_complement order by seqlen limit ".$variablearray['complement']['mid_pos'].",1) as median, (select seqlen from basecalled_complement order by seqlen limit ".$variablearray['complement']['third_q'].",1) as lastq from basecalled_complement limit 1;";
-			$sql2d = "select (select seqlen from basecalled_2d order by seqlen limit " .$variablearray['2d']['first_q'] . ",1) as firstq, (select seqlen from basecalled_2d order by seqlen limit ".$variablearray['2d']['mid_pos'].",1) as median, (select seqlen from basecalled_2d order by seqlen limit ".$variablearray['2d']['third_q'].",1) as lastq from basecalled_2d limit 1;";
+            if ($resulttempquartiles!=False){
+                $sqltemp = "select (select seqlen from basecalled_template order by seqlen limit " .$variablearray['template']['first_q'] . ",1) as firstq, (select seqlen from basecalled_template order by seqlen limit ".$variablearray['template']['mid_pos'].",1) as median, (select seqlen from basecalled_template order by seqlen limit ".$variablearray['template']['third_q'].",1) as lastq from basecalled_template limit 1;";
+            }
+            if ($resultcompquartiles!=False){
+                $sqlcomp = "select (select seqlen from basecalled_complement order by seqlen limit " .$variablearray['complement']['first_q'] . ",1) as firstq, (select seqlen from basecalled_complement order by seqlen limit ".$variablearray['complement']['mid_pos'].",1) as median, (select seqlen from basecalled_complement order by seqlen limit ".$variablearray['complement']['third_q'].",1) as lastq from basecalled_complement limit 1;";
+            }
+            if ($result2dquartiles!=False){
+                $sql2d = "select (select seqlen from basecalled_2d order by seqlen limit " .$variablearray['2d']['first_q'] . ",1) as firstq, (select seqlen from basecalled_2d order by seqlen limit ".$variablearray['2d']['mid_pos'].",1) as median, (select seqlen from basecalled_2d order by seqlen limit ".$variablearray['2d']['third_q'].",1) as lastq from basecalled_2d limit 1;";
+            }
             if ($resultpretempquartiles!=False){
                 $pretemp = "select (select hairpin_event_index from pre_config_general order by hairpin_event_index limit " .$variablearray['Raw Template']['first_q'] . ",1) as firstq, (select hairpin_event_index from pre_config_general order by hairpin_event_index limit ".$variablearray['Raw Template']['mid_pos'].",1) as median, (select hairpin_event_index from pre_config_general order by hairpin_event_index limit ".$variablearray['Raw Template']['third_q'].",1) as lastq from pre_config_general;";
             }
@@ -639,9 +645,15 @@ if ($login->isUserLoggedIn() == true) {
             }
             #echo "<br>";
             #echo $sqltemp . "<br>";
-            $resultsqltemp = $mindb_connection->query($sqltemp);
-			$resultsqlcomp = $mindb_connection->query($sqlcomp);
-			$resultsql2d = $mindb_connection->query($sql2d);
+            if ($resulttempquartiles!=False){
+                $resultsqltemp = $mindb_connection->query($sqltemp);
+            }
+            if ($resultcompquartiles!=False){
+			             $resultsqlcomp = $mindb_connection->query($sqlcomp);
+            }
+            if ($result2dquartiles!=False){
+			             $resultsql2d = $mindb_connection->query($sql2d);
+            }
             if ($resultpretempquartiles!=False){
 			             $resultpretemp = $mindb_connection->query($pretemp);
             }
