@@ -668,16 +668,16 @@ if ($login->isUserLoggedIn() == true) {
             }
             if (isset($resultpretemp)){
                 $val = mysqli_fetch_array($resultpretemp);
+                $resultstore["first_q"]["Raw Template"]=$val[0];
+                $resultstore["median"]["Raw Template"]=$val[1];
+                $resultstore["third_q"]["Raw Template"]=$val[2];
             }
-            $resultstore["first_q"]["Raw Template"]=$val[0];
-            $resultstore["median"]["Raw Template"]=$val[1];
-            $resultstore["third_q"]["Raw Template"]=$val[2];
             if (isset($resultprecomp)){
                 $val = mysqli_fetch_array($resultprecomp);
+                $resultstore["first_q"]["Raw Complement"]=$val[0];
+                $resultstore["median"]["Raw Complement"]=$val[1];
+                $resultstore["third_q"]["Raw Complement"]=$val[2];
             }
-            $resultstore["first_q"]["Raw Complement"]=$val[0];
-            $resultstore["median"]["Raw Complement"]=$val[1];
-            $resultstore["third_q"]["Raw Complement"]=$val[2];
 
 
 
