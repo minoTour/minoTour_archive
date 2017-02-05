@@ -454,7 +454,7 @@ if ($login->isUserLoggedIn() == true) {
             foreach ($resultarray as $key=>$value){
                 if (isset($resultarray[$key]["count"])){
                     $count = array_sum($resultarray[$key]["count"]);
-                    echo "COUNT IS $count :";
+                    //echo "COUNT IS $count :";
                 }else{
                     $count = 0;
                 }
