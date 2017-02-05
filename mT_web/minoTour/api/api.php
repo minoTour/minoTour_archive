@@ -103,8 +103,8 @@ if ($login->isUserLoggedIn() == true) {
 
     // ... ask if we are logged in here:
     if ($login->isUserLoggedIn() == true) {
-        $mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION['active_run_name']);
-        $currun = $_SESSION['active_run_name'];
+        $mindb_connection = new mysqli(DB_HOST,DB_USER,DB_PASS,$_SESSION["active_run_name"]);
+        $currun = $_SESSION["active_run_name"];
         #echo "Welcome To Matt's API\n";
         #echo "Going off to fetch read counts in 1minwin.\n";
         #echo "Working on " . $currun . "\n";
@@ -120,7 +120,7 @@ if ($login->isUserLoggedIn() == true) {
         $jobname = "starttimes";
         $ref = "";
         $resultstore=array();
-        list($runtest,$resultstore) = checkmemstore($_SESSION['active_run_name'],$jobname,$ref,$memcache,$resultstore);
+        list($runtest,$resultstore) = checkmemstore($_SESSION["active_run_name"],$jobname,$ref,$memcache,$resultstore);
         #echo $runtest . "\n";
         #echo $resultstore . "\n";
 
@@ -178,7 +178,7 @@ if ($login->isUserLoggedIn() == true) {
                     }
                 }
             }
-            setmemstore($_SESSION['active_run_name'],$jobname,$ref,$memcache,$resultstore);
+            setmemstore($_SESSION["active_run_name"],$jobname,$ref,$memcache,$resultstore);
         }
         //var_dump($resultstore);
 
@@ -189,7 +189,7 @@ if ($login->isUserLoggedIn() == true) {
         $jobname = "readnumberstats";
         $ref = "";
         $resultstore=array();
-        list($runtest,$resultstore) = checkmemstore($_SESSION['active_run_name'],$jobname,$ref,$memcache,$resultstore);
+        list($runtest,$resultstore) = checkmemstore($_SESSION["active_run_name"],$jobname,$ref,$memcache,$resultstore);
         #echo $runtest . "\n";
         #echo $resultstore . "\n";
         $limiter = "";
@@ -431,7 +431,7 @@ if ($login->isUserLoggedIn() == true) {
                 }
             }
 
-            setmemstore($_SESSION['active_run_name'],$jobname,$ref,$memcache,$resultstore);
+            setmemstore($_SESSION["active_run_name"],$jobname,$ref,$memcache,$resultstore);
         }
 
         //Now we are going to convert previously grabbed values to sums and store them.
@@ -444,7 +444,7 @@ if ($login->isUserLoggedIn() == true) {
         $ref = "";
         $resultarray = $resultstore;
         $resultstore=array();
-        list($runtest,$resultstore) = checkmemstore($_SESSION['active_run_name'],$jobname,$ref,$memcache,$resultstore);
+        list($runtest,$resultstore) = checkmemstore($_SESSION["active_run_name"],$jobname,$ref,$memcache,$resultstore);
         #echo $runtest . "\n";
         #echo $resultstore . "\n";
         $limiter = "";
@@ -693,7 +693,7 @@ if ($login->isUserLoggedIn() == true) {
 
 
 
-            setmemstore($_SESSION['active_run_name'],$jobname,$ref,$memcache,$resultstore);
+            setmemstore($_SESSION["active_run_name"],$jobname,$ref,$memcache,$resultstore);
         }
 
     //var_dump($resultstore);
