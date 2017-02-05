@@ -33,7 +33,7 @@ if ($login->isUserLoggedIn() == true) {
 	#$cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT) or die ("Memcached Failure");
 	$cacheAvailable = $memcache->connect(MEMCACHED_HOST, MEMCACHED_PORT);
 
-    //echo "SLARTIBARTFAST";
+    //echo "NUMPTY";
 
     function checkmemstore($dbname,$testtype,$ref,$memcache,$array){
         // A simple funtion to test if a given requested value is present in the memcache store or needs recalculating.
@@ -125,22 +125,7 @@ if ($login->isUserLoggedIn() == true) {
         #echo $resultstore . "\n";
 
         if ($runtest==1){
-            //Get exp_start_time
-            /*$start_time_queries = "select count(*) as count, device_id, exp_script_purpose,exp_start_time,run_id,version_name from tracking_id group by run_id order by exp_start_time;";
 
-            //$start_time_queries = "select exp_start_time from tracking_id group by exp_start_time;";
-            $starttime=$mindb_connection->query($start_time_queries);
-            if ($starttime->num_rows>=1){
-                foreach ($starttime as $row){
-                    //$resultarray["summaryinfo"]["exp_start_time"][]=$row['exp_start_time'];
-                    $resultstore["BC"][$row['exp_start_time']]["count"]=$row['count'];
-                    $resultstore["BC"][$row['exp_start_time']]["device_id"]=$row['device_id'];
-                    $resultstore["BC"][$row['exp_start_time']]["exp_script_purpose"]=$row['exp_script_purpose'];
-                    $resultstore["BC"][$row['exp_start_time']]["run_id"]=$row['run_id'];
-                    $resultstore["BC"][$row['exp_start_time']]["version_name"]=$row['version_name'];
-                    $resultstore["BC"][$row['exp_start_time']]["exp_start_time"]=$row['exp_start_time'];
-                }
-            }*/
 
             //Optimising queries for large datasets:
             //This gives the values for the mux_scan_counts
@@ -179,7 +164,8 @@ if ($login->isUserLoggedIn() == true) {
 
             $pre_start_time_queries = "select count(*) as count,device_id, exp_script_purpose,exp_start_time,run_id,version_name from pre_tracking_id  group by device_id, exp_script_purpose, exp_start_time,run_id,version_name order by exp_start_time;";
             $starttime=$mindb_connection->query($pre_start_time_queries);
-            if ($starttime->num_rows>=1){
+
+            if ( isset($starttime->num_rows) && $starttime->num_rows>=1){
                 foreach ($starttime as $row){
                     //$resultarray["summaryinfo"]["exp_start_time"][]=$row['exp_start_time'];
                     if ($row['count']>0){
@@ -237,31 +223,31 @@ if ($login->isUserLoggedIn() == true) {
             $pretemplate=$mindb_connection->query($pre_template);
             $precomplement=$mindb_connection->query($pre_complement);
 
-            if ($template->num_rows >= 1){
+            if (isset($template->num_rows) && $template->num_rows >= 1){
                 foreach ($template as $row) {
                     //$resultarray["readcounts"][$row['exp_script_purpose']]['template'][$row['1minwin']]=$row['readnum'];
                     $resultstore['template']['count'][$row['1minwin']]=$row['readnum'];
                 }
             }
-            if ($complement->num_rows >= 1){
+            if (isset($complement->num_rows) && $complement->num_rows >= 1){
                 foreach ($complement as $row) {
                     //$resultstore["readcounts"][$row['exp_script_purpose']]['complement'][$row['1minwin']]=$row['readnum'];
                     $resultstore['complement']['count'][$row['1minwin']]=$row['readnum'];
                 }
             }
-            if ($read2d->num_rows >= 1){
+            if (isset($read2d->num_rows) && $read2d->num_rows >= 1){
                 foreach ($read2d as $row) {
                     //$resultstore["readcounts"][$row['exp_script_purpose']]['2d'][$row['1minwin']]=$row['readnum'];
                     $resultstore['2d']['count'][$row['1minwin']]=$row['readnum'];
                 }
             }
-            if ($pretemplate->num_rows >= 1){
+            if (isset($pretemplate->num_rows) && $pretemplate->num_rows >= 1){
                 foreach ($pretemplate as $row) {
                     //$resultstore["readcounts"][$row['exp_script_purpose']]['Raw Template']=$row['readnum'];
                     $resultstore['Raw Template']['count'][$row['1minwin']]=$row['readnum'];
                 }
             }
-            if ($precomplement->num_rows >= 1){
+            if (isset($precomplement->num_rows) && $precomplement->num_rows >= 1){
                 foreach ($precomplement as $row) {
                     //$resultstore["readcounts"][$row['exp_script_purpose']]['Raw Complement']=$row['readnum'];
                     $resultstore['Raw Complement']['count'][$row['1minwin']]=$row['readnum'];
@@ -281,7 +267,7 @@ if ($login->isUserLoggedIn() == true) {
             $pretemplate=$mindb_connection->query($pre_template);
             $precomplement=$mindb_connection->query($pre_complement);
 
-            if ($template->num_rows >= 1){
+            if (isset($template->num_rows) && $template->num_rows >= 1){
                 foreach ($template as $row) {
                     //$resultarray["lengthsum"]['template'][$row['1minwin']]=$row['bases'];
                     $resultstore['template']['lengthsum'][$row['1minwin']]=$row['bases'];
@@ -290,7 +276,7 @@ if ($login->isUserLoggedIn() == true) {
                     //$resultstore['template']['std'][$row['1minwin']]=$row['stdlen'];
                 }
             }
-            if ($complement->num_rows >= 1){
+            if (isset($complement->num_rows) && $complement->num_rows >= 1){
                 foreach ($complement as $row) {
                     //$resultarray["lengthsum"]['complement'][$row['1minwin']]=$row['bases'];
                     $resultstore['complement']['lengthsum'][$row['1minwin']]=$row['bases'];
@@ -299,7 +285,7 @@ if ($login->isUserLoggedIn() == true) {
                     //$resultstore['complement']['std'][$row['1minwin']]=$row['stdlen'];
                 }
             }
-            if ($read2d->num_rows >= 1){
+            if (isset($read2d->num_rows) && $read2d->num_rows >= 1){
                 foreach ($read2d as $row) {
                     //$resultarray["lengthsum"]['2d'][$row['1minwin']]=$row['bases'];
                     $resultstore['2d']['lengthsum'][$row['1minwin']]=$row['bases'];
@@ -309,7 +295,7 @@ if ($login->isUserLoggedIn() == true) {
                 }
             }
 
-            if ($pretemplate->num_rows >= 1){
+            if (isset($pretemplate->num_rows) && $pretemplate->num_rows >= 1){
                 foreach ($pretemplate as $row) {
                     //$resultarray["lengthsum"]['Raw Template']=$row['events'];
                     $resultstore['Raw Template']['lengthsum'][$row['1minwin']]=$row['events'];
@@ -318,7 +304,7 @@ if ($login->isUserLoggedIn() == true) {
                     //$resultstore['Raw Template']['std'][$row['1minwin']]=$row['stdevents'];
                 }
             }
-            if ($precomplement->num_rows >= 1){
+            if (isset($precomplement->num_rows) && $precomplement->num_rows >= 1){
                 foreach ($precomplement as $row) {
                     //$resultarray["lengthsum"]['Raw Complement']=$row['events'];
                     $resultstore['Raw Complement']['lengthsum'][$row['1minwin']]=$row['events'];
@@ -341,31 +327,31 @@ if ($login->isUserLoggedIn() == true) {
             $pretemplate=$mindb_connection->query($pre_template);
             $precomplement=$mindb_connection->query($pre_complement);
 
-            if ($template->num_rows >= 1){
+            if (isset($template->num_rows) && $template->num_rows >= 1){
                 foreach ($template as $row) {
                     //$resultarray["readcounts"][$row['exp_script_purpose']]['template'][$row['1minwin']]=$row['readnum'];
                     $resultstore['template']['countalign'][$row['1minwin']]=$row['readnum'];
                 }
             }
-            if ($complement->num_rows >= 1){
+            if (isset($complement->num_rows) && $complement->num_rows >= 1){
                 foreach ($complement as $row) {
                     //$resultarray["readcounts"][$row['exp_script_purpose']]['complement'][$row['1minwin']]=$row['readnum'];
                     $resultstore['complement']['countalign'][$row['1minwin']]=$row['readnum'];
                 }
             }
-            if ($read2d->num_rows >= 1){
+            if (isset($read2d->num_rows) && $read2d->num_rows >= 1){
                 foreach ($read2d as $row) {
                     //$resultarray["readcounts"][$row['exp_script_purpose']]['2d'][$row['1minwin']]=$row['readnum'];
                     $resultstore['2d']['countalign'][$row['1minwin']]=$row['readnum'];
                 }
             }
-            if ($pretemplate->num_rows >= 1){
+            if (isset($pretemplate->num_rows) && $pretemplate->num_rows >= 1){
                 foreach ($pretemplate as $row) {
                     //$resultarray["readcounts"][$row['exp_script_purpose']]['Raw Template']=$row['readnum'];
                     $resultstore['Raw Template']['countalign'][$row['1minwin']]=$row['readnum'];
                 }
             }
-            if ($precomplement->num_rows >= 1){
+            if (isset($precomplement->num_rows) && $precomplement->num_rows >= 1){
                 foreach ($precomplement as $row) {
                     //$resultarray["readcounts"][$row['exp_script_purpose']]['Raw Complement']=$row['readnum'];
                     $resultstore['Raw Complement']['countalign'][$row['1minwin']]=$row['readnum'];
@@ -464,35 +450,81 @@ if ($login->isUserLoggedIn() == true) {
         $limiter = "";
         if ($runtest==1){
             //var_dump($resultarray);
+            //echo "dusty";
             foreach ($resultarray as $key=>$value){
-                $count = array_sum($resultarray[$key]["count"]);
-                $align = array_sum($resultarray[$key]["countalign"]);
-                $yield = array_sum($resultarray[$key]["lengthsum"]);
-                //echo "key".$key."\n";
-                //echo "count".$count;
-                //echo "\n";
-                //echo "align".$align;
-                //echo "\n";
-                //echo "yield".$yield;
-                //echo "\n";
-                //echo $yield/$count."\n";
-                //echo "\n\n";
-
-                if (isset($_SESSION['activereflength'])){
-                    $resultstore["est_cov"][$key]=array_sum($resultarray[$key]["lengthsum"])/intval($_SESSION['activereflength']);
+                if (isset($resultarray[$key]["count"])){
+                    $count = array_sum($resultarray[$key]["count"]);
+                    echo "COUNT IS $count :";
+                }else{
+                    $count = 0;
+                }
+                if (isset($resultarray[$key]["countalign"])){
+                    $align = array_sum($resultarray[$key]["countalign"]);
+                }else{
+                    $align = 0;
+                }
+                if (isset($resultarray[$key]["lengthsum"])){
+                    $yield = array_sum($resultarray[$key]["lengthsum"]);
+                }else{
+                    $yield = 0;
+                }
+                if (isset($_SESSION['activereflength']) && isset($resultarray[$key]["lengthsum"]) && isset($_SESSION['activereflength'] )){
+                    if (intval($_SESSION['activereflength'])>0){
+                        $resultstore["est_cov"][$key]=array_sum($resultarray[$key]["lengthsum"])/intval($_SESSION['activereflength']);
+                    }else{
+                        $resultstore["est_cov"][$key]=0;
+                    }
                 }else{
                     $resultstore["est_cov"][$key]=0;
                     //intval($_SESSION['activereflen']);
                 }
-                $pass = array_sum($resultarray[$key]["countpass"]);
-                $fail = array_sum($resultarray[$key]["countfail"]);
-                $max = max($resultarray[$key]["max"]);
-                $min = min($resultarray[$key]["min"]);
-                $resultstore["totalcount"][$key]=$count;
-                $resultstore["totalyield"][$key]=$yield;
-                $resultstore["totalalign"][$key]=$align;
-                $resultstore["totalpass"][$key]=$pass;
-                $resultstore["totalfail"][$key]=$fail;
+                if (isset($resultarray[$key]["countpass"])){
+                    $pass = array_sum($resultarray[$key]["countpass"]);
+                }else{
+                    $pass=0;
+                }
+                if (isset($resultarray[$key]["countfail"])){
+                    $fail = array_sum($resultarray[$key]["countfail"]);
+                }else{
+                    $fail = 0;
+                }
+                if (isset($resultarray[$key]["max"])){
+                    $max = max($resultarray[$key]["max"]);
+                }else{
+                    $max = 0;
+                }
+                if (isset($resultarray[$key]["min"])){
+                    $min = min($resultarray[$key]["min"]);
+                }else{
+                    $min = 0;
+                }
+                if (isset($count)){
+                    $resultstore["totalcount"][$key]=$count;
+                    echo $count;
+                }else{
+                    $resultstore["totalcount"][$key]=0;
+                }
+                if (isset($yield)){
+                    $resultstore["totalyield"][$key]=$yield;
+                }else{
+                    $resultstore["totalyield"][$key]=0;
+                }
+                if (isset($align)){
+                    $resultstore["totalalign"][$key]=$align;
+                }else{
+                    $resultstore["totalalign"][$key]=0;
+                }
+                if (isset($pass)){
+                    $resultstore["totalpass"][$key]=$pass;
+                }else{
+                    $resultstore["totalpass"][$key]=0;
+                }
+                if (isset($fail)){
+                    $resultstore["totalfail"][$key]=$fail;
+                }else{
+                    $resultstore["totalfail"][$key]=0;
+                }
+
                 if ($count != 0) {
                     $resultstore["avglen"][$key]=$yield/$count;
                 }else{
@@ -532,12 +564,18 @@ if ($login->isUserLoggedIn() == true) {
     		$template=$mindb_connection->query($sql_template);
     		$complement=$mindb_connection->query($sql_complement);
     		$read2d=$mindb_connection->query($sql_2d);
-            $val = mysqli_fetch_array($template);
-            $resultstore["processed"]["template"]=$val[0];
-            $val = mysqli_fetch_array($complement);
-            $resultstore["processed"]["complement"]=$val[0];
-            $val = mysqli_fetch_array($read2d);
-            $resultstore["processed"]["2d"]=$val[0];
+            if ($template != False){
+                $val = mysqli_fetch_array($template);
+                $resultstore["processed"]["template"]=$val[0];
+            }
+            if ($complement != False){
+                $val = mysqli_fetch_array($complement);
+                $resultstore["processed"]["complement"]=$val[0];
+            }
+            if ($read2d != False){
+                $val = mysqli_fetch_array($read2d);
+                $resultstore["processed"]["2d"]=$val[0];
+            }
 
 
             //Get median, 1st and 3rd quartile values for box plots
@@ -559,57 +597,84 @@ if ($login->isUserLoggedIn() == true) {
 			$resultpretempquartiles = $mindb_connection->query($pretempquartiles);
 			$resultprecompquartiles = $mindb_connection->query($precompquartiles);
             $variablearray=array();
-            $val = mysqli_fetch_array($resulttempquartiles);
-            $variablearray["template"]["first_q"]=$val[0];
-            $variablearray["template"]["mid_pos"]=$val[1];
-            $variablearray["template"]["third_q"]=$val[2];
-            $val = mysqli_fetch_array($resultcompquartiles);
-            $variablearray["complement"]["first_q"]=$val[0];
-            $variablearray["complement"]["mid_pos"]=$val[1];
-            $variablearray["complement"]["third_q"]=$val[2];
-            $val = mysqli_fetch_array($result2dquartiles);
-            $variablearray["2d"]["first_q"]=$val[0];
-            $variablearray["2d"]["mid_pos"]=$val[1];
-            $variablearray["2d"]["third_q"]=$val[2];
-            $val = mysqli_fetch_array($resultpretempquartiles);
-            $variablearray["Raw Template"]["first_q"]=$val[0];
-            $variablearray["Raw Template"]["mid_pos"]=$val[1];
-            $variablearray["Raw Template"]["third_q"]=$val[2];
-            $val = mysqli_fetch_array($resultprecompquartiles);
-            $variablearray["Raw Complement"]["first_q"]=$val[0];
-            $variablearray["Raw Complement"]["mid_pos"]=$val[1];
-            $variablearray["Raw Complement"]["third_q"]=$val[2];
+            if ($resulttempquartiles!=False){
+                $val = mysqli_fetch_array($resulttempquartiles);
+                $variablearray["template"]["first_q"]=$val[0];
+                $variablearray["template"]["mid_pos"]=$val[1];
+                $variablearray["template"]["third_q"]=$val[2];
+            }
+            if ($resultcompquartiles!=False){
+                $val = mysqli_fetch_array($resultcompquartiles);
+                $variablearray["complement"]["first_q"]=$val[0];
+                $variablearray["complement"]["mid_pos"]=$val[1];
+                $variablearray["complement"]["third_q"]=$val[2];
+            }
+            if ($result2dquartiles!=False){
+                $val = mysqli_fetch_array($result2dquartiles);
+                $variablearray["2d"]["first_q"]=$val[0];
+                $variablearray["2d"]["mid_pos"]=$val[1];
+                $variablearray["2d"]["third_q"]=$val[2];
+            }
+            if ($resultpretempquartiles!=False){
+                $val = mysqli_fetch_array($resultpretempquartiles);
+                $variablearray["Raw Template"]["first_q"]=$val[0];
+                $variablearray["Raw Template"]["mid_pos"]=$val[1];
+                $variablearray["Raw Template"]["third_q"]=$val[2];
+            }
+            if ($resultprecompquartiles!=False){
+                $val = mysqli_fetch_array($resultprecompquartiles);
+                $variablearray["Raw Complement"]["first_q"]=$val[0];
+                $variablearray["Raw Complement"]["mid_pos"]=$val[1];
+                $variablearray["Raw Complement"]["third_q"]=$val[2];
+            }
             //These are very slow
             $sqltemp = "select (select seqlen from basecalled_template order by seqlen limit " .$variablearray['template']['first_q'] . ",1) as firstq, (select seqlen from basecalled_template order by seqlen limit ".$variablearray['template']['mid_pos'].",1) as median, (select seqlen from basecalled_template order by seqlen limit ".$variablearray['template']['third_q'].",1) as lastq from basecalled_template limit 1;";
 			$sqlcomp = "select (select seqlen from basecalled_complement order by seqlen limit " .$variablearray['complement']['first_q'] . ",1) as firstq, (select seqlen from basecalled_complement order by seqlen limit ".$variablearray['complement']['mid_pos'].",1) as median, (select seqlen from basecalled_complement order by seqlen limit ".$variablearray['complement']['third_q'].",1) as lastq from basecalled_complement limit 1;";
 			$sql2d = "select (select seqlen from basecalled_2d order by seqlen limit " .$variablearray['2d']['first_q'] . ",1) as firstq, (select seqlen from basecalled_2d order by seqlen limit ".$variablearray['2d']['mid_pos'].",1) as median, (select seqlen from basecalled_2d order by seqlen limit ".$variablearray['2d']['third_q'].",1) as lastq from basecalled_2d limit 1;";
-			$pretemp = "select (select hairpin_event_index from pre_config_general order by hairpin_event_index limit " .$variablearray['Raw Template']['first_q'] . ",1) as firstq, (select hairpin_event_index from pre_config_general order by hairpin_event_index limit ".$variablearray['Raw Template']['mid_pos'].",1) as median, (select hairpin_event_index from pre_config_general order by hairpin_event_index limit ".$variablearray['Raw Template']['third_q'].",1) as lastq from pre_config_general;";
-			$precomp = "select (select (total_events-hairpin_event_index) from pre_config_general where hairpin_found = 1 order by (total_events-hairpin_event_index) limit " .$variablearray['Raw Complement']['first_q'] . ",1) as firstq, (select (total_events-hairpin_event_index) from pre_config_general where hairpin_found = 1 order by (total_events-hairpin_event_index) limit ".$variablearray['Raw Complement']['mid_pos'].",1) as median, (select (total_events-hairpin_event_index) from pre_config_general where hairpin_found = 1 order by (total_events-hairpin_event_index) limit ".$variablearray['Raw Complement']['third_q'].",1) as lastq from pre_config_general where hairpin_found = 1;";
+            if ($resultpretempquartiles!=False){
+                $pretemp = "select (select hairpin_event_index from pre_config_general order by hairpin_event_index limit " .$variablearray['Raw Template']['first_q'] . ",1) as firstq, (select hairpin_event_index from pre_config_general order by hairpin_event_index limit ".$variablearray['Raw Template']['mid_pos'].",1) as median, (select hairpin_event_index from pre_config_general order by hairpin_event_index limit ".$variablearray['Raw Template']['third_q'].",1) as lastq from pre_config_general;";
+            }
+            if ($resultprecompquartiles!=False){
+			             $precomp = "select (select (total_events-hairpin_event_index) from pre_config_general where hairpin_found = 1 order by (total_events-hairpin_event_index) limit " .$variablearray['Raw Complement']['first_q'] . ",1) as firstq, (select (total_events-hairpin_event_index) from pre_config_general where hairpin_found = 1 order by (total_events-hairpin_event_index) limit ".$variablearray['Raw Complement']['mid_pos'].",1) as median, (select (total_events-hairpin_event_index) from pre_config_general where hairpin_found = 1 order by (total_events-hairpin_event_index) limit ".$variablearray['Raw Complement']['third_q'].",1) as lastq from pre_config_general where hairpin_found = 1;";
+            }
             #echo "<br>";
             #echo $sqltemp . "<br>";
             $resultsqltemp = $mindb_connection->query($sqltemp);
 			$resultsqlcomp = $mindb_connection->query($sqlcomp);
 			$resultsql2d = $mindb_connection->query($sql2d);
-			$resultpretemp = $mindb_connection->query($pretemp);
-			$resultprecomp = $mindb_connection->query($precomp);
-
-            $val = mysqli_fetch_array($resultsqltemp);
-            $resultstore["first_q"]["template"]=$val[0];
-            $resultstore["median"]["template"]=$val[1];
-            $resultstore["third_q"]["template"]=$val[2];
-            $val = mysqli_fetch_array($resultsqlcomp);
-            $resultstore["first_q"]["complement"]=$val[0];
-            $resultstore["median"]["complement"]=$val[1];
-            $resultstore["third_q"]["complement"]=$val[2];
-            $val = mysqli_fetch_array($resultsql2d);
-            $resultstore["first_q"]["2d"]=$val[0];
-            $resultstore["median"]["2d"]=$val[1];
-            $resultstore["third_q"]["2d"]=$val[2];
-            $val = mysqli_fetch_array($resultpretemp);
+            if ($resultpretempquartiles!=False){
+			             $resultpretemp = $mindb_connection->query($pretemp);
+            }
+            if ($resultprecompquartiles!=False){
+			             $resultprecomp = $mindb_connection->query($precomp);
+            }
+            if ($resultsqltemp != False){
+                $val = mysqli_fetch_array($resultsqltemp);
+                $resultstore["first_q"]["template"]=$val[0];
+                $resultstore["median"]["template"]=$val[1];
+                $resultstore["third_q"]["template"]=$val[2];
+            }
+            if ($resultsqlcomp != False){
+                $val = mysqli_fetch_array($resultsqlcomp);
+                $resultstore["first_q"]["complement"]=$val[0];
+                $resultstore["median"]["complement"]=$val[1];
+                $resultstore["third_q"]["complement"]=$val[2];
+            }
+            if ($resultsql2d){
+                $val = mysqli_fetch_array($resultsql2d);
+                $resultstore["first_q"]["2d"]=$val[0];
+                $resultstore["median"]["2d"]=$val[1];
+                $resultstore["third_q"]["2d"]=$val[2];
+            }
+            if (isset($resultpretemp)){
+                $val = mysqli_fetch_array($resultpretemp);
+            }
             $resultstore["first_q"]["Raw Template"]=$val[0];
             $resultstore["median"]["Raw Template"]=$val[1];
             $resultstore["third_q"]["Raw Template"]=$val[2];
-            $val = mysqli_fetch_array($resultprecomp);
+            if (isset($resultprecomp)){
+                $val = mysqli_fetch_array($resultprecomp);
+            }
             $resultstore["first_q"]["Raw Complement"]=$val[0];
             $resultstore["median"]["Raw Complement"]=$val[1];
             $resultstore["third_q"]["Raw Complement"]=$val[2];
@@ -619,7 +684,7 @@ if ($login->isUserLoggedIn() == true) {
             setmemstore($_SESSION['active_run_name'],$jobname,$ref,$memcache,$resultstore);
         }
 
-    //  var_dump($resultstore);
+    var_dump($resultstore);
 
     }else{
     	echo "ERROR";

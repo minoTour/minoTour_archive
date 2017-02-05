@@ -73,14 +73,14 @@ if ($login->isUserLoggedIn() == true) {
                     $resultarray = array();
                     $detailedmessages = "SELECT * FROM " . $dbname . ".messages where target = 'details' order by message_index desc;";
                     $detailedmessagesres = $mindb_connection->query($detailedmessages);
-                    if ($detailedmessagesres->num_rows > 0) {
+                    if (isset($detailedmessagesres->num_rows) && $detailedmessagesres->num_rows > 0) {
                         foreach ($detailedmessagesres as $row) {
                             $resultarray[$row['message']]=$row['param1'];
                         }
                     }else {
                             //echo "Not Available" . "<br>";
                     }
-                    if (strlen($resultarray['disk_usage']) > 0) {
+                    if (isset($resultarray['disk_usage']) && strlen($resultarray['disk_usage']) > 0) {
                         $chunks = explode(" ", $resultarray['disk_usage']);
                         echo "<small>" . $resultarray['machine_id'] . " " . round($chunks[0]/$chunks[2]*100) . "% (". $chunks[0] . "/". $chunks[2] ." " .$chunks[3] . ") free.</small><br>";
                         $monitoringarray[$resultarray['machine_id']]=array(intval(round($chunks[0]/$chunks[2]*100)),$dbname);
@@ -742,9 +742,11 @@ if ($login->isUserLoggedIn() == true) {
         vm.liverunsnames=liveruns;
         vm.prevnumruns=prevnum;
         vm.activealerts=".$activealerts.";
-        vm.completedalerts=".$completedalerts.";
-        vm2.basenotificationmaster=JSON.parse( '".json_encode($queryarray)."' );
-        //alert('".json_encode($queryarray)."');
+        vm.completedalerts=".$completedalerts.";";
+        if (isset($queryarray)){
+            echo "vm2.basenotificationmaster=JSON.parse( '".json_encode($queryarray)."' );";
+        }
+        echo "
         </script>";
 		if (isset ($runsfinished)){
 			//print "Runs deleted:";

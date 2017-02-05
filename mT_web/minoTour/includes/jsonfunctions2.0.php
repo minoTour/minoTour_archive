@@ -24,7 +24,7 @@ function newblanktemplate($jobname,$currun) {
     } else {
         //echo "Value expired - recalculating";
         //This will run only if both flags are false and so will start to process the data. Therefore it must set the running flag to True
-        $memcache->set("$checkrunstat", "True",0,0);
+        $memcache->set("$runstate", "True",0,0);
         //Now we execute the code to retrieve whatever values we are after and store them in the $jsonstring value:
         $jsonstring = hello_world();
         if ($_GET["prev"] == 1){
@@ -35,7 +35,7 @@ function newblanktemplate($jobname,$currun) {
         //Now we store the flag to report the data is updated
         $memcache->set("$flagstate","True",0,5); //Note this will expire after 5 seconds.
         //Finally we set the running flag to false
-        $memcache->set("$checkrunstat", "False",0,0);
+        $memcache->set("$runstate", "False",0,0);
 
     }
     return $jsonstring;
@@ -142,6 +142,7 @@ function readnumber($jobname,$currun){
                     $datarray[$type][]=$summarystats["totalcount"][$type];
                 }
             }
+            $jsonstring = "";
             $jsonstring = $jsonstring . "[\n";
             foreach($readtypearray as $type){
                 if (isset ($datarray[$type])){
@@ -170,6 +171,7 @@ function maxlen($jobname,$currun){
                     $datarray[$type][]=$summarystats["maxlen"][$type];
                 }
             }
+            $jsonstring = "";
             $jsonstring = $jsonstring . "[\n";
             foreach($readtypearray as $type){
                 if (isset ($datarray[$type])){
@@ -198,6 +200,7 @@ function avelen($jobname,$currun){
                     $datarray[$type][]=$summarystats["avglen"][$type];
                 }
             }
+            $jsonstring = "";
             $jsonstring = $jsonstring . "[\n";
             foreach($readtypearray as $type){
                 if (isset ($datarray[$type])){
@@ -226,6 +229,7 @@ function bases($jobname,$currun){
                     $datarray[$type][]=$summarystats["totalyield"][$type];
                 }
             }
+            $jsonstring = "";
             $jsonstring = $jsonstring . "[\n";
             foreach($readtypearray as $type){
                 if (isset ($datarray[$type])){
@@ -254,20 +258,29 @@ function readnumberupload($jobname,$currun){
             $readtypearray=array('template','complement','2d');
             foreach($readtypearray as $type){
                 $count++;
-                $datarray["Called"][]=$summarystats["totalcount"][$type];
-                $datarray["Aligned"][]=$summarystats["totalalign"][$type];
-                $datarray["Processed"][]=$summarystats["processed"][$type];
+                if (isset($summarystats["totalcount"][$type])){
+                    $datarray["Called"][]=$summarystats["totalcount"][$type];
+                }
+                if (isset($summarystats["totalalign"][$type])){
+                    $datarray["Aligned"][]=$summarystats["totalalign"][$type];
+                }
+                if (isset($summarystats["processed"][$type])){
+                    $datarray["Processed"][]=$summarystats["processed"][$type];
+                }
             }
             for ($x = 0; $x < $count; $x++){
                 $datarray["Uploaded"][]=$summarystats["totalcount"]["uploaded"];
             }
+            $jsonstring = "";
             $jsonstring = $jsonstring . "[\n";
             $resultarray=array('Uploaded','Called','Aligned','Processed');
             foreach($resultarray as $type){
-                $jsonstring = $jsonstring . "{\n";
-                $jsonstring = $jsonstring . '"name":"'.$type. '"' . ",\n";
-                $jsonstring = $jsonstring . '"data":[' . implode(",",$datarray[$type]) . "]\n";
-                $jsonstring = $jsonstring . "},\n";
+                if (isset($datarray[$type])){
+                    $jsonstring = $jsonstring . "{\n";
+                        $jsonstring = $jsonstring . '"name":"'.$type. '"' . ",\n";
+                        $jsonstring = $jsonstring . '"data":[' . implode(",",$datarray[$type]) . "]\n";
+                        $jsonstring = $jsonstring . "},\n";
+                    }
             }
             $jsonstring = $jsonstring . "]\n";
         }
@@ -374,12 +387,13 @@ function sequencingrate($jobname,$currun) {
       					$resultarray['complement effective rate'][$row['bin_floor']]=$row['effective_rate'];
       				}
       			}
-
-      			if ($resultprebasecalledevents->num_rows >= 1){
+                if (isset($resultprebasecalledevents->num_rows)){
+      			    if ( $resultprebasecalledevents->num_rows >= 1){
       				foreach($resultprebasecalledevents as $row){
       					$resultarray['Raw Event Rate'][$row['bin_floor']]=$row['rate'];
       					$resultarray['Raw Effective Rate'][$row['bin_floor']]=$row['effective_rate'];
       				}
+                }
       			}
 
       		    $jsonstring="";
@@ -460,7 +474,7 @@ function sequencingrate($jobname,$currun) {
             if (strlen($jsonstring) < 1){
                 //echo "Value expired - recalculating";
                 //This will run only if both flags are false and so will start to process the data. Therefore it must set the running flag to True
-                $memcache->set("$checkrunstat", "True",0,0);
+                $memcache->set("$runstate", "True",0,0);
                 //Get previous json entry to merge
                 $jsonstringprev = $memcache->get("$storedvalue");
                 //We want to test the length of this to see if there is a stored value or not/
@@ -592,7 +606,8 @@ function sequencingrate($jobname,$currun) {
             //Now we store the flag to report the data is updated
             $memcache->set("$flagstate","True",0,1); //Note this will expire after 1 seconds.
             //Finally we set the running flag to false
-            $memcache->set("$checkrunstat", "False",0,0);
+
+            $memcache->set("$runstate", "False",0,0);
 
         }
         return $jsonstring;
@@ -605,19 +620,27 @@ function sequencingrate($jobname,$currun) {
       $jsonstring = "";  //A simple variable to hold the value of the jsonstring to return
       //Flag to check to see if this job needs re-running or has expired
       $flagstate = $currun.$jobname."flag";
+      ////echo "$flagstate";
+      //echo "\n";
       //Flag to check if job is already running
       $runstate = $currun.$jobname."runstate";
+      //echo "$runstate";
+      //echo "\n";
       //Holder to store the actual data
       $storedvalue = $currun.$jobname."store";
       //Get flagstate and runstate from the memcache store.
       $checkflagstate = $memcache->get("$flagstate");
+      //echo $checkflagstate;
+      //echo "\n";
       $checkrunstate = $memcache->get("$runstate");
+      //echo $checkrunstate;
+      //echo "\n";
       //First check to see if it is safe to retrieve data from the store - it will be if checkflagstate is true or checkrunstate is true
       if ($checkflagstate == "True" || $checkrunstate == "True"){
           //echo "Retrieving current value";
           $jsonstring = $memcache->get("$storedvalue");
       } else {
-
+          //echo "SLART";
           //We want to check if we are a previous run - in which case the data ought to be stored in the database
           if ($_GET["prev"] == 1){
               //echo "We are running a previous database so values should be recorded.";
@@ -633,7 +656,7 @@ function sequencingrate($jobname,$currun) {
           if (strlen($jsonstring) < 1){
               //echo "Value expired - recalculating";
               //This will run only if both flags are false and so will start to process the data. Therefore it must set the running flag to True
-              $memcache->set("$checkrunstat", "True",0,0);
+              $memcache->set("$runstate", "True",0,0);
               //Get previous json entry to merge
               $jsonstringprev = $memcache->get("$storedvalue");
               //We want to test the length of this to see if there is a stored value or not/
@@ -833,7 +856,7 @@ function sequencingrate($jobname,$currun) {
                 $INDEXPOSITION++;
   			}
             */
-  			if ($resultpretemp->num_rows >=1) {
+  			if (isset($resultpretemp->num_rows) && $resultpretemp->num_rows >=1) {
   				$cumucount = 0;
   				foreach ($resultpretemp as $row) {
                     $temparray=array();
@@ -846,7 +869,7 @@ function sequencingrate($jobname,$currun) {
   				}
                 $INDEXPOSITION++;
   			}
-  			if ($resultprecomp->num_rows >=1) {
+  			if (isset($resultprecomp->num_rows) && $resultprecomp->num_rows >=1) {
   				$cumucount = 0;
   				foreach ($resultprecomp as $row) {
                     $temparray=array();
@@ -859,7 +882,7 @@ function sequencingrate($jobname,$currun) {
   				}
                 $INDEXPOSITION++;
   			}
-            //var_dump($resultarray2);
+                //var_dump($resultarray2);
               //echo "Going through result array.\n";
               foreach ($resultarray2 as $index=>$value){
                  //echo $index . "\n";
@@ -906,7 +929,8 @@ function sequencingrate($jobname,$currun) {
           //Now we store the flag to report the data is updated
           $memcache->set("$flagstate","True",0,1); //Note this will expire after 1 seconds.
           //Finally we set the running flag to false
-          $memcache->set("$checkrunstat", "False",0,0);
+          //echo $checkrunstate;
+          $memcache->set("$runstate", "False",0,0);
 
       }
       return $jsonstring;
@@ -946,7 +970,7 @@ function lengthtimewindow($jobname,$currun) {
         if (strlen($jsonstring) < 1){
             //echo "Value expired - recalculating";
             //This will run only if both flags are false and so will start to process the data. Therefore it must set the running flag to True
-            $memcache->set("$checkrunstat", "True",0,0);
+            $memcache->set("$runstate", "True",0,0);
             //Get previous json entry to merge
             $jsonstringprev = $memcache->get("$storedvalue");
             //We want to test the length of this to see if there is a stored value or not/
@@ -1021,7 +1045,7 @@ function lengthtimewindow($jobname,$currun) {
                     #$resultarray['complement effective rate'][$row['bin_floor']]=$row['effective_rate'];
                 }
             }
-
+            if (isset($resultpretemp->num_rows)){
             if ($resultpretemp->num_rows >=1) {
                 #$cumucount = 0;
                 foreach ($resultpretemp as $row) {
@@ -1035,7 +1059,8 @@ function lengthtimewindow($jobname,$currun) {
                     #$resultarray['complement effective rate'][$row['bin_floor']]=$row['effective_rate'];
                 }
             }
-
+            }
+            if (isset($resultprecomp->num_rows)){
             if ($resultprecomp->num_rows >=1) {
                 #$cumucount = 0;
                 foreach ($resultprecomp as $row) {
@@ -1049,6 +1074,7 @@ function lengthtimewindow($jobname,$currun) {
                     #$resultarray['complement effective rate'][$row['bin_floor']]=$row['effective_rate'];
                 }
             }
+        }
             //var_dump(json_encode($resultarray2));
             //echo "Go Through Previous Array\n";
 
@@ -1109,7 +1135,7 @@ function lengthtimewindow($jobname,$currun) {
         //Now we store the flag to report the data is updated
         $memcache->set("$flagstate","True",0,1); //Note this will expire after 1 seconds.
         //Finally we set the running flag to false
-        $memcache->set("$checkrunstat", "False",0,0);
+        $memcache->set("$runstate", "False",0,0);
 
     }
     return $jsonstring;

@@ -738,7 +738,7 @@ function mappabletime($jobname,$currun) {
 
 
 
-			if ($resultpre2dtotal->num_rows >=1) {
+			if (isset($resultpre2dtotal->num_rows) && $resultpre2dtotal->num_rows >=1) {
 				#$cumucount = 0;
 
 				foreach ($resultpre2dtotal as $row) {
@@ -747,7 +747,7 @@ function mappabletime($jobname,$currun) {
 
 				}
 			}
-			if ($resultpre2dmap->num_rows >=1) {
+			if (isset($resultpre2dmap->num_rows)&&$resultpre2dmap->num_rows >=1) {
 				#$cumucount = 0;
 				foreach ($resultpre2dmap as $row) {
 					#$cumucount++;
@@ -756,7 +756,7 @@ function mappabletime($jobname,$currun) {
 				}
 			}
 
-			if ($resultpretemptotal->num_rows >=1) {
+			if (isset($resultpretemptotal->num_rows) && $resultpretemptotal->num_rows >=1) {
 				#$cumucount = 0;
 
 				foreach ($resultpretemptotal as $row) {
@@ -765,7 +765,7 @@ function mappabletime($jobname,$currun) {
 
 				}
 			}
-			if ($resultpretempmap->num_rows >=1) {
+			if (isset($resultpretempmap->num_rows) && $resultpretempmap->num_rows >=1) {
 				#$cumucount = 0;
 				foreach ($resultpretempmap as $row) {
 					#$cumucount++;
@@ -775,7 +775,7 @@ function mappabletime($jobname,$currun) {
 			}
 
 
-			if ($resultprecomptotal->num_rows >=1) {
+			if (isset($resultprecomptotal->num_rows) && $resultprecomptotal->num_rows >=1) {
 				#$cumucount = 0;
 
 				foreach ($resultprecomptotal as $row) {
@@ -784,7 +784,7 @@ function mappabletime($jobname,$currun) {
 
 				}
 			}
-			if ($resultprecompmap->num_rows >=1) {
+			if (isset($resultprecompmap->num_rows) && $resultprecompmap->num_rows >=1) {
 				#$cumucount = 0;
 				foreach ($resultprecompmap as $row) {
 					#$cumucount++;
@@ -816,7 +816,9 @@ function mappabletime($jobname,$currun) {
 				$jsonstring = $jsonstring . "\"data\":[";
 				foreach ($value as $key2 => $value2) {
 					//echo $value2['alignedreads'] . "\t" . $value2['allreads'] . "\n";
-					$jsonstring = $jsonstring . "[  $key2 , " .$value2['alignedreads']/$value2['allreads']." ],";
+                    if (isset($value2['alignedreads'])) {
+                        $jsonstring = $jsonstring . "[  $key2 , " .$value2['alignedreads']/$value2['allreads']." ],";
+                    }
 				}
 
 			$jsonstring = $jsonstring . "]\n";
@@ -1937,14 +1939,14 @@ function ratio2dtemplate($jobname,$currun) {
 					$resultarray['2d'][$binfloor]=$row['count'];
 				}
 			}
-			if ($resultpretemplate->num_rows >=1) {
+			if (isset($resultpretemplate->num_rows) && $resultpretemplate->num_rows >=1) {
 				#$cumucount = 0;
 				foreach ($resultpretemplate as $row) {
 					#$cumucount++;
 					$resultarray['Raw Template'][$row['bin_floor']]=$row['count'];
 				}
 			}
-			if ($resultprecomplement->num_rows >=1) {
+			if (isset($resultprecomplement->num_rows)&&$resultprecomplement->num_rows >=1) {
 				#$cumucount = 0;
 				foreach ($resultprecomplement as $row) {
 					#$cumucount++;
@@ -4345,13 +4347,17 @@ function readnumberlength($jobname,$currun){
 
 
 			//$sql_template_lengths = "select seqpos, count(*) as count from last_align_basecalled_template_5prime where alignnum = 1 group by seqpos order by seqpos;";
-			$resultarray2;
+			$resultarray2=array();
 
 			$sql_template_lengths = "select seqlen as lenseq from last_align_basecalled_template_5prime inner join basecalled_template using (basename_id) group by basename_id order by seqlen;";
 
 			$template_lengths=$mindb_connection->query($sql_template_lengths);
-			$template_numbers = $template_lengths->num_rows;
-			if ($template_lengths->num_rows >= 1){
+			if (isset($template_lengths->num_rows)){
+                $template_numbers = $template_lengths->num_rows;
+            } else{
+                $template_numbers = 0;
+            }
+			if (isset($template_lengths->num_rows) && $template_lengths->num_rows >= 1){
 				foreach ($template_lengths as $row) {
 					$resultarray2['template(aligned)'][$row['lenseq']]=$template_numbers;
 					$template_numbers = $template_numbers-1;
@@ -4363,9 +4369,14 @@ function readnumberlength($jobname,$currun){
 			$sql_complement_lengths = "select seqlen as lenseq from last_align_basecalled_complement_5prime inner join basecalled_complement using (basename_id) group by basename_id order by seqlen;";
 
 			$complement_lengths=$mindb_connection->query($sql_complement_lengths);
-			$complement_numbers = $complement_lengths->num_rows;
+            if (isset($complement_lengths->num_rows)){
+                $complement_numbers = $complement_lengths->num_rows;
+            }else{
+                $complement_numbers = 0;
+            }
 
-			if ($complement_lengths->num_rows >= 1){
+
+			if (isset($complement_lengths->num_rows) && $complement_lengths->num_rows >= 1){
 				foreach ($complement_lengths as $row) {
 					$resultarray2['complement(aligned)'][$row['lenseq']]=$complement_numbers;
 					$complement_numbers = $complement_numbers-1;
@@ -4375,8 +4386,13 @@ function readnumberlength($jobname,$currun){
 			$sql_2d_lengths = "select seqlen as lenseq from last_align_basecalled_2d_5prime inner join basecalled_2d using (basename_id) group by basename_id order by seqlen;";
 
 			$read2d_lengths=$mindb_connection->query($sql_2d_lengths);
-			$read2d_numbers = $read2d_lengths->num_rows;
-				if ($read2d_lengths->num_rows >= 1){
+            if (isset($read2d_lengths->num_rows)){
+                $read2d_numbers = $read2d_lengths->num_rows;
+            }else{
+                $read2d_numbers = 0;
+            }
+
+				if (isset($read2d_lengths->num_rows) && $read2d_lengths->num_rows >= 1){
 				foreach ($read2d_lengths as $row) {
 					$resultarray2['2d(aligned)'][$row['lenseq']]=$read2d_numbers;
 					$read2d_numbers = $read2d_numbers-1;
@@ -4386,8 +4402,13 @@ function readnumberlength($jobname,$currun){
             $sql_pretemplate_lengths = "SELECT hairpin_event_index as lenseq FROM pre_align_template inner join pre_config_general using (basename_id) where hairpin_event_index >= 0 order by hairpin_event_index;";
 
 			$pretemplate_lengths=$mindb_connection->query($sql_pretemplate_lengths);
-			$pretemplate_numbers = $pretemplate_lengths->num_rows;
-			if ($pretemplate_lengths->num_rows >= 1){
+            if (isset($pretemplate_lengths->num_rows)){
+                $pretemplate_numbers = $pretemplate_lengths->num_rows;
+            }else{
+                $pretemplate_numbers = 0;
+            }
+
+			if (isset($pretemplate_lengths->num_rows) && $pretemplate_lengths->num_rows >= 1){
 				foreach ($pretemplate_lengths as $row) {
 					$resultarray2['template(raw-aligned)'][$row['lenseq']]=$pretemplate_numbers;
 					$pretemplate_numbers = $pretemplate_numbers-1;
@@ -4398,8 +4419,12 @@ function readnumberlength($jobname,$currun){
             $sql_precomplement_lengths = "SELECT (total_events-hairpin_event_index) as lenseq FROM pre_align_complement inner join pre_config_general using (basename_id) where (total_events-hairpin_event_index) >= 0 order by (total_events-hairpin_event_index);";
 
 			$precomplement_lengths=$mindb_connection->query($sql_precomplement_lengths);
-			$precomplement_numbers = $precomplement_lengths->num_rows;
-			if ($precomplement_lengths->num_rows >= 1){
+            if (isset($precomplement_lengths->num_rows)){
+                $precomplement_numbers = $precomplement_lengths->num_rows;
+            }else{
+                $precomplement_numbers = 0;
+            }
+			if (isset($precomplement_lengths->num_rows) && $precomplement_lengths->num_rows >= 1){
 				foreach ($precomplement_lengths as $row) {
 					$resultarray2['complement(raw-aligned)'][$row['lenseq']]=$precomplement_numbers;
 					$precomplement_numbers = $precomplement_numbers-1;
@@ -4410,8 +4435,12 @@ function readnumberlength($jobname,$currun){
             $sql_pre2d_lengths = "SELECT (total_events/2) as lenseq FROM pre_align_2d inner join pre_config_general using (basename_id) where (total_events/2) >= 0 order by (total_events/2);";
 
 			$pre2d_lengths=$mindb_connection->query($sql_pre2d_lengths);
-			$pre2d_numbers = $pre2d_lengths->num_rows;
-			if ($pre2d_lengths->num_rows >= 1){
+            if (isset($pre2d_lengths->num_rows)){
+                $pre2d_numbers = $pre2d_lengths->num_rows;
+            }else{
+                $pre2d_numbers = 0;
+            }
+			if (isset($pre2d_lengths->num_rows) && $pre2d_lengths->num_rows >= 1){
 				foreach ($pre2d_lengths as $row) {
 					$resultarray2['2d(raw-aligned)'][$row['lenseq']]=$pre2d_numbers;
 					$pre2d_numbers = $pre2d_numbers-1;
@@ -4479,7 +4508,7 @@ function readlengthqual($jobname,$currun){
 			$resultarray=array();
 
 			$template=$mindb_connection->query($sql_template);
-			if ($template->num_rows >= 1){
+			if (isset($template->num_rows) && $template->num_rows >= 1){
 				foreach ($template as $row) {
 					$resultarray['template'][$row['bin_floor']]=$row['avequal'];
 				}
@@ -4489,7 +4518,7 @@ function readlengthqual($jobname,$currun){
 			$sql_complement = "select floor(seqpos/50)*50 as bin_floor, AVG(seqbasequal) as avequal from last_align_basecalled_complement_5prime group by 2,1 order by 2,1;";
 
 			$complement=$mindb_connection->query($sql_complement);
-			if ($complement->num_rows >= 1){
+			if (isset($complement->num_rows) && $complement->num_rows >= 1){
 				foreach ($complement as $row) {
 					$resultarray['complement'][$row['bin_floor']]=$row['avequal'];
 				}
@@ -4498,7 +4527,7 @@ function readlengthqual($jobname,$currun){
 
 			$read2d=$mindb_connection->query($sql_2d);
 
-			if ($read2d->num_rows >= 1){
+			if (isset($read2d->num_rows) && $read2d->num_rows >= 1){
 				foreach ($read2d as $row) {
 					$resultarray['2d'][$row['bin_floor']]=$row['avequal'];
 				}
