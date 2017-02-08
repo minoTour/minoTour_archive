@@ -183,6 +183,7 @@ include 'includes/head-new.php';
 <div class="col-lg-6" id=""><div v-model="newdata" is="chartn50" :datain="newdata" ></div></div>
 <div class="col-lg-6" id=""><div v-model="newdata" is="chartnumreads" :datain="newdata" ></div></div>
 <div class="col-lg-6" id=""><div v-model="newdata" is="chartnumcontigs" :datain="newdata" ></div></div>
+<div class="col-lg-12" id=""><div v-model="scatterdata" is="chartscatcontigs" :datain="scatterdata" ></div></div>
 </div>
 
                 </div>
@@ -211,6 +212,7 @@ include 'includes/head-new.php';
 
 
       var dataurl = "jsonencode/assemblyjson.php?prev=0&db=<?php echo $_SESSION['active_run_name'];?>&callback=?";
+      var dataurlalt = "jsonencode/assemblyscatjson.php?prev=0&db=<?php echo $_SESSION['active_run_name'];?>&callback=?";
 
       Vue.component('chartyield', {
       template: '<div id="containeryield" style="margin: 0 auto"</div>',
@@ -476,16 +478,85 @@ include 'includes/head-new.php';
           }
       })
 
+      Vue.component('chartscatcontigs', {
+      template: '<div id="chartscatcontigs" style="margin: 0 auto"</div>',
+      props: ['datain'],
+      data: function() {
+          //var d = new Date();
+          //var t = d.getTime();
+          //console.log(this.datain);
+          return {
+              opts: {
+                  chart: {
+                      renderTo: 'chartscatcontigs',
+                      type:'scatter',
+                      zoomType: 'x',
+                      height: 350,
+                  },
+                  title: {
+                      text: 'Lengths of Contigs Generated'
+                  },
+                  xAxis: {
+                  type: 'datetime',
+                  tickPixelInterval: 150
+              },
+              yAxis: {
+                  title: {
+                      text: 'Length of Contigs'
+                  },
+                  plotLines: [{
+                      value: 0,
+                      width: 1,
+                      color: '#808080'
+                  }],
+                  //min: 0,
+              },
+              credits: {
+                  enabled: false
+              },
+              series: [{
+                  name: 'Time Points',
+                  data: []
+              }]
+                      }
+              }
+      }
+      ,
+
+
+      ready: function() {
+        this.$nextTick(function() {
+              this.chart = new Highcharts.Chart(this.opts);
+
+              setInterval(function () {
+                  var DataArray = []
+                  for (var i = 0; i < this.datain.length; i++) {
+                      //console.log('helo')
+                      var DataBit=[]
+                      DataBit.push(Date.parse(this.datain[i].timeset))
+                      DataBit.push(parseInt(this.datain[i].length))
+                      DataArray.push(DataBit)
+                  }
+                  console.log(DataArray)
+                  this.chart.series[0].setData(DataArray);
+                  this.chart.redraw();
+              }.bind(this), 5000);
+              });
+          }
+      })
+
       var demo = new Vue({
 
       el: '#demo',
 
       data: {
         newdata: null,
+        scatterdata: null,
       },
 
       created: function () {
         this.fetchData()
+        this.fetchData2()
       },
 
      filters: {
@@ -509,6 +580,7 @@ include 'includes/head-new.php';
               //console.log(self.newdata)
             }
             xhr.send()
+
             setInterval(function () {
               var xhr = new XMLHttpRequest()
               var self = this
@@ -519,9 +591,35 @@ include 'includes/head-new.php';
                 //console.log(self.newdata)
               }
               xhr.send()
+
           }.bind(this), 10000);
 
       },
+      fetchData2: function () {
+          var xhr = new XMLHttpRequest()
+          var self = this
+          xhr.open('GET', dataurlalt)
+          xhr.onload = function () {
+            self.scatterdata = JSON.parse(xhr.responseText)
+            //console.log(xhr.responseText)
+            //console.log(self.newdata)
+          }
+          xhr.send()
+
+          setInterval(function () {
+            var xhr = new XMLHttpRequest()
+            var self = this
+            xhr.open('GET', dataurlalt)
+            xhr.onload = function () {
+              self.scatterdata = JSON.parse(xhr.responseText)
+              //console.log(xhr.responseText)
+              //console.log(self.newdata)
+            }
+            xhr.send()
+
+        }.bind(this), 10000);
+
+    },
       getassembly: function(event){
           //alert(event.target.id);
           var sequrl = "includes/fetchreads.php?db=<?php echo $_SESSION['active_run_name']?>&type=assembly&timeid="+event.target.id+"&prev=0";
