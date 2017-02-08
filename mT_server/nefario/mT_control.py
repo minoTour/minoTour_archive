@@ -19,6 +19,16 @@ import memcache
 import numpy as np
 import pandas as pd
 import subprocess
+import platform
+
+global OPER
+
+OPER = platform.system()
+if OPER is 'Windows':  # MS
+    OPER = 'windows'
+else:
+    OPER = 'linux'  # MS
+print OPER  # MS
 
 sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
@@ -114,7 +124,7 @@ def runSQL(db, sql):
 
 #-------------------------------------------------------------------------------
 
-memc = memcache.Client([mT_params['memcache']], debug=1)
+memc = memcache.Client([mT_params['memcache']], debug=0)
 # Here we define a series of sub routines which will be run to write data to json and store it in memcache for access by the php scripts on the server. These will run at three different rates. Rapidly updating material will be written frequently (every 10 seconds), intermediate datasets every 60 seconds and complex analysis every 180 seconds. We will write a second set of subroutines to manipulate data from table to table whilst still keeping results available in memcache.
 
 #As standard we pass variables as database_name,
@@ -141,6 +151,48 @@ def jobs(args, mT_params, dbname, jobname, reflength, minupversion):
 
                 subprocess.Popen(command, shell=True)
 
+
+#-------------------------------------------------------------------------------
+
+#Here we check a run to see if it has an align command running. If it does, we fire the align command. If not, we don't.
+
+def checkjob(args,dbname,memc,job):
+    print "Checking %s to see if it needs %s." % (dbname,job)
+    jobtestname = "%s_%s" % (job,dbname)
+    jobtestrun  = jobtestname+"_run"
+    checkrunning = memc.get(jobtestrun)
+    print jobtestname
+    try:
+        result =  memc.get(jobtestname);
+        print result
+        if result == "True":
+            if checkrunning == "True":
+                pass
+            else:
+                print "trying to set store"
+                memc.set(jobtestrun, "True", 0)
+                try:
+                    if OPER is 'linux':
+                        cmd = \
+                            'python jobs/assemble_miniasm.py -dbh %s -dbu %s -dbp %d -pw %s %s' \
+                            % (
+                                args.dbhost,
+                                args.dbusername,
+                                args.dbport,
+                                args.dbpass,
+                                dbname
+
+                                )
+                        print cmd
+                        subprocess.Popen(cmd, stdout=None, stderr=None,
+                            stdin=None, shell=True)
+                except Exception as e:
+                    print "Error",e
+        else:
+            if checkrunning == "True":
+                memc.delete(jobtestrun)
+    except Exception as e:
+        print "Error running Job",e
 
 #-------------------------------------------------------------------------------
 # Create two arrays of jobs to run thru
@@ -193,7 +245,9 @@ while 42:
         ref = results_df
         if numCols>0:
             print "Active Runs: "
-            for r in ref['runname']: print "\t"+r
+            for r in ref['runname']:
+                print "\t"+r
+                checkjob(args,r,memc,"align")
         else: print "No Active Runs."
 
 #-------------------------------------------------------------------------------

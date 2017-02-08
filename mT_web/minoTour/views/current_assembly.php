@@ -132,12 +132,58 @@ include 'includes/head-new.php';
     </div>
     </div>
                 </div>
+
+
                 <div id="assmbly">
                 <div class="panel-body">
-                          <div class="row">
-                              <?php assemblysummary(); ?>
 
-                      </div>
+
+
+
+
+
+                    <div id="demo">
+
+  <h3>Assembly Data Summary</h3>
+  <div class="row">
+  <div class='table-responsive'>
+  <table class='table table-condensed'>
+      <thead>
+  <tr>
+          <th>Assembly Number</th>
+          <th>Assembly Time</th>
+          <th>Number of Reads Used</th>
+          <th>Number of Contigs</th>
+          <th>Shortest Contig</th>
+          <th>Longest Contig</th>
+          <th>Contig N50</th>
+          <th>Total Assembly Length</th>
+          <th>Donwload Fasta Assembly</th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr v-for="record in newdata">
+              <td>{{record.timeid}}</td>
+              <td>{{record.timeset}}</td>
+              <td>{{record.no_reads}}</td>
+              <td>{{record.no_contigs}}</td>
+              <td>{{record.minlen}}</td>
+              <td>{{record.maxlen}}</td>
+              <td>{{record.n50}}</td>
+              <td>{{record.totallen}}</td>
+              <td><button v-on:click="getassembly" id='{{record.timeid}}' type='button' class='btn btn-success btn-sm' >Get Assembly</button></td>
+        </tr>
+    </tbody>
+</table>
+
+    </div>
+</div>
+<div class="row">
+<div class="col-lg-6" id=""><div v-model="newdata" is="chartyield" :datain="newdata" ></div></div>
+<div class="col-lg-6" id=""><div v-model="newdata" is="chartn50" :datain="newdata" ></div></div>
+<div class="col-lg-6" id=""><div v-model="newdata" is="chartnumreads" :datain="newdata" ></div></div>
+<div class="col-lg-6" id=""><div v-model="newdata" is="chartnumcontigs" :datain="newdata" ></div></div>
+</div>
 
                 </div>
               </div>
@@ -159,448 +205,338 @@ include 'includes/head-new.php';
       </div><!-- /.content-wrapper -->
 
       <?php include 'includes/reporting-new.php'; ?>
-      <?php $arr = array("template", "complement", "2d");?>
-  					<?php foreach ($arr as $key => $value) {
-  						//echo $key . " " . $value . "<br>";?>
 
-  			<script>
-  		$(document).ready(function() {
-  		    var options = {
-  		        chart: {
-  		            renderTo: 'barcodwimm<?php echo $key;?>',
-  					zoomType: 'x',
-  		            type: 'area',
-  		        },
-  		        title: {
-  		          text: '<?php echo $value;?> Barcode Plot'
-  		        },
-  		        resetZoomButton: {
-                  position: {
-                      // align: 'right', // by default
-                      // verticalAlign: 'top', // by default
-                      x: -10,
-                      y: 10
+      <script>
+
+
+
+      var dataurl = "jsonencode/assemblyjson.php?prev=0&db=<?php echo $_SESSION['active_run_name'];?>&callback=?";
+
+      Vue.component('chartyield', {
+      template: '<div id="containeryield" style="margin: 0 auto"</div>',
+      props: ['datain'],
+      data: function() {
+          //var d = new Date();
+          //var t = d.getTime();
+          //console.log(this.datain);
+          return {
+              opts: {
+                  chart: {
+                      renderTo: 'containeryield',
+                      type:'spline',
+                      zoomType: 'x',
+                      height: 350,
                   },
-                  relativeTo: 'chart'
+                  title: {
+                      text: 'Assembly Length Over Time'
+                  },
+                  xAxis: {
+                  type: 'datetime',
+                  tickPixelInterval: 150
               },
-  		        plotOptions: {
-              area: {
-                  stacking: 'normal',
-                  lineColor: '#666666',
-                  lineWidth: 1,
-                  marker: {
-                  	enabled: false,
-                      lineWidth: 1,
-                      lineColor: '#666666'
-                  }
+              yAxis: {
+                  title: {
+                      text: 'Bases'
+                  },
+                  plotLines: [{
+                      value: 0,
+                      width: 1,
+                      color: '#808080'
+                  }],
+                  //min: 0,
+              },
+              credits: {
+                  enabled: false
+              },
+              series: [{
+                  name: 'Time Points',
+                  data: []
+              }]
+                      }
               }
-          },
-  				xAxis: {
-  				            title: {
-  				                text: 'Time (S)'
-  				            }
-  				        },
-  						yAxis: [{
-  				                labels: {
-              				        align: 'right',
-              	    			    x: -3
-              	   				},
-              	    			title: {
-              	        			text: '<?php echo $value;?>'
-  				                },
-  				                height: '100%',
-  				                lineWidth: 1
-  				            }],
-  								credits: {
-  								    enabled: false
-  								  },
-  		        legend: {
-  		        	title: {
-                  text: 'Barcode<br/><span style="font-size: 9px; color: #666; font-weight: normal">(Click to hide)</span>',
-                  style: {
-                      fontStyle: 'italic'
+      }
+      ,
+
+
+      ready: function() {
+        this.$nextTick(function() {
+              this.chart = new Highcharts.Chart(this.opts);
+
+              setInterval(function () {
+                  var DataArray = []
+                  for (var i = 0; i < this.datain.length; i++) {
+                      var DataBit=[]
+                      DataBit.push(Date.parse(this.datain[i].timeset))
+                      DataBit.push(parseInt(this.datain[i].totallen))
+                      DataArray.push(DataBit)
                   }
+                  //console.log(DataArray)
+                  this.chart.series[0].setData(DataArray);
+                  this.chart.redraw();
+              }.bind(this), 5000);
+              });
+          }
+      })
+
+      Vue.component('chartn50', {
+      template: '<div id="containern50" style="margin: 0 auto"</div>',
+      props: ['datain'],
+      data: function() {
+          //var d = new Date();
+          //var t = d.getTime();
+          //console.log(this.datain);
+          return {
+              opts: {
+                  chart: {
+                      renderTo: 'containern50',
+                      type:'spline',
+                      zoomType: 'x',
+                      height: 350,
+                  },
+                  title: {
+                      text: 'N50 Over Time'
+                  },
+                  xAxis: {
+                  type: 'datetime',
+                  tickPixelInterval: 150
               },
+              yAxis: {
+                  title: {
+                      text: 'N50'
+                  },
+                  plotLines: [{
+                      value: 0,
+                      width: 1,
+                      color: '#808080'
+                  }],
+                  //min: 0,
+              },
+              credits: {
+                  enabled: false
+              },
+              series: [{
+                  name: 'Time Points',
+                  data: []
+              }]
+                      }
+              }
+      }
+      ,
 
-  		            layout: 'horizontal',
-  		            align: 'center',
-  		            //verticalAlign: 'middle',
-  		            borderWidth: 0
-  		        },
-  		        series: []
-  		    };
 
-  		    $.getJSON('jsonencode/barcodwimm.php?prev=0&type=<?php echo $value; ?>&callback=?', function(data) {
-  				//alert("success");
-  		        options.series = data; // <- just assign the data to the series property.
+      ready: function() {
+        this.$nextTick(function() {
+              this.chart = new Highcharts.Chart(this.opts);
+
+              setInterval(function () {
+                  var DataArray = []
+                  for (var i = 0; i < this.datain.length; i++) {
+                      var DataBit=[]
+                      DataBit.push(Date.parse(this.datain[i].timeset))
+                      DataBit.push(parseInt(this.datain[i].n50))
+                      DataArray.push(DataBit)
+                  }
+                  //console.log(DataArray)
+                  this.chart.series[0].setData(DataArray);
+                  this.chart.redraw();
+              }.bind(this), 5000);
+              });
+          }
+      })
+
+      Vue.component('chartnumreads', {
+      template: '<div id="containernumreads" style="margin: 0 auto"</div>',
+      props: ['datain'],
+      data: function() {
+          //var d = new Date();
+          //var t = d.getTime();
+          //console.log(this.datain);
+          return {
+              opts: {
+                  chart: {
+                      renderTo: 'containernumreads',
+                      type:'spline',
+                      zoomType: 'x',
+                      height: 350,
+                  },
+                  title: {
+                      text: 'Number of Reads Used for Each Assembly'
+                  },
+                  xAxis: {
+                  type: 'datetime',
+                  tickPixelInterval: 150
+              },
+              yAxis: {
+                  title: {
+                      text: 'Number of Reads'
+                  },
+                  plotLines: [{
+                      value: 0,
+                      width: 1,
+                      color: '#808080'
+                  }],
+                  //min: 0,
+              },
+              credits: {
+                  enabled: false
+              },
+              series: [{
+                  name: 'Time Points',
+                  data: []
+              }]
+                      }
+              }
+      }
+      ,
 
 
+      ready: function() {
+        this.$nextTick(function() {
+              this.chart = new Highcharts.Chart(this.opts);
 
-  		        //options.series = JSON2;
-  				var chart = new Highcharts.Chart(options);
-  				});
-  		});
+              setInterval(function () {
+                  var DataArray = []
+                  for (var i = 0; i < this.datain.length; i++) {
+                      var DataBit=[]
+                      DataBit.push(Date.parse(this.datain[i].timeset))
+                      DataBit.push(parseInt(this.datain[i].no_reads))
+                      DataArray.push(DataBit)
+                  }
+                  //console.log(DataArray)
+                  this.chart.series[0].setData(DataArray);
+                  this.chart.redraw();
+              }.bind(this), 5000);
+              });
+          }
+      })
 
-  			//]]>
+      Vue.component('chartnumcontigs', {
+      template: '<div id="containernumcontigs" style="margin: 0 auto"</div>',
+      props: ['datain'],
+      data: function() {
+          //var d = new Date();
+          //var t = d.getTime();
+          //console.log(this.datain);
+          return {
+              opts: {
+                  chart: {
+                      renderTo: 'containernumcontigs',
+                      type:'spline',
+                      zoomType: 'x',
+                      height: 350,
+                  },
+                  title: {
+                      text: 'Number of Contigs Generated'
+                  },
+                  xAxis: {
+                  type: 'datetime',
+                  tickPixelInterval: 150
+              },
+              yAxis: {
+                  title: {
+                      text: 'Number of Contigs'
+                  },
+                  plotLines: [{
+                      value: 0,
+                      width: 1,
+                      color: '#808080'
+                  }],
+                  //min: 0,
+              },
+              credits: {
+                  enabled: false
+              },
+              series: [{
+                  name: 'Time Points',
+                  data: []
+              }]
+                      }
+              }
+      }
+      ,
 
-  			</script>
-  		<?php } ?>
 
-        <!-- Detailed Barcode Coverage Plots -->
+      ready: function() {
+        this.$nextTick(function() {
+              this.chart = new Highcharts.Chart(this.opts);
 
-    <script>
-        $(document).ready(function() {
-            chartsetup = {
-                chart: {
-        		   	renderTo: 'barcodcovdet',
-        			//zoomType: 'x',
-        			type: 'scatter',
-        		   	//type: 'line'
-        		},
-        		title: {
-        		    text: 'Coverage Depth By Barcode',
-    	        },
-    	        xAxis: {
-    				title: {
-    					text: 'Position (bp)'
-    			    },
-    		        //min: tmin,
-        			//max: tmax,
-        		},
-        		yAxis: [
-                    {
-        		        labels: {
-                            //align: 'right',
-        	                //x: -3
-                	    },
-                	    title: {
-                	           text: 'Barcode 1'
-        			    },
-        			    height: '7%',
-        			    lineWidth: 1
-        		    },
-                    {
-        		        labels: {
-                            align: 'right',
-        	                //x: -3
-                	    },
-                	    title: {
-                	           text: 'Barcode 2'
-        			    },
-                        top: '8%',
-                        offset: 0,
-        			    height: '7%',
-        			    lineWidth: 1
-        		    },{
-        		        labels: {
-                            align: 'right',
-        	                //x: -3
-                	    },
-                	    title: {
-                	           text: 'Barcode 3'
-        			    },
-                        top: '16%',
-                        offset: 0,
-        			    height: '7%',
-        			    lineWidth: 1
-        		    },{
-        		        labels: {
-                            align: 'right',
-        	                //x: -3
-                	    },
-                	    title: {
-                	           text: 'Barcode 4'
-        			    },
-                        top: '24%',
-                        offset: 0,
-        			    height: '7%',
-        			    lineWidth: 1
-        		    },{
-        		        labels: {
-                            align: 'right',
-        	                //x: -3
-                	    },
-                	    title: {
-                	           text: 'Barcode 5'
-        			    },
-                        top: '32%',
-                        offset: 0,
-        			    height: '7%',
-        			    lineWidth: 1
-        		    },{
-        		        labels: {
-                            align: 'right',
+              setInterval(function () {
+                  var DataArray = []
+                  for (var i = 0; i < this.datain.length; i++) {
+                      var DataBit=[]
+                      DataBit.push(Date.parse(this.datain[i].timeset))
+                      DataBit.push(parseInt(this.datain[i].no_contigs))
+                      DataArray.push(DataBit)
+                  }
+                  //console.log(DataArray)
+                  this.chart.series[0].setData(DataArray);
+                  this.chart.redraw();
+              }.bind(this), 5000);
+              });
+          }
+      })
 
-        	                //x: -3
-                	    },
-                	    title: {
-                	           text: 'Barcode 6',
+      var demo = new Vue({
 
-        			    },
-                        top: '40%',
-                        offset: 0,
-        			    height: '7%',
-        			    lineWidth: 1
-        		    },{
-        		        labels: {
-                            align: 'right',
-        	                //x: -3
-                	    },
-                	    title: {
-                	           text: 'Barcode 7'
-        			    },
-                        top: '48%',
-                        offset: 0,
-        			    height: '7%',
-        			    lineWidth: 1
-        		    },{
-        		        labels: {
-                            align: 'right',
-        	                //x: -3
-                	    },
-                	    title: {
-                	           text: 'Barcode 8'
-        			    },
-                        top: '56%',
-                        offset: 0,
-        			    height: '7%',
-        			    lineWidth: 1
-        		    },{
-        		        labels: {
-                            align: 'right',
-        	                //x: -3
-                	    },
-                	    title: {
-                	           text: 'Barcode 9'
-        			    },
-                        top: '64%',
-                        offset: 0,
-        			    height: '7%',
-        			    lineWidth: 1
-        		    },{
-        		        labels: {
-                            align: 'right',
-        	                //x: -3
-                	    },
-                	    title: {
-                	           text: 'Barcode 10'
-        			    },
-                        top: '72%',
-                        offset: 0,
-        			    height: '7%',
-        			    lineWidth: 1
-        		    },{
-        		        labels: {
-                            align: 'right',
-        	                //x: -3
-                	    },
-                	    title: {
-                	           text: 'Barcode 11'
-        			    },
-                        top: '80%',
-                        offset: 0,
-        			    height: '7%',
-        			    lineWidth: 1
-        		    },{
-        		        labels: {
-                            align: 'right',
-        	                //x: -3
-                	    },
-                	    title: {
-                	           text: 'Barcode 12'
-        			    },
-                        top: '88%',
-                        offset: 0,
-        			    height: '7%',
-        			    lineWidth: 1
-        		    },
-            	],
-        		scrollbar: {
-              	    enabled: false
-            	},
-            	navigator: {
-         	  	    enabled: true
-            	},
-        		plotOptions: {
+      el: '#demo',
 
-        		line: {
-        			marker: {
-        		 		enabled: false
-        		 	}
-        		},
-        		},
-        		credits: {
-        		    enabled: false
-        		},
-        		legend: {
-        		    layout: 'vertical',
-        			align: 'right',
-        			verticalAlign: 'middle',
-        			borderWidth: 0
-        		},
-        		series: []
-        		};
-                $.getJSON('jsonencode/coverage_barcodes.php?prev=0&start=-1&end=-1&seqid=1&callback=?', function(data){
-    				//alert(data);
-                    chartsetup.series = data;
-    			    var chart = new Highcharts.Chart(chartsetup);
-    			});
-                //chartsetup.series = data;
-    			//var chart = new Highcharts.Chart(chartsetup);
-        	});
+      data: {
+        newdata: null,
+      },
+
+      created: function () {
+        this.fetchData()
+      },
+
+     filters: {
+        truncate: function (v) {
+          var newline = v.indexOf('\n')
+          return newline > 0 ? v.slice(0, newline) : v
+        },
+        formatDate: function (v) {
+          return v.replace(/T|Z/g, ' ')
+        }
+      },
+
+      methods: {
+        fetchData: function () {
+            var xhr = new XMLHttpRequest()
+            var self = this
+            xhr.open('GET', dataurl)
+            xhr.onload = function () {
+              self.newdata = JSON.parse(xhr.responseText)
+              //console.log(xhr.responseText)
+              //console.log(self.newdata)
+            }
+            xhr.send()
+            setInterval(function () {
+              var xhr = new XMLHttpRequest()
+              var self = this
+              xhr.open('GET', dataurl)
+              xhr.onload = function () {
+                self.newdata = JSON.parse(xhr.responseText)
+                //console.log(xhr.responseText)
+                //console.log(self.newdata)
+              }
+              xhr.send()
+          }.bind(this), 10000);
+
+      },
+      getassembly: function(event){
+          //alert(event.target.id);
+          var sequrl = "includes/fetchreads.php?db=<?php echo $_SESSION['active_run_name']?>&type=assembly&timeid="+event.target.id+"&prev=0";
+          window.open(sequrl);
+      },
+
+      }
+  })
+
+
 
     </script>
 
-  	<!-- Barcode Coverage Information -->
-
-  <script>
-
-                              $(document).ready(function() {
-                                  var options = {
-                                      chart: {
-                                          renderTo: 'barcodcov',
-                                          type: 'column',
-                                          //type: 'line'
-                                      },
-                                      plotOptions: {
-                                      	column: {
-                                          	animation: false,
-  										    //colorByPoint: true
-                                          }
-                                      },
-                                      //colors: [
-  								      //  '#4A6D8E',
-  								       // '#7cb5ec',
-  								       // '#A3CBF2',
-  								       // '#CBE1F7',
-  								    //],
-                                      title: {
-                                        text: 'Coverage Depth'
-                                      },
-                                      xAxis: {
-                                                  title: {
-                                                      text: 'Barcodes'
-                                                  },
-                                                  labels: {
-  						            	enabled:true,
-  						            	},
-  						            	categories: [
-
-  									                ]
 
 
-                                              },
-                                              yAxis: {
-                                                          title: {
-                                                              text: 'Barcode Coverage Depth'
-                                                          }
-                                                      },
-                                                      credits: {
-                                                          enabled: false
-                                                        },
-                                      legend: {
-                                          layout: 'vertical',
-                                          align: 'center',
-                                          verticalAlign: 'bottom',
-                                          borderWidth: 0
-                                      },
-                                      series: []
-                                  };
-                                  $.getJSON('jsonencode/barcodingcov.php?prev=0&callback=?', function(data) {
-  					                //alert("success");
-                                    options.xAxis.categories = data[0]['data'];
-                                    options.series = data.slice(1,);
-  					        //options.series = data; // <- just assign the data to the series property.
-
-  					        //options.series = JSON2;
-  					                var chart = new Highcharts.Chart(options);
-  					                });
-
-  				});
-
-
-
-
-                                  //]]>
-
-                                  </script>
-
-
-
-  <!-- Barcode Information -->
-
-  <script>
-  $(document).ready(function() {
-  			    var options = {
-  			        chart: {
-  						renderTo: 'barcod',
-  			            type: 'pie',
-  			            marginTop: 30,
-  			            marginBottom: 30
-  			        },
-
-
-  			        title: {
-  			            text: 'Barcoding Proportions'
-  			        },
-
-  					credits: {
-  					    enabled: false
-  					  },
-  	            plotOptions: {
-              pie: {
-              	animation: false,
-                  allowPointSelect: false,
-                  cursor: 'pointer',
-                  dataLabels: {
-                      enabled: true,
-                      format: '<b>{point.name}</b>: {point.percentage:.1f} %',
-                      style: {
-                          color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
-                      }
-                  }
-              }
-          },
-  				    series: []
-
-  			    };
-  			    $.getJSON('jsonencode/barcodingpie.php?prev=0&callback=?', function(data) {
-  					                //alert("success");
-
-  					        options.series = data; // <- just assign the data to the series property.
-
-  					        //options.series = JSON2;
-  					                var chart = new Highcharts.Chart(options);
-  					                });
-
-  				});
-
-
-  </script>
-
-     <script>
-
-             $.getJSON('http://www.nottingham.ac.uk/~plzloose/minoTourhome/message.php?callback=?', function(result) {
-
-                       $.each(result, function(key,value){
-                          //checking version info.
-                          if (key == 'version'){
-                              if (value == '<?php echo $_SESSION['minotourversion'];?>'){
-                                  $('#newstarget').html("You are running the most recent version of minoTour - version "+value+".<br>");
-                              }else if (value < '<?php echo $_SESSION['minotourversion'];?>'){
-                                  $('#newstarget').html("You appear to be in the fortunate position of running a future version of the minoTour web application "+value+". If you have modified the code yourself - great. If not then there might be an issue somewhere!.<br>");
-                              }else if (value > '<?php echo $_SESSION['minotourversion'];?>'){
-                                  $('#newstarget').html("You are running an outdated version of the minoTour web application. The most recent version of minoTour is version "+value+".<br>"+"Instructions for upgrading will be posted below.<br>");
-                              }
-
-
-                          }else if (key.substring(0, 7) == 'message') {
-                              $('#newstarget').append(value + "<br>");
-                            }
-                       });
-                     });
-
-         </script>
 
 
 

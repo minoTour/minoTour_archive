@@ -41,6 +41,56 @@ function newblanktemplate($jobname,$currun) {
     return $jsonstring;
 }
 
+
+
+function assemblyjson($jobname,$currun) {
+    //echo "TUMP";
+    global $memcache;
+    global $mindb_connection;
+    $jsonstring = "";  //A simple variable to hold the value of the jsonstring to return
+    //Flag to check to see if this job needs re-running or has expired
+    $flagstate = $currun.$jobname."flag";
+    //Flag to check if job is already running
+    $runstate = $currun.$jobname."runstate";
+    //Holder to store the actual data
+    $storedvalue = $currun.$jobname."store";
+    //Get flagstate and runstate from the memcache store.
+    $checkflagstate = $memcache->get("$flagstate");
+    $checkrunstate = $memcache->get("$runstate");
+    //First check to see if it is safe to retrieve data from the store - it will be if checkflagstate is true or checkrunstate is true
+    if ($checkflagstate == "True" || $checkrunstate == "True"){
+        //echo "Retrieving current value";
+        $jsonstring = $memcache->get("$storedvalue");
+    } else {
+        //echo "Value expired - recalculating";
+        //This will run only if both flags are false and so will start to process the data. Therefore it must set the running flag to True
+        $memcache->set("$runstate", "True",0,0);
+        //Now we execute the code to retrieve whatever values we are after and store them in the $jsonstring value:
+
+        $jsonstring = "";
+        $sql = "select * from assembly_metrics;";
+        $assemblies = $mindb_connection->query($sql);
+        $emparray = array();
+        while($row =mysqli_fetch_assoc($assemblies))
+            {
+                $emparray[] = $row;
+            }
+
+        $jsonstring = json_encode($emparray);
+
+        if ($_GET["prev"] == 1){
+			include 'savejson.php';
+		}
+        //Now we store the value we are after in the memcache holder for the value with no time out (so it persists):
+        $memcache->set("$storedvalue",$jsonstring,MEMCACHE_COMPRESSED,0);
+        //Now we store the flag to report the data is updated
+        $memcache->set("$flagstate","True",0,5); //Note this will expire after 5 seconds.
+        //Finally we set the running flag to false
+        $memcache->set("$runstate", "False",0,0);
+
+    }
+    return $jsonstring;
+}
 ##### Template for a function to run the desired code
 
 function hello_world(){
@@ -891,6 +941,7 @@ function sequencingrate($jobname,$currun) {
                   //    echo "Lookup this value in the original array\n";
                       $match = 0;
                       //echo gettype($jsonstringarray[$index]->name);
+                      if (isset($jsonstringarray[$index])){
                       foreach ($jsonstringarray[$index]->data as &$key3){
                           if ($key3[0]==$key2[0]){
                   //            echo "We got a match";
@@ -900,7 +951,8 @@ function sequencingrate($jobname,$currun) {
               //                    echo "reset value " . $key3[1];
                           }
           //                echo "\t original value " . $key2[1] . "\n";
-                      }
+                        }
+                    }
                       if ($match == 0) {
                           //echo "wanna push \n";
                           $jsonstringarray[$index]->name=$resultarray2[$index]["name"];

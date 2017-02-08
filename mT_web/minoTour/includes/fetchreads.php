@@ -12,6 +12,8 @@ if (isset ($_GET["code"])){
 }elseif (isset ($_GET["type"])) {
 	if ($_GET["type"] == "histogram") {
 		$filename = $db . "_" . $_GET["type"] . "_" . $_GET["length"] . "_" . ($_GET["length"] + 1000) . "_" . $_GET["job"] . ".fasta";
+	}elseif ($_GET["type"] == "assembly") {
+	    $filename = $id . $_GET["timeid"] . ".fasta";
 	}else {
 		$filename = $id . "." . $_GET["type"];
 	}
@@ -117,6 +119,20 @@ if ($login->isUserLoggedIn() == true) {
 			}
 			exit;
 		}
+
+        if ($_GET["type"] == "assembly"){
+            #Get the assembly group
+            $timeid = $_GET["timeid"];
+            $sql = "select contigname,fasta from assembly_seq where timeid=$timeid;";
+            $queryresult=$mindb_connection->query($sql);
+            if ($queryresult->num_rows >= 1){
+				foreach ($queryresult as $row) {
+					echo ">" . $row['contigname'] . "\n";
+					echo $row['fasta'] . "\n";
+				}
+			}
+			exit;
+        }
 
 		if ($_GET["type"] == "fastq"){
 			$querytable = "basecalled_" . $jobtype;

@@ -137,6 +137,12 @@ include 'includes/head-new.php';
                 <div id="assmbly">
                 <div class="panel-body">
                           <div class="row">
+                              <?php $cachecheck = $memcache->get("perl_mem_cache_connection");
+                              if($cachecheck === false){
+                                  echo "<strong>Your minotour installation is not using background scripts which provide these functions - please consult with the user manual to set these up.<br></strong>";
+                              }else{?>
+
+
                               <p>To set a basic minasm/minimap assembly running, trigger the button below. </p>
 
                               <p>Note that these jobs are entirely dependent on the current load on the server. </p>
@@ -146,31 +152,20 @@ include 'includes/head-new.php';
                               <p>Assemblies run every 30 minutes or 20,000 reads.</p>
 
                               <p>Assemblies will stop when a run is finished or by inactivating the switch below.</p>
-                              Run Assembly: <input type="checkbox"  data-toggle="toggle" id="assemblyswitch">
-
-
-                              <?php $cachecheck = $memcache->get("perl_mem_cache_connection");
-                              if($cachecheck === false){
-                                  echo "<strong>Your minotour installation is not using background scripts which accelerate web performance - please consult with the user manual to set these up.<br></strong>";
+                              Run Assembly: <input type="checkbox"  data-toggle="toggle" id="assemblyswitch"
+                              <?php
+                              $vartoget = "align_".$_SESSION['active_run_name'];
+                              $cachecheck = $memcache->get($vartoget);
+                              if ($cachecheck=='True' ){
+                                  echo " CHECKED";
                               }else {
-                                  echo "<strong>Congratulations, you have memcache up and running and the background scripts are communicating well with your web backend!</strong><br>";
-                                  $active_runs = $memcache->get("perl_proc_active");
-                                  if ($active_runs === false) {
-                                      echo "You have no active runs being processed at this time.<br>";
-                                  }else {
-                                      echo "You have $active_runs active runs at this time.<br>";
-                                      for ($x=1; $x<=$active_runs; $x++) {
-                                          $run_to_retrieve = "perl_active_" . $x;
-                                          $runname = $memcache->get($run_to_retrieve);
-                                          echo "The number is $x: $runname <br>";
-                                          $jsonreads = $runname . "bases";
-                                          $json_test = $memcache->get($jsonreads);
-                                          echo $jsonreads . "<br>";
-                                          echo "$json_test<br>";
-                                      }
+                                  echo " ";
+                              }
+                              ?>>
 
-                                  }
-                              } ?>
+
+                              <?php }
+                              ?>
 
                       </div>
 
@@ -198,12 +193,37 @@ include 'includes/head-new.php';
 
 <script>
       $(document).ready(function() {
+
     $('#assemblyswitch').change(function() {
         if ($(this).prop('checked')) {
-            alert("You have elected to show your checkout history."); //checked
+            //alert("You have elected to show your checkout history."); //checked
+            //e.preventDefault(); // preventing default click action
+            $.ajax({
+                url: 'jsonencode/jobs.php?job=startassembly',
+                success: function(data){
+                    //alert ('success');
+                    //alert(data);
+                    //$("#messages").html(data);
+                    //$('#optobutton').addClass('disabled');
+                    //$('#archivebutton').addClass('disabled');
+                }, error: function(){
+                    alert('ajax failed');
+                },
+            })
         }
         else {
-            alert("You have elected to turn off checkout history."); //not checked
+            $.ajax({
+                url: 'jsonencode/jobs.php?job=stopassembly',
+                success: function(data){
+                    //alert ('success');
+                    //alert(data);
+                    //$("#messages").html(data);
+                    //$('#optobutton').addClass('disabled');
+                    //$('#archivebutton').addClass('disabled');
+                }, error: function(){
+                    alert('ajax failed');
+                },
+            })
         }
     });
 });
