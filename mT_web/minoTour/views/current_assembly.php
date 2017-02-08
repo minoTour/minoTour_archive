@@ -143,8 +143,15 @@ include 'includes/head-new.php';
 
 
                     <div id="demo">
+                        <h3>Assembly Data Summary</h3>
+                        <div class="row">
+                        <div class="col-lg-6" id=""><div v-model="newdata" is="chartyield" :datain="newdata" ></div></div>
+                        <div class="col-lg-6" id=""><div v-model="newdata" is="chartn50" :datain="newdata" ></div></div>
+                        <div class="col-lg-6" id=""><div v-model="newdata" is="chartnumreads" :datain="newdata" ></div></div>
+                        <div class="col-lg-6" id=""><div v-model="newdata" is="chartnumcontigs" :datain="newdata" ></div></div>
+                        <div class="col-lg-12" id=""><div v-model="scatterdata" is="chartscatcontigs" :datain="scatterdata" ></div></div>
+                        </div>
 
-  <h3>Assembly Data Summary</h3>
   <div class="row">
   <div class='table-responsive'>
   <table class='table table-condensed'>
@@ -178,13 +185,7 @@ include 'includes/head-new.php';
 
     </div>
 </div>
-<div class="row">
-<div class="col-lg-6" id=""><div v-model="newdata" is="chartyield" :datain="newdata" ></div></div>
-<div class="col-lg-6" id=""><div v-model="newdata" is="chartn50" :datain="newdata" ></div></div>
-<div class="col-lg-6" id=""><div v-model="newdata" is="chartnumreads" :datain="newdata" ></div></div>
-<div class="col-lg-6" id=""><div v-model="newdata" is="chartnumcontigs" :datain="newdata" ></div></div>
-<div class="col-lg-12" id=""><div v-model="scatterdata" is="chartscatcontigs" :datain="scatterdata" ></div></div>
-</div>
+
 
                 </div>
               </div>
@@ -491,7 +492,7 @@ include 'includes/head-new.php';
                       renderTo: 'chartscatcontigs',
                       type:'scatter',
                       zoomType: 'x',
-                      height: 350,
+                      height: 450,
                   },
                   title: {
                       text: 'Lengths of Contigs Generated'
@@ -504,6 +505,7 @@ include 'includes/head-new.php';
                   title: {
                       text: 'Length of Contigs'
                   },
+                  type: 'logarithmic',
                   plotLines: [{
                       value: 0,
                       width: 1,
@@ -537,7 +539,7 @@ include 'includes/head-new.php';
                       DataBit.push(parseInt(this.datain[i].length))
                       DataArray.push(DataBit)
                   }
-                  console.log(DataArray)
+                  //console.log(DataArray)
                   this.chart.series[0].setData(DataArray);
                   this.chart.redraw();
               }.bind(this), 5000);
