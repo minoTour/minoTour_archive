@@ -61,8 +61,10 @@
 }
  </style>
  <script src="js/vue.min.js"></script>
- <script src="js/vue-filter.min.js"></script>
+ <!--<script src="https://unpkg.com/vue@2.1.10/dist/vue.js"></script>-->
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-filter/0.1.10/vue-filter.js"></script>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/1.2.0/vue-resource.min.js"></script>
  <script src="js/reconnecting_websocket.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js"></script>
 </head>
 <!--This is a test to see where this text appears - this site is in development.-->

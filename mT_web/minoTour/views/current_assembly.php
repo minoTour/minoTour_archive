@@ -43,7 +43,7 @@ Import the header.
 <?php
 include 'includes/head-new.php';
 ?>
-<link href="css/jquery.nouislider.min.css" rel="stylesheet">
+<!--<link href="css/jquery.nouislider.min.css" rel="stylesheet">-->
   <!--
   BODY TAG OPTIONS:
   =================
@@ -134,18 +134,13 @@ include 'includes/head-new.php';
                 </div>
 
 
-                <div id="assmbly">
+                <div id="assembly">
                 <div class="panel-body">
-
-
-
-
-
-
                     <div id="demo">
+                        <div is="my-component" :datain="newdata"></div>
                         <h3>Assembly Data Summary</h3>
                         <div class="row">
-                        <div class="col-lg-6" id=""><div v-model="newdata" is="chartyield" :datain="newdata" ></div></div>
+                        <div class="col-lg-6" id=""><div is="chartyield" :datain="newdata" ></div></div>
                         <div class="col-lg-6" id=""><div v-model="newdata" is="chartn50" :datain="newdata" ></div></div>
                         <div class="col-lg-6" id=""><div v-model="newdata" is="chartnumreads" :datain="newdata" ></div></div>
                         <div class="col-lg-6" id=""><div v-model="newdata" is="chartnumcontigs" :datain="newdata" ></div></div>
@@ -178,7 +173,7 @@ include 'includes/head-new.php';
               <td>{{record.maxlen}}</td>
               <td>{{record.n50}}</td>
               <td>{{record.totallen}}</td>
-              <td><button v-on:click="getassembly" id='{{record.timeid}}' type='button' class='btn btn-success btn-sm' >Get Assembly</button></td>
+              <td><button v-on:click="getassembly" :id='record.timeid' type='button' class='btn btn-success btn-sm' >Get Assembly</button></td>
         </tr>
     </tbody>
 </table>
@@ -209,6 +204,7 @@ include 'includes/head-new.php';
       <?php include 'includes/reporting-new.php'; ?>
 
       <script>
+
 
 
 
@@ -259,23 +255,26 @@ include 'includes/head-new.php';
               }
       }
       ,
-
-
       ready: function() {
         this.$nextTick(function() {
               this.chart = new Highcharts.Chart(this.opts);
-
-              setInterval(function () {
+              var testload = function (self) {
                   var DataArray = []
-                  for (var i = 0; i < this.datain.length; i++) {
+
+                  for (var i = 0; i < self.datain.length; i++) {
                       var DataBit=[]
-                      DataBit.push(Date.parse(this.datain[i].timeset))
-                      DataBit.push(parseInt(this.datain[i].totallen))
+                      DataBit.push(parseInt(moment(self.datain[i].timeset).format('x')))
+                      DataBit.push(parseInt(self.datain[i].totallen))
                       DataArray.push(DataBit)
                   }
-                  //console.log(DataArray)
-                  this.chart.series[0].setData(DataArray);
-                  this.chart.redraw();
+                  self.chart.series[0].setData(DataArray);
+                  self.chart.redraw();
+              }
+              setTimeout(function() {
+                return testload(this)
+            }.bind(this),500)
+              setInterval(function () {
+                  return testload(this)
               }.bind(this), 5000);
               });
           }
@@ -330,18 +329,23 @@ include 'includes/head-new.php';
       ready: function() {
         this.$nextTick(function() {
               this.chart = new Highcharts.Chart(this.opts);
-
-              setInterval(function () {
+              var testload = function (self) {
                   var DataArray = []
-                  for (var i = 0; i < this.datain.length; i++) {
+
+                  for (var i = 0; i < self.datain.length; i++) {
                       var DataBit=[]
-                      DataBit.push(Date.parse(this.datain[i].timeset))
-                      DataBit.push(parseInt(this.datain[i].n50))
+                      DataBit.push(parseInt(moment(self.datain[i].timeset).format('x')))
+                      DataBit.push(parseInt(self.datain[i].n50))
                       DataArray.push(DataBit)
                   }
-                  //console.log(DataArray)
-                  this.chart.series[0].setData(DataArray);
-                  this.chart.redraw();
+                  self.chart.series[0].setData(DataArray);
+                  self.chart.redraw();
+              }
+              setTimeout(function() {
+                return testload(this)
+              }.bind(this),500)
+              setInterval(function () {
+                  return testload(this)
               }.bind(this), 5000);
               });
           }
@@ -396,20 +400,26 @@ include 'includes/head-new.php';
       ready: function() {
         this.$nextTick(function() {
               this.chart = new Highcharts.Chart(this.opts);
-
-              setInterval(function () {
+              var testload = function (self) {
                   var DataArray = []
-                  for (var i = 0; i < this.datain.length; i++) {
+
+                  for (var i = 0; i < self.datain.length; i++) {
                       var DataBit=[]
-                      DataBit.push(Date.parse(this.datain[i].timeset))
-                      DataBit.push(parseInt(this.datain[i].no_reads))
+                      DataBit.push(parseInt(moment(self.datain[i].timeset).format('x')))
+                      DataBit.push(parseInt(self.datain[i].no_reads))
                       DataArray.push(DataBit)
                   }
-                  //console.log(DataArray)
-                  this.chart.series[0].setData(DataArray);
-                  this.chart.redraw();
+                  self.chart.series[0].setData(DataArray);
+                  self.chart.redraw();
+              }
+              setTimeout(function() {
+                return testload(this)
+              }.bind(this),500)
+              setInterval(function () {
+                  return testload(this)
               }.bind(this), 5000);
               });
+
           }
       })
 
@@ -462,18 +472,23 @@ include 'includes/head-new.php';
       ready: function() {
         this.$nextTick(function() {
               this.chart = new Highcharts.Chart(this.opts);
-
-              setInterval(function () {
+              var testload = function (self) {
                   var DataArray = []
-                  for (var i = 0; i < this.datain.length; i++) {
+
+                  for (var i = 0; i < self.datain.length; i++) {
                       var DataBit=[]
-                      DataBit.push(Date.parse(this.datain[i].timeset))
-                      DataBit.push(parseInt(this.datain[i].no_contigs))
+                      DataBit.push(parseInt(moment(self.datain[i].timeset).format('x')))
+                      DataBit.push(parseInt(self.datain[i].no_contigs))
                       DataArray.push(DataBit)
                   }
-                  //console.log(DataArray)
-                  this.chart.series[0].setData(DataArray);
-                  this.chart.redraw();
+                  self.chart.series[0].setData(DataArray);
+                  self.chart.redraw();
+              }
+              setTimeout(function() {
+                return testload(this)
+              }.bind(this),500)
+              setInterval(function () {
+                  return testload(this)
               }.bind(this), 5000);
               });
           }
@@ -527,21 +542,26 @@ include 'includes/head-new.php';
 
 
       ready: function() {
+         // console.log("ready running")
         this.$nextTick(function() {
               this.chart = new Highcharts.Chart(this.opts);
-
-              setInterval(function () {
+              var testload = function (self) {
                   var DataArray = []
-                  for (var i = 0; i < this.datain.length; i++) {
-                      //console.log('helo')
+
+                  for (var i = 0; i < self.datain.length; i++) {
                       var DataBit=[]
-                      DataBit.push(Date.parse(this.datain[i].timeset))
-                      DataBit.push(parseInt(this.datain[i].length))
+                      DataBit.push(parseInt(moment(self.datain[i].timeset).format('x')))
+                      DataBit.push(parseInt(self.datain[i].length))
                       DataArray.push(DataBit)
                   }
-                  //console.log(DataArray)
-                  this.chart.series[0].setData(DataArray);
-                  this.chart.redraw();
+                  self.chart.series[0].setData(DataArray);
+                  self.chart.redraw();
+              }
+              setTimeout(function() {
+                return testload(this)
+              }.bind(this),500)
+              setInterval(function () {
+                  return testload(this)
               }.bind(this), 5000);
               });
           }
@@ -573,6 +593,7 @@ include 'includes/head-new.php';
 
       methods: {
         fetchData: function () {
+            //console.log('fetchdata called')
             var xhr = new XMLHttpRequest()
             var self = this
             xhr.open('GET', dataurl)
@@ -598,6 +619,7 @@ include 'includes/head-new.php';
 
       },
       fetchData2: function () {
+          //console.log('fetchdata called')
           var xhr = new XMLHttpRequest()
           var self = this
           xhr.open('GET', dataurlalt)

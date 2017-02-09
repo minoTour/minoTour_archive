@@ -20,7 +20,7 @@ class Assemble():
 
 
     def run(self):
-        print 'minimap -Sw5 -L100 -t2 '+self.tmpfile.name+' '+self.tmpfile.name+' | miniasm -f '+self.tmpfile.name+' - | awk \'/^S/{print \">\"$2\"\\n\"$3}\' | fold '
+        print 'minimap -Sw5 -L100 -t8 '+self.tmpfile.name+' '+self.tmpfile.name+' | miniasm -f '+self.tmpfile.name+' - | awk \'/^S/{print \">\"$2\"\\n\"$3}\' | fold '
         p1 = subprocess.Popen('minimap -Sw5 -L100 -t2 '+self.tmpfile.name+' '+self.tmpfile.name+' | miniasm -f '+self.tmpfile.name+' - | awk \'/^S/{print \">\"$2\"\\n\"$3}\' | fold ', shell=True, stdout=subprocess.PIPE)
         (out, err) = p1.communicate()
         return out
@@ -104,7 +104,7 @@ if __name__ == "__main__":
     seqcount = 0
     partcount = 1
 
-    fetch_read = "select g_1minwin,basename_id,sequence from "+args.database+".basecalled_template order by g_1minwin asc"
+    fetch_read = "select g_1minwin,basename_id,sequence from "+args.database+".basecalled_template where pass=1 order by g_1minwin asc"
     reads = runSQL(db,fetch_read)
     #print reads
     assrun = Assemble()
