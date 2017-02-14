@@ -112,7 +112,10 @@ class MyServerProtocol(WebSocketServerProtocol):
                                         tracker_dict[user][minION]["state"]=1
                                         try:
                                             #tracker_dict[user][minION]["scripts"]=selfminIONdict[job][user][minION]["scripts"]["result"]["items"]
-                                            tracker_dict[user][minION]["scripts"]=message_dict[user][minION]["scripts"]["result"]["items"]
+                                            #print message_dict[user][minION]["scripts"]
+                                            #tracker_dict[user][minION]["scripts"]=message_dict[user][minION]["scripts"]["result"]["items"]
+                                            tracker_dict[user][minION]["scripts"]=message_dict[user][minION]["scripts"]
+
                                         except Exception, err:
                                             #print "tracker dict 191 problem"
                                             print "Except 117",err

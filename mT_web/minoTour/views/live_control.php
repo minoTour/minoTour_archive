@@ -419,7 +419,7 @@ include 'includes/head-new.php';
                                                       <p>If you are sure you wish to do this select an available run script and click 'Start minION' below. Otherwise close this window.</p>
                                                       <div v-for="script in minion.scripts" class='radio'>
                                                           <label>
-                                                              <input type='radio' name='scriptRadios' id='{{script.name}}' value='{{script.name}}' >{{script.name}}.py</label>
+                                                              <input type='radio' name='scriptRadios' id='{{script.name}}' value='{{script.identifier}}' >{{script.name}}.py</label>
                                                       </div>
                                                   </div>
                                                   <div class='modal-footer'>
@@ -683,6 +683,9 @@ include 'includes/head-new.php';
                       if (minionsthings.minions[thing].state != jsonreturn[prop].state){
                           minionsthings.minions[thing].state = jsonreturn[prop].state;
                       }
+                      //console.log(jsonreturn[prop].scripts)
+                      console.log(minionsthings.minions[thing])
+
                       if (minionsthings.minions[thing].scripts.length != jsonreturn[prop].scripts.length) {
                           minionsthings.minions[thing].scripts = jsonreturn[prop].scripts;
                       }
@@ -2157,6 +2160,7 @@ include 'includes/head-new.php';
             },
             startminion: function(event){
                 var script = $("input[type='radio'][name='scriptRadios']:checked").val();
+                //alert(script);
                 var instructionmessage={"INSTRUCTION":{"USER":"<?php echo $_SESSION['user_name'];?>","minion":event.target.id,"JOB":"startminion","SCRIPT":script}};
                 ws.send(JSON.stringify(instructionmessage));
                 //$('#startminionmodal').modal('hide');
