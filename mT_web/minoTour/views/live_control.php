@@ -2456,7 +2456,7 @@ include 'includes/head-new.php';
     })
 
     Vue.component('predictedvals', {
-        template: '<div class="col-md-2"><p>Estimated Current Yield (bases) <strong>{{speedresult}}</strong></p></div><div class="col-md-2"><p>Estimated Average Read Length (bases) <strong>{{averageresult}}</strong></p></div><div class="col-md-2"><p>Theoretical Predicted Yield at 24 hours (bases)<strong>{{startbit}}</strong></p></div><div class="col-md-2"><p> Theoretical Predicted Yield at 48 hours (bases) <strong>{{endbit}}</strong></p></div>',
+        template: '<div class="col-md-2"><p>Estimated Current Yield (bases) <strong>{{speedresult}}</strong></p></div><div class="col-md-2"><p>Estimated Average Read Length (bases) <strong>{{averageresult}}</strong></p></div><div class="col-md-2"><p>Theoretical Predicted Yield at 24 hours (bases) <strong>{{startbit}}</strong></p></div><div class="col-md-2"><p> Theoretical Predicted Yield at 48 hours (bases) <strong>{{endbit}}</strong></p></div>',
         props: ['seqspeed','currentyield','compreads','calccurrenttime','calcstarttime'],
         computed: {
                 startbit: function() {
