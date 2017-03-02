@@ -164,13 +164,13 @@ include 'includes/head-new.php';
                           <div class="row">
 
                                   <div class="col-md-3" id="{{minion.name}}"><div is="container-avg" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count" :datain2="minion.statistics.selected_completed_count"></div></div>
-                                  <!--<div class="col-md-3" id="{{minion.name}}"><div is="container-temp" :title="minion.name" :key="key" :datain="minion.engine_states.minion_heatsink_temperature"></div></div>-->
                                   <div class="col-md-3" id="{{minion.name}}"><div is="container-chan" :title="minion.name" :key="key" :datain="minion.statistics.channels_with_read_event_count"></div></div>
                                   <div class="col-md-3" id="{{minion.name}}"><div is="container-strand" :title="minion.name" :key="key" :datain="minion.simplesummary"></div></div>
                                   <div class="col-md-3" id="{{minion.name}}"><div is="container-perc" :title="minion.name" :key="key" :datain="minion.simplesummary"></div></div>
 
 
                           </div>
+
                         </div>
                          <div class="col-md-4">
                              <div class="col-md-12" id="{{minion.name}}"><div is="chartporehist" :title="minion.name" :key="key" :datain="minion.channelstuff" :datain2="minion.simplesummary"></div></div>
@@ -184,6 +184,28 @@ include 'includes/head-new.php';
                              </div>
                             </div>
                         </div>
+                    </div>
+                    <div class = "row">
+                        <div class="col-md-6">
+                        <p>The values below are estimated from the run based on a scaling factor from events determined by sequencing speed. The projected yield for 24 hours and 48 hours will update dynamically throuhgout the run.
+                            </div>
+                        </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <p> Set sequencing speed: </p>
+                          <select v-model="seqspeed">
+                              <option selected="selected">450 b/s</option>
+                              <option>250 b/s</option>
+                              <option>70 b/s</option>
+                              </select>
+                              <p><span>Selected: {{ seqspeed }}</span></p>
+                          </div>
+                              <div is="predictedvals" :seqspeed="seqspeed" :currentyield="minion.statistics.read_event_count" :compreads="minion.statistics.selected_completed_count" :calcurrenttime="" :calcstarttime="minion.engine_states.daq_start_time"></div>
+
+                            <!--<div class="col-md-3" id="{{minion.name}}"><div is="container-strand" :title="minion.name" :key="key" :datain="minion.simplesummary"></div></div>-->
+                            <!--<div class="col-md-3" id="{{minion.name}}"><div is="container-perc" :title="minion.name" :key="key" :datain="minion.simplesummary"></div></div>-->
+
+
                     </div>
                       <div class="row">
                   </div>
@@ -1187,6 +1209,313 @@ include 'includes/head-new.php';
         }
     })
 
+
+
+    Vue.component('container-curr-yield-prediction', {
+        template: '<div id="container-curr-yield-prediction{{title}}" style="height: 140px; margin: 0 auto"</div>',
+        props: ['title','key','script','eventcount'],
+        data: function() {
+            return {
+
+                opts: {
+                    chart: {
+                        renderTo: 'container-curr-yield-prediction'+this.title,
+                        type: 'solidgauge'
+                    },
+
+                    title: "Predicted Current Yield",
+
+                    pane: {
+                        center: ['50%', '85%'],
+                        size: '100%',
+                        startAngle: -90,
+                        endAngle: 90,
+                        background: {
+                            backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+                            innerRadius: '60%',
+                            outerRadius: '100%',
+                            shape: 'arc'
+                        }
+                    },
+
+                    tooltip: {
+                        enabled: false
+                    },
+
+                    // the value axis
+                    yAxis: {
+                        type: 'logarithmic',
+                        stops: [
+                            [0.3, '#0000FF'], // blue
+                            [0.37, '#DDDF0D'], // green
+                            [0.43, '#DF5353'], // red
+                        ],
+                        lineWidth: 0,
+                        minorTickInterval: null,
+                        tickPixelInterval: 400,
+                        tickWidth: 0,
+                        title: {
+                            y: -70
+                        },
+                        labels: {
+                            y: 16
+                        },
+                        min: 0.1,
+                        max: 100000,
+                        title: {
+                            text: null
+                        }
+                    },
+
+                    plotOptions: {
+                        solidgauge: {
+                            dataLabels: {
+                                y: -30,
+                                borderWidth: 0,
+                                useHTML: true
+                            }
+                        }
+                    },
+
+
+       credits: {
+           enabled: false
+       },
+
+       series: [{
+           name: 'Events',
+           data: [0],
+           dataLabels: {
+               format: '<div style="text-align:center"><span style="font-size:15px;color:' +
+               ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
+               '<span style="font-size:12px;color:silver"> Predicted Yield</span></div>'
+           },
+           tooltip: {
+               valueSuffix: ' events'
+           }
+       }],
+
+                    plotOptions: {
+                        solidgauge: {
+                            dataLabels: {
+                                y: 30,
+                                borderWidth: 0,
+                                useHTML: true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        ,
+        ready: function() {
+
+
+          this.$nextTick(function() {
+
+                    switch (this.script) {
+                        case "450 b/s":
+                            scaling = 1.8;
+                            break;
+                        case "250 b/s":
+                            scaling = 1.1;
+                            break;
+                        case "70 b/s":
+                            scaling = 1.0;
+                            break;
+                    }
+                    //alert(scaling);
+          		this.chart = new Highcharts.Chart(this.opts);
+                //this.chart.series[0].setData(this.datain);
+                if (this.chart) {
+                    //point = this.chart.series[0].points[0];
+                    this.chart.series[0].points[0].update(round(parseFloat((this.eventcount)*scaling) ,0));
+                    //point.update(this.datain);
+                    //alert("camel");
+                }
+
+                setInterval(function () {
+                //    this.chart.series[0].setData(this.datain);
+                //    this.chart.redraw();
+                if (this.chart) {
+                    switch (this.script) {
+                        case "450 b/s":
+                            scaling = 1.8;
+                            break;
+                        case "250 b/s":
+                            scaling = 1.1;
+                            break;
+                        case "70 b/s":
+                            scaling = 1.0;
+                            break;
+                    }
+                    point = this.chart.series[0].points[0];
+                    point.update(round(parseFloat((this.eventcount)*scaling),0));
+                    //this.chart.redraw();
+
+
+                }
+            }.bind(this), 5000);
+                });
+            }
+        }),
+
+
+
+    Vue.component('container-avg-base-prediction', {
+        template: '<div id="container-avg-base-prediction{{title}}" style="height: 140px; margin: 0 auto"</div>',
+        props: ['title','key','datain','datain2','script'],
+        data: function() {
+            return {
+
+                opts: {
+                    chart: {
+                        renderTo: 'container-avg-base-prediction'+this.title,
+                        type: 'solidgauge'
+                    },
+
+                    title: "Average Read Length (est Bases)",
+
+                    pane: {
+                        center: ['50%', '85%'],
+                        size: '100%',
+                        startAngle: -90,
+                        endAngle: 90,
+                        background: {
+                            backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+                            innerRadius: '60%',
+                            outerRadius: '100%',
+                            shape: 'arc'
+                        }
+                    },
+
+                    tooltip: {
+                        enabled: false
+                    },
+
+                    // the value axis
+                    yAxis: {
+                        type: 'logarithmic',
+                        stops: [
+                            [0.3, '#0000FF'], // blue
+                            [0.37, '#DDDF0D'], // green
+                            [0.43, '#DF5353'], // red
+                        ],
+                        lineWidth: 0,
+                        minorTickInterval: null,
+                        tickPixelInterval: 400,
+                        tickWidth: 0,
+                        title: {
+                            y: -70
+                        },
+                        labels: {
+                            y: 16
+                        },
+                        min: 0.1,
+                        max: 100000,
+                        title: {
+                            text: null
+                        }
+                    },
+
+                    plotOptions: {
+                        solidgauge: {
+                            dataLabels: {
+                                y: -30,
+                                borderWidth: 0,
+                                useHTML: true
+                            }
+                        }
+                    },
+
+
+       credits: {
+           enabled: false
+       },
+
+       series: [{
+           name: 'Events',
+           data: [0],
+           dataLabels: {
+               format: '<div style="text-align:center"><span style="font-size:15px;color:' +
+               ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
+               '<span style="font-size:12px;color:silver"> Avg event len</span></div>'
+           },
+           tooltip: {
+               valueSuffix: ' events'
+           }
+       }],
+
+                    plotOptions: {
+                        solidgauge: {
+                            dataLabels: {
+                                y: 30,
+                                borderWidth: 0,
+                                useHTML: true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        ,
+        ready: function() {
+
+
+          this.$nextTick(function() {
+
+                    switch (this.script) {
+                        case "450 b/s":
+                            scaling = 1.8;
+                            break;
+                        case "250 b/s":
+                            scaling = 1.1;
+                            break;
+                        case "70 b/s":
+                            scaling = 1.0;
+                            break;
+                    }
+                    //alert(scaling);
+          		this.chart = new Highcharts.Chart(this.opts);
+                //this.chart.series[0].setData(this.datain);
+                if (this.chart) {
+                    //point = this.chart.series[0].points[0];
+                    this.chart.series[0].points[0].update(round(parseFloat((this.datain/this.datain2)*scaling) ,0));
+                    //point.update(this.datain);
+                    //alert("camel");
+                }
+
+                setInterval(function () {
+                //    this.chart.series[0].setData(this.datain);
+                //    this.chart.redraw();
+                if (this.chart) {
+                    switch (this.script) {
+                        case "450 b/s":
+                            scaling = 1.8;
+                            break;
+                        case "250 b/s":
+                            scaling = 1.1;
+                            break;
+                        case "70 b/s":
+                            scaling = 1.0;
+                            break;
+                    }
+                    point = this.chart.series[0].points[0];
+                    point.update(round(parseFloat((this.datain/this.datain2)*scaling),0));
+                    //this.chart.redraw();
+
+
+                }
+            }.bind(this), 5000);
+                });
+            }
+        }),
+
+
     Vue.component('container-avg', {
         template: '<div id="container-avg{{title}}" style="height: 140px; margin: 0 auto"</div>',
         props: ['title','key','datain','datain2'],
@@ -2126,11 +2455,99 @@ include 'includes/head-new.php';
         }
     })
 
+    Vue.component('predictedvals', {
+        template: '<div class="col-md-2"><p>Estimated Current Yield (bases) <strong>{{speedresult}}</strong></p></div><div class="col-md-2"><p>Estimated Average Read Length (bases) <strong>{{averageresult}}</strong></p></div><div class="col-md-2"><p>Theoretical Predicted Yield at 24 hours (bases)<strong>{{startbit}}</strong></p></div><div class="col-md-2"><p> Theoretical Predicted Yield at 48 hours (bases) <strong>{{endbit}}</strong></p></div>',
+        props: ['seqspeed','currentyield','compreads','calccurrenttime','calcstarttime'],
+        computed: {
+                startbit: function() {
+                    switch (this.seqspeed) {
+                        case "450 b/s":
+                            scaling = 1.8;
+                            break;
+                        case "250 b/s":
+                            scaling = 1.1;
+                            break;
+                        case "70 b/s":
+                            scaling = 1.0;
+                            break;
+                    }
+                    var startthing = new Date(parseInt(this.calcstarttime)*1000);
+                    var endthing = new Date();
+
+                    return round(round(parseFloat(scaling * this.currentyield),0)/((endthing - startthing)/1000)*(24*60*60),0);
+                },
+                endbit: function() {
+                    switch (this.seqspeed) {
+                        case "450 b/s":
+                            scaling = 1.8;
+                            break;
+                        case "250 b/s":
+                            scaling = 1.1;
+                            break;
+                        case "70 b/s":
+                            scaling = 1.0;
+                            break;
+                    }
+                    var startthing = new Date(parseInt(this.calcstarttime)*1000);
+                    var endthing = new Date();
+
+                    return round(round(parseFloat(scaling * this.currentyield),0)/((endthing - startthing)/1000)*(48*60*60),0);
+                },
+                speedresult: function(){
+                    switch (this.seqspeed) {
+                        case "450 b/s":
+                            scaling = 1.8;
+                            break;
+                        case "250 b/s":
+                            scaling = 1.1;
+                            break;
+                        case "70 b/s":
+                            scaling = 1.0;
+                            break;
+                    }
+                    //round(parseFloat(this.datain),2)
+                    return round(parseFloat(scaling * this.currentyield),0);
+                },
+                averageresult: function() {
+                    switch (this.seqspeed) {
+                        case "450 b/s":
+                            scaling = 1.8;
+                            break;
+                        case "250 b/s":
+                            scaling = 1.1;
+                            break;
+                        case "70 b/s":
+                            scaling = 1.0;
+                            break;
+                    }
+                    return round(parseFloat(scaling * (this.currentyield/this.compreads)),0);
+                }
+            }
+    })
+
     var minionsthings = new Vue({
         el: '#app',
         data: {
-            minions: [ ]
+            minions: [ ],
+            seqspeed: '',
+            currentyield: ''
         },
+        computed: {
+                speedresult: function(){
+                    switch (this.seqspeed) {
+                        case "450 b/s":
+                            scaling = 1.8;
+                            break;
+                        case "250 b/s":
+                            scaling = 1.1;
+                            break;
+                        case "70 b/s":
+                            scaling = 1.0;
+                            break;
+                    }
+                    return this.currentyield;
+                }
+            },
         methods: {
             testmessage: function(event) {
                 var instructionmessage={"INSTRUCTION":{"USER":"<?php echo $_SESSION['user_name'];?>","minion":event.target.id,"JOB":"testmessage"}};
