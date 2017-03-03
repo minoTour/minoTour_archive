@@ -1318,7 +1318,7 @@ include 'includes/head-new.php';
 
                     switch (this.script) {
                         case "MegaCrazy Runs":
-                            scaling = 3.0;
+                            scaling = 3.5;
                             break;
                         case "450 b/s":
                             scaling = 1.8;
@@ -1346,7 +1346,7 @@ include 'includes/head-new.php';
                 if (this.chart) {
                     switch (this.script) {
                         case "MegaCrazy Runs":
-                            scaling = 3.0;
+                            scaling = 3.5;
                             break;
                         case "450 b/s":
                             scaling = 1.8;
@@ -1477,7 +1477,7 @@ include 'includes/head-new.php';
 
                     switch (this.script) {
                         case "MegaCrazy Runs":
-                            scaling = 3.0;
+                            scaling = 3.5;
                             break;
                         case "450 b/s":
                             scaling = 1.8;
@@ -1505,7 +1505,7 @@ include 'includes/head-new.php';
                 if (this.chart) {
                     switch (this.script) {
                         case "MegaCrazy Runs":
-                            scaling = 3.0;
+                            scaling = 3.5;
                             break;
                         case "450 b/s":
                             scaling = 1.8;
@@ -2475,7 +2475,7 @@ include 'includes/head-new.php';
                 startbit: function() {
                     switch (this.seqspeed) {
                         case "MegaCrazy Runs":
-                            scaling = 3.0;
+                            scaling = 3.5;
                             break;
                         case "450 b/s":
                             scaling = 1.8;
@@ -2495,7 +2495,7 @@ include 'includes/head-new.php';
                 endbit: function() {
                     switch (this.seqspeed) {
                         case "MegaCrazy Runs":
-                            scaling = 3.0;
+                            scaling = 3.5;
                             break;
                         case "450 b/s":
                             scaling = 1.8;
@@ -2515,7 +2515,7 @@ include 'includes/head-new.php';
                 speedresult: function(){
                     switch (this.seqspeed) {
                         case "MegaCrazy Runs":
-                            scaling = 3.0;
+                            scaling = 3.5;
                             break;
                         case "450 b/s":
                             scaling = 1.8;
@@ -2533,7 +2533,7 @@ include 'includes/head-new.php';
                 averageresult: function() {
                     switch (this.seqspeed) {
                         case "MegaCrazy Runs":
-                            scaling = 3.0;
+                            scaling = 3.5;
                             break;
                         case "450 b/s":
                             scaling = 1.8;
@@ -2561,7 +2561,7 @@ include 'includes/head-new.php';
                 speedresult: function(){
                     switch (this.seqspeed) {
                         case "MegaCrazy Runs":
-                            scaling = 3.0;
+                            scaling = 3.5;
                             break;
                         case "450 b/s":
                             scaling = 1.8;
