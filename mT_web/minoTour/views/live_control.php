@@ -608,7 +608,7 @@ include 'includes/head-new.php';
                 //console.log(readeventcountweightedhistbinwidth);
                 //console.log(i);
                 //console.log(i*readeventcountweightedhistbinwidth);
-                var category = String((i) * readeventcountweightedhistbinwidth) + " - " + String((i+1) * readeventcountweightedhistbinwidth) + " bp";
+                var category = String((i) * readeventcountweightedhistbinwidth) + " - " + String((i+1) * readeventcountweightedhistbinwidth) + " ev";
                 categories.push(category);
                 results.push({ "name": category, "y": readeventcountweightedhist[i] });
             //}
