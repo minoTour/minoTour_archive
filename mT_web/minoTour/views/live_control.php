@@ -194,6 +194,7 @@ include 'includes/head-new.php';
                         <div class="col-md-2">
                             <p> Set sequencing speed: </p>
                           <select v-model="seqspeed">
+                              <option>MegaCrazy Runs</option>
                               <option selected="selected">450 b/s</option>
                               <option>250 b/s</option>
                               <option>70 b/s</option>
@@ -1316,6 +1317,9 @@ include 'includes/head-new.php';
           this.$nextTick(function() {
 
                     switch (this.script) {
+                        case "MegaCrazy Runs":
+                            scaling = 3.0;
+                            break;
                         case "450 b/s":
                             scaling = 1.8;
                             break;
@@ -1341,6 +1345,9 @@ include 'includes/head-new.php';
                 //    this.chart.redraw();
                 if (this.chart) {
                     switch (this.script) {
+                        case "MegaCrazy Runs":
+                            scaling = 3.0;
+                            break;
                         case "450 b/s":
                             scaling = 1.8;
                             break;
@@ -1469,6 +1476,9 @@ include 'includes/head-new.php';
           this.$nextTick(function() {
 
                     switch (this.script) {
+                        case "MegaCrazy Runs":
+                            scaling = 3.0;
+                            break;
                         case "450 b/s":
                             scaling = 1.8;
                             break;
@@ -1494,6 +1504,9 @@ include 'includes/head-new.php';
                 //    this.chart.redraw();
                 if (this.chart) {
                     switch (this.script) {
+                        case "MegaCrazy Runs":
+                            scaling = 3.0;
+                            break;
                         case "450 b/s":
                             scaling = 1.8;
                             break;
@@ -2461,6 +2474,9 @@ include 'includes/head-new.php';
         computed: {
                 startbit: function() {
                     switch (this.seqspeed) {
+                        case "MegaCrazy Runs":
+                            scaling = 3.0;
+                            break;
                         case "450 b/s":
                             scaling = 1.8;
                             break;
@@ -2478,6 +2494,9 @@ include 'includes/head-new.php';
                 },
                 endbit: function() {
                     switch (this.seqspeed) {
+                        case "MegaCrazy Runs":
+                            scaling = 3.0;
+                            break;
                         case "450 b/s":
                             scaling = 1.8;
                             break;
@@ -2495,6 +2514,9 @@ include 'includes/head-new.php';
                 },
                 speedresult: function(){
                     switch (this.seqspeed) {
+                        case "MegaCrazy Runs":
+                            scaling = 3.0;
+                            break;
                         case "450 b/s":
                             scaling = 1.8;
                             break;
@@ -2510,6 +2532,9 @@ include 'includes/head-new.php';
                 },
                 averageresult: function() {
                     switch (this.seqspeed) {
+                        case "MegaCrazy Runs":
+                            scaling = 3.0;
+                            break;
                         case "450 b/s":
                             scaling = 1.8;
                             break;
@@ -2535,6 +2560,9 @@ include 'includes/head-new.php';
         computed: {
                 speedresult: function(){
                     switch (this.seqspeed) {
+                        case "MegaCrazy Runs":
+                            scaling = 3.0;
+                            break;
                         case "450 b/s":
                             scaling = 1.8;
                             break;
