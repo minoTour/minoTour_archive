@@ -2182,6 +2182,37 @@ include 'includes/head-new.php';
                     zoomType: 'x',
                     height: 350,
 	        	},
+                rangeSelector: {
+       enabled: true,
+       buttons: [{
+           type: 'minute',
+           count: 1,
+           text: '1min'
+       }, {
+           type: 'minute',
+           count: 5,
+           text: '5min'
+       }, {
+           type: 'minute',
+           count: 30,
+           text: '1/2hr'
+       }, {
+           type: 'minute',
+           count: 60,
+           text: '1hr'
+       }, {
+           type: 'day',
+           count: 0.5,
+           text: '12hrs'
+       }, {
+           type: 'day',
+           count: 1,
+           text: '1day'
+       }, {
+           type: 'all',
+           text: 'All'
+       }]
+   },
     	    	title: {
         	    	text: 'Yield over time '
 	        	},
@@ -2205,6 +2236,9 @@ include 'includes/head-new.php';
             },
             series: [{
                 name: 'Event Counts',
+                dataGrouping:{
+                    enabled: true
+                },
                 data: []
             }]
          			}
@@ -2215,7 +2249,7 @@ include 'includes/head-new.php';
 
     ready: function() {
       this.$nextTick(function() {
-      		this.chart = new Highcharts.Chart(this.opts);
+      		this.chart = new Highcharts.stockChart(this.opts);
             this.chart.series[0].setData(this.datain2);
             setInterval(function () {
                 //console.log(this.datain2);
@@ -2240,6 +2274,37 @@ include 'includes/head-new.php';
                     zoomType: 'x',
                     height: 350,
 	        	},
+                rangeSelector: {
+       enabled: true,
+       buttons: [{
+           type: 'minute',
+           count: 1,
+           text: '1min'
+       }, {
+           type: 'minute',
+           count: 5,
+           text: '5min'
+       }, {
+           type: 'minute',
+           count: 30,
+           text: '1/2hr'
+       }, {
+           type: 'minute',
+           count: 60,
+           text: '1hr'
+       }, {
+           type: 'day',
+           count: 0.5,
+           text: '12hrs'
+       }, {
+           type: 'day',
+           count: 1,
+           text: '1day'
+       }, {
+           type: 'all',
+           text: 'All'
+       }]
+   },
     	    	title: {
         	    	text: '% Occupancy Over Time'
 	        	},
@@ -2257,13 +2322,16 @@ include 'includes/head-new.php';
                     color: '#808080'
                 }],
                 min: 0,
-                max: 100,
+                max: 100
             },
             credits: {
                 enabled: false
             },
             series: [{
                 name: '% Occupancy',
+                dataGrouping:{
+                    enabled: true
+                },
                 data: []
             }
             ]
@@ -2273,7 +2341,7 @@ include 'includes/head-new.php';
     ,
     ready: function() {
       this.$nextTick(function() {
-      		this.chart = new Highcharts.Chart(this.opts);
+      		this.chart = new Highcharts.stockChart(this.opts);
             this.chart.series[0].setData(this.datain2["percent"]);
             setInterval(function () {
                 //console.log(this.datain2);
@@ -2298,6 +2366,37 @@ include 'includes/head-new.php';
                     zoomType: 'x',
                     height: 350,
 	        	},
+                rangeSelector: {
+       enabled: true,
+       buttons: [{
+           type: 'minute',
+           count: 1,
+           text: '1min'
+       }, {
+           type: 'minute',
+           count: 5,
+           text: '5min'
+       }, {
+           type: 'minute',
+           count: 30,
+           text: '1/2hr'
+       }, {
+           type: 'minute',
+           count: 60,
+           text: '1hr'
+       }, {
+           type: 'day',
+           count: 0.5,
+           text: '12hrs'
+       }, {
+           type: 'day',
+           count: 1,
+           text: '1day'
+       }, {
+           type: 'all',
+           text: 'All'
+       }]
+   },
     	    	title: {
         	    	text: 'In Strand Counts'
 	        	},
@@ -2322,9 +2421,15 @@ include 'includes/head-new.php';
             series: [
                 {
                     name: 'In Strand',
+                    dataGrouping:{
+                        enabled: true
+                    },
                     data: []
                 },{
                     name: 'Single Pore',
+                    dataGrouping:{
+                        enabled: true
+                    },
                     data: []
                 }
             ]
@@ -2334,7 +2439,7 @@ include 'includes/head-new.php';
     ,
     ready: function() {
       this.$nextTick(function() {
-      		this.chart = new Highcharts.Chart(this.opts);
+      		this.chart = new Highcharts.stockChart(this.opts);
             this.chart.series[0].setData(this.datain2["strand"]);
             this.chart.series[1].setData(this.datain2["single"]);
             setInterval(function () {
@@ -2361,6 +2466,37 @@ include 'includes/head-new.php';
                     zoomType: 'x',
                     height: 350,
 	        	},
+                rangeSelector: {
+       enabled: true,
+       buttons: [{
+           type: 'minute',
+           count: 1,
+           text: '1min'
+       }, {
+           type: 'minute',
+           count: 5,
+           text: '5min'
+       }, {
+           type: 'minute',
+           count: 30,
+           text: '1/2hr'
+       }, {
+           type: 'minute',
+           count: 60,
+           text: '1hr'
+       }, {
+           type: 'day',
+           count: 0.5,
+           text: '12hrs'
+       }, {
+           type: 'day',
+           count: 1,
+           text: '1day'
+       }, {
+           type: 'all',
+           text: 'All'
+       }]
+   },
     	    	title: {
         	    	text: 'Temperature over time '
 	        	},
@@ -2384,9 +2520,15 @@ include 'includes/head-new.php';
             },
             series: [{
                 name: 'Asic Temperature',
+                dataGrouping:{
+                    enabled: true
+                },
                 data: []
             },{
                 name: 'Heat Sink Temperature',
+                dataGrouping:{
+                    enabled: true
+                },
                 data: []
             }
             ]
@@ -2396,7 +2538,7 @@ include 'includes/head-new.php';
     ,
     ready: function() {
       this.$nextTick(function() {
-      		this.chart = new Highcharts.Chart(this.opts);
+      		this.chart = new Highcharts.stockChart(this.opts);
             this.chart.series[0].setData(this.datain2["asictemp"]);
             this.chart.series[1].setData(this.datain2["heatsinktemp"]);
             setInterval(function () {
@@ -2423,6 +2565,37 @@ include 'includes/head-new.php';
                     zoomType: 'x',
                     height: 350,
 	        	},
+                rangeSelector: {
+       enabled: true,
+       buttons: [{
+           type: 'minute',
+           count: 1,
+           text: '1min'
+       }, {
+           type: 'minute',
+           count: 5,
+           text: '5min'
+       }, {
+           type: 'minute',
+           count: 30,
+           text: '1/2hr'
+       }, {
+           type: 'minute',
+           count: 60,
+           text: '1hr'
+       }, {
+           type: 'day',
+           count: 0.5,
+           text: '12hrs'
+       }, {
+           type: 'day',
+           count: 1,
+           text: '1day'
+       }, {
+           type: 'all',
+           text: 'All'
+       }]
+   },
     	    	title: {
         	    	text: 'Global Voltage over time '
 	        	},
@@ -2446,6 +2619,9 @@ include 'includes/head-new.php';
             },
             series: [{
                 name: 'Global Voltage',
+                dataGrouping:{
+                    enabled: true
+                },
                 data: []
             }
             ]
@@ -2455,7 +2631,7 @@ include 'includes/head-new.php';
     ,
     ready: function() {
       this.$nextTick(function() {
-      		this.chart = new Highcharts.Chart(this.opts);
+      		this.chart = new Highcharts.stockChart(this.opts);
             this.chart.series[0].setData(this.datain2["voltage"]);
             //this.chart.series[1].setData(this.datain2["heatsinktemp"]);
             setInterval(function () {
