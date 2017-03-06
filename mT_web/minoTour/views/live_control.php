@@ -227,7 +227,7 @@ include 'includes/head-new.php';
                             </div>
                         -->
 
-                            <div class="col-lg-12" id="{{minion.name}}"><div is="chartreadhist" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count_weighted_hist" :datain2="minion.statistics.read_event_count_weighted_hist_bin_width"></div></div>
+                            <div class="col-lg-12" id="{{minion.name}}"><div is="chartreadhist" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count_weighted_hist" :datain2="minion.statistics.read_event_count_weighted_hist_bin_width" :totalyield="minion.statistics.read_event_count"></div></div>
                             <div class="col-lg-6" id="{{minion.name}}"><div is="temphistory" :title="minion.name" :key="key" :datain2="minion.temp_history"></div></div>
 
                             <div class="col-lg-6" id="{{minion.name}}"><div is="volthistory" :title="minion.name" :key="key" :datain2="minion.temp_history"></div></div>
@@ -597,11 +597,15 @@ include 'includes/head-new.php';
       <script>
   $(document).ready(function () {
     //creating useful functions
-    function tohistogram(readeventcountweightedhist,readeventcountweightedhistbinwidth) {
+    function add(a,b) {
+        return a + b;
+    }
+    function tohistogram(readeventcountweightedhist,readeventcountweightedhistbinwidth,totalyield) {
         var results =[];
         var categories = [];
         //var counter = 0;
-        //console.log(minionsthings.minions[minion].statistics.read_event_count_weighted_hist);
+        //console.log(readeventcountweightedhist.reduce(add,0));
+        //console.log(readeventcountweightedhistbinwidth);
         for (var i = 0; i < readeventcountweightedhist.length; i++) {
 
             //if (readeventcountweightedhist[i] > 0){
@@ -614,6 +618,9 @@ include 'includes/head-new.php';
                 results.push({ "name": category, "y": readeventcountweightedhist[i] });
             //}
         }
+        categories.push(">> max ev");
+        var missed = totalyield - readeventcountweightedhist.reduce(add,0);
+        results.push( {"name": ">> max ev" , "y": missed});
         //console.log(results);
         return [results,categories];
     }
@@ -1151,7 +1158,7 @@ include 'includes/head-new.php';
 
     Vue.component('chartreadhist', {
 	template: '<div id="container{{title}}" style="margin: 0 auto"</div>',
-    props: ['title','key','datain','datain2'],
+    props: ['title','key','datain','datain2','totalyield'],
     data: function() {
         return {
         	opts: {
@@ -1193,7 +1200,7 @@ include 'includes/head-new.php';
             setInterval(function () {
                 //console.log(this.datain);
                 //console.log(this.datain2);
-                var returndata = tohistogram(this.datain,parseInt(this.datain2));
+                var returndata = tohistogram(this.datain,parseInt(this.datain2),this.totalyield);
                 this.chart.series[0].setData(returndata[0]);
                 this.chart.xAxis[0].setCategories(returndata[1]);
                 //this.chart.series[0].setData(this.datain);
