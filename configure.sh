@@ -55,8 +55,8 @@ fi
 git pull
 sudo apt-get update
 sudo apt-get install -y lamp-server^
-sudo apt-get install -y memcached php-memcache
-sudo apt-get install -y php-curl php-dev
+sudo apt-get install -y memcached php5-memcache
+sudo apt-get install -y php5-curl php5-dev
 sudo apt-get install -y libcache-memcached-perl
 sudo apt-get install -y make
 sudo apt-get install -y screen
