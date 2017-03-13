@@ -315,6 +315,8 @@ class ThreadingExample():
                                 if str(difference) != "[]":
                                     subscriber_dict[subscriber]["connect"].sendMessage(str(difference))
                                     print "XXXXXXXX_new",sys.getsizeof(json.dumps(str(difference)))
+                                else:
+ 				    print "no change"
                                 message_to_send[subscriber]=copy.deepcopy(deepcopydict)
                                 #print type(difference)
                                 #print len(difference)

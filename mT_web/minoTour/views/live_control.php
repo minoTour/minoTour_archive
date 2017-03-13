@@ -607,7 +607,6 @@ include 'includes/head-new.php';
         //console.log(readeventcountweightedhist.reduce(add,0));
         //console.log(readeventcountweightedhistbinwidth);
         for (var i = 0; i < readeventcountweightedhist.length; i++) {
-
             //if (readeventcountweightedhist[i] > 0){
                 //counter+=1;
                 //console.log(readeventcountweightedhistbinwidth);

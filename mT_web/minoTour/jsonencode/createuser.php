@@ -50,19 +50,19 @@ if ($login->isUserLoggedIn() == true) {
                     //echo $_GET['pass'];
                 //}
                 $sql1="CREATE USER '".$_GET["user"]."'@'localhost' identified by '".$_GET["pass"]."';";
-                //echo $sql1 . "<br>";
+                #echo $sql1 . "<br>";
                 $sql2="CREATE USER '".$_GET["user"]."'@'%' identified by '".$_GET["pass"]."';";
-                //echo $sql2 . "<br>";
+                #echo $sql2 . "<br>";
                 $sql3="GRANT ALL ON Gru.* TO '".$_GET["user"]."'@'localhost' identified by '".$_GET["pass"]."';";
-                //echo $sql3 . "<br>";
+                #echo $sql3 . "<br>";
                 $sql4="GRANT ALL ON Gru.* TO '".$_GET["user"]."'@'%' identified by '".$_GET["pass"]."';";
-                //echo $sql4 . "<br>";
-                $sql5="GRANT ALL ON `".$_GET["user"]."_%`.* TO '".$_GET["user"]."'@'localhost' identified by '".$_GET["pass"]."';";
-                //echo $sql5 . "<br>";
-                $sql6="GRANT ALL ON `".$_GET["user"]."_%`.* TO '".$_GET["user"]."'@'%' identified by '".$_GET["pass"]."';";
-                //echo $sql6 . "<br>";
+                #echo $sql4 . "<br>";
+                $sql5="GRANT ALL ON `".$_GET["user"]."\_%`.* TO '".$_GET["user"]."'@'localhost' identified by '".$_GET["pass"]."';";
+                #echo $sql5 . "<br>";
+                $sql6="GRANT ALL ON `".$_GET["user"]."\_%`.* TO '".$_GET["user"]."'@'%' identified by '".$_GET["pass"]."';";
+                #echo $sql6 . "<br>";
                 $sql7="FLUSH PRIVILEGES;";
-                //echo $sql7 . "<br>";
+                #echo $sql7 . "<br>";
                 $mindb_connection->query($sql1);
                 $mindb_connection->query($sql2);
                 $mindb_connection->query($sql3);

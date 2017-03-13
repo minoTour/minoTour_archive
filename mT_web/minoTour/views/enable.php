@@ -204,7 +204,7 @@ include 'includes/head-new.php';
                     //alert(data);
                     $("#messages").html(data);
                     var delay = 3000; //Your delay in milliseconds
-                    setTimeout(function(){ location.reload(); }, delay);
+                    //setTimeout(function(){ location.reload(); }, delay);
                 }, error: function(){
                     alert('ajax failed');
                 },
