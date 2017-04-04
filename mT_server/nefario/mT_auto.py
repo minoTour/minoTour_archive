@@ -253,7 +253,7 @@ class ThreadingExample():
     until the application exits.
     """
 
-    def __init__(self, server, interval=2):
+    def __init__(self, server, interval=10):
         """ Constructor
         :type interval: int
         :param interval: Check interval, in seconds

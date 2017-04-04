@@ -588,8 +588,6 @@ include 'includes/head-new.php';
       <?php include 'includes/reporting-new.php'; ?>
       <script src="js/plugins/dataTables/jquery.dataTables.js" type="text/javascript" charset="utf-8"></script>
       <script src="js/plugins/dataTables/dataTables.bootstrap.js" type="text/javascript" charset="utf-8"></script>
-      <script src="https://code.highcharts.com/highcharts-more.js"></script>
-      <script src="https://code.highcharts.com/modules/solid-gauge.src.js"></script>
       <script src="js/json-patch.min.js"></script>
 
 
