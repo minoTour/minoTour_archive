@@ -159,7 +159,7 @@ include 'includes/head-new.php';
                               if ($cachecheck=='True' ){
                                   echo " CHECKED";
                               }else {
-                                  echo " ";
+                                  echo "";
                               }
                               ?>>
 

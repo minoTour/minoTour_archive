@@ -161,13 +161,12 @@ echo "Remember if I ask for your password it is the mySQL root password..."
 cd mT_server/db_control/setup
 ./createADMIN ${adminuser} ${adminpass1} ${adminemail}
 cd ../../../
-<<<<<<< HEAD
+
 cd mT_server/nefario
 screen -d -m -S websocket sh websocket.sh
 screen -d -m -S mTcontrol sh mT_control.sh
 cd ../../
-=======
->>>>>>> 007b788d12d1b18c04bffc461a75c75760765958
+
 echo "Removing old index files"
 sudo rm ${webpath}index.html
 echo "Now I am going to attempt to copy files - you may be asked to provide a sudo capable password."
