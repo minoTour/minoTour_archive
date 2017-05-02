@@ -186,39 +186,29 @@ include 'includes/head-new.php';
       </div><!-- /.content-wrapper -->
 
       <?php include 'includes/reporting-new.php'; ?>
-      <script>
-        $(function(){
-            $('#emailformgo').on('click', function(e){
-      e.preventDefault(); // preventing default click action
-      if ($( "#InputPassword" ).val().length < 8)
-      {
-          $("#messages").append( "<div class='alert alert-danger alert-dismissible' role='alert'><button type='button' class='close' data-dismiss='alert'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button><strong>Warning!</strong> Password must be at least 8 characters long.</div>" );
-      }
-      else
-      {
-          if ($( "#NewEmail1" ).val() == $( "#NewEmail2" ).val())
-          {
-              $.post( "jsonencode/email_change.php", {
-                  user_password: $("#InputPassword").val(),
-                  user_email_new: $("#NewEmail1").val(),
-                  submitform: true,
-                  user_email_new_repeat: $( "#NewEmail2" ).val() })
-                .done(function( data ) {
-                  $("#messages").html(data);
-              });
-          }
-          else
-          {
-              $("#messages").append( "<div class='alert alert-danger alert-dismissible' role='alert'><button type='button' class='close' data-dismiss='alert'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button><strong>Warning!</strong> New Email Addresses Do Not Match.</div>" );
-          }
-      }
-      document.getElementById("emailreset").reset();
 
-      //alert ("button clicked");
-    })
-    })
-</script>
-      
+      <script>
+          $(function(){
+              $('#emailformgo').on('click', function(e){
+                  e.preventDefault(); // preventing default click action
+                  if ($( "#InputPassword" ).val().length < 8){
+                      $("#messages").append( "<div class='alert alert-danger alert-dismissible' role='alert'><button type='button' class='close' data-dismiss='alert'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button><strong>Warning!</strong> Password must be at least 8 characters long.</div>" );
+                  }else{
+                      if ($( "#NewEmail1" ).val() == $( "#NewEmail2" ).val()) {
+                          $.post( "jsonencode/email_change.php", { current: $("#InputPassword").val(), new: $( "#NewEmail2" ).val()  })
+                            .done(function( data ) {
+                              $("#messages").html(data);
+                          });
+                      }else {
+                          $("#messages").append( "<div class='alert alert-danger alert-dismissible' role='alert'><button type='button' class='close' data-dismiss='alert'><span aria-hidden='true'>&times;</span><span class='sr-only'>Close</span></button><strong>Warning!</strong> New Email Addresses Do Not Match.</div>" );
+                      }
+                  }
+                  document.getElementById("emailreset").reset();
+
+                  //alert ("button clicked");
+              })
+          })
+      </script>
 
       <script>
           $(function(){

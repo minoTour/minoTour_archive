@@ -73,8 +73,8 @@ if ($login->isUserLoggedIn() == true) {
 				$sql = "select seqid,sequence, qual from $querytable inner join barcode_assignment using (basename_id) inner join $lasttable using (basename_id) where barcode_arrangement like \"%". $_GET['code'] ."\";";
 			}else {
 				$sql = "select seqid,sequence, qual from $querytable inner join barcode_assignment using (basename_id) where barcode_arrangement like \"%". $_GET['code'] ."\";";
-				//echo $sql;
 			}
+            //echo $sql;
 			$queryresult=$mindb_connection->query($sql);
 			if ($_GET['type'] == "fastq") {
 				if ($queryresult->num_rows >= 1){

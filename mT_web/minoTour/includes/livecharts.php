@@ -19,7 +19,7 @@
 				},
 
 				xAxis: {
-					categories: ['Template', 'Complement', '2D', 'Raw Template', 'Raw Complement'],
+					categories: ['Template', 'Complement', '2D',], // 'Raw Template', 'Raw Complement'],
 					title: {
 						text: 'Read Type'
 					}
@@ -29,8 +29,8 @@
 					title: {
 						text: 'Read Length'
 					},
-					type: 'logarithmic',
-					min :1,
+					//type: 'logarithmic',
+					min :0,
 
 				},
 

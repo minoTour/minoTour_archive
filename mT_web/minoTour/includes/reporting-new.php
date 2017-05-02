@@ -260,13 +260,13 @@ PNotify.prototype.options.styling = "fontawesome";
 </script>
 <!-- Highcharts Addition -->
 <!--<script src="http://code.highcharts.com/highcharts.js"></script>-->
-<script src="https://code.highcharts.com/stock/highstock.js"></script>
-<script src="https://code.highcharts.com/highcharts-more.js"></script>
-<script src="https://code.highcharts.com/modules/solid-gauge.src.js"></script>
+<script src="https://code.highcharts.com/stock/5.0.9/highstock.js"></script>
+<script src="https://code.highcharts.com/5.0.9/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/5.0.9/modules/solid-gauge.src.js"></script>
 <script type="text/javascript" src="js/themes/grid-light.js"></script>
 <script src="http://code.highcharts.com/modules/heatmap.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
-<script src="http://code.highcharts.com/highcharts-more.js"></script>
 <script src="https://raw.githubusercontent.com/highcharts/export-csv/master/export-csv.js"></script>
+<script src="https://rawgithub.com/phpepe/highcharts-regression/master/highcharts-regression.js"></script>
 <script src="js/ion.rangeSlider.js"></script>
 <script src="http://code.highcharts.com/modules/no-data-to-display.js"></script>

@@ -1,7 +1,7 @@
 <?php
 
 //Setting general system wide parameters for various features
-$_SESSION['minotourversion']=0.7;
+$_SESSION['minotourversion']=0.8;
 $_SESSION['pagerefresh']=5000;
 
 
@@ -778,7 +778,14 @@ function checksessionvars(){
 					}else{
 						$_SESSION['focusPRE'] = 0; //$intresult->num_rows;
 					}
-
+                    //Check for the existence of an assmebly table in the active run database:
+                    $prevassemblycheck = "select * from  assembly_metrics;";
+                    $prevassemblycheckresult = $db_connection2->query($prevassemblycheck);
+                    if (!empty ($prevassemblycheckresult)  && ($prevassemblycheckresult->num_rows >= 1)) {
+						$_SESSION['prevassemblyactive'] = $prevassemblycheckresult->num_rows;
+					}else{
+						$_SESSION['prevassemblyactive'] = 0;// $barcoderesult->num_rows;
+					}
                     //Check for the existence of basecalled data in the active run database:
                     echo "tits";
 					$intcheck = "select * from config_general limit 1;";

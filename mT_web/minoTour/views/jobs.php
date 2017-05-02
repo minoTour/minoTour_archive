@@ -147,7 +147,7 @@ include 'includes/head-new.php';
 
                               <p>Note that these jobs are entirely dependent on the current load on the server. </p>
 
-                              <p>If multiple groups are running assemblies, only one assmebly runs at any time. </p>
+                              <p>If multiple groups are running assemblies, only one assembly runs at any time. </p>
 
                               <p>Assemblies run every 30 minutes or 20,000 reads.</p>
 

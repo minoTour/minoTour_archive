@@ -396,14 +396,19 @@ function boxplotlength($jobname,$currun) {
             $jsonstring="";
             $readtypearray=array('Raw Template','Raw Complment','template','complement','2d');
             foreach($readtypearray as $type){
+                #$jsonstring = $jsonstring . $type;
                 if (isset ($summarystats["minlen"][$type])){
+                #if (isset ($summarystats["minlen"])){
+                #    $jsonstring = $jsonstring . "hello";
                     $datarray[$type][]=$summarystats["minlen"][$type];
                     $datarray[$type][]=$summarystats["first_q"][$type];
                     $datarray[$type][]=$summarystats["median"][$type];
                     $datarray[$type][]=$summarystats["third_q"][$type];
                     $datarray[$type][]=$summarystats["maxlen"][$type];
                 }
+
             }
+            ##$jsonstring = $jsonstring . var_dump($summarystats);
             $jsonstring = $jsonstring . "[\n";
             $jsonstring = $jsonstring . "{\n";
                 $jsonstring = $jsonstring . '"name": "Observations",' . "\n";
@@ -1267,7 +1272,7 @@ function ratiopassfail($jobname,$currun) {
             //echo "badger";
 			#$sqltotalcount = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) group by 2,1 order by 2,1;";
             //$sqltotalcount = "select 10minwin,exp_start_time, count(*) as count from basecalled_template group by 2,1 order by 2,1;";
-            $sqltotalcount = "select 1minwin, readcount as count from basecalled_template_1minwin_sum order by 1;";
+            $sqltotalcount = "select 1minwin, readcount as count from basecalled_template_1minwin_sum where bases !='Null' and readcount >=0  order by 1;";
             #$sqltemplate = "select ((basecalled_template.10minwin*10*60)+exp_start_time)*1000 as bin_floor, count(*) as count from basecalled_template inner join tracking_id using (basename_id) where pass = 1 group by 2,1 order by 2,1;";
 
             //$sqltemplate = "select 10minwin,exp_start_time, count(*) as count from basecalled_template where pass = 1 group by 2,1 order by 2,1;";
@@ -1278,8 +1283,8 @@ function ratiopassfail($jobname,$currun) {
 			#$sql2d="select 10minwin,exp_start_time, count(*) as count from basecalled_2d where pass = 1 group by 2,1 order by 2,1;";
             $sql2d = "select 1minwin, passcount as count from basecalled_2d_1minwin_sum where bases!='Null' order by 1;";
             //$sqltemplate2 = "select 10minwin,exp_start_time, count(*) as count from basecalled_template where pass = 0 group by 2,1 order by 2,1;";
-            $sqltemplate2 = "select 1minwin, (readcount-passcount) as count from basecalled_template_1minwin_sum order by 1;";
-            $sqlcomplement2 = "select 1minwin, (readcount-passcount) as count from basecalled_complement_1minwin_sum where bases!='Null' order by 1;";
+            $sqltemplate2 = "select 1minwin, (readcount-passcount) as count from basecalled_template_1minwin_sum where bases !='Null' and readcount >= 0 order by 1;";
+            $sqlcomplement2 = "select 1minwin, (readcount-passcount) as count from basecalled_complement_1minwin_sum where bases!='Null' and readcount >=0 order by 1;";
 			#$sql2d2 = "select 10minwin,exp_start_time, count(*) as count from basecalled_2d where pass = 0 group by 2,1 order by 2,1;";
             $sql2d2 = "select 1minwin, (readcount-passcount) as count from basecalled_2d_1minwin_sum where bases!='Null' order by 1;";
 			$resulttotal = $mindb_connection->query($sqltotalcount);
@@ -1301,6 +1306,7 @@ function ratiopassfail($jobname,$currun) {
                     #$binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
                     $binfloor = $row['1minwin']*60*1000;
                     settype($binfloor,"string");
+                    //echo $row['count'];
 					$totalarray[$binfloor]=$row['count'];
 
 				}
@@ -1315,7 +1321,11 @@ function ratiopassfail($jobname,$currun) {
                     #$binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
                     $binfloor = $row['1minwin']*60*1000;
                     settype($binfloor,"string");
-					$resultarray['template pass'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+                    if (!is_nan($row['count']/$totalarray[$binfloor]*100)){
+                        $resultarray['template pass'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+                    }
+
+                    //echo $row['count']/$totalarray[$binfloor]*100 . "<br>";
                     //echo $row['count'];
 				}
 			}
@@ -1326,7 +1336,9 @@ function ratiopassfail($jobname,$currun) {
                     #$binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
                     $binfloor = $row['1minwin']*60*1000;
                     settype($binfloor,"string");
-					$resultarray['complement pass'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+                    if (!is_nan($row['count']/$totalarray[$binfloor]*100)){
+					    $resultarray['complement pass'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+                    }
 				}
 			}
 			if ($result2d->num_rows >=1) {
@@ -1336,7 +1348,9 @@ function ratiopassfail($jobname,$currun) {
                     #$binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
                     $binfloor = $row['1minwin']*60*1000;
                     settype($binfloor,"string");
-					$resultarray['2d pass'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+                    if (!is_nan($row['count']/$totalarray[$binfloor]*100)){
+					    $resultarray['2d pass'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+                    }
 				}
 			}
 			if ($resulttemplate2->num_rows >=1) {
@@ -1346,7 +1360,9 @@ function ratiopassfail($jobname,$currun) {
                     #$binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
                     $binfloor = $row['1minwin']*60*1000;
                     settype($binfloor,"string");
-					$resultarray['template fail'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+                    if (!is_nan($row['count']/$totalarray[$binfloor]*100)){
+					    $resultarray['template fail'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+                    }
 
 				}
 			}
@@ -1357,7 +1373,9 @@ function ratiopassfail($jobname,$currun) {
                     #$binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
                     $binfloor = $row['1minwin']*60*1000;
                     settype($binfloor,"string");
-					$resultarray['complement fail'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+                    if (!is_nan($row['count']/$totalarray[$binfloor]*100)){
+					    $resultarray['complement fail'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+                    }
 				}
 			}
 			if ($result2d2->num_rows >=1) {
@@ -1367,7 +1385,9 @@ function ratiopassfail($jobname,$currun) {
                     #$binfloor = ($row['1minwin']*60+$row['exp_start_time'])*1000;
                     $binfloor = $row['1minwin']*60*1000;
                     settype($binfloor,"string");
-					$resultarray['2d fail'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+                    if (!is_nan($row['count']/$totalarray[$binfloor]*100)){
+					    $resultarray['2d fail'][$binfloor]=$row['count']/$totalarray[$binfloor]*100;
+                    }
 				}
 			}
 

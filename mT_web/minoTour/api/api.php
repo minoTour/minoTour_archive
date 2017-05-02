@@ -254,9 +254,9 @@ if ($login->isUserLoggedIn() == true) {
                 }
             }
             //This query ends up running very very slowly.
-            $sql_template = "SELECT 1minwin,bases, maxlen,minlen FROM basecalled_template_1minwin_sum group by 1 order by 1;";
-            $sql_complement = "SELECT 1minwin,bases, maxlen,minlen FROM basecalled_complement_1minwin_sum group by 1 order by 1;";
-            $sql_2d = "SELECT 1minwin,bases, maxlen,minlen FROM basecalled_2d_1minwin_sum group by 1 order by 1;";
+            $sql_template = "SELECT 1minwin,bases, maxlen,minlen FROM basecalled_template_1minwin_sum where minlen > 0 group by 1 order by 1;";
+            $sql_complement = "SELECT 1minwin,bases, maxlen,minlen FROM basecalled_complement_1minwin_sum where minlen> 0 group by 1 order by 1;";
+            $sql_2d = "SELECT 1minwin,bases, maxlen,minlen FROM basecalled_2d_1minwin_sum where minlen> 0 group by 1 order by 1;";
             $pre_template="SELECT 1minwin,sum(case when pre_config_general.hairpin_found=1 then hairpin_event_index else total_events end) as events,max(case when pre_config_general.hairpin_found=1 then hairpin_event_index else total_events end) as maxevents,min(case when pre_config_general.hairpin_found=1 then hairpin_event_index else total_events end) as minevents FROM pre_config_general  group by 1 order by 1 desc".$limiter.";";
             $pre_complement = "SELECT 1minwin,sum(total_events-hairpin_event_index) as events, max(total_events-hairpin_event_index) as maxevents, min(total_events-hairpin_event_index) as minevents FROM pre_config_general where pre_config_general.hairpin_found = 1 group by 1 order by 1 desc".$limiter.";";
 
@@ -433,7 +433,7 @@ if ($login->isUserLoggedIn() == true) {
 
             setmemstore($_SESSION["active_run_name"],$jobname,$ref,$memcache,$resultstore);
         }
-
+        //var_dump($resultstore);
         //Now we are going to convert previously grabbed values to sums and store them.
 
         //DO NOT SEPERATE THESE
@@ -452,6 +452,7 @@ if ($login->isUserLoggedIn() == true) {
             //var_dump($resultarray);
             //echo "dusty";
             foreach ($resultarray as $key=>$value){
+                //echo "hello" ;
                 if (isset($resultarray[$key]["count"])){
                     $count = array_sum($resultarray[$key]["count"]);
                     //echo "COUNT IS $count :";

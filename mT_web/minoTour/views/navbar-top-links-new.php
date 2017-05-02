@@ -61,7 +61,7 @@
                                     <a href="live_data.php"><i class="fa fa-cog fa-spin"></i> Live Data</a>
                                 </li>
 
-                                <?php if ($_SESSION['assemblyactive'] >= 1) {?>
+                                <?php if (isset($_SESSION['assemblyactive']) && $_SESSION['assemblyactive'] >= 1) {?>
                                     <li>
                                         <a href="current_assembly.php"><i class="fa fa-puzzle-piece"></i><span> Assembly</span></a>
                                     </li>
@@ -135,6 +135,11 @@
 								<li>
                                     <a href="previous_summary.php"><i class="fa fa-bar-chart-o fa-fw"></i><span> Data Summary</span></a>
                                 </li>
+                                <?php if (isset($_SESSION['prevassemblyactive']) && $_SESSION['prevassemblyactive'] >= 1) {?>
+                                    <li>
+                                        <a href="previous_assembly.php"><i class="fa fa-puzzle-piece"></i><span> Assembly</span></a>
+                                    </li>
+                                <?php }; ?>
                                 <?php if (isset($_SESSION['previousbarcode']) && $_SESSION['previousbarcode'] >= 1) {?>
 								<li>
                                     <a href="prev_barcode.php"><i class="fa fa-barcode"></i><span> Barcodes</span></a>
@@ -245,7 +250,7 @@
     parts = pathname.split("/");
                 var filename = parts[parts.length - 1];
                 //alert(filename);
-                if (filename == "previous_bases.php" || filename == "previous_basecalling.php" || filename == "previous_insertions.php" || filename == "previous_deletions.php" || filename == "previous_variants.php" || filename == "previous_var.php" || filename == "previous_report.php" || filename == "previous_barcodes.php" || filename == "previous_runs.php" || filename  == "previous_summary.php" || filename  == "previous_histogram.php" || filename== "previous_export.php" || filename== "previous_rates.php" || filename== "previous_pores.php" || filename== "previous_quality.php" || filename== "previous_coverage.php" || filename== "previous_development.php" || filename=="reads_table.php" || filename=="manage_data.php" || filename=="prev_kmers.php"){
+                if (filename == "previous_assembly.php" || filename == "previous_bases.php" || filename == "previous_basecalling.php" || filename == "previous_insertions.php" || filename == "previous_deletions.php" || filename == "previous_variants.php" || filename == "previous_var.php" || filename == "previous_report.php" || filename == "previous_barcodes.php" || filename == "previous_runs.php" || filename  == "previous_summary.php" || filename  == "previous_histogram.php" || filename== "previous_export.php" || filename== "previous_rates.php" || filename== "previous_pores.php" || filename== "previous_quality.php" || filename== "previous_coverage.php" || filename== "previous_development.php" || filename=="reads_table.php" || filename=="manage_data.php" || filename=="prev_kmers.php"){
                     var d = document.getElementById("prevruns");
                     d.className = d.className + " active";
                 }

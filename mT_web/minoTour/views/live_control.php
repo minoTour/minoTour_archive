@@ -164,13 +164,13 @@ include 'includes/head-new.php';
                           <div class="row">
 
                                   <div class="col-md-3" id="{{minion.name}}"><div is="container-avg" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count" :datain2="minion.statistics.selected_completed_count"></div></div>
-                                  <!--<div class="col-md-3" id="{{minion.name}}"><div is="container-temp" :title="minion.name" :key="key" :datain="minion.engine_states.minion_heatsink_temperature"></div></div>-->
                                   <div class="col-md-3" id="{{minion.name}}"><div is="container-chan" :title="minion.name" :key="key" :datain="minion.statistics.channels_with_read_event_count"></div></div>
                                   <div class="col-md-3" id="{{minion.name}}"><div is="container-strand" :title="minion.name" :key="key" :datain="minion.simplesummary"></div></div>
                                   <div class="col-md-3" id="{{minion.name}}"><div is="container-perc" :title="minion.name" :key="key" :datain="minion.simplesummary"></div></div>
 
 
                           </div>
+
                         </div>
                          <div class="col-md-4">
                              <div class="col-md-12" id="{{minion.name}}"><div is="chartporehist" :title="minion.name" :key="key" :datain="minion.channelstuff" :datain2="minion.simplesummary"></div></div>
@@ -185,6 +185,29 @@ include 'includes/head-new.php';
                             </div>
                         </div>
                     </div>
+                    <div class = "row">
+                        <div class="col-md-6">
+                        <p>The values below are estimated from the run based on a scaling factor from events determined by sequencing speed. The projected yield for 24 hours and 48 hours will update dynamically throuhgout the run.
+                            </div>
+                        </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <p> Set sequencing speed: </p>
+                          <select v-model="seqspeed">
+                              <option>MegaCrazy Runs</option>
+                              <option selected="selected">450 b/s</option>
+                              <option>250 b/s</option>
+                              <option>70 b/s</option>
+                              </select>
+                              <p><span>Selected: {{ seqspeed }}</span></p>
+                          </div>
+                              <div is="predictedvals" :seqspeed="seqspeed" :currentyield="minion.statistics.read_event_count" :compreads="minion.statistics.selected_completed_count" :calcurrenttime="" :calcstarttime="minion.engine_states.daq_start_time"></div>
+
+                            <!--<div class="col-md-3" id="{{minion.name}}"><div is="container-strand" :title="minion.name" :key="key" :datain="minion.simplesummary"></div></div>-->
+                            <!--<div class="col-md-3" id="{{minion.name}}"><div is="container-perc" :title="minion.name" :key="key" :datain="minion.simplesummary"></div></div>-->
+
+
+                    </div>
                       <div class="row">
                   </div>
 
@@ -193,6 +216,7 @@ include 'includes/head-new.php';
                         <div class="col-lg-12">
                             <div class="col-lg-6" id="{{minion.name}}"><div is="chartyield" :title="minion.name" :key="key" :datain="minion.engine_states.yield" :datain2="minion.yield_history"></div></div>
                             <div class="col-lg-6" id="{{minion.name}}"><div is="porehistory" :title="minion.name" :key="key" :datain2="minion.pore_history"></div></div>
+                            <div class="col-lg-12" id="{{minion.name}}"><div is="projchartyield" :start_time="minion.engine_states.daq_start_time" :seqspeed="seqspeed" :title="minion.name" :key="key" :datain="minion.engine_states.yield" :datain2="minion.yield_history"></div></div>
                             <div class="col-lg-6" id="{{minion.name}}"><div is="perchistory" :title="minion.name" :key="key" :datain2="minion.pore_history"></div></div>
                             <!--<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
                               Show Pore States
@@ -204,7 +228,7 @@ include 'includes/head-new.php';
                             </div>
                         -->
 
-                            <div class="col-lg-12" id="{{minion.name}}"><div is="chartreadhist" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count_weighted_hist" :datain2="minion.statistics.read_event_count_weighted_hist_bin_width"></div></div>
+                            <div class="col-lg-12" id="{{minion.name}}"><div is="chartreadhist" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count_weighted_hist" :datain2="minion.statistics.read_event_count_weighted_hist_bin_width" :totalyield="minion.statistics.read_event_count"></div></div>
                             <div class="col-lg-6" id="{{minion.name}}"><div is="temphistory" :title="minion.name" :key="key" :datain2="minion.temp_history"></div></div>
 
                             <div class="col-lg-6" id="{{minion.name}}"><div is="volthistory" :title="minion.name" :key="key" :datain2="minion.temp_history"></div></div>
@@ -565,32 +589,137 @@ include 'includes/head-new.php';
       <?php include 'includes/reporting-new.php'; ?>
       <script src="js/plugins/dataTables/jquery.dataTables.js" type="text/javascript" charset="utf-8"></script>
       <script src="js/plugins/dataTables/dataTables.bootstrap.js" type="text/javascript" charset="utf-8"></script>
-      <script src="https://code.highcharts.com/highcharts-more.js"></script>
-      <script src="https://code.highcharts.com/modules/solid-gauge.src.js"></script>
       <script src="js/json-patch.min.js"></script>
+
 
 
 
       <script>
   $(document).ready(function () {
     //creating useful functions
-    function tohistogram(readeventcountweightedhist,readeventcountweightedhistbinwidth) {
+    function add(a,b) {
+        return a + b;
+    }
+
+    function geteighthours(data,runstart){
+        return (28800*1000 - (data[0][0]-(runstart*1000)));
+    }
+    function projectresults(syntheticdata,scalingfactor,steps,difference,runstart){
+        testdata = syntheticdata.slice(-2);
+        var lastval = testdata[1][1];
+        var lasttime = testdata[1][0];
+        var timingdiff = testdata[1][0]-testdata[0][0];
+        //var valdiff = testdata[1][1]-testdata[0][1];
+        var valdiff = difference;
+        var newresults = [];
+        var muxphase = 0
+        //console.log(lastval,timingdiff);
+        for (var i = 0; i < steps; i++){
+            templastval = lastval;
+            lastval = lastval+(valdiff*scalingfactor);
+            valdiff = lastval-templastval;
+            lasttime = lasttime + timingdiff;
+            if (muxphase != Math.floor((lasttime-(runstart*1000))/1000/28800)){
+                difference = difference * 0.9;
+                valdiff = difference;
+                muxphase = Math.floor((lasttime-(runstart*1000))/1000/28800);
+            }
+            //remainder = lasttime-(runstart*1000) - (lasttime-(runstart*1000) % (28800*1000))/(28800*1000);
+            //console.log(Math.floor((lasttime-(runstart*1000))/1000/28800));
+            newresults.push([lasttime,lastval]);
+        }
+        //console.log(newresults);
+        return newresults;
+    }
+
+    function converttobases(data,seqspeed){
+        switch (seqspeed) {
+            case "MegaCrazy Runs":
+                scaling = 3.5;
+                break;
+            case "450 b/s":
+                scaling = 1.8;
+                break;
+            case "250 b/s":
+                scaling = 1.1;
+                break;
+            case "70 b/s":
+                scaling = 1.0;
+                break;
+        }
+        var scaleddata = [];
+        for (var i = 0; i < data.length; i++){
+            scaleddata.push([data[i][0],data[i][1]*scaling]);
+        }
+        return scaleddata;
+    }
+
+    function projectdata(data){
+        var results = [];
+        var holder = [];
+        var diffholder = 0;
+        var meanholder = 0;
+        if (data.length > 3000){
+            data=data.slice(-3000);
+        }
+
+
+        for (var i = 1; i < data.length; i++){
+            var diff = data[i][1] - data[i-1][1];
+            holder.push(diff);
+            meanholder = meanholder + diff;
+        }
+        for (var i = 2; i <holder.length; i++){
+            var ratio = holder[i]/holder[i-1];
+            if (ratio > 1.4){
+                ratio = 1.4;
+            }
+            diffholder = diffholder+ratio;
+            //if (meanholder > 1) {
+            //    meanholder = 1;
+            //}
+        }
+        //console.log(diffholder/(holder.length - 1));
+        if ( diffholder/(holder.length - 1) > 1 ){
+            return [1,meanholder/(holder.length -1 )];
+        }else if ( diffholder/(holder.length - 1) < 0.999 ) {
+            return ([0.999,meanholder/(holder.length -1 )]);
+        }else{
+            return ([diffholder/(holder.length - 1),meanholder/(holder.length -1 )]);
+        }
+
+    }
+
+    function scaleyield(firstelement,data){
+        var results =[];
+        for (var i = 0; i < data.length; i++){
+            //console.log(data[i]);
+            //console.log((data[i][0]-firstelement[0])/1000);
+            //console.log((data[i][1]/1000000));
+            results.push((((data[i][0]-firstelement[0])/1000),(data[i][1]/1000000)));
+        }
+        return results;
+    }
+    function tohistogram(readeventcountweightedhist,readeventcountweightedhistbinwidth,totalyield) {
         var results =[];
         var categories = [];
         //var counter = 0;
-        //console.log(minionsthings.minions[minion].statistics.read_event_count_weighted_hist);
+        //console.log(readeventcountweightedhist.reduce(add,0));
+        //console.log(readeventcountweightedhistbinwidth);
         for (var i = 0; i < readeventcountweightedhist.length; i++) {
-
             //if (readeventcountweightedhist[i] > 0){
                 //counter+=1;
                 //console.log(readeventcountweightedhistbinwidth);
                 //console.log(i);
                 //console.log(i*readeventcountweightedhistbinwidth);
-                var category = String((i) * readeventcountweightedhistbinwidth) + " - " + String((i+1) * readeventcountweightedhistbinwidth) + " bp";
+                var category = String((i) * readeventcountweightedhistbinwidth) + " - " + String((i+1) * readeventcountweightedhistbinwidth) + " ev";
                 categories.push(category);
                 results.push({ "name": category, "y": readeventcountweightedhist[i] });
             //}
         }
+        categories.push(">> max ev");
+        var missed = totalyield - readeventcountweightedhist.reduce(add,0);
+        results.push( {"name": ">> max ev" , "y": missed});
         //console.log(results);
         return [results,categories];
     }
@@ -684,7 +813,7 @@ include 'includes/head-new.php';
                           minionsthings.minions[thing].state = jsonreturn[prop].state;
                       }
                       //console.log(jsonreturn[prop].scripts)
-                      console.log(minionsthings.minions[thing])
+                      //console.log(minionsthings.minions[thing])
 
                       if (minionsthings.minions[thing].scripts.length != jsonreturn[prop].scripts.length) {
                           minionsthings.minions[thing].scripts = jsonreturn[prop].scripts;
@@ -1131,7 +1260,7 @@ include 'includes/head-new.php';
 
     Vue.component('chartreadhist', {
 	template: '<div id="container{{title}}" style="margin: 0 auto"</div>',
-    props: ['title','key','datain','datain2'],
+    props: ['title','key','datain','datain2','totalyield'],
     data: function() {
         return {
         	opts: {
@@ -1173,7 +1302,7 @@ include 'includes/head-new.php';
             setInterval(function () {
                 //console.log(this.datain);
                 //console.log(this.datain2);
-                var returndata = tohistogram(this.datain,parseInt(this.datain2));
+                var returndata = tohistogram(this.datain,parseInt(this.datain2),this.totalyield);
                 this.chart.series[0].setData(returndata[0]);
                 this.chart.xAxis[0].setCategories(returndata[1]);
                 //this.chart.series[0].setData(this.datain);
@@ -1189,6 +1318,325 @@ include 'includes/head-new.php';
             });
         }
     })
+
+
+
+    Vue.component('container-curr-yield-prediction', {
+        template: '<div id="container-curr-yield-prediction{{title}}" style="height: 140px; margin: 0 auto"</div>',
+        props: ['title','key','script','eventcount'],
+        data: function() {
+            return {
+
+                opts: {
+                    chart: {
+                        renderTo: 'container-curr-yield-prediction'+this.title,
+                        type: 'solidgauge'
+                    },
+
+                    title: "Predicted Current Yield",
+
+                    pane: {
+                        center: ['50%', '85%'],
+                        size: '100%',
+                        startAngle: -90,
+                        endAngle: 90,
+                        background: {
+                            backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+                            innerRadius: '60%',
+                            outerRadius: '100%',
+                            shape: 'arc'
+                        }
+                    },
+
+                    tooltip: {
+                        enabled: false
+                    },
+
+                    // the value axis
+                    yAxis: {
+                        type: 'logarithmic',
+                        stops: [
+                            [0.3, '#0000FF'], // blue
+                            [0.37, '#DDDF0D'], // green
+                            [0.43, '#DF5353'], // red
+                        ],
+                        lineWidth: 0,
+                        minorTickInterval: null,
+                        tickPixelInterval: 400,
+                        tickWidth: 0,
+                        title: {
+                            y: -70
+                        },
+                        labels: {
+                            y: 16
+                        },
+                        min: 0.1,
+                        max: 100000,
+                        title: {
+                            text: null
+                        }
+                    },
+
+                    plotOptions: {
+                        solidgauge: {
+                            dataLabels: {
+                                y: -30,
+                                borderWidth: 0,
+                                useHTML: true
+                            }
+                        }
+                    },
+
+
+       credits: {
+           enabled: false
+       },
+
+       series: [{
+           name: 'Events',
+           data: [0],
+           dataLabels: {
+               format: '<div style="text-align:center"><span style="font-size:15px;color:' +
+               ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
+               '<span style="font-size:12px;color:silver"> Predicted Yield</span></div>'
+           },
+           tooltip: {
+               valueSuffix: ' events'
+           }
+       }],
+
+                    plotOptions: {
+                        solidgauge: {
+                            dataLabels: {
+                                y: 30,
+                                borderWidth: 0,
+                                useHTML: true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        ,
+        ready: function() {
+
+
+          this.$nextTick(function() {
+
+                    switch (this.script) {
+                        case "MegaCrazy Runs":
+                            scaling = 3.5;
+                            break;
+                        case "450 b/s":
+                            scaling = 1.8;
+                            break;
+                        case "250 b/s":
+                            scaling = 1.1;
+                            break;
+                        case "70 b/s":
+                            scaling = 1.0;
+                            break;
+                    }
+                    //alert(scaling);
+          		this.chart = new Highcharts.Chart(this.opts);
+                //this.chart.series[0].setData(this.datain);
+                if (this.chart) {
+                    //point = this.chart.series[0].points[0];
+                    this.chart.series[0].points[0].update(round(parseFloat((this.eventcount)*scaling) ,0));
+                    //point.update(this.datain);
+                    //alert("camel");
+                }
+
+                setInterval(function () {
+                //    this.chart.series[0].setData(this.datain);
+                //    this.chart.redraw();
+                if (this.chart) {
+                    switch (this.script) {
+                        case "MegaCrazy Runs":
+                            scaling = 3.5;
+                            break;
+                        case "450 b/s":
+                            scaling = 1.8;
+                            break;
+                        case "250 b/s":
+                            scaling = 1.1;
+                            break;
+                        case "70 b/s":
+                            scaling = 1.0;
+                            break;
+                    }
+                    point = this.chart.series[0].points[0];
+                    point.update(round(parseFloat((this.eventcount)*scaling),0));
+                    //this.chart.redraw();
+
+
+                }
+            }.bind(this), 5000);
+                });
+            }
+        }),
+
+
+
+    Vue.component('container-avg-base-prediction', {
+        template: '<div id="container-avg-base-prediction{{title}}" style="height: 140px; margin: 0 auto"</div>',
+        props: ['title','key','datain','datain2','script'],
+        data: function() {
+            return {
+
+                opts: {
+                    chart: {
+                        renderTo: 'container-avg-base-prediction'+this.title,
+                        type: 'solidgauge'
+                    },
+
+                    title: "Average Read Length (est Bases)",
+
+                    pane: {
+                        center: ['50%', '85%'],
+                        size: '100%',
+                        startAngle: -90,
+                        endAngle: 90,
+                        background: {
+                            backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+                            innerRadius: '60%',
+                            outerRadius: '100%',
+                            shape: 'arc'
+                        }
+                    },
+
+                    tooltip: {
+                        enabled: false
+                    },
+
+                    // the value axis
+                    yAxis: {
+                        type: 'logarithmic',
+                        stops: [
+                            [0.3, '#0000FF'], // blue
+                            [0.37, '#DDDF0D'], // green
+                            [0.43, '#DF5353'], // red
+                        ],
+                        lineWidth: 0,
+                        minorTickInterval: null,
+                        tickPixelInterval: 400,
+                        tickWidth: 0,
+                        title: {
+                            y: -70
+                        },
+                        labels: {
+                            y: 16
+                        },
+                        min: 0.1,
+                        max: 100000,
+                        title: {
+                            text: null
+                        }
+                    },
+
+                    plotOptions: {
+                        solidgauge: {
+                            dataLabels: {
+                                y: -30,
+                                borderWidth: 0,
+                                useHTML: true
+                            }
+                        }
+                    },
+
+
+       credits: {
+           enabled: false
+       },
+
+       series: [{
+           name: 'Events',
+           data: [0],
+           dataLabels: {
+               format: '<div style="text-align:center"><span style="font-size:15px;color:' +
+               ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
+               '<span style="font-size:12px;color:silver"> Avg event len</span></div>'
+           },
+           tooltip: {
+               valueSuffix: ' events'
+           }
+       }],
+
+                    plotOptions: {
+                        solidgauge: {
+                            dataLabels: {
+                                y: 30,
+                                borderWidth: 0,
+                                useHTML: true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        ,
+        ready: function() {
+
+
+          this.$nextTick(function() {
+
+                    switch (this.script) {
+                        case "MegaCrazy Runs":
+                            scaling = 3.5;
+                            break;
+                        case "450 b/s":
+                            scaling = 1.8;
+                            break;
+                        case "250 b/s":
+                            scaling = 1.1;
+                            break;
+                        case "70 b/s":
+                            scaling = 1.0;
+                            break;
+                    }
+                    //alert(scaling);
+          		this.chart = new Highcharts.Chart(this.opts);
+                //this.chart.series[0].setData(this.datain);
+                if (this.chart) {
+                    //point = this.chart.series[0].points[0];
+                    this.chart.series[0].points[0].update(round(parseFloat((this.datain/this.datain2)*scaling) ,0));
+                    //point.update(this.datain);
+                    //alert("camel");
+                }
+
+                setInterval(function () {
+                //    this.chart.series[0].setData(this.datain);
+                //    this.chart.redraw();
+                if (this.chart) {
+                    switch (this.script) {
+                        case "MegaCrazy Runs":
+                            scaling = 3.5;
+                            break;
+                        case "450 b/s":
+                            scaling = 1.8;
+                            break;
+                        case "250 b/s":
+                            scaling = 1.1;
+                            break;
+                        case "70 b/s":
+                            scaling = 1.0;
+                            break;
+                    }
+                    point = this.chart.series[0].points[0];
+                    point.update(round(parseFloat((this.datain/this.datain2)*scaling),0));
+                    //this.chart.redraw();
+
+
+                }
+            }.bind(this), 5000);
+                });
+            }
+        }),
+
 
     Vue.component('container-avg', {
         template: '<div id="container-avg{{title}}" style="height: 140px; margin: 0 auto"</div>',
@@ -1843,6 +2291,37 @@ include 'includes/head-new.php';
                     zoomType: 'x',
                     height: 350,
 	        	},
+                rangeSelector: {
+       enabled: true,
+       buttons: [{
+           type: 'minute',
+           count: 1,
+           text: '1min'
+       }, {
+           type: 'minute',
+           count: 5,
+           text: '5min'
+       }, {
+           type: 'minute',
+           count: 30,
+           text: '1/2hr'
+       }, {
+           type: 'minute',
+           count: 60,
+           text: '1hr'
+       }, {
+           type: 'day',
+           count: 0.5,
+           text: '12hrs'
+       }, {
+           type: 'day',
+           count: 1,
+           text: '1day'
+       }, {
+           type: 'all',
+           text: 'All'
+       }]
+   },
     	    	title: {
         	    	text: 'Yield over time '
 	        	},
@@ -1866,6 +2345,9 @@ include 'includes/head-new.php';
             },
             series: [{
                 name: 'Event Counts',
+                dataGrouping:{
+                    enabled: true
+                },
                 data: []
             }]
          			}
@@ -1876,7 +2358,7 @@ include 'includes/head-new.php';
 
     ready: function() {
       this.$nextTick(function() {
-      		this.chart = new Highcharts.Chart(this.opts);
+      		this.chart = new Highcharts.stockChart(this.opts);
             this.chart.series[0].setData(this.datain2);
             setInterval(function () {
                 //console.log(this.datain2);
@@ -1886,6 +2368,115 @@ include 'includes/head-new.php';
             });
         }
     })
+
+    Vue.component('projchartyield', {
+	template: '<div id="projcontaineryield{{title}}" style="margin: 0 auto"</div>',
+    props: ['title','key','datain','datain2','seqspeed','start_time'],
+    data: function() {
+        //var d = new Date();
+        //var t = d.getTime();
+        return {
+        	opts: {
+		        chart: {
+        	    	renderTo: 'projcontaineryield'+this.title,
+                    type:'spline',
+                    zoomType: 'x',
+                    height: 350,
+	        	},
+
+    	    	title: {
+        	    	text: 'Projected Yield over time '
+	        	},
+                xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150
+            },
+            yAxis: {
+                title: {
+                    text: 'Cumulative Predicted Bases'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }],
+                min: 0,
+            },
+            credits: {
+                enabled: false
+            },
+            series: [{
+      //regression: true,
+      //regressionSettings: {
+        //type: 'polynomial',
+        //order: 4,
+        //color: 'rgba(223, 83, 83, .9)',
+        //extrapolate: 5
+      //},
+      name: 'Original Data',
+      data: []
+
+  },
+  {
+      name: 'Current Projected Data',
+      dashStyle: 'longdash',
+      data: []
+  },
+  {
+      name: 'First Hour Projected Data',
+      dashStyle: 'shortdash',
+      data: []
+  },
+  {
+      name: 'Ideal Results',
+      dashStyle: 'Dot',
+      data: []
+  }
+]
+
+         			}
+    	    }
+    }
+    ,
+
+
+    ready: function() {
+      this.$nextTick(function() {
+      		this.chart = new Highcharts.Chart(this.opts);
+            //this.chart.series[0].setData(this.datain2.slice(-15));
+            this.chart.series[0].setData(converttobases(this.datain2,this.seqspeed));
+            this.chart.redraw();
+
+            setInterval(function () {
+                //console.log(this.datain2.length);
+                var timeleft = geteighthours(this.datain2.slice(-1),this.start_time);
+                var firsthour = 120;
+                [scalingfactor,difference] = projectdata(this.datain2);
+                [scalingfactor2,difference2] = projectdata(this.datain2.slice(0,firsthour));
+                //console.log(this.start_time);
+                //console.log(this.datain2[0][0]);
+                //console.log(scaling);
+                var syntheticdata = this.datain2;
+                //console.log(syntheticdata.slice(-1));
+                //console.log(syntheticdata.slice(-2));
+                newarray = projectresults(syntheticdata,scalingfactor,4000,difference,this.start_time);
+                newarray1 = projectresults(syntheticdata.slice(0,firsthour),scalingfactor2,4000,difference2,this.start_time);
+                newarray2 = projectresults(syntheticdata.slice(0,firsthour),1,4000,difference2,this.start_time);
+                //syntheticdata.push.apply(projectresults(syntheticdata.slice(-2),scalingfactor,100));
+
+                //console.log(scaleyield(this.datain2[0],this.datain2.slice(-15)));
+                //scaleyield(this.datain2[0],this.datain2.slice(-15));
+                this.chart.series[0].setData(converttobases(this.datain2,this.seqspeed));
+                this.chart.series[1].setData(converttobases(newarray,this.seqspeed));
+                this.chart.series[2].setData(converttobases(newarray1,this.seqspeed));
+                this.chart.series[3].setData(converttobases(newarray2,this.seqspeed));
+                //this.chart.redraw();
+        }.bind(this), 15000);
+            });
+        }
+    })
+
+
 
     Vue.component('perchistory', {
 	template: '<div id="perchistory{{title}}" style="margin: 0 auto"</div>',
@@ -1901,6 +2492,37 @@ include 'includes/head-new.php';
                     zoomType: 'x',
                     height: 350,
 	        	},
+                rangeSelector: {
+       enabled: true,
+       buttons: [{
+           type: 'minute',
+           count: 1,
+           text: '1min'
+       }, {
+           type: 'minute',
+           count: 5,
+           text: '5min'
+       }, {
+           type: 'minute',
+           count: 30,
+           text: '1/2hr'
+       }, {
+           type: 'minute',
+           count: 60,
+           text: '1hr'
+       }, {
+           type: 'day',
+           count: 0.5,
+           text: '12hrs'
+       }, {
+           type: 'day',
+           count: 1,
+           text: '1day'
+       }, {
+           type: 'all',
+           text: 'All'
+       }]
+   },
     	    	title: {
         	    	text: '% Occupancy Over Time'
 	        	},
@@ -1918,13 +2540,16 @@ include 'includes/head-new.php';
                     color: '#808080'
                 }],
                 min: 0,
-                max: 100,
+                max: 100
             },
             credits: {
                 enabled: false
             },
             series: [{
                 name: '% Occupancy',
+                dataGrouping:{
+                    enabled: true
+                },
                 data: []
             }
             ]
@@ -1934,7 +2559,7 @@ include 'includes/head-new.php';
     ,
     ready: function() {
       this.$nextTick(function() {
-      		this.chart = new Highcharts.Chart(this.opts);
+      		this.chart = new Highcharts.stockChart(this.opts);
             this.chart.series[0].setData(this.datain2["percent"]);
             setInterval(function () {
                 //console.log(this.datain2);
@@ -1959,6 +2584,37 @@ include 'includes/head-new.php';
                     zoomType: 'x',
                     height: 350,
 	        	},
+                rangeSelector: {
+       enabled: true,
+       buttons: [{
+           type: 'minute',
+           count: 1,
+           text: '1min'
+       }, {
+           type: 'minute',
+           count: 5,
+           text: '5min'
+       }, {
+           type: 'minute',
+           count: 30,
+           text: '1/2hr'
+       }, {
+           type: 'minute',
+           count: 60,
+           text: '1hr'
+       }, {
+           type: 'day',
+           count: 0.5,
+           text: '12hrs'
+       }, {
+           type: 'day',
+           count: 1,
+           text: '1day'
+       }, {
+           type: 'all',
+           text: 'All'
+       }]
+   },
     	    	title: {
         	    	text: 'In Strand Counts'
 	        	},
@@ -1983,9 +2639,15 @@ include 'includes/head-new.php';
             series: [
                 {
                     name: 'In Strand',
+                    dataGrouping:{
+                        enabled: true
+                    },
                     data: []
                 },{
                     name: 'Single Pore',
+                    dataGrouping:{
+                        enabled: true
+                    },
                     data: []
                 }
             ]
@@ -1995,7 +2657,7 @@ include 'includes/head-new.php';
     ,
     ready: function() {
       this.$nextTick(function() {
-      		this.chart = new Highcharts.Chart(this.opts);
+      		this.chart = new Highcharts.stockChart(this.opts);
             this.chart.series[0].setData(this.datain2["strand"]);
             this.chart.series[1].setData(this.datain2["single"]);
             setInterval(function () {
@@ -2022,6 +2684,37 @@ include 'includes/head-new.php';
                     zoomType: 'x',
                     height: 350,
 	        	},
+                rangeSelector: {
+       enabled: true,
+       buttons: [{
+           type: 'minute',
+           count: 1,
+           text: '1min'
+       }, {
+           type: 'minute',
+           count: 5,
+           text: '5min'
+       }, {
+           type: 'minute',
+           count: 30,
+           text: '1/2hr'
+       }, {
+           type: 'minute',
+           count: 60,
+           text: '1hr'
+       }, {
+           type: 'day',
+           count: 0.5,
+           text: '12hrs'
+       }, {
+           type: 'day',
+           count: 1,
+           text: '1day'
+       }, {
+           type: 'all',
+           text: 'All'
+       }]
+   },
     	    	title: {
         	    	text: 'Temperature over time '
 	        	},
@@ -2045,9 +2738,15 @@ include 'includes/head-new.php';
             },
             series: [{
                 name: 'Asic Temperature',
+                dataGrouping:{
+                    enabled: true
+                },
                 data: []
             },{
                 name: 'Heat Sink Temperature',
+                dataGrouping:{
+                    enabled: true
+                },
                 data: []
             }
             ]
@@ -2057,7 +2756,7 @@ include 'includes/head-new.php';
     ,
     ready: function() {
       this.$nextTick(function() {
-      		this.chart = new Highcharts.Chart(this.opts);
+      		this.chart = new Highcharts.stockChart(this.opts);
             this.chart.series[0].setData(this.datain2["asictemp"]);
             this.chart.series[1].setData(this.datain2["heatsinktemp"]);
             setInterval(function () {
@@ -2084,6 +2783,37 @@ include 'includes/head-new.php';
                     zoomType: 'x',
                     height: 350,
 	        	},
+                rangeSelector: {
+       enabled: true,
+       buttons: [{
+           type: 'minute',
+           count: 1,
+           text: '1min'
+       }, {
+           type: 'minute',
+           count: 5,
+           text: '5min'
+       }, {
+           type: 'minute',
+           count: 30,
+           text: '1/2hr'
+       }, {
+           type: 'minute',
+           count: 60,
+           text: '1hr'
+       }, {
+           type: 'day',
+           count: 0.5,
+           text: '12hrs'
+       }, {
+           type: 'day',
+           count: 1,
+           text: '1day'
+       }, {
+           type: 'all',
+           text: 'All'
+       }]
+   },
     	    	title: {
         	    	text: 'Global Voltage over time '
 	        	},
@@ -2107,6 +2837,9 @@ include 'includes/head-new.php';
             },
             series: [{
                 name: 'Global Voltage',
+                dataGrouping:{
+                    enabled: true
+                },
                 data: []
             }
             ]
@@ -2116,7 +2849,7 @@ include 'includes/head-new.php';
     ,
     ready: function() {
       this.$nextTick(function() {
-      		this.chart = new Highcharts.Chart(this.opts);
+      		this.chart = new Highcharts.stockChart(this.opts);
             this.chart.series[0].setData(this.datain2["voltage"]);
             //this.chart.series[1].setData(this.datain2["heatsinktemp"]);
             setInterval(function () {
@@ -2129,11 +2862,114 @@ include 'includes/head-new.php';
         }
     })
 
+    Vue.component('predictedvals', {
+        template: '<div class="col-md-2"><p>Estimated Current Yield (bases) <strong>{{speedresult}}</strong></p></div><div class="col-md-2"><p>Estimated Average Read Length (bases) <strong>{{averageresult}}</strong></p></div><div class="col-md-2"><p>Theoretical Predicted Yield at 24 hours (bases) <strong>{{startbit}}</strong></p></div><div class="col-md-2"><p> Theoretical Predicted Yield at 48 hours (bases) <strong>{{endbit}}</strong></p></div>',
+        props: ['seqspeed','currentyield','compreads','calccurrenttime','calcstarttime'],
+        computed: {
+                startbit: function() {
+                    switch (this.seqspeed) {
+                        case "MegaCrazy Runs":
+                            scaling = 3.5;
+                            break;
+                        case "450 b/s":
+                            scaling = 1.8;
+                            break;
+                        case "250 b/s":
+                            scaling = 1.1;
+                            break;
+                        case "70 b/s":
+                            scaling = 1.0;
+                            break;
+                    }
+                    var startthing = new Date(parseInt(this.calcstarttime)*1000);
+                    var endthing = new Date();
+
+                    return round(round(parseFloat(scaling * this.currentyield),0)/((endthing - startthing)/1000)*(24*60*60),0);
+                },
+                endbit: function() {
+                    switch (this.seqspeed) {
+                        case "MegaCrazy Runs":
+                            scaling = 3.5;
+                            break;
+                        case "450 b/s":
+                            scaling = 1.8;
+                            break;
+                        case "250 b/s":
+                            scaling = 1.1;
+                            break;
+                        case "70 b/s":
+                            scaling = 1.0;
+                            break;
+                    }
+                    var startthing = new Date(parseInt(this.calcstarttime)*1000);
+                    var endthing = new Date();
+
+                    return round(round(parseFloat(scaling * this.currentyield),0)/((endthing - startthing)/1000)*(48*60*60),0);
+                },
+                speedresult: function(){
+                    switch (this.seqspeed) {
+                        case "MegaCrazy Runs":
+                            scaling = 3.5;
+                            break;
+                        case "450 b/s":
+                            scaling = 1.8;
+                            break;
+                        case "250 b/s":
+                            scaling = 1.1;
+                            break;
+                        case "70 b/s":
+                            scaling = 1.0;
+                            break;
+                    }
+                    //round(parseFloat(this.datain),2)
+                    return round(parseFloat(scaling * this.currentyield),0);
+                },
+                averageresult: function() {
+                    switch (this.seqspeed) {
+                        case "MegaCrazy Runs":
+                            scaling = 3.5;
+                            break;
+                        case "450 b/s":
+                            scaling = 1.8;
+                            break;
+                        case "250 b/s":
+                            scaling = 1.1;
+                            break;
+                        case "70 b/s":
+                            scaling = 1.0;
+                            break;
+                    }
+                    return round(parseFloat(scaling * (this.currentyield/this.compreads)),0);
+                }
+            }
+    })
+
     var minionsthings = new Vue({
         el: '#app',
         data: {
-            minions: [ ]
+            minions: [ ],
+            seqspeed: '',
+            currentyield: ''
         },
+        computed: {
+                speedresult: function(){
+                    switch (this.seqspeed) {
+                        case "MegaCrazy Runs":
+                            scaling = 3.5;
+                            break;
+                        case "450 b/s":
+                            scaling = 1.8;
+                            break;
+                        case "250 b/s":
+                            scaling = 1.1;
+                            break;
+                        case "70 b/s":
+                            scaling = 1.0;
+                            break;
+                    }
+                    return this.currentyield;
+                }
+            },
         methods: {
             testmessage: function(event) {
                 var instructionmessage={"INSTRUCTION":{"USER":"<?php echo $_SESSION['user_name'];?>","minion":event.target.id,"JOB":"testmessage"}};

@@ -92,109 +92,110 @@ class MyServerProtocol(WebSocketServerProtocol):
                                 #for minION in selfminIONdict[job][user].keys():
                                 for minION in message_dict[user].keys():
                                     #print minION
-                                    #if minION not in publisher_dict[socketid]["minion"]:
-                                    #    publisher_dict[socketid]["minion"].add(minION)
-                                    if minION not in tracker_dict[user]:
-                                        tracker_dict[user][minION]=dict()
-                                    if minION not in test_dict[user].keys():
-                                        test_dict[user][minION]=dict()
-                                    if "comms" not in tracker_dict[user][minION].keys():
-                                        tracker_dict[user][minION]["comms"]=self.peer
-                                        publisher_dict[socketid]["minion"].add(minION)
-                                    if minION not in control_dict[user].keys():
-                                        print "SETTING THE CONTROL DICT",self.peer
-                                        control_dict[user][minION]=self
+                                    if minION[0]=="M":
+                                        #if minION not in publisher_dict[socketid]["minion"]:
+                                        #    publisher_dict[socketid]["minion"].add(minION)
+                                        if minION not in tracker_dict[user]:
+                                            tracker_dict[user][minION]=dict()
+                                        if minION not in test_dict[user].keys():
+                                            test_dict[user][minION]=dict()
+                                        if "comms" not in tracker_dict[user][minION].keys():
+                                            tracker_dict[user][minION]["comms"]=self.peer
+                                            publisher_dict[socketid]["minion"].add(minION)
+                                        if minION not in control_dict[user].keys():
+                                            print "SETTING THE CONTROL DICT",self.peer
+                                            control_dict[user][minION]=self
 
-                                    #print user,minION,tracker_dict[user][minION]["comms"]
-                                    #if selfminIONdict[job][user][minION]["state"]=="active":
-                                    if message_dict[user][minION]["state"]=="active":
+                                        #print user,minION,tracker_dict[user][minION]["comms"]
+                                        #if selfminIONdict[job][user][minION]["state"]=="active":
+                                        if message_dict[user][minION]["state"]=="active":
 
-                                        tracker_dict[user][minION]["state"]=1
-                                        try:
-                                            #tracker_dict[user][minION]["scripts"]=selfminIONdict[job][user][minION]["scripts"]["result"]["items"]
-                                            #print message_dict[user][minION]["scripts"]
-                                            #tracker_dict[user][minION]["scripts"]=message_dict[user][minION]["scripts"]["result"]["items"]
-                                            tracker_dict[user][minION]["scripts"]=message_dict[user][minION]["scripts"]
-
-                                        except Exception, err:
-                                            #print "tracker dict 191 problem"
-                                            print "Except 117",err
-
-                                        #if "channelstuff" in selfminIONdict[job][user][minION].keys():
-                                        if "channelstuff" in message_dict[user][minION].keys():
-                                            #channelstatedetails = selfminIONdict[job][user][minION]["channelstuff"]
-                                            #tracker_dict[user][minION]["channelstuff"]=selfminIONdict[job][user][minION]["channelstuff"]
-                                            channelstatedetails = message_dict[user][minION]["channelstuff"]
-                                            tracker_dict[user][minION]["channelstuff"]=message_dict[user][minION]["channelstuff"]
-                                        else:
+                                            tracker_dict[user][minION]["state"]=1
                                             try:
-                                                tracker_dict[user][minION]["channelstuff"]=channelstatedetails
+                                                #tracker_dict[user][minION]["scripts"]=selfminIONdict[job][user][minION]["scripts"]["result"]["items"]
+                                                #print message_dict[user][minION]["scripts"]
+                                                #tracker_dict[user][minION]["scripts"]=message_dict[user][minION]["scripts"]["result"]["items"]
+                                                tracker_dict[user][minION]["scripts"]=message_dict[user][minION]["scripts"]
+
                                             except Exception, err:
-                                                print "Except 199",err
+                                                #print "tracker dict 191 problem"
+                                                print "Except 117",err
 
-                                        if "messages" in message_dict[user][minION].keys():
-                                            print "message received"
-                                            tracker_dict[user][minION]["messages"]=message_dict[user][minION]["messages"]
-                                        if "livedata" in message_dict[user][minION].keys():
-                                            tracker_dict[user][minION]["livedata"]=message_dict[user][minION]["livedata"]
-                                            #print selfminIONdict[job][user][minION]["livedata"]["yield_res"]["result"]
-                                        if "yield_history" in message_dict[user][minION].keys():
-                                            tracker_dict[user][minION]["yield_history"]=message_dict[user][minION]["yield_history"]
-                                        if "temp_history" in message_dict[user][minION].keys():
-                                            tracker_dict[user][minION]["temp_history"]=message_dict[user][minION]["temp_history"]
-                                        if "pore_history" in message_dict[user][minION].keys():
-                                            tracker_dict[user][minION]["pore_history"]=message_dict[user][minION]["pore_history"]
-                                        #print "Original"
-                                        #print message_dict[user][minION]["pore_history"]
-                                        #print "Copy"
-                                        #print tracker_dict[user][minION]["pore_history"]
-                                        if "simplechanstats" in message_dict[user][minION].keys():
-                                            tracker_dict[user][minION]["simplechanstats"]=message_dict[user][minION]["simplechanstats"]
-                                        if "simplesummary" in message_dict[user][minION].keys():
-                                            tracker_dict[user][minION]["simplesummary"]=message_dict[user][minION]["simplesummary"]
+                                            #if "channelstuff" in selfminIONdict[job][user][minION].keys():
+                                            if "channelstuff" in message_dict[user][minION].keys():
+                                                #channelstatedetails = selfminIONdict[job][user][minION]["channelstuff"]
+                                                #tracker_dict[user][minION]["channelstuff"]=selfminIONdict[job][user][minION]["channelstuff"]
+                                                channelstatedetails = message_dict[user][minION]["channelstuff"]
+                                                tracker_dict[user][minION]["channelstuff"]=message_dict[user][minION]["channelstuff"]
+                                            else:
+                                                try:
+                                                    tracker_dict[user][minION]["channelstuff"]=channelstatedetails
+                                                except Exception, err:
+                                                    print "Except 199",err
 
-                                        if "detailsdata" in message_dict[user][minION].keys():
-                                            for thing in message_dict[user][minION]["detailsdata"].keys():
+                                            if "messages" in message_dict[user][minION].keys():
+                                                print "message received"
+                                                tracker_dict[user][minION]["messages"]=message_dict[user][minION]["messages"]
+                                            if "livedata" in message_dict[user][minION].keys():
+                                                tracker_dict[user][minION]["livedata"]=message_dict[user][minION]["livedata"]
+                                                #print selfminIONdict[job][user][minION]["livedata"]["yield_res"]["result"]
+                                            if "yield_history" in message_dict[user][minION].keys():
+                                                tracker_dict[user][minION]["yield_history"]=message_dict[user][minION]["yield_history"]
+                                            if "temp_history" in message_dict[user][minION].keys():
+                                                tracker_dict[user][minION]["temp_history"]=message_dict[user][minION]["temp_history"]
+                                            if "pore_history" in message_dict[user][minION].keys():
+                                                tracker_dict[user][minION]["pore_history"]=message_dict[user][minION]["pore_history"]
+                                            #print "Original"
+                                            #print message_dict[user][minION]["pore_history"]
+                                            #print "Copy"
+                                            #print tracker_dict[user][minION]["pore_history"]
+                                            if "simplechanstats" in message_dict[user][minION].keys():
+                                                tracker_dict[user][minION]["simplechanstats"]=message_dict[user][minION]["simplechanstats"]
+                                            if "simplesummary" in message_dict[user][minION].keys():
+                                                tracker_dict[user][minION]["simplesummary"]=message_dict[user][minION]["simplesummary"]
 
-                                                if "detailsdata" not in tracker_dict[user][minION]:
-                                                    tracker_dict[user][minION]["detailsdata"]=dict()
+                                            if "detailsdata" in message_dict[user][minION].keys():
+                                                for thing in message_dict[user][minION]["detailsdata"].keys():
 
-                                                if thing not in mungejson(tracker_dict[user][minION]["detailsdata"]):
-                                                    tracker_dict[user][minION]["detailsdata"][thing]=dict()
-                                                if thing == "statistics":
-                                                    for section in mungejson(message_dict[user][minION]["detailsdata"][thing]):
-                                                        tempholder = tracker_dict[user][minION]["detailsdata"][thing]
-                                                        if section not in tempholder:
-                                                            tracker_dict[user][minION]["detailsdata"][thing][section]=dict()
-                                                    context = dict(list(tracker_dict[user][minION]["detailsdata"][thing].items()) + list(message_dict[user][minION]["detailsdata"][thing].items()))
-                                                    tracker_dict[user][minION]["detailsdata"][thing]=context
-                                                if thing == "channels":
-                                                    for section in mungejson(message_dict[user][minION]["detailsdata"][thing]):
-                                                        tempholder = tracker_dict[user][minION]["detailsdata"][thing]
-                                                        if section not in tempholder:
-                                                            tracker_dict[user][minION]["detailsdata"][thing][section]=dict()
-                                                    context = dict(list(tracker_dict[user][minION]["detailsdata"][thing].items()) + list(message_dict[user][minION]["detailsdata"][thing].items()))
-                                                    tracker_dict[user][minION]["detailsdata"][thing]=context
-                                                if thing == "channel_info":
-                                                    for section in mungejson(message_dict[user][minION]["detailsdata"][thing]):
-                                                        tempholder = tracker_dict[user][minION]["detailsdata"][thing]
-                                                        if section not in tempholder:
-                                                            tracker_dict[user][minION]["detailsdata"][thing][section]=dict()
-                                                    context = dict(list(tracker_dict[user][minION]["detailsdata"][thing].items()) + list(message_dict[user][minION]["detailsdata"][thing].items()))
-                                                    tracker_dict[user][minION]["detailsdata"][thing]=context
-                                                else:
-                                                    try:
-                                                        tracker_dict[user][minION]["detailsdata"][thing]=message_dict[user][minION]["detailsdata"][thing]
-                                                    except Exception, err:
-                                                        print "Error 179",err
-                                        active += 1
+                                                    if "detailsdata" not in tracker_dict[user][minION]:
+                                                        tracker_dict[user][minION]["detailsdata"]=dict()
 
-                                    else:
-                                        inactive += 1
-                                        tracker_dict[user][minION]["state"]=0
-                                        tracker_dict[user][minION]["scripts"]=[]
-                                        tracker_dict[user][minION]["livedata"]=[]
-                                        tracker_dict[user][minION]["detailsdata"]={}
+                                                    if thing not in mungejson(tracker_dict[user][minION]["detailsdata"]):
+                                                        tracker_dict[user][minION]["detailsdata"][thing]=dict()
+                                                    if thing == "statistics":
+                                                        for section in mungejson(message_dict[user][minION]["detailsdata"][thing]):
+                                                            tempholder = tracker_dict[user][minION]["detailsdata"][thing]
+                                                            if section not in tempholder:
+                                                                tracker_dict[user][minION]["detailsdata"][thing][section]=dict()
+                                                        context = dict(list(tracker_dict[user][minION]["detailsdata"][thing].items()) + list(message_dict[user][minION]["detailsdata"][thing].items()))
+                                                        tracker_dict[user][minION]["detailsdata"][thing]=context
+                                                    if thing == "channels":
+                                                        for section in mungejson(message_dict[user][minION]["detailsdata"][thing]):
+                                                            tempholder = tracker_dict[user][minION]["detailsdata"][thing]
+                                                            if section not in tempholder:
+                                                                tracker_dict[user][minION]["detailsdata"][thing][section]=dict()
+                                                        context = dict(list(tracker_dict[user][minION]["detailsdata"][thing].items()) + list(message_dict[user][minION]["detailsdata"][thing].items()))
+                                                        tracker_dict[user][minION]["detailsdata"][thing]=context
+                                                    if thing == "channel_info":
+                                                        for section in mungejson(message_dict[user][minION]["detailsdata"][thing]):
+                                                            tempholder = tracker_dict[user][minION]["detailsdata"][thing]
+                                                            if section not in tempholder:
+                                                                tracker_dict[user][minION]["detailsdata"][thing][section]=dict()
+                                                        context = dict(list(tracker_dict[user][minION]["detailsdata"][thing].items()) + list(message_dict[user][minION]["detailsdata"][thing].items()))
+                                                        tracker_dict[user][minION]["detailsdata"][thing]=context
+                                                    else:
+                                                        try:
+                                                            tracker_dict[user][minION]["detailsdata"][thing]=message_dict[user][minION]["detailsdata"][thing]
+                                                        except Exception, err:
+                                                            print "Error 179",err
+                                            active += 1
+
+                                        else:
+                                            inactive += 1
+                                            tracker_dict[user][minION]["state"]=0
+                                            tracker_dict[user][minION]["scripts"]=[]
+                                            tracker_dict[user][minION]["livedata"]=[]
+                                            tracker_dict[user][minION]["detailsdata"]={}
                                 print "There are %s minIONs available. %s active, %s inactive." % (len(message_dict[user]),active, inactive)
                 else:
                     pass
@@ -252,7 +253,7 @@ class ThreadingExample():
     until the application exits.
     """
 
-    def __init__(self, server, interval=2):
+    def __init__(self, server, interval=10):
         """ Constructor
         :type interval: int
         :param interval: Check interval, in seconds
@@ -314,6 +315,8 @@ class ThreadingExample():
                                 if str(difference) != "[]":
                                     subscriber_dict[subscriber]["connect"].sendMessage(str(difference))
                                     print "XXXXXXXX_new",sys.getsizeof(json.dumps(str(difference)))
+                                else:
+ 				    print "no change"
                                 message_to_send[subscriber]=copy.deepcopy(deepcopydict)
                                 #print type(difference)
                                 #print len(difference)
