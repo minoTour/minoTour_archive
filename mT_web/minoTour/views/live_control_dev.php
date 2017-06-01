@@ -216,6 +216,10 @@ include 'includes/head-new.php';
                         <div class="col-lg-12">
                             <div class="col-lg-6" id="{{minion.name}}"><div is="chartyield" :title="minion.name" :key="key" :datain="minion.engine_states.yield" :datain2="minion.yield_history"></div></div>
                             <div class="col-lg-6" id="{{minion.name}}"><div is="porehistory" :title="minion.name" :key="key" :datain2="minion.pore_history"></div></div>
+                            <div class="col-lg-12" id="{{minion.name}}"><div is="projchartyield" :start_time="minion.engine_states.daq_start_time" :seqspeed="seqspeed" :title="minion.name" :key="key" :datain="minion.engine_states.yield" :datain2="minion.yield_history"></div></div>
+
+
+
                             <div class="col-lg-6" id="{{minion.name}}"><div is="perchistory" :title="minion.name" :key="key" :datain2="minion.pore_history"></div></div>
                             <!--<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
                               Show Pore States
@@ -231,6 +235,9 @@ include 'includes/head-new.php';
                             <div class="col-lg-6" id="{{minion.name}}"><div is="temphistory" :title="minion.name" :key="key" :datain2="minion.temp_history"></div></div>
 
                             <div class="col-lg-6" id="{{minion.name}}"><div is="volthistory" :title="minion.name" :key="key" :datain2="minion.temp_history"></div></div>
+
+                            <div class="col-lg-6" id="{{minion.name}}"><div is="porecurrents" :title="minion.name" :key="key" :datain="minion.pore_history"></div></div>
+                            <div class="col-lg-6" id="{{minion.name}}"><div is="meanratio" :title="minion.name" :key="key" :datain="minion.pore_history"></div></div>
 
                         </div>
                     </div>
@@ -592,11 +599,112 @@ include 'includes/head-new.php';
 
 
 
+
       <script>
   $(document).ready(function () {
     //creating useful functions
     function add(a,b) {
         return a + b;
+    }
+
+    function geteighthours(data,runstart){
+        return (28800*1000 - (data[0][0]-(runstart*1000)));
+    }
+    function projectresults(syntheticdata,scalingfactor,steps,difference,runstart){
+        testdata = syntheticdata.slice(-2);
+        var lastval = testdata[1][1];
+        var lasttime = testdata[1][0];
+        var timingdiff = testdata[1][0]-testdata[0][0];
+        //var valdiff = testdata[1][1]-testdata[0][1];
+        var valdiff = difference;
+        var newresults = [];
+        var muxphase = 0
+        //console.log(lastval,timingdiff);
+        for (var i = 0; i < steps; i++){
+            templastval = lastval;
+            lastval = lastval+(valdiff*scalingfactor);
+            valdiff = lastval-templastval;
+            lasttime = lasttime + timingdiff;
+            if (muxphase != Math.floor((lasttime-(runstart*1000))/1000/28800)){
+                difference = difference * 0.9;
+                valdiff = difference;
+                muxphase = Math.floor((lasttime-(runstart*1000))/1000/28800);
+            }
+            //remainder = lasttime-(runstart*1000) - (lasttime-(runstart*1000) % (28800*1000))/(28800*1000);
+            //console.log(Math.floor((lasttime-(runstart*1000))/1000/28800));
+            newresults.push([lasttime,Math.ceil(lastval)]);
+        }
+        //console.log(newresults);
+        return newresults;
+    }
+
+    function converttobases(data,seqspeed){
+        switch (seqspeed) {
+            case "MegaCrazy Runs":
+                scaling = 3.5;
+                break;
+            case "450 b/s":
+                scaling = 1.8;
+                break;
+            case "250 b/s":
+                scaling = 1.1;
+                break;
+            case "70 b/s":
+                scaling = 1.0;
+                break;
+        }
+        var scaleddata = [];
+        for (var i = 0; i < data.length; i++){
+            scaleddata.push([data[i][0],data[i][1]*scaling]);
+        }
+        return scaleddata;
+    }
+
+    function projectdata(data){
+        var results = [];
+        var holder = [];
+        var diffholder = 0;
+        var meanholder = 0;
+        if (data.length > 3000){
+            data=data.slice(-3000);
+        }
+
+
+        for (var i = 1; i < data.length; i++){
+            var diff = data[i][1] - data[i-1][1];
+            holder.push(diff);
+            meanholder = meanholder + diff;
+        }
+        for (var i = 2; i <holder.length; i++){
+            var ratio = holder[i]/holder[i-1];
+            //if (ratio > 2){
+            //    ratio = 2;
+            //}
+            diffholder = diffholder+ratio;
+            //if (meanholder > 1) {
+            //    meanholder = 1;
+            //}
+        }
+        //console.log(diffholder/(holder.length - 1));
+        if ( diffholder/(holder.length - 1) > 1 ){
+            return [1,meanholder/(holder.length -1 )];
+        }else if ( diffholder/(holder.length - 1) < 0.999 ) {
+            return ([0.999,meanholder/(holder.length -1 )]);
+        }else{
+            return ([diffholder/(holder.length - 1),meanholder/(holder.length -1 )]);
+        }
+
+    }
+
+    function scaleyield(firstelement,data){
+        var results =[];
+        for (var i = 0; i < data.length; i++){
+            //console.log(data[i]);
+            //console.log((data[i][0]-firstelement[0])/1000);
+            //console.log((data[i][1]/1000000));
+            results.push((((data[i][0]-firstelement[0])/1000),Math.ceil((data[i][1]/1000000))));
+        }
+        return results;
     }
     function tohistogram(readeventcountweightedhist,readeventcountweightedhistbinwidth,totalyield) {
         var results =[];
@@ -604,15 +712,29 @@ include 'includes/head-new.php';
         //var counter = 0;
         //console.log(readeventcountweightedhist.reduce(add,0));
         //console.log(readeventcountweightedhistbinwidth);
+        var n50count = 0;
+        var check = 0;
         for (var i = 0; i < readeventcountweightedhist.length; i++) {
             //if (readeventcountweightedhist[i] > 0){
                 //counter+=1;
                 //console.log(readeventcountweightedhistbinwidth);
                 //console.log(i);
-                //console.log(i*readeventcountweightedhistbinwidth);
+
+                //console.log(i*readeventcountweightedhistbinwidth, readeventcountweightedhist[i]);
+                n50count += readeventcountweightedhist[i];
+                if (n50count >= (totalyield/2)){
+                    //console.log('n50',(i+1)*readeventcountweightedhistbinwidth, n50count);
+                    check += 1;
+                }
                 var category = String((i) * readeventcountweightedhistbinwidth) + " - " + String((i+1) * readeventcountweightedhistbinwidth) + " ev";
                 categories.push(category);
-                results.push({ "name": category, "y": readeventcountweightedhist[i] });
+                if (check == 1) {
+                    results.push({ "name": category, "y": readeventcountweightedhist[i], "color":'red' });
+                    check +=1;
+                }else{
+                    results.push({ "name": category, "y": readeventcountweightedhist[i], "color":'blue' });
+                }
+
             //}
         }
         categories.push(">> max ev");
@@ -710,6 +832,9 @@ include 'includes/head-new.php';
                       if (minionsthings.minions[thing].state != jsonreturn[prop].state){
                           minionsthings.minions[thing].state = jsonreturn[prop].state;
                       }
+                      //console.log(jsonreturn[prop].scripts)
+                      //console.log(minionsthings.minions[thing])
+
                       if (minionsthings.minions[thing].scripts.length != jsonreturn[prop].scripts.length) {
                           minionsthings.minions[thing].scripts = jsonreturn[prop].scripts;
                       }
@@ -2264,6 +2389,115 @@ include 'includes/head-new.php';
         }
     })
 
+    Vue.component('projchartyield', {
+	template: '<div id="projcontaineryield{{title}}" style="margin: 0 auto"</div>',
+    props: ['title','key','datain','datain2','seqspeed','start_time'],
+    data: function() {
+        //var d = new Date();
+        //var t = d.getTime();
+        return {
+        	opts: {
+		        chart: {
+        	    	renderTo: 'projcontaineryield'+this.title,
+                    type:'spline',
+                    zoomType: 'x',
+                    height: 350,
+	        	},
+
+    	    	title: {
+        	    	text: 'Projected Yield over time '
+	        	},
+                xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150
+            },
+            yAxis: {
+                title: {
+                    text: 'Cumulative Predicted Bases'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }],
+                min: 0,
+            },
+            credits: {
+                enabled: false
+            },
+            series: [{
+      //regression: true,
+      //regressionSettings: {
+        //type: 'polynomial',
+        //order: 4,
+        //color: 'rgba(223, 83, 83, .9)',
+        //extrapolate: 5
+      //},
+      name: 'Original Data',
+      data: []
+
+  },
+  {
+      name: 'Current Projected Data',
+      dashStyle: 'longdash',
+      data: []
+  },
+  {
+      name: 'First Hour Projected Data',
+      dashStyle: 'shortdash',
+      data: []
+  },
+  {
+      name: 'Ideal Results',
+      dashStyle: 'Dot',
+      data: []
+  }
+]
+
+         			}
+    	    }
+    }
+    ,
+
+
+    ready: function() {
+      this.$nextTick(function() {
+      		this.chart = new Highcharts.Chart(this.opts);
+            //this.chart.series[0].setData(this.datain2.slice(-15));
+            this.chart.series[0].setData(converttobases(this.datain2,this.seqspeed));
+            this.chart.redraw();
+
+            setInterval(function () {
+                //console.log(this.datain2.length);
+                var timeleft = geteighthours(this.datain2.slice(-1),this.start_time);
+                var firsthour = 120;
+                [scalingfactor,difference] = projectdata(this.datain2);
+                [scalingfactor2,difference2] = projectdata(this.datain2.slice(0,firsthour));
+                //console.log(this.start_time);
+                //console.log(this.datain2[0][0]);
+                //console.log(scaling);
+                var syntheticdata = this.datain2;
+                //console.log(syntheticdata.slice(-1));
+                //console.log(syntheticdata.slice(-2));
+                newarray = projectresults(syntheticdata,scalingfactor,4000,difference,this.start_time);
+                newarray1 = projectresults(syntheticdata.slice(0,firsthour),scalingfactor2,4000,difference2,this.start_time);
+                newarray2 = projectresults(syntheticdata.slice(0,firsthour),1,4000,difference2,this.start_time);
+                //syntheticdata.push.apply(projectresults(syntheticdata.slice(-2),scalingfactor,100));
+
+                //console.log(scaleyield(this.datain2[0],this.datain2.slice(-15)));
+                //scaleyield(this.datain2[0],this.datain2.slice(-15));
+                this.chart.series[0].setData(converttobases(this.datain2,this.seqspeed));
+                this.chart.series[1].setData(converttobases(newarray,this.seqspeed));
+                this.chart.series[2].setData(converttobases(newarray1,this.seqspeed));
+                this.chart.series[3].setData(converttobases(newarray2,this.seqspeed));
+                //this.chart.redraw();
+        }.bind(this), 15000);
+            });
+        }
+    })
+
+
+
     Vue.component('perchistory', {
 	template: '<div id="perchistory{{title}}" style="margin: 0 auto"</div>',
     props: ['title','key','datain2'],
@@ -2350,6 +2584,200 @@ include 'includes/head-new.php';
             setInterval(function () {
                 //console.log(this.datain2);
                 this.chart.series[0].setData(this.datain2["percent"]);
+                this.chart.redraw();
+        }.bind(this), 5000);
+            });
+        }
+    })
+
+    Vue.component('porecurrents', {
+	template: '<div id="porecurrents{{title}}" style="margin: 0 auto"</div>',
+    props: ['title','key','datain'],
+    data: function() {
+        //var d = new Date();
+        //var t = d.getTime();
+        return {
+        	opts: {
+		        chart: {
+        	    	renderTo: 'porecurrents'+this.title,
+                    type:'spline',
+                    zoomType: 'x',
+                    height: 350,
+	        	},
+                rangeSelector: {
+       enabled: true,
+       buttons: [{
+           type: 'minute',
+           count: 1,
+           text: '1min'
+       }, {
+           type: 'minute',
+           count: 5,
+           text: '5min'
+       }, {
+           type: 'minute',
+           count: 30,
+           text: '1/2hr'
+       }, {
+           type: 'minute',
+           count: 60,
+           text: '1hr'
+       }, {
+           type: 'day',
+           count: 0.5,
+           text: '12hrs'
+       }, {
+           type: 'day',
+           count: 1,
+           text: '1day'
+       }, {
+           type: 'all',
+           text: 'All'
+       }]
+   },
+    	    	title: {
+        	    	text: 'Pore State Currents'
+	        	},
+                xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150
+            },
+            yAxis: {
+                title: {
+                    text: 'Current'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }],
+                startOnTick: false,
+                //min: 0,
+            },
+            credits: {
+                enabled: false
+            },
+            series: [
+                {
+                    name: 'In Strand',
+                    dataGrouping:{
+                        enabled: true
+                    },
+                    data: []
+                },{
+                    name: 'Open Pore',
+                    dataGrouping:{
+                        enabled: true
+                    },
+                    data: []
+                }
+            ]
+         			}
+    	    }
+    }
+    ,
+    ready: function() {
+      this.$nextTick(function() {
+      		this.chart = new Highcharts.stockChart(this.opts);
+            this.chart.series[0].setData(this.datain["instrand_history"]);
+            this.chart.series[1].setData(this.datain["openpore_history"]);
+            setInterval(function () {
+                //console.log(this.datain);
+                this.chart.series[0].setData(this.datain["instrand_history"]);
+                this.chart.series[1].setData(this.datain["openpore_history"]);
+                this.chart.redraw();
+        }.bind(this), 5000);
+            });
+        }
+    })
+
+    Vue.component('meanratio', {
+	template: '<div id="meanratio{{title}}" style="margin: 0 auto"</div>',
+    props: ['title','key','datain'],
+    data: function() {
+        //var d = new Date();
+        //var t = d.getTime();
+        return {
+        	opts: {
+		        chart: {
+        	    	renderTo: 'meanratio'+this.title,
+                    type:'spline',
+                    zoomType: 'x',
+                    height: 350,
+	        	},
+                rangeSelector: {
+       enabled: true,
+       buttons: [{
+           type: 'minute',
+           count: 1,
+           text: '1min'
+       }, {
+           type: 'minute',
+           count: 5,
+           text: '5min'
+       }, {
+           type: 'minute',
+           count: 30,
+           text: '1/2hr'
+       }, {
+           type: 'minute',
+           count: 60,
+           text: '1hr'
+       }, {
+           type: 'day',
+           count: 0.5,
+           text: '12hrs'
+       }, {
+           type: 'day',
+           count: 1,
+           text: '1day'
+       }, {
+           type: 'all',
+           text: 'All'
+       }]
+   },
+    	    	title: {
+        	    	text: 'Current Ratio - In Strand/Open Pore'
+	        	},
+                xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150
+            },
+            yAxis: {
+                title: {
+                    text: 'Current Ratio'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }],
+                startOnTick: false,
+                //min: 0,
+            },
+            credits: {
+                enabled: false
+            },
+            series: [
+                {
+                    name: 'Current Ratio',
+                    dataGrouping:{
+                        enabled: true
+                    },
+                    data: []
+                }
+            ]
+         			}
+    	    }
+    }
+    ,
+    ready: function() {
+      this.$nextTick(function() {
+      		this.chart = new Highcharts.stockChart(this.opts);
+            this.chart.series[0].setData(this.datain["meanratio_history"]);
+            setInterval(function () {
+                //console.log(this.datain);
+                this.chart.series[0].setData(this.datain["meanratio_history"]);
                 this.chart.redraw();
         }.bind(this), 5000);
             });
@@ -2782,6 +3210,7 @@ include 'includes/head-new.php';
             },
             startminion: function(event){
                 var script = $("input[type='radio'][name='scriptRadios']:checked").val();
+                //alert(script);
                 var instructionmessage={"INSTRUCTION":{"USER":"<?php echo $_SESSION['user_name'];?>","minion":event.target.id,"JOB":"startminion","SCRIPT":script}};
                 ws.send(JSON.stringify(instructionmessage));
                 //$('#startminionmodal').modal('hide');
