@@ -713,6 +713,7 @@ include 'includes/head-new.php';
         //console.log(readeventcountweightedhist.reduce(add,0));
         //console.log(readeventcountweightedhistbinwidth);
         var n50count = 0;
+        var n50index = 0;
         var check = 0;
         for (var i = 0; i < readeventcountweightedhist.length; i++) {
             //if (readeventcountweightedhist[i] > 0){
@@ -729,6 +730,7 @@ include 'includes/head-new.php';
                 var category = String((i) * readeventcountweightedhistbinwidth) + " - " + String((i+1) * readeventcountweightedhistbinwidth) + " ev";
                 categories.push(category);
                 if (check == 1) {
+                    n50index = i;
                     results.push({ "name": category, "y": readeventcountweightedhist[i], "color":'red' });
                     check +=1;
                 }else{
@@ -741,7 +743,7 @@ include 'includes/head-new.php';
         var missed = totalyield - readeventcountweightedhist.reduce(add,0);
         results.push( {"name": ">> max ev" , "y": missed});
         //console.log(results);
-        return [results,categories];
+        return [results,categories,n50index];
     }
 
     function gety(value){
@@ -1325,6 +1327,24 @@ include 'includes/head-new.php';
                 var returndata = tohistogram(this.datain,parseInt(this.datain2),this.totalyield);
                 this.chart.series[0].setData(returndata[0]);
                 this.chart.xAxis[0].setCategories(returndata[1]);
+                this.chart.xAxis[0].addPlotBand({
+                    from: returndata[2]-0.5,
+                    to: returndata[2]+0.5,
+                    color: '#FCFFC5',
+                    id: 'plot-band-1',
+                });
+                this.chart.xAxis[0].addPlotBand({
+                    color: 'black',
+                    width: 2,
+                    dashStyle: 'longdashdot',
+                    value: returndata[2],
+                    label: {
+                        text: 'Estimated Read N50',
+                        align: 'left',
+                        rotation : 0,
+                        x: +10 // Amount of pixels the label will be repositioned according to the alignment.
+                    }
+                })
                 //this.chart.series[0].setData(this.datain);
                 //this.chart.redraw();
                 //console.log("chart in",this.datain);
