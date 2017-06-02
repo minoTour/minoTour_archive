@@ -226,12 +226,12 @@ include 'includes/head-new.php';
                             </button>
                             <div class="collapse" id="collapseExample">
                             --->
-                                <div class="col-lg-6" id="{{minion.name}}"><div is="chartporehistdetails" :title="minion.name" :key="key" :datain="minion.channelstuff" :datain2="minion.pore_history.details"></div></div>
+                                <div class="col-lg-6" id="{{minion.name}}"><div is="chartporehistdetails" :title="minion.name" :key="key" :datain="minion.channelstuff" :datain2="minion.pore_history.details" ></div></div>
                             <!--
                             </div>
                         -->
 
-                            <div class="col-lg-12" id="{{minion.name}}"><div is="chartreadhist" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count_weighted_hist" :datain2="minion.statistics.read_event_count_weighted_hist_bin_width" :totalyield="minion.statistics.read_event_count"></div></div>
+                            <div class="col-lg-12" id="{{minion.name}}"><div is="chartreadhist" :title="minion.name" :key="key" :datain="minion.statistics.read_event_count_weighted_hist" :datain2="minion.statistics.read_event_count_weighted_hist_bin_width" :totalyield="minion.statistics.read_event_count" :seqspeed="seqspeed" :readcount="minion.statistics.selected_completed_count"></div></div>
                             <div class="col-lg-6" id="{{minion.name}}"><div is="temphistory" :title="minion.name" :key="key" :datain2="minion.temp_history"></div></div>
 
                             <div class="col-lg-6" id="{{minion.name}}"><div is="volthistory" :title="minion.name" :key="key" :datain2="minion.temp_history"></div></div>
@@ -1282,7 +1282,7 @@ include 'includes/head-new.php';
 
     Vue.component('chartreadhist', {
 	template: '<div id="container{{title}}" style="margin: 0 auto"</div>',
-    props: ['title','key','datain','datain2','totalyield'],
+    props: ['title','key','datain','datain2','totalyield','seqspeed','readcount'],
     data: function() {
         return {
         	opts: {
@@ -1327,12 +1327,14 @@ include 'includes/head-new.php';
                 var returndata = tohistogram(this.datain,parseInt(this.datain2),this.totalyield);
                 this.chart.series[0].setData(returndata[0]);
                 this.chart.xAxis[0].setCategories(returndata[1]);
+                this.chart.xAxis[0].removePlotBand('plot-band-1');
                 this.chart.xAxis[0].addPlotBand({
                     from: returndata[2]-0.5,
                     to: returndata[2]+0.5,
                     color: '#FCFFC5',
                     id: 'plot-band-1',
                 });
+                this.chart.xAxis[0].removePlotBand('plot-band-2');
                 this.chart.xAxis[0].addPlotBand({
                     color: 'black',
                     width: 2,
@@ -1343,8 +1345,24 @@ include 'includes/head-new.php';
                         align: 'left',
                         rotation : 0,
                         x: +10 // Amount of pixels the label will be repositioned according to the alignment.
-                    }
-                })
+                    },
+                    id :'plot-band-2',
+                });
+                this.chart.xAxis[0].removePlotBand('plot-band-3');
+                this.chart.xAxis[0].addPlotBand({
+                    color: 'black',
+                    width: 2,
+                    dashStyle: 'longdashdot',
+                    value: (Math.floor(this.totalyield/this.readcount/this.datain2)),
+                    label: {
+                        text: 'Estimated Read Average - ' + Math.round(this.totalyield/this.readcount/1000 * 100) / 100  + ' K events' ,
+                        align: 'left',
+                        rotation : 0,
+                        x: +10 // Amount of pixels the label will be repositioned according to the alignment.
+                    },
+                    id :'plot-band-3',
+                });
+                //console.log(Math.round(this.totalyield/this.readcount/1000 * 100) / 100 );
                 //this.chart.series[0].setData(this.datain);
                 //this.chart.redraw();
                 //console.log("chart in",this.datain);
