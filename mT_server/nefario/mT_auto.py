@@ -92,7 +92,7 @@ class MyServerProtocol(WebSocketServerProtocol):
                                 #for minION in selfminIONdict[job][user].keys():
                                 for minION in message_dict[user].keys():
                                     #print minION
-                                    if minION[0]=="M":
+                                    if (minION[0]=="M" or minION[0]=="G"):
                                         #if minION not in publisher_dict[socketid]["minion"]:
                                         #    publisher_dict[socketid]["minion"].add(minION)
                                         if minION not in tracker_dict[user]:
